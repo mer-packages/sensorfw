@@ -1,0 +1,5 @@
+/usr/include/sensord/*.h
+/usr/include/sensord/filters/*.h
+/usr/include/sensord/datatypes/*.h
+/usr/lib/pkgconfig/*.pc
+/usr/share/qt4/mkspecs/features/*.prf

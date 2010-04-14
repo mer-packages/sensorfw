@@ -1,0 +1,3 @@
+LIBS += -L/usr/lib/ -lsensorclient -lsensordatatypes
+DEPENDPATH += /usr/include/sensord
+INCLUDEPATH += /usr/include/sensord /usr/include/sensord/datatypes /usr/include/sensord/filters

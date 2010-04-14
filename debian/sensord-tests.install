@@ -1,0 +1,6 @@
+/usr/share/sensord-tests/tests.xml
+/usr/share/sensord-tests/sensord-deadclienttest.py
+/usr/bin/sensor*-test
+/usr/bin/sensord-deadclient
+/usr/bin/sensordummyclient
+/usr/lib/sensord/testing/*

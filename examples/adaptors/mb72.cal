@@ -1,0 +1,12 @@
+acc_x_off = 1856
+acc_y_off = 1486
+acc_z_off = 1436
+mag_x_off = 20
+mag_y_off = -125
+mag_z_off = -354
+acc_x_scale = 1163
+acc_y_scale = 1165
+acc_z_scale = 1173
+mag_x_scale = -212
+mag_y_scale = -206
+mag_z_scale = 231

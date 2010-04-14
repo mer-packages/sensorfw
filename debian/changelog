@@ -1,0 +1,245 @@
+sensord (0.6.6) unstable; urgency=low
+
+  [Timo Rongas]
+  * Implements: SWP#MaSSW-1568
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 07 Apr 2010 14:50:12 +0300
+
+sensord (0.6.5) unstable; urgency=low
+
+  [Timo Rongas]
+  * Fixes: NB#162512 - Compass does not give even nearly correct values anymore
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 26 Mar 2010 14:47:53 +0200
+
+sensord (0.6.4) unstable; urgency=low
+
+  [Timo Rongas]
+  * Fixes: NB#161335 - lis3lv02d does not release VAUX1 regulator when not needed
+  * Fixes: NB#160447 - Sensord is unusable for "user"
+  * Fixes: NB#161699 - With QmALS, QmSensor::stop() blocks for a while, and right after it, ALS does not work
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 16 Mar 2010 16:11:22 +0200
+
+sensord (0.6.3) unstable; urgency=low
+
+  [Tapio Rantala]
+  * Fixed als and orientation tests for context framework
+
+  [Matias Muhonen]
+  * Fixed als and orientation tests for context framework
+
+  [Üstün Ergenoglu]
+  * Fixes: NB#160447 - Sensord is unusable for "user"
+
+  [Timo Rongas]
+  * Implements: SWP#MaSSW-1259
+  * Fixes: NB#159184 - The ipolldevd is causing very high wakeups which prevents the device to go in idle mode.
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 05 Mar 2010 12:25:41 +0200
+
+sensord (0.6.2) unstable; urgency=low
+
+  [Timo Rongas]
+  * Implements: SWP#MaSSW-1399, SWP#MaSSW-1398
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 17 Feb 2010 09:05:51 +0200
+
+sensord (0.6.1) unstable; urgency=low
+
+  * Fixes: NB#156771 - Compass calibration is really slow and the data is wrong in Columbus
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 16 Feb 2010 10:00:22 +0200
+
+sensord (0.6.0) unstable; urgency=low
+
+  * Implements: SWP#MaSSW-1004, SWP#MaSSW-1187
+  * Fixes: NB#155680 - UI is not rotated with 2.6.32 (linux-dali) kernel
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 25 Jan 2010 13:51:17 +0200
+
+sensord (0.5.27) unstable; urgency=low
+
+  * RotationSensor and MagnetometerSensor (raw data) added
+  * Benchmark test added
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 22 Jan 2010 08:41:16 +0200
+
+sensord (0.5.26) unstable; urgency=low
+
+  * Removed upstart and sysv init files from package.
+  * Cleaned up plug-ins to use only abstract interfaces of other plug-ins.
+  * Implements: SWP#MaSSW-1009
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 11 Jan 2010 10:48:51 +0200
+
+sensord (0.5.25) unstable; urgency=low
+
+  * Merged contextfw-position branch
+  * Merged contextfwmagnetometer2 branch
+  * Implements: SWP#MaSSW-981, SWP#MaSSW-1002
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 24 Nov 2009 16:08:44 +0200
+
+sensord (0.5.24) unstable; urgency=low
+
+  * Fixes NB#141511 - sensord Test Cases fail in CITA testing
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Fri, 23 Oct 2009 13:51:02 +0300
+
+sensord (0.5.23) unstable; urgency=low
+
+  * Implements SWP#MaSSW-938
+  * Merged contextprovider4 branch back to trunk
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Fri, 16 Oct 2009 08:12:06 +0300
+
+sensord (0.5.22) unstable; urgency=low
+
+  * merging contextfw test package branch into trunk
+  * merged adaptorcontrol branch back to trunk
+
+ -- Sagar Shinde <ext-sagar.shinde@nokia.com>  Mon, 08 Oct 2009 19:58:55 +0300
+
+sensord (0.5.21) unstable; urgency=low
+
+  * Implements: SWP#MaSSW-895, SWP#MaSSW-824
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Mon, 05 Oct 2009 11:36:55 +0300
+
+sensord (0.5.20) unstable; urgency=low
+
+  * Changed upstart start criteria to "started dbus"
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Mon, 28 Sep 2009 09:46:28 +0300
+
+sensord (0.5.19) unstable; urgency=low
+
+  * Removed dependencies to QtGui
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Thu, 24 Sep 2009 10:50:58 +0300
+
+sensord (0.5.18) unstable; urgency=low
+
+  * Fixed ambiguous inheritance in sysfsadaptor
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Thu, 24 Sep 2009 08:58:28 +0300
+
+sensord (0.5.17) unstable; urgency=low
+
+  * Added libcontextprovider to build deps
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Wed, 23 Sep 2009 16:52:44 +0300
+
+sensord (0.5.16) unstable; urgency=low
+
+  * Implements: SWP#MaSSW-818
+  * Fixes: NB#139128 - Orientation is reported upside down
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 22 Sep 2009 07:44:52 +0300
+
+sensord (0.5.15) unstable; urgency=low
+
+  * Updates for CI test packages
+
+ -- Sagar Shinde <ext-sagar.shinde@nokia.com>  Tue, 08 Sep 2009 10:57:25 +0300
+
+sensord (0.5.14) unstable; urgency=low
+
+  * Added binary installations for test packages
+
+ -- Sagar Shinde <ext-sagar.shinde@nokia.com>  Mon, 07 Sep 2009 15:49:25 +0300
+
+sensord (0.5.13) unstable; urgency=low
+
+  * Fixed bluetooth and usb library references
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Mon, 07 Sep 2009 11:49:25 +0300
+
+sensord (0.5.12) unstable; urgency=low
+
+  * Reverted packaging to include some header files required by qmsystem
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Mon, 07 Sep 2009 10:48:05 +0300
+
+sensord (0.5.10) unstable; urgency=low
+
+  * Test package section: tests
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Wed, 02 Sep 2009 15:35:45 +0300
+
+sensord (0.5.9) unstable; urgency=low
+
+  * Compass to point north.
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Wed, 02 Sep 2009 09:59:15 +0300
+
+sensord (0.5.8) unstable; urgency=low
+
+  * Implemented: SWP#MaSSW-725, SWP#MaSSW-643
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 18 Aug 2009 10:41:09 +0300
+
+sensord (0.5.7) unstable; urgency=low
+
+  * Added sensord.upstart
+  * Adaptor timestamps from utility function
+  * Removed debug messages
+  * Added sensord-test package
+  * Modified compass sensor properties (declination correction)
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Thu, 13 Aug 2009 15:24:35 +0300
+
+sensord (0.5.6) unstable; urgency=low
+
+  * Trying to tag it again...
+
+ -- Ilya Dogolazky <ilya.dogolazky@nokia.com>  Mon, 27 Jul 2009 10:37:39 +0300
+
+sensord (0.5.5) unstable; urgency=low
+
+  * Many changes by Timo
+
+ -- Ilya Dogolazky <ilya.dogolazky@nokia.com>  Mon, 27 Jul 2009 10:25:50 +0300
+
+sensord (0.5.4) unstable; urgency=low
+
+  * Added -doc package
+  * Fixed configuration problems
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Thu, 16 Jul 2009 10:58:20 +0300
+
+sensord (0.5.3) unstable; urgency=low
+
+  * Fixed dependency tag for dbg package
+  * Forced directory build order to fix parallel building.
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Wed, 08 Jul 2009 15:06:05 +0300
+
+sensord (0.5.2) unstable; urgency=low
+
+  * Removed subcontractor references from files.
+  * Changed pkg-config utility to be installed with dev package
+  * Added note of libak library to README
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Wed, 08 Jul 2009 10:55:51 +0300
+
+sensord (0.5.1) unstable; urgency=low
+
+  * Fixed building on i386.
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 07 Jul 2009 15:01:59 +0300
+
+sensord (0.5) unstable; urgency=low
+
+  * Version bump up to replace previous temporary solution
+  * Implemented: SWP#MaSSW-432, SWP#MaSSW-433, SWP#MaSSW-390, SWP#MaSSW-641,
+  * Implemented: SWP#MaSSW-522
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 07 Jul 2009 10:40:54 +0300
+
+sensord (0.1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 23 Jun 2009 15:54:46 +0300

@@ -1,0 +1,8 @@
+/usr/lib/libfilters.so*
+/usr/lib/libsensorclient.so*
+/usr/lib/libsensordatatypes.so*
+/usr/lib/sensord/*so
+/usr/sbin/sensord
+/usr/share/contextkit/providers/*
+/etc/dbus-1/system.d/*
+/etc/sensord.conf
