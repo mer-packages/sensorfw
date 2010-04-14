@@ -11,11 +11,3 @@ internal {
               kbslideradaptor \
               proximityadaptor
 }
-
-motionband {
-     SUBDIRS += mbadaptor
-}
-
-ariane {
-     SUBDIRS += arianeadaptor
-}

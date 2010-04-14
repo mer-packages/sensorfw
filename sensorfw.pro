@@ -34,15 +34,6 @@ internal {
           tests
 }
 
-# Temporary hack to allow direct linking (i.e. no daemon)
-ariane:SUBDIRS += libsensord
-
-# do not build automatically
-examples {
-    SUBDIRS += examples
-}
-
-
 publicheaders.files += include/*.h
 
 INSTALLS += PKGCONFIGFILES QTCONFIGFILES DBUSCONFIGFILES SENSORDCONFIGFILES

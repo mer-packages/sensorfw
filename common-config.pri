@@ -18,11 +18,6 @@ CONFIG += contextprovider
 ### uncomment the following line:
 #### CONFIG+= x86build
 
-# Ariane specific options
-#CONFIG += ariane
-#CONFIG += motionband
-
-#CONFIG += examples
 
 #use syslogd
 CONFIG += use_syslog

@@ -24,8 +24,3 @@ LIBS += -L../../qt-api \
         -L../../datatypes \
         -lsensordatatypes
 
-ariane {
-    DEFINES += USE_ARIANE
-    HEADERS += gesturehandler.h
-    SOURCES += gesturehandler.cpp
-}

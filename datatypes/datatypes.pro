@@ -26,17 +26,6 @@ internal {
     SOURCES += tap.cpp
 }
 
-ariane {
-    HEADERS += key.h
-    SOURCES += key.cpp
-}
-
-motionband {
-    HEADERS += raworientation.h
-    SOURCES += raworientation.cpp
-    INCLUDEPATH += ../libs
-}
-
 include(../common-install.pri)
 publicheaders.path  = $${publicheaders.path}/datatypes
 publicheaders.files = $$HEADERS

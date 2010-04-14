@@ -81,21 +81,6 @@ HEADERS += sensormanager.h \
 
 internal:DEFINES += USE_INTERNAL
 
-motionband { 
-    DEFINES += USE_MOTION_BAND
-    INCLUDEPATH += ../libs
-    LIBS += -L../libs/ht \
-        -lmotionband \
-        -lmbfilter \
-        -lvisualization
-}
-
-ariane { 
-    DEFINES += USE_ARIANE
-    INCLUDEPATH += ../adaptors
-    LIBS += -lariane
-}
-
 use_syslog:DEFINES += SENSORD_USE_SYSLOG
 
 contextprovider:DEFINES += PROVIDE_CONTEXT_INFO

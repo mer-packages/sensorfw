@@ -1,6 +1,4 @@
-# -------------------------------------------------
-# Project created by QtCreator 2009-04-06T14:56:43
-# -------------------------------------------------
+
 QT += dbus network
 TARGET = sensorclient
 TEMPLATE = lib
@@ -40,20 +38,6 @@ internal {
         proximitysensor_i.h \
         rotationsensor_i.h \
         magnetometersensor_i.h
-}
-
-motionband {
-    SOURCES += raworientationsensor_i.cpp
-    HEADERS += raworientationsensor_i.h
-    INCLUDEPATH += ../libs \
-        ../libs/libfilter
-}
-
-ariane {
-    SOURCES += filteredsensor_i.cpp \
-        arianesensor_i.cpp
-    HEADERS += filteredsensor_i.h \
-        arianesensor_i.h
 }
 
 include(../common-install.pri)

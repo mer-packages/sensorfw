@@ -22,24 +22,6 @@ internal {
         touchdata.h
  }
 
-ariane {
-    HEADERS += orientationdata.h \
-        orientationoffsetter.h \
-        genericdata.h \
-        orientationconverter.h \
-        timedkey.h
-    SOURCES += orientationoffsetter.cpp \
-        orientationconverter.cpp
-}
-
-motionband {
-    HEADERS += motionbanddata.h \
-        headtrackfilter.h
-    SOURCES += headtrackfilter.cpp
-    INCLUDEPATH += ../libs \
-        ../libs/libfilter
-}
-
 include(../common-install.pri)
 publicheaders.path = $${publicheaders.path}/filters
 publicheaders.files = $$HEADERS
