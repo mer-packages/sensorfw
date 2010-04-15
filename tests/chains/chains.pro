@@ -64,4 +64,4 @@ INCLUDEPATH += ../.. \
     ../../chains \    
     ../../adaptors \
 
-LIBS += -L../../builddir/filters -L../../filters/ -lfilters
+QMAKE_LIBDIR_FLAGS += -L../../builddir/filters -L../../filters/ -lfilters

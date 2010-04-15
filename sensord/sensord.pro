@@ -12,7 +12,6 @@ CONFIG -= app_bundle
 
 PKGCONFIG += contextprovider-1.0
 
-LIBS += -Wl,-rpath,/usr/lib/sensord
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
@@ -21,9 +20,11 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -Wl,-E \
-        -L../filters -lfilters \
-        -L../datatypes -lsensordatatypes
+LIBS += -Wl,-rpath,/usr/lib/sensord
+LIBS += -Wl,-E
+
+QMAKE_LIBDIR_FLAGS += -L../filters -lfilters \
+                      -L../datatypes -lsensordatatypes
 
 SOURCES += main.cpp \
     sensormanager.cpp \

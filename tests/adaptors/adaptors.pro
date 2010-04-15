@@ -82,19 +82,3 @@ INCLUDEPATH += ../.. \
     ../../adaptors/kbslideradaptor \
     ../../adaptors/proximityadaptor
     
-#LIBS += -L../../adaptors/sysfsadaptor \
-#    -lsysfsadaptor \
-#    -L../../adaptors/accelerometeradaptor \
-#    -laccelerometeradaptor \
-#    -L../../adaptors/touchadaptor \
-#    -ltouchadaptor \
-#    -L../../adaptors/tapadaptor \
-#    -lalsadaptor \
-#    -L../../adaptors/alsadaptor \
-#    -ltapadaptor \
-#    -L../../adaptors/touchadaptor \
-#    -ltouchadaptor \
-#    -L../../adaptors/kbslideradaptor \
-#    -lkbslideradaptor \
-#    -L../../adaptors/proximityadaptor \
-#    -lproximityadaptor

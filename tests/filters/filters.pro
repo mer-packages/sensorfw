@@ -71,5 +71,5 @@ INCLUDEPATH += ../.. \
     ../../filters/rotationfilter \
     ../../sensord
     
-LIBS += -L../../filters -lfilters \
+QMAKE_LIBDIR_FLAGS += -L../../filters -lfilters \
 

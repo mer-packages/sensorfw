@@ -7,7 +7,7 @@ DEPENDPATH += .
 
 QT += network dbus
 QT -= gui
-CONFIG += sensord debug
+CONFIG += debug
 DEFINES += ORIENTATION
 
 INCLUDEPATH += ../.. \
@@ -16,8 +16,8 @@ INCLUDEPATH += ../.. \
                ../../datatypes \
                ../../qt-api
 
-LIBS += -L../../qt-api -lsensorclient \
-        -L../../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
+                      -L../../datatypes -lsensordatatypes
 
 # Input
 HEADERS += datareceiver.h testwindow.h

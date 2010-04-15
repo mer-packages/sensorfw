@@ -12,5 +12,5 @@ INCLUDEPATH += ../../../qt-api \
 SOURCES += dummyclient.cpp
 HEADERS += dummyclient.h
 
-LIBS += -L../../../qt-api -lsensorclient \
-        -L../../../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../../../qt-api -lsensorclient \
+                      -L../../../datatypes -lsensordatatypes
