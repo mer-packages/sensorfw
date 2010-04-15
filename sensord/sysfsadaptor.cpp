@@ -348,22 +348,21 @@ void SysfsAdaptorReader::run()
 
             if (descriptors == -1) {
                 // TODO: deal with errors
-                sensordLogC() << "epoll_wait():" << strerror(errno);
-                return;
-            }
+                sensordLogD() << "epoll_wait():" << strerror(errno);
+            } else {
 
-            for (int i = 0; i < descriptors; ++i) {
-                int index = parent_->sysfsDescriptors_.lastIndexOf(events[i].data.fd);
-                if (index != -1) {
-                    parent_->processSample(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(i));
-                    //emit readyRead(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(index));
-                    // TODO: Wait on flag
-                    lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET);
-                } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
-                    running_ = false;
+                for (int i = 0; i < descriptors; ++i) {
+                    int index = parent_->sysfsDescriptors_.lastIndexOf(events[i].data.fd);
+                    if (index != -1) {
+                        parent_->processSample(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(i));
+                        //emit readyRead(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(index));
+                        // TODO: Wait on flag
+                        lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET);
+                    } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
+                        running_ = false;
+                    }
                 }
             }
-
         } else { //IntervalMode
 
             // Read through all fds.

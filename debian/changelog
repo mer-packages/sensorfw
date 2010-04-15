@@ -2,6 +2,7 @@ sensord (0.6.8) unstable; urgency=low
 
   [Timo Rongas]
   * Fixes: NB#164312 - sensord is being linked against old version of its own libraries (already installed in scratchbox)
+  * Fixes: NB#164339 -  sensord: *CRITICAL* 2000-01-01 00:02:39 [../../sensord/sysfsadaptor.cpp:325:virtual void SysfsAdaptorReader::run()] epoll_wait(): Interrupted system call
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Thu, 15 Apr 2010 08:09:40 +0300
 
