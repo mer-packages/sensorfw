@@ -1,3 +1,10 @@
+sensord (0.6.8) unstable; urgency=low
+
+  [Timo Rongas]
+  * Fixes: NB#164312 - sensord is being linked against old version of its own libraries (already installed in scratchbox)
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Thu, 15 Apr 2010 08:09:40 +0300
+
 sensord (0.6.7) unstable; urgency=low
 
   [Matias Muhonen]
