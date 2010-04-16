@@ -33,8 +33,9 @@
 #include "datatypes/xyz.h"
 
 #define MODE_SWITCH_INTERVAL 20000 // in ms, 20s
+#define MAX_EXEC_COUNT 3
 
-DriverPollTester::DriverPollTester(QObject *parent) : QObject(parent), poll(false)
+DriverPollTester::DriverPollTester(QObject *parent) : QObject(parent), poll(false), execTimes(0)
 {
     modeTimer = new QTimer(this);
     QObject::connect(modeTimer, SIGNAL(timeout()), this, SLOT(needModeSwitch()));
@@ -88,11 +89,19 @@ void DriverPollTester::switchMode(bool needStopping)
         accOne->setInterval(0); // 0 == hw interrupt
         accOne->start();
         // Don't start the second interface 
-    } 
+    }
+
+    execTimes++; 
 }
 
 void DriverPollTester::needModeSwitch()
 {
+     if (MAX_EXEC_COUNT == execTimes) {
+         qDebug() << "Reached the maximum execution count. Exit.";
+         QCoreApplication::exit();
+         return;
+     }
+
      poll = !poll;
 
      if (poll) {

@@ -37,12 +37,12 @@ class DriverPollTester : public QObject {
 public:
     DriverPollTester(QObject *parent = 0);
     virtual ~DriverPollTester();
-    void foo();
 
 private:
     // Timer switches between the poll and interrupt mode
     QTimer *modeTimer;
     bool poll;
+    int execTimes;
 
     AccelerometerSensorChannelInterface *accOne;
     AccelerometerSensorChannelInterface *accTwo;
