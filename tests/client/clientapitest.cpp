@@ -370,6 +370,9 @@ void ClientApiTest::testRotationSensor()
     // Test properties
     sensorIfc->setInterval(100);
 
+    bool hasz = sensorIfc->hasZ();
+    qDebug() << "Z-axis rotation calculations in use:" << hasz;
+
     // Need simulated data to make sensible test ouf of this.
     XYZ sample1 = sensorIfc->rotation();
     XYZ sample2 = qvariant_cast<XYZ>(sensorIfc->property("rotation"));

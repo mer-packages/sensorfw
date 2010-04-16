@@ -35,3 +35,8 @@ XYZ RotationSensorChannelAdaptor::rotation() const
 {
     return qvariant_cast< XYZ >(parent()->property("rotation"));
 }
+
+bool RotationSensorChannelAdaptor::hasZ() const
+{
+    return qvariant_cast< bool >(parent()->property("hasZ"));
+}

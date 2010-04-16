@@ -41,9 +41,10 @@ public:
         sm.loadPlugin("orientationsensor");
         sm.registerSensorInterface<OrientationSensorChannelInterface>("orientationsensor");
 
-        sensor = OrientationSensorChannelInterface::controlInterface("orientationsensor");
+        //~ sensor = OrientationSensorChannelInterface::controlInterface("orientationsensor");
+        sensor = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
         if (sensor == NULL || !sensor->isValid()) {
-            qDebug() << "[DummyClient] Unable to get control session:" << sensor->errorString();
+            qDebug() << "[DummyClient] Unable to get listen session:" << sensor->errorString();
         } else {
             sensor->start();
         }

@@ -33,7 +33,8 @@
 RotationSensorChannel::RotationSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<TimedXyzData>(10),
-        prevRotation_(0,0,0,0)
+        prevRotation_(0,0,0,0),
+        hasZ_(false)
 {
     SensorManager& sm = SensorManager::instance();
 
@@ -47,6 +48,15 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1024);
 
+    compassChain_ = sm.requestChain("compasschain");
+    if (compassChain_ && compassChain_->isValid()) {
+        hasZ_ = true;
+    } else {
+        sensordLogW() << "Unable to use compass for z-axis rotation.";
+    }
+    compassReader_ = new BufferReader<CompassData>(1024);
+
+
     rotationFilter_ = sm.instantiateFilter("rotationfilter");
     Q_ASSERT(rotationFilter_);
 
@@ -56,10 +66,12 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     filterBin_ = new Bin;
 
     filterBin_->add(accelerometerReader_, "accelerometer");
+    filterBin_->add(compassReader_, "compass");
     filterBin_->add(rotationFilter_, "rotationfilter");
     filterBin_->add(outputBuffer_, "buffer");
 
-    filterBin_->join("accelerometer", "source", "rotationfilter", "sink");
+    filterBin_->join("accelerometer", "source", "rotationfilter", "accelerometersink");
+    filterBin_->join("compass", "source", "rotationfilter", "compasssink");
     filterBin_->join("rotationfilter", "source", "buffer", "sink");
     
     // Join datasources to the chain
@@ -68,13 +80,17 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     Q_ASSERT(rb);
     rb->join(accelerometerReader_);
 
+    rb = compassChain_->findBuffer("truenorth");
+    Q_ASSERT(rb);
+    rb->join(compassReader_);
+
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
 
     /// Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor";
+    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor";
 }
 
 RotationSensorChannel::~RotationSensorChannel()
@@ -85,10 +101,15 @@ RotationSensorChannel::~RotationSensorChannel()
     rb = accelerometerChain_->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->unjoin(accelerometerReader_);
-
     sm.releaseChain("accelerometerchain");
  
+    rb = compassChain_->findBuffer("truenorth");
+    Q_ASSERT(rb);
+    rb->unjoin(compassReader_);
+    sm.releaseChain("compasschain");
+
     delete accelerometerReader_;
+    delete compassReader_;
     delete rotationFilter_;
     delete outputBuffer_;
     delete marshallingBin_;
@@ -103,6 +124,8 @@ bool RotationSensorChannel::start()
         marshallingBin_->start();
         filterBin_->start();
         accelerometerChain_->start();
+        compassChain_->setProperty("compassEnabled", true);
+        compassChain_->start();
     }
     return true;
 }
@@ -113,7 +136,9 @@ bool RotationSensorChannel::stop()
 
     if (AbstractSensorChannel::stop()) {
         accelerometerChain_->stop();
+        compassChain_->stop();
         filterBin_->stop();
+        compassChain_->setProperty("compassEnabled", false);
         marshallingBin_->stop();
     }
     return true;

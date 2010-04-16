@@ -42,6 +42,7 @@ class RotationSensorChannelInterface: public AbstractSensorChannelInterface
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ rotation READ rotation);
+    Q_PROPERTY(bool hasZ READ hasZ);
 
 public:
     static inline const char *staticInterfaceName()
@@ -54,6 +55,7 @@ public:
     }
 
     inline XYZ rotation() const { return qvariant_cast< XYZ >(internalPropGet("rotation")); }
+    inline bool hasZ() const { return qvariant_cast< bool >(internalPropGet("hasZ")); }
 
 public:
     RotationSensorChannelInterface(const QString &path, int sessionId);

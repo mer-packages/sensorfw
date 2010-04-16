@@ -409,34 +409,36 @@ void FilterApiTest::testRotationFilter()
 {
     TimedXyzData inputData[] = {
         TimedXyzData(0,   0,   0,   0),
-
         TimedXyzData(1,   0,   0,-500),
-        TimedXyzData(2,   0,-500,   0),
-        TimedXyzData(3, 500,   0,   0),
+        TimedXyzData(2,   0,   0, 500),
 
-        TimedXyzData(4,   0,   0, 500),
-        TimedXyzData(5,   0, 500,   0),
-        TimedXyzData(6,-500,   0,   0),
+        TimedXyzData(3,   0,-500,   0),
+        TimedXyzData(4,   0, 500,   0),
 
-        TimedXyzData(7, 500,   0, 500),
-        TimedXyzData(8,   0, 500, 500),
-        TimedXyzData(9,-500, 500,   0)
+        TimedXyzData(5,-500,   0,   0),
+        TimedXyzData(6, 500,   0,   0),
+        //~ TimedXyzData(6,-500,   0,   0),
+
+        //~ TimedXyzData(7, 500,   0, 500),
+        //~ TimedXyzData(8,   0, 500, 500),
+        //~ TimedXyzData(9,-500, 500,   0)
     };
     
     TimedXyzData expectedResult[] = {
         TimedXyzData(0,   0,   0,   0),
+        TimedXyzData(1,   0,   0,   0),
+        TimedXyzData(2,   0, 180,   0),
 
-        TimedXyzData(1,  90,  90, 180),
-        TimedXyzData(2,  90, 180,  90),
-        TimedXyzData(3,   0,  90,  90),
+        TimedXyzData(3,  90,   0,   0),
+        TimedXyzData(4, -90,   0,   0),
 
-        TimedXyzData(4,  90,  90,   0),
-        TimedXyzData(5,  90,   0,  90),
-        TimedXyzData(6, 180,  90,  90),
+        TimedXyzData(5,   0, -90,   0),
+        TimedXyzData(6,   0,  90,   0),
+        //~ TimedXyzData(6,   0, -90,   0),
 
-        TimedXyzData(7,  45,  90,  45),
-        TimedXyzData(8,  90,  45,  45),
-        TimedXyzData(9, 135,  45,  90)
+        //~ TimedXyzData(7,  45,  90,  45),
+        //~ TimedXyzData(8,  90,  45,  45),
+        //~ TimedXyzData(9, 135,  45,  90)
     };
 
     QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),
@@ -455,7 +457,7 @@ void FilterApiTest::testRotationFilter()
     filterBin.add(rotationFilter, "rotationfilter");
     filterBin.add(&outputBuffer, "buffer");
 
-    filterBin.join("adapter", "source", "rotationfilter", "sink");
+    filterBin.join("adapter", "source", "rotationfilter", "accelerometersink");
     filterBin.join("rotationfilter", "source", "buffer", "sink");
 
     Bin marshallingBin;

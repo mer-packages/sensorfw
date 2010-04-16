@@ -39,7 +39,7 @@
  * Axis rotations are given in degrees. Rotation is defined as the angle
  * between the acceleration vector and the positive axis.
  */
-class RotationFilter : public QObject, public Filter<TimedXyzData, RotationFilter, TimedXyzData>
+class RotationFilter : public QObject, public FilterBase
 {
     Q_OBJECT;
 public:
@@ -59,12 +59,24 @@ private:
      */
     RotationFilter();
 
+    /**
+     * Utility function for calculating the length of vector.
+     * @param data input vector.
+     * @return Length of the input vector.
+     */
+    double vectorLength(const TimedXyzData& data);
+
+    Sink<RotationFilter, TimedXyzData> accelerometerDataSink_;
+    Sink<RotationFilter, CompassData> compassDataSink_;
+    Source<TimedXyzData> source_;
+
     void interpret(unsigned, const TimedXyzData*);
+    void updateZvalue(unsigned, const CompassData*);
 
     inline int dotProduct(TimedXyzData a, TimedXyzData b) const {
         return (a.x_*b.x_)+(a.y_*b.y_)+(a.z_*b.z_);
     }
-    
+
     TimedXyzData rotation_;
 };
 

@@ -45,7 +45,8 @@ class RotationSensorChannel :
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ rotation READ rotation);
-    
+    Q_PROPERTY(bool hasZ READ hasZ);
+
 public:
     /**
      * Factory method for RotationSensorChannel.
@@ -55,7 +56,7 @@ public:
     {
         RotationSensorChannel* sc = new RotationSensorChannel(id);
         new RotationSensorChannelAdaptor(sc);
-        
+
         return sc;
     }
 
@@ -64,29 +65,37 @@ public:
         return XYZ(prevRotation_);
     }
 
+    bool hasZ() const
+    {
+        return hasZ_;
+    }
+
 public Q_SLOTS:
     bool start();
     bool stop();
-    
+
 signals:
     /**
      * Sent when new measurement data has become available.
      * @param data Newly measured data.
      */
     void dataAvailable(const XYZ& data);
-    
+
 protected:
     RotationSensorChannel(const QString& id);
     ~RotationSensorChannel();
-    
+
 private:
-    Bin*                             filterBin_;
-    Bin*                             marshallingBin_;
-    AbstractChain*                   accelerometerChain_;
-    BufferReader<AccelerationData>*  accelerometerReader_;
-    FilterBase*                      rotationFilter_;
-    RingBuffer<AccelerationData>*    outputBuffer_;
-    TimedXyzData                     prevRotation_;
+    Bin*                         filterBin_;
+    Bin*                         marshallingBin_;
+    AbstractChain*               accelerometerChain_;
+    AbstractChain*               compassChain_;
+    BufferReader<TimedXyzData>*  accelerometerReader_;
+    BufferReader<CompassData>*   compassReader_;
+    FilterBase*                  rotationFilter_;
+    RingBuffer<TimedXyzData>*    outputBuffer_;
+    TimedXyzData                 prevRotation_;
+    bool                         hasZ_;
 
     void emitToDbus(const TimedXyzData& value);
 };

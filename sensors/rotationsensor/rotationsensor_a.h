@@ -35,10 +35,13 @@ class RotationSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
     Q_OBJECT;
     Q_CLASSINFO("D-Bus Interface", "local.RotationSensor");
-    
+
 public:
-    Q_PROPERTY(XYZ rotation READ rotation)
+    Q_PROPERTY(XYZ rotation READ rotation);
     XYZ rotation() const;
+
+    Q_PROPERTY(bool hasZ READ hasZ);
+    bool hasZ() const;
 
     RotationSensorChannelAdaptor(QObject* parent);
 
