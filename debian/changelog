@@ -2,7 +2,8 @@ sensord (0.6.8) unstable; urgency=low
 
   [Timo Rongas]
   * Fixes: NB#164312 - sensord is being linked against old version of its own libraries (already installed in scratchbox)
-  * Fixes: NB#164339 -  sensord: *CRITICAL* 2000-01-01 00:02:39 [../../sensord/sysfsadaptor.cpp:325:virtual void SysfsAdaptorReader::run()] epoll_wait(): Interrupted system call
+  * Fixes: NB#164339 - sensord: *CRITICAL* 2000-01-01 00:02:39 [../../sensord/sysfsadaptor.cpp:325:virtual void SysfsAdaptorReader::run()] epoll_wait(): Interrupted system call
+  * Fixes: NB#162104 - Device orientation does not change after making a call without SIM
 
   [Üstün Ergenoglu]
   * Fixes: NB#156788 - Orientation detection is too sensitive
