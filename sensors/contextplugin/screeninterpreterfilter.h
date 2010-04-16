@@ -55,8 +55,7 @@ private:
     void interpret(unsigned, const TimedXyzData* data);
     void provideScreenData(int x, int y, int z);
 
-    const float threshold, hysteresis;
-    int averageAcceleration;
+    const float threshold;
 };
 
 #endif
