@@ -63,7 +63,7 @@ void ScreenInterpreterFilter::provideScreenData(int x, int y, int z)
     int gVector = ((x*x + y*y + z*z)/1000);
     bool goodVector = ((gVector >= 800) && (gVector <=1250)) ? true : false;
     if (!goodVector)
-        qDebug() << "vector is not good...";
+        sensordLogT() << "vector is not good...";
 
     /* Face up or down? */
     if (isCovered == false) {
