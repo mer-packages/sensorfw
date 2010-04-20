@@ -50,6 +50,9 @@
  * DummyAdaptor is a Pusher that can be used to push data into a filter for testing.
  * Input data is given as an array. Calling \c pushNewData() will propagate the next
  * value in the array into adaptor output.
+ * 
+ * @todo For some reason we can only feed in 10 samples.. Anything beyond that will
+ *       get compared to wrong expected output..
  */
 template <class TYPE>
 class DummyAdaptor : public Pusher
