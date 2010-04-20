@@ -417,11 +417,16 @@ void FilterApiTest::testRotationFilter()
 
         TimedXyzData(5,-500,   0,   0),
         TimedXyzData(6, 500,   0,   0),
-        //~ TimedXyzData(6,-500,   0,   0),
 
-        //~ TimedXyzData(7, 500,   0, 500),
-        //~ TimedXyzData(8,   0, 500, 500),
-        //~ TimedXyzData(9,-500, 500,   0)
+        TimedXyzData(7,-500,   0,-500),
+        //~ TimedXyzData(8, 500,   0,-500),
+
+        TimedXyzData(9,   0,-500,-500),
+        //~ TimedXyzData(10,   0, 500,-500),
+
+        TimedXyzData(11,   0,-500, 500),
+        //~ TimedXyzData(12,   0, 500, 500),
+
     };
     
     TimedXyzData expectedResult[] = {
@@ -434,11 +439,16 @@ void FilterApiTest::testRotationFilter()
 
         TimedXyzData(5,   0, -90,   0),
         TimedXyzData(6,   0,  90,   0),
-        //~ TimedXyzData(6,   0, -90,   0),
 
-        //~ TimedXyzData(7,  45,  90,  45),
-        //~ TimedXyzData(8,  90,  45,  45),
-        //~ TimedXyzData(9, 135,  45,  90)
+        TimedXyzData(7,   0, -45,   0),
+        //~ TimedXyzData(8,   0,  45,   0),
+
+        TimedXyzData(9,  45,   0,   0),
+        //~ TimedXyzData(10, -45,   0,   0),
+
+        TimedXyzData(11,  45, 180,   0),
+        //~ TimedXyzData(12, -45, 180,   0),
+
     };
 
     QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),

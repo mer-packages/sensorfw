@@ -28,6 +28,8 @@
 #include <QVariant>
 #include <math.h>
 
+#define RADIANS_TO_DEGREES 180/M_PI
+
 RotationFilter::RotationFilter() :
         accelerometerDataSink_(this, &RotationFilter::interpret),
         compassDataSink_(this, &RotationFilter::updateZvalue),
@@ -42,52 +44,35 @@ void RotationFilter::interpret(unsigned, const TimedXyzData* data)
 {
     // TODO: Thread safety here
     rotation_.timestamp_ = data->timestamp_;
-    //~ double vectorLength = sqrt(data->x_*data->x_ + data->y_*data->y_ + data->z_*data->z_);
 
-    /// X-rotation
-    TimedXyzData axis(0,0,1,0); /// Y-axis
-    if ((data->y_ != 0) || (data->z_ != 0)) {
-        TimedXyzData projection(0,0,data->y_,data->z_); /// Projection to Y/Z-plane
-        rotation_.x_ = (int)round(acos(dotProduct(projection, axis)/vectorLength(projection))*180/M_PI);
-
-        rotation_.x_ -= 90; /// Set 0 angle
-
-    } else {
-        rotation_.x_ = 0;
-    }
+    /// X-Rotation
+    //~ if (data->x_ == 0 && data->z_ == 0) {
+        //~ rotation_.x_ = 0;
+    //~ } else {
+        rotation_.x_ = round(atan((double)data->y_ / sqrt(data->x_*data->x_ + data->z_*data->z_)) * RADIANS_TO_DEGREES);
+        rotation_.x_ = -rotation_.x_;
+    //~ }
 
     /// Y-rotation
-
-    /// get the rotated z-axis as unit vector. (z = acceleration)
-    //~ double glength = vectorLength(TimedXyzData(0, data->x_, 0, data->z_));
-    axis.y_ = 0;
-    axis.x_ = -1; //100000*(data->x_ / glength);
-    //~ axis.z_ = 100000*(data->z_ / glength);
-
-    //~ TimedXyzData projection(0,data->x_,0,data->z_); /// Projection to X/Z-plane
-    //~ rotation_.y_ = (int)round(acos(dotProduct(projection, axis)/vectorLength(projection))*180/M_PI);
-    //~ qDebug() << "[Z-AXIS] (" << axis.x_ << ", 0, " << axis.z_ << ")";
-
-    if ((data->x_ != 0)  || (data->z_ != 0)) {
-        TimedXyzData projection(0,data->x_,0,data->z_); /// Projection to X/Z-plane
-        rotation_.y_ = (int)round(acos(dotProduct(projection, axis)/vectorLength(projection))*180/M_PI);
- 
-        rotation_.y_ -= 90; /// set 0 angle
-
-        if (rotation_.y_ >= 0 && data->z_ >= 0) {
-            rotation_.y_ = 90 + (90-rotation_.y_);
-        }
-
-        if (rotation_.y_ < 0 && data->z_ >= 0) {
-            rotation_.y_ = -90 - (90 + rotation_.y_);
-        }
-    } else {
+    if (data->x_ == 0 && data->y_ == 0 && data->z_ > 0) {
+        rotation_.y_ = 180;
+    } else if (data->x_ == 0 && data->z_  == 0) {
         rotation_.y_ = 0;
-    }
+    } else {
+        //~ if (data->y_  == 0 && data->z_ == 0) {
+            //~ rotation_.y_ = 0;
+        //~ } else {
+            rotation_.y_ = round(atan((double)data->x_ / sqrt(data->y_*data->y_ + data->z_*data->z_)) * RADIANS_TO_DEGREES);
+        //~ }
 
-    //~ rotation_.x_ = (int)round(acos(dotProduct(*data, TimedXyzData(0,1,0,0))/vectorLength)*180/M_PI);
-    //~ rotation_.y_ = (int)round(acos(dotProduct(*data, TimedXyzData(0,0,1,0))/vectorLength)*180/M_PI);
-    //~ rotation_.z_ = (int)round(acos(dotProduct(*data, TimedXyzData(0,0,0,1))/vectorLength)*180/M_PI);
+        qreal theta = atan(sqrt(data->x_*data->x_ + data->y_*data->y_) / data->z_) * RADIANS_TO_DEGREES;
+        if (theta > 0) {
+            if (rotation_.y_ >= 0)
+                rotation_.y_ = 180 - rotation_.y_;
+            else
+                rotation_.y_ = -180 - rotation_.y_;
+        }
+    }
 
     source_.propagate(1, &rotation_);
 }
