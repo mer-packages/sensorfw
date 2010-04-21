@@ -42,7 +42,6 @@ RotationFilter::RotationFilter() :
 
 void RotationFilter::interpret(unsigned, const TimedXyzData* data)
 {
-    // TODO: Thread safety here
     rotation_.timestamp_ = data->timestamp_;
 
     /// X-Rotation
@@ -84,7 +83,6 @@ double RotationFilter::vectorLength(const TimedXyzData& data)
 
 void RotationFilter::updateZvalue(unsigned, const CompassData* data)
 {
-    // TODO: Thread safety here...
     rotation_.timestamp_ = data->timestamp_;
 
     /// Z-rotation
