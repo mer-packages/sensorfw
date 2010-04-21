@@ -158,6 +158,10 @@ void ClientApiTest::testAccelerometerSensor()
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());   
 
+    XYZ sample1 = sensorIfc->get();
+    XYZ sample2 = qvariant_cast<XYZ>(sensorIfc->property("value"));
+    QVERIFY(sample1 == sample2);
+
     delete sensorIfc;
 }
 

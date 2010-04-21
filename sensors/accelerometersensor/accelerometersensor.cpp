@@ -32,7 +32,8 @@
 
 AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<AccelerationData>(10)
+        DbusEmitter<AccelerationData>(10),
+        previousSample_(0,0,0,0)
 {
     SensorManager& sm = SensorManager::instance();
 
@@ -114,6 +115,7 @@ bool AccelerometerSensorChannel::stop()
 
 void AccelerometerSensorChannel::emitToDbus(const AccelerationData& value)
 {
+    previousSample_ = value;
 #ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(AccelerationData));
 #else

@@ -30,3 +30,8 @@ AccelerometerSensorChannelAdaptor::AccelerometerSensorChannelAdaptor(QObject* pa
 {
     setAutoRelaySignals(true);
 }
+
+XYZ AccelerometerSensorChannelAdaptor::get() const
+{
+    return qvariant_cast< XYZ >(parent()->property("value"));
+}

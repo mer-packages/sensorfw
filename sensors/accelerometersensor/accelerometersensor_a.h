@@ -34,10 +34,13 @@
 
 class AccelerometerSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
-    Q_OBJECT
+    Q_OBJECT;
     Q_CLASSINFO("D-Bus Interface", "local.AccelerometerSensor")
 
 public:
+    Q_PROPERTY(XYZ value READ get);
+    XYZ get() const;
+
     AccelerometerSensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:

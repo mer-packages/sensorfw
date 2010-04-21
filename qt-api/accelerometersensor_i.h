@@ -41,7 +41,7 @@
  */
 class AccelerometerSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT
+    Q_OBJECT;
 
 public:
     /**
@@ -60,6 +60,9 @@ public:
         // ToDo: see which arguments can be made explicit
         return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
     }
+
+    Q_PROPERTY(XYZ value READ get);
+    inline XYZ get() const { return qvariant_cast< XYZ >(internalPropGet("value")); }
 
 public:
     /**

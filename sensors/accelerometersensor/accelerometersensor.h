@@ -49,6 +49,7 @@ class AccelerometerSensorChannel :
         public DbusEmitter<AccelerationData>
 {
     Q_OBJECT;
+    Q_PROPERTY(XYZ value READ get);
 
 public:
     /**
@@ -62,7 +63,9 @@ public:
         
         return sc;
     }
-    
+
+    XYZ get() const { return previousSample_; }
+
 public Q_SLOTS:
     bool start();
     bool stop();
@@ -85,6 +88,7 @@ private:
     AbstractChain*                   accelerometerChain_;
     BufferReader<AccelerationData>*  accelerometerReader_; 
     RingBuffer<AccelerationData>*    outputBuffer_;
+    AccelerationData                 previousSample_;
 
     void emitToDbus(const AccelerationData& value);
 };
