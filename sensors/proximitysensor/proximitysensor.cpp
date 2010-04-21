@@ -33,7 +33,7 @@
 ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<TimedUnsigned>(10),
-        previousValue_(0, 0)
+        previousValue_(0, -1)
 {
     SensorManager& sm = SensorManager::instance();
 
@@ -111,10 +111,15 @@ bool ProximitySensorChannel::stop()
 
 void ProximitySensorChannel::emitToDbus(const TimedUnsigned& value)
 {
-    previousValue_ = value;
+    previousValue_.timestamp_ = value.timestamp_;
+    
+    if (value.value_ != previousValue_.value_) {
+        previousValue_.value_ = value.value_;
+
 #ifdef USE_SOCKET
-    writeToClients((const void *)&value, sizeof(TimedUnsigned));
+        writeToClients((const void *)&value, sizeof(TimedUnsigned));
 #else
-    emit dataAvailable(value);
+        emit dataAvailable(value);
 #endif
+    }
 }
