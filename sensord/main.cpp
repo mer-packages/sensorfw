@@ -43,14 +43,6 @@
 #include "datatypes/tap.h"
 #endif
 
-#ifdef USE_ARIANE
-#include "key.h"
-#endif
-
-#ifdef USE_MOTION_BAND
-#include "raworientation.h"
-#endif
-
 #define CONFIG_FILE_PATH     "/etc/sensord.conf"
 
 int main(int argc, char *argv[])
@@ -69,12 +61,7 @@ int main(int argc, char *argv[])
 #ifdef USE_INTERNAL
     qDBusRegisterMetaType<Tap>();
 #endif
-#ifdef USE_ARIANE
-    qDBusRegisterMetaType<Key>();
-#endif
-#ifdef USE_MOTION_BAND
-    qDBusRegisterMetaType<RawOrientation>();
-#endif
+
 
     SensorManager& sm = SensorManager::instance();
 
@@ -89,24 +76,13 @@ int main(int argc, char *argv[])
     //sensordLog() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
 #endif
 
-#ifdef USE_MOTION_BAND
-    // TODO: come up with a way to specify plugin search paths
-    sensordLog() << "Loading plugin RawOrientationSensor" << sm.loadPlugin("raworientationsensor");
-#endif
-
-#ifdef USE_ARIANE
-    // TODO: allow for location and other differentiating sensor properties
-    sensordLog() << "Loading FilteredSensor" << sm.loadPlugin("filteredsensor");
-    sensordLog() << "Loading ArianeSensor" << sm.loadPlugin("arianesensor");
-    sensordLog() << "Loading ArianeAdaptor" << sm.loadPlugin("arianeadaptor");
-#endif
-
 #ifdef PROVIDE_CONTEXT_INFO    
     sensordLog() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
 
     // FIXME: A HACK: make sure the AlsSensorChannel & ContextSensorChannel are created
     sm.requestControlSensor("alssensor");
     sm.requestControlSensor("contextsensor");
+
 #endif
 
     sm.registerService();
