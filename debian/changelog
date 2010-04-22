@@ -2,7 +2,9 @@ sensord (0.6.9) unstable; urgency=low
 
   [Timo Rongas]
   * Implements: SWP#MaSSW-1564
-
+  * Added duplicate value filter to ProximitySensor (no BI)
+  * Added getter property for AccelerometerSensor (no BI)
+ 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 21 Apr 2010 07:41:46 +0300
 
 sensord (0.6.8) unstable; urgency=low
