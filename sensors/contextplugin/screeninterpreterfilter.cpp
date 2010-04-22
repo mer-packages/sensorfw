@@ -38,7 +38,8 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     Filter<TimedXyzData, ScreenInterpreterFilter, TimedXyzData>(this, &ScreenInterpreterFilter::interpret),
     topEdgeProperty(topEdgeProperty),
     isCoveredProperty(isCoveredProperty),
-    threshold(230)
+    threshold(230),
+    isCovered(false)
 {
     //qDebug() << "Creating the ScreenInterpreterFilter";
 }
@@ -56,7 +57,8 @@ void ScreenInterpreterFilter::provideScreenData(int x, int y, int z)
     // isCovered = false. They won't be Unknown (whenever data is
     // available).
     QString topEdge = "";
-    bool isCovered = false;
+
+    sensordLogT() << "x:" << x << "y:" << y << "z:" << z;
 
     /* Device orientation calculations. Mostly copied from Fremantle
      * MCE code.*/
@@ -67,12 +69,14 @@ void ScreenInterpreterFilter::provideScreenData(int x, int y, int z)
 
     /* Face up or down? */
     if (isCovered == false) {
-        if ( (z > 800) && (x < 200) && (y < 200)) {
+        if ( (z < -750) && (abs(x) < 300) && (abs(y) < 300)) {
             isCovered = true;
         }
-    } else if ( z < -120 ) {
+    } else if ( z > 120 ) {
         isCovered = false;
     }
+
+    sensordLogT() << "Device is:" << (isCovered?"Covered":"not Covered");
 
     if (!goodVector) {
         topEdge = "";

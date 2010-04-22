@@ -56,6 +56,7 @@ private:
     void provideScreenData(int x, int y, int z);
 
     const float threshold;
+    bool isCovered;
 };
 
 #endif
