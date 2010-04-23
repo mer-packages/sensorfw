@@ -118,7 +118,7 @@ void MagnetometerSensorChannel::emitToDbus(const CalibratedMagneticFieldData& va
 #ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));
 #else
-    TimedXyzData tmpValue(value.timestamp_, value.calibratedData.x_, value.calibratedData.y_, value.calibratedData.z_);
-    emit dataAvailable(tmpValue);
+    //~ TimedXyzData tmpValue(value.timestamp_, value.calibratedData.x_, value.calibratedData.y_, value.calibratedData.z_);
+    emit dataAvailable(value);
 #endif
 }

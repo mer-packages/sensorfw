@@ -28,7 +28,7 @@
 
 #include <QtDBus/QtDBus>
 
-#include "datatypes/xyz.h"
+#include "datatypes/magneticfield.h"
 #include "abstractsensor_a.h"
 
 class MagnetometerSensorChannelAdaptor : public AbstractSensorChannelAdaptor
@@ -37,13 +37,13 @@ class MagnetometerSensorChannelAdaptor : public AbstractSensorChannelAdaptor
     Q_CLASSINFO("D-Bus Interface", "local.MagnetometerSensor");
     
 public:
-    Q_PROPERTY(XYZ magneticField READ magneticField)
-    XYZ magneticField() const;
+    Q_PROPERTY(MagneticField magneticField READ magneticField)
+    MagneticField magneticField() const;
 
     MagnetometerSensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:
-    void dataAvailable(const XYZ& data);
+    void dataAvailable(const MagneticField& data);
 };
 
 #endif

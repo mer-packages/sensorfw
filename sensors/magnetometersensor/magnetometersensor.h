@@ -46,7 +46,7 @@ class MagnetometerSensorChannel :
         public DbusEmitter<CalibratedMagneticFieldData>
 {
     Q_OBJECT;
-    Q_PROPERTY(XYZ magneticField READ magneticField); //TODO :FIX
+    Q_PROPERTY(MagneticField magneticField READ magneticField);
     
 public:
     /**
@@ -61,10 +61,9 @@ public:
         return sc;
     }
 
-    XYZ magneticField() // TODO: FIX
+    MagneticField magneticField()
     {
-        return XYZ();
-        //return XYZ(prevMeasurement_);
+        return MagneticField(prevMeasurement_);
     }
 
 public Q_SLOTS:
@@ -76,7 +75,7 @@ signals:
      * Sent when new measurement data has become available.
      * @param data Newly measured data.
      */
-    void dataAvailable(const XYZ& data);
+    void dataAvailable(const MagneticField& data);
     
 protected:
     MagnetometerSensorChannel(const QString& id);

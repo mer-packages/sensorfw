@@ -31,7 +31,7 @@ MagnetometerSensorChannelAdaptor::MagnetometerSensorChannelAdaptor(QObject* pare
     setAutoRelaySignals(true);
 }
 
-XYZ MagnetometerSensorChannelAdaptor::magneticField() const
+MagneticField MagnetometerSensorChannelAdaptor::magneticField() const
 {
-    return qvariant_cast< XYZ >(parent()->property("magneticField"));
+    return qvariant_cast< MagneticField >(parent()->property("magneticField"));
 }
