@@ -116,14 +116,14 @@ void ClientApiTest::testOrientationSensor()
     sensorIfc->setThreshold(threshold + offset);
     QVERIFY(threshold+offset == sensorIfc->threshold());
     sensorIfc->setThreshold(threshold);
-    
+
     // test start
     QDBusReply<void> reply = sensorIfc->start();
     QVERIFY(reply.isValid());
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -156,7 +156,7 @@ void ClientApiTest::testAccelerometerSensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     XYZ sample1 = sensorIfc->get();
     XYZ sample2 = qvariant_cast<XYZ>(sensorIfc->property("value"));
@@ -198,7 +198,7 @@ void ClientApiTest::testMagnetometerSensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -235,7 +235,7 @@ void ClientApiTest::testCompassSensor()
     sensorIfc->setUseDeclination(!declinationInUse);
     QVERIFY(declinationInUse != sensorIfc->useDeclination());
     sensorIfc->setUseDeclination(!declinationInUse);
-    
+
     // TODO: Compare declination value against value in gconf
 
 
@@ -245,7 +245,7 @@ void ClientApiTest::testCompassSensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -278,7 +278,7 @@ void ClientApiTest::testTapSensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -314,7 +314,7 @@ void ClientApiTest::testALSSensor()
 
     // test stop
     //reply = sensorIfc->stop();
-    //QVERIFY(reply.isValid());   
+    //QVERIFY(reply.isValid());
 
     //delete sensorIfc;
 }
@@ -347,7 +347,7 @@ void ClientApiTest::testProximitySensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -388,7 +388,7 @@ void ClientApiTest::testRotationSensor()
 
     // test stop
     reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());   
+    QVERIFY(reply.isValid());
 
     delete sensorIfc;
 }
@@ -399,11 +399,11 @@ void ClientApiTest::testRotationSensor()
  *
  * For the sake of testing, OrientationSensor and AccelerometerSensor are
  * used. AccelerometerChain is shared.
- * 
- * @note Sensord hacks starting context framework things might affect this by 
+ *
+ * @note Sensord hacks starting context framework things might affect this by
  *       adding other sensors that use the same adaptor.
- */ 
-void ClientApiTest::testCommonAdaptorPipeline() 
+ */
+void ClientApiTest::testCommonAdaptorPipeline()
 {
     int DELAY = 250;
     OrientationSensorChannelInterface *orientation;
@@ -412,7 +412,7 @@ void ClientApiTest::testCommonAdaptorPipeline()
     orientation = OrientationSensorChannelInterface::controlInterface("orientationsensor");
     QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor control channel");
     orientation->setInterval(100);
-    
+
     orientation->start();
     qDebug() << "Orientation sensor started, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);
@@ -424,7 +424,7 @@ void ClientApiTest::testCommonAdaptorPipeline()
     accelerometer->start();
     qDebug() << "Accelerometer sensor started, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);
-    
+
     orientation->stop();
     qDebug() << "Orientation sensor stopped, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);

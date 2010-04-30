@@ -25,6 +25,7 @@
 
 #include <gconf/gconf-client.h>
 #include "declinationfilter.h"
+#include "logging.h"
 
 #define DECLINATION_KEY "/system/osso/location/magneticvariation"
 
@@ -53,13 +54,17 @@ void DeclinationFilter::loadSettings()
     int     value;
     GError *error = NULL;
 
-    client = gconf_client_get_default ();
-    if (! client )
+    client = gconf_client_get_default();
+    if (! client ) {
+        sensordLogW() << "Failed to initialise GConf client.";
         return;
+    }
 
-    value = gconf_client_get_int (client, DECLINATION_KEY, &error);
-    if ( error )
+    value = gconf_client_get_int(client, DECLINATION_KEY, &error);
+    if ( error ) {
+        sensordLogW() << "Failed to read value for " << DECLINATION_KEY << "from GConf.";
         return;
+    }
 
     declinationCorrection_(value);
 

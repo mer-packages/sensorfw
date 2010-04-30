@@ -2,6 +2,7 @@ sensord (0.6.9) unstable; urgency=low
 
   [Timo Rongas]
   * Implements: SWP#MaSSW-1564
+  * Implements: SWP#MaSSW-1563
   * Added duplicate value filter to ProximitySensor (no BI)
   * Added getter property for AccelerometerSensor (no BI)
  

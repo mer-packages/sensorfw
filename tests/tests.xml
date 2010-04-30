@@ -37,7 +37,7 @@
       <case name="Sensord_Memory_OpenKill" level="Component" type="Benchmark" description="Memory leak check for session open/kill" timeout="200" subfeature="Sensor Framework">
         <step>/usr/bin/sensorbenchmark-test testLostSessionLeaks</step>
       </case>
-      
+
       <!-- Environments optional - tells where the tests are run -->
       <environments>
         <scratchbox>false</scratchbox>
@@ -75,7 +75,7 @@
         <step>mv /usr/lib/sensord/libalsadaptor.so /usr/lib/sensord/libalsadaptor.so.orig</step>
         <step>ln -s /usr/lib/sensord/testing/libalsadaptor.so /usr/lib/sensord/libalsadaptor.so</step>
       </pre_steps>
-      
+
       <case name="Sensord_Benchmark_50hz" level="Component" type="Benchmark" description="Sensord Benchmark @ 50hz" timeout="45" subfeature="Sensor Framework">
         <step>echo 20 > /tmp/sensorTestSampleRate</step>
         <step>start sensord</step>
@@ -105,6 +105,18 @@
         <step>mv /usr/lib/sensord/libalsadaptor.so.orig /usr/lib/sensord/libalsadaptor.so</step>
         <step>start sensord</step>
       </post_steps>
+
+      <!-- Environments optional - tells where the tests are run -->
+      <environments>
+        <scratchbox>false</scratchbox>
+        <hardware>true</hardware>
+      </environments>
+    </set>
+
+    <set name="Sensord-external-tests" description="External issue tests for sensord" feature="Sensor Framework" requirement="SensorFw Testing and automation">
+      <case name="Sensord_External" level="Component" type="Functional" description="Check external required API, values etc." timeout="15" subfeature="Sensor Framework" insignificant="true">
+        <step>/usr/bin/sensorexternal-test</step>
+      </case>
 
       <!-- Environments optional - tells where the tests are run -->
       <environments>

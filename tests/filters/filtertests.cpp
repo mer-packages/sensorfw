@@ -50,7 +50,7 @@
  * DummyAdaptor is a Pusher that can be used to push data into a filter for testing.
  * Input data is given as an array. Calling \c pushNewData() will propagate the next
  * value in the array into adaptor output.
- * 
+ *
  * @todo For some reason we can only feed in 10 samples.. Anything beyond that will
  *       get compared to wrong expected output..
  */
@@ -221,8 +221,9 @@ void FilterApiTest::testCoordinateAlignFilter()
 
     FilterBase* coordAlignFilter = CoordinateAlignFilter::factoryMethod();
 
-    ((CoordinateAlignFilter*)coordAlignFilter)->setProperty("transMatrix", QVariant::fromValue(TMatrix(hconv)));    RingBuffer<TimedXyzData> outputBuffer(10);
+    ((CoordinateAlignFilter*)coordAlignFilter)->setProperty("transMatrix", QVariant::fromValue(TMatrix(hconv)));
 
+    RingBuffer<TimedXyzData> outputBuffer(10);
     filterBin.add(&dummyAdaptor, "adapter");
     filterBin.add(coordAlignFilter, "coordfilter");
     filterBin.add(&outputBuffer, "buffer");
@@ -332,7 +333,6 @@ void FilterApiTest::testOrientationInterpretationFilter()
     delete orientationInterpreterFilter;
 }
 
-
 void FilterApiTest::testDeclinationFilter()
 {
     // Input data to feed to the filter
@@ -347,16 +347,19 @@ void FilterApiTest::testDeclinationFilter()
         CompassData(0, 1, 1)
     };
 
+    FilterBase* declinationFilter = DeclinationFilter::factoryMethod();
+    int key = qvariant_cast<int>(dynamic_cast<DeclinationFilter*>(declinationFilter)->property("declinationCorrection"));
+
     // Expected output data
     CompassData expectedResult[] = {
-        CompassData(0, 0, 0),
-        CompassData(0, 1, 0),
-        CompassData(0, 0, 2),
-        CompassData(0, 0, 0),
-        CompassData(0, 4, 5),
-        CompassData(0, 6, 0),
-        CompassData(0, 0, 8),
-        CompassData(0, 1, 1)
+        CompassData(0, 0+key, 0),
+        CompassData(0, 1+key, 0),
+        CompassData(0, 0+key, 2),
+        CompassData(0, 0+key, 0),
+        CompassData(0, 4+key, 5),
+        CompassData(0, 6+key, 0),
+        CompassData(0, 0+key, 8),
+        CompassData(0, 1+key, 1)
     };
 
     QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),
@@ -366,8 +369,6 @@ void FilterApiTest::testDeclinationFilter()
 
     Bin filterBin;
     DummyAdaptor<CompassData> dummyAdaptor;
-
-    FilterBase* declinationFilter = DeclinationFilter::factoryMethod();
 
     RingBuffer<CompassData> outputBuffer(10);
 
@@ -431,7 +432,7 @@ void FilterApiTest::testRotationFilter()
         //~ TimedXyzData(12,   0, 500, 500),
 
     };
-    
+
     TimedXyzData expectedResult[] = {
         TimedXyzData(0,   0,   0,   0),
         TimedXyzData(1,   0,   0,   0),

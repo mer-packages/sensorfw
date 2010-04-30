@@ -4,13 +4,14 @@ TEMPLATE = subdirs
 SUBDIRS = filters\
           adaptors \
           chains \
-	  contextfw \
+          contextfw \
           client \
           dataflow \
           benchmark \
           testutils \
           deadclient \
-          powermanagement
+          powermanagement \
+          external
 
 testdefinition.files = tests.xml
 testdefinition.path = /usr/share/sensord-tests

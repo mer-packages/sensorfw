@@ -109,7 +109,7 @@ void BenchmarkTest::testThroughput()
 
     // get mem
     signalDump.recordMemUsage(sensordPid);
-    
+
     /// Sample rate
     double sampleRate = signalDump.cnt/(double)DELAY;
     qDebug() << "[Sample Rate]:" << sampleRate << "s/sec";
@@ -137,7 +137,7 @@ void BenchmarkTest::testThroughput()
         dirtyAvg += value;
     }
     dirtyAvg = dirtyAvg / signalDump.memoryDirty.size();
-    
+
     qDebug() << "[MEM        ]: Average Min Max" ;
     qDebug() << "[      Clean]:" << cleanAvg << cleanMin << cleanMax;
     qDebug() << "[      Dirty]:" << dirtyAvg << dirtyMin << dirtyMax;
@@ -149,9 +149,9 @@ void BenchmarkTest::testSessionLeaks()
 {
     int ITERATIONS = 30;
     SignalDump signalDump;
-    
+
     qDebug() << "Initiating and closing RotationSensor" << ITERATIONS << "times";
-    
+
     QProcess* process = new QProcess(this);
     process->start(QString("pidof sensord"));
     process->waitForReadyRead(1000);
@@ -184,9 +184,9 @@ void BenchmarkTest::testLostSessionLeaks()
 {
     int ITERATIONS = 30;
     SignalDump signalDump;
-    
+
     qDebug() << "Initiating and killing RotationSensor" << ITERATIONS << "times";
-    
+
     QProcess* process = new QProcess(this);
     process->start(QString("pidof sensord"));
     process->waitForReadyRead(1000);

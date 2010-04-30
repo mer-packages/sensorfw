@@ -190,7 +190,4 @@ void DataFlowTest::testChainSharing()
 }
 
 
-
-
 QTEST_MAIN(DataFlowTest)
-

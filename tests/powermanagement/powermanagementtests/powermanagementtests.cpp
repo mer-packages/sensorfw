@@ -143,7 +143,7 @@ void PowerManagementTest::testIntervalRace()
     QVERIFY(readPollInterval(accPollFile) == 150);
 
     accTwo->stop();
-    
+
     QVERIFY(readPollInterval(accPollFile) == 0);
 
     delete accOne;
