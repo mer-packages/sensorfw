@@ -4,7 +4,8 @@ include( ../common-config.pri )
 include( ../common-install.pri )
 
 internal {
-    SUBDIRS  = accelerometerchain
+    SUBDIRS  = accelerometerchain \
+               orientationchain
 }
 
 

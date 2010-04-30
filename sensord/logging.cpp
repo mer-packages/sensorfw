@@ -37,7 +37,6 @@
 #include <syslog.h>
 #endif
 
-//SensordLogLevel SensordLogger::outputLevel;
 SensordLogLevel SensordLogger::outputLevel = SensordLogWarning;
 
 SensordLogger::SensordLogger (const char *module, const char* func, 

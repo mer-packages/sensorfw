@@ -5,6 +5,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
+   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,8 +28,10 @@
 
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
+#include "sensord/abstractchain.h"
 #include "accelerometeradaptor.h"
 #include "filters/orientationdata.h"
+#include "posedata.h"
 
 #include "normalizerfilter.h"
 #include "cutterfilter.h"
@@ -62,8 +65,10 @@ private:
     ContextProvider::Group group;
 
     BufferReader<AccelerationData> accelerometerReader;
+    BufferReader<PoseData> orientationReader;
     DeviceAdaptor* accelerometerAdaptor;
 
+    AbstractChain* orientationChain;
     ScreenInterpreterFilter screenInterpreterFilter;
     NormalizerFilter normalizerFilter;
     CutterFilter cutterFilter;

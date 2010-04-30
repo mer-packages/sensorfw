@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,12 +27,11 @@
 #include "orientationinterpreterplugin.h"
 #include "orientationinterpreter.h"
 #include "sensormanager.h"
-
-#include <QtDebug>
+#include "sensord/logging.h"
 
 void OrientationInterpreterPlugin::Register(class Loader&)
 {
-    qDebug() << "registering orientationinterpreter";
+    sensordLogD() << "registering orientationinterpreter";
     SensorManager& sm = SensorManager::instance();
     sm.registerFilter<OrientationInterpreter>("orientationinterpreter");
 }

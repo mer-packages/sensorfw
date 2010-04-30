@@ -5,6 +5,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
+   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -37,6 +38,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     isStableProperty(s, "Position.Stable"),
     isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),
+    orientationReader(10),
     screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty),
     cutterFilter(4.0),
     avgVarFilter(100),
@@ -48,7 +50,11 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
     Q_ASSERT(accelerometerAdaptor);
 
+    orientationChain = SensorManager::instance().requestChain("orientationchain");
+    Q_ASSERT(orientationChain);
+
     add(&accelerometerReader, "accelerometer");
+    add(&orientationReader, "orientation");
     add(&screenInterpreterFilter, "screeninterpreterfilter");
     add(&normalizerFilter, "normalizerfilter");
     add(&cutterFilter, "cutterfilter");
@@ -56,7 +62,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     add(&stabilityFilter, "stabilityfilter");
 
     // Create a branching filter chain
-    join("accelerometer", "source", "screeninterpreterfilter", "sink");
+    join("orientation", "source", "screeninterpreterfilter", "sink");
 
     join("accelerometer", "source", "normalizerfilter", "sink");
     join("normalizerfilter", "source", "cutterfilter", "sink");
@@ -68,6 +74,10 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     Q_ASSERT(rb);
     rb->join(&accelerometerReader);
 
+    rb = orientationChain->findBuffer("orientation");
+    Q_ASSERT(rb);
+    rb->join(&orientationReader);
+
     // Context group
     group.add(topEdgeProperty);
     group.add(isCoveredProperty);
@@ -78,6 +88,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
 
     // Set default values (if the default isn't Unknown)
     topEdgeProperty.setValue("top");
+    isCoveredProperty.setValue(false);
 }
 
 OrientationBin::~OrientationBin()
@@ -101,11 +112,13 @@ void OrientationBin::startRun()
     isShakyProperty.unsetValue();
     start();
     accelerometerAdaptor->startSensor("accelerometer");
+    orientationChain->start();
 }
 
 void OrientationBin::stopRun()
 {
     //qDebug() << "Stopping the run on the orientationbin";
     accelerometerAdaptor->stopSensor("accelerometer");
+    orientationChain->stop();
     stop();
 }

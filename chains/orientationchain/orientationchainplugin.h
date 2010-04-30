@@ -1,10 +1,10 @@
 /**
-   @file contextplugin.cpp
-   @brief Plugin for ContextSensor
+   @file accelerometerchainplugin.h
+   @brief Plugin for AccelerometerChain
+
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
@@ -21,22 +21,18 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
-*/
+ */
 
-#include "contextplugin.h"
-#include "sensormanager.h"
-#include "contextsensor.h"
-#include <QtDebug>
+#ifndef ORIENTATIONCHAINPLUGIN_H
+#define ORIENTATIONCHAINPLUGIN_H
 
-void ContextPlugin::Register(class Loader&)
+#include "plugin.h"
+
+class OrientationChainPlugin : public Plugin
 {
-    qDebug() << "registering contextsensor";
-    SensorManager& sm = SensorManager::instance();
-    sm.registerSensor<ContextSensorChannel>("contextsensor");
-}
+private:
+    void Register(class Loader& l);
+    QStringList Dependencies();
+};
 
-QStringList ContextPlugin::Dependencies() {
-    return QString("accelerometeradaptor:coordinatealignfilter:compasschain:orientationchain").split(":", QString::SkipEmptyParts);
-}
-
-Q_EXPORT_PLUGIN2(contextsensor, ContextPlugin)
+#endif

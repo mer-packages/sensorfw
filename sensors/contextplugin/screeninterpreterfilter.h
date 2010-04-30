@@ -26,7 +26,7 @@
 #define SCREENINTERPRETERFILTER_H
 
 #include "sensord/filter.h"
-#include "orientationdata.h"
+#include "posedata.h"
 
 #include <ContextProvider>
 
@@ -42,7 +42,7 @@
 
 */
 
-class ScreenInterpreterFilter : public QObject, public Filter<TimedXyzData, ScreenInterpreterFilter, TimedXyzData>
+class ScreenInterpreterFilter : public QObject, public Filter<PoseData, ScreenInterpreterFilter, PoseData>
 {
     Q_OBJECT
 
@@ -52,8 +52,8 @@ public:
 private:
     ContextProvider::Property* topEdgeProperty;
     ContextProvider::Property* isCoveredProperty;
-    void interpret(unsigned, const TimedXyzData* data);
-    void provideScreenData(int x, int y, int z);
+    void interpret(unsigned, const PoseData* data);
+    void provideScreenData(PoseData::Orientation orientation);
 
     const float threshold;
     bool isCovered;

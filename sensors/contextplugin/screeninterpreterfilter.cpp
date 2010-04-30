@@ -35,7 +35,7 @@
 ScreenInterpreterFilter::ScreenInterpreterFilter(
     ContextProvider::Property* topEdgeProperty,
     ContextProvider::Property* isCoveredProperty) :
-    Filter<TimedXyzData, ScreenInterpreterFilter, TimedXyzData>(this, &ScreenInterpreterFilter::interpret),
+    Filter<PoseData, ScreenInterpreterFilter, PoseData>(this, &ScreenInterpreterFilter::interpret),
     topEdgeProperty(topEdgeProperty),
     isCoveredProperty(isCoveredProperty),
     threshold(230),
@@ -44,91 +44,42 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     //qDebug() << "Creating the ScreenInterpreterFilter";
 }
 
-void ScreenInterpreterFilter::interpret(unsigned, const TimedXyzData* data)
+void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)
 {
     sensordLogT() << "Data received on ScreenInterpreter... " << data->timestamp_;
-    provideScreenData(data->x_, data->y_, data->z_);
+    provideScreenData(data->orientation_);
     source_.propagate(1, data);
 }
 
-void ScreenInterpreterFilter::provideScreenData(int x, int y, int z)
+void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientation)
 {
-    // Default values: TopEdge = "keep the previous one",
-    // isCovered = false. They won't be Unknown (whenever data is
-    // available).
-    QString topEdge = "";
-
-    sensordLogT() << "x:" << x << "y:" << y << "z:" << z;
-
-    /* Device orientation calculations. Mostly copied from Fremantle
-     * MCE code.*/
-    int gVector = ((x*x + y*y + z*z)/1000);
-    bool goodVector = ((gVector >= 800) && (gVector <=1250)) ? true : false;
-    if (!goodVector)
-        sensordLogT() << "vector is not good...";
-
-    /* Face up or down? */
-    if (isCovered == false) {
-        if ( (z < -750) && (abs(x) < 300) && (abs(y) < 300)) {
-            isCovered = true;
-        }
-    } else if ( z > 120 ) {
-        isCovered = false;
-    }
-
-    sensordLogT() << "Device is:" << (isCovered?"Covered":"not Covered");
-
-    if (!goodVector) {
-        topEdge = "";
-    } else if ((abs(x) >= 200) || (abs(y) >= 200)) {
-        if (topEdge == "") {
-            /*change topEdge away from unknown
-             * when x or y goes above 400 */
-            if ( (abs(y) > 400) && (abs(y) > abs(x)) ) {
-                if (y < 0)
-                    topEdge = "bottom";
-                else
-                    topEdge = "top";
-            } else if ( (abs(x) > 400) && (abs(x) > abs(y)) ) {
-                if (x < 0)
-                    topEdge = "left";
-                else
-                    topEdge = "right";
-            }
-        } else if (topEdge == "top" || topEdge == "bottom") {
-            /* change topEdge when x is bigger than y as much as the threshold.*/
-            if ( abs(x) > (abs(y) + threshold) ) {
-                if ( x < 0 )
-                    topEdge = "left";
-                else
-                    topEdge = "right";
-            } else {
-                if ( y < 0 )
-                    topEdge = "top";
-                else
-                    topEdge = "bottom";
-            }
-        } else if (topEdge == "left" || topEdge == "right") {
-            /* change topEdge when y is bigger than x as much as the threshold.*/
-            if (abs(y) > (abs(x) + threshold)) {
-                if (y < 0)
-                    topEdge = "top";
-                else
-                    topEdge = "bottom";
-            } else {
-                if (x < 0)
-                    topEdge = "left";
-                else
-                    topEdge = "right";
-            }
-        }
-    } else {
-        topEdge = "";
-    }
-
     // Provide
-    if (topEdge != "") {
-        sensordLogT() << "Screen orientation:" << topEdge;
+    QString topEdge;
+
+    if (orientation != PoseData::Undefined) {
+        sensordLogT() << "Screen orientation:" << orientation;
+
+        switch (orientation) {
+            case PoseData::FaceUp:
+                isCovered = false;
+                break;
+            case PoseData::FaceDown:
+                isCovered = true;
+                break;
+            case PoseData::LeftUp:
+                topEdge = "left";
+                break;
+            case PoseData::RightUp:
+                topEdge = "right";
+                break;
+            case PoseData::BottomDown:
+                topEdge = "top";
+                break;
+            case PoseData::BottomUp:
+                topEdge = "bottom";
+                break;
+        }
+
         topEdgeProperty->setValue(topEdge);
     }
     isCoveredProperty->setValue(isCovered);
