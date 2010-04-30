@@ -128,19 +128,19 @@ public:
      * Returns the raw value for X.
      * @return raw x value.
      */
-    int rx() const { return data_.x_; }
+    int rx() const { return data_.rx_; }
 
     /**
      * Returns the raw value for Y.
      * @return raw y value.
      */
-    int ry() const { return data_.y_; }
+    int ry() const { return data_.ry_; }
 
     /**
      * Returns the raw value for Z.
      * @return raw z value.
      */
-    int rz() const { return data_.z_; }
+    int rz() const { return data_.rz_; }
 
     /**
      * Returns the magnetometer calibration level.
