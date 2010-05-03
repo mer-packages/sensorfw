@@ -37,38 +37,33 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
 {
     SensorManager& sm = SensorManager::instance();
     
-    accelerometerChain_ = sm.requestChain("accelerometerchain");
-    Q_ASSERT( accelerometerChain_ );
-    if (!accelerometerChain_->isValid()) {
+    orientationChain_ = sm.requestChain("orientationchain");
+    Q_ASSERT( orientationChain_ );
+    if (!orientationChain_->isValid()) {
         isValid_ = false;
     } else {
         isValid_ = true;
     }
 
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(1024);
+    orientationReader_ = new BufferReader<PoseData>(1024);
 
-    orientationInterpreterFilter_ = sm.instantiateFilter("orientationinterpreter");
-    Q_ASSERT(orientationInterpreterFilter_);
-    
     outputBuffer_ = new RingBuffer<PoseData>(1024);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
 
-    filterBin_->add(accelerometerReader_, "accelerometer");
-    filterBin_->add(orientationInterpreterFilter_, "orientationinterpreter");
+    filterBin_->add(orientationReader_, "orientation");
     filterBin_->add(outputBuffer_, "buffer");
 
     // Join filterchain buffers
-    filterBin_->join("accelerometer", "source", "orientationinterpreter", "sink");
-    filterBin_->join("orientationinterpreter", "source", "buffer", "sink");
+    filterBin_->join("orientation", "source", "buffer", "sink");
 
     // Join datasources to the chain
     RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
+    rb = orientationChain_->findBuffer("orientation");
     Q_ASSERT(rb);
-    rb->join(accelerometerReader_);
+    rb->join(orientationReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -84,14 +79,13 @@ OrientationSensorChannel::~OrientationSensorChannel()
     SensorManager& sm = SensorManager::instance();
 
     RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
+    rb = orientationChain_->findBuffer("orientation");
     Q_ASSERT(rb);
-    rb->unjoin(accelerometerReader_);
+    rb->unjoin(orientationReader_);
 
-    sm.releaseChain("accelerometerchain");
+    sm.releaseChain("orientationchain");
 
-    delete accelerometerReader_;
-    delete orientationInterpreterFilter_;
+    delete orientationReader_;
     delete outputBuffer_;
     delete marshallingBin_;
     delete filterBin_;
@@ -104,7 +98,7 @@ bool OrientationSensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        accelerometerChain_->start();
+        orientationChain_->start();
     }
     return true;
 }
@@ -114,7 +108,7 @@ bool OrientationSensorChannel::stop()
     sensordLogD() << "Stopping OrientationSensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        accelerometerChain_->stop();
+        orientationChain_->stop();
         filterBin_->stop();
         marshallingBin_->stop();
     }

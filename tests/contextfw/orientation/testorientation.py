@@ -49,7 +49,7 @@ class Orientation(unittest.TestCase):
         context_client = CLTool("context-listen", "Screen.TopEdge")
 
         # Top side up
-        os.system("echo 36 0 1008 | " + self.datafaker + " " + self.fpath)
+        os.system("echo 60 960 18 | " + self.datafaker + " " + self.fpath)
         self.assert_(context_client.expect('Screen.TopEdge = QString:"top"'))
 
         # Right side up
@@ -67,7 +67,7 @@ class Orientation(unittest.TestCase):
         context_client = CLTool("context-listen", "Screen.IsCovered")
 
         # On the table
-        os.system("echo -954 -90 -36 | " + self.datafaker + " " + self.fpath)
+        os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
         self.assert_(context_client.expect('Screen.IsCovered = bool:false'))
 
         # On the table upside down

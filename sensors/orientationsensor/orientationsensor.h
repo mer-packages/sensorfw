@@ -53,7 +53,7 @@ class OrientationSensorChannel :
     Q_OBJECT;
 
     Q_PROPERTY(Unsigned orientation READ orientation);
-    Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
+    //Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
 public:
 
     /**
@@ -81,20 +81,20 @@ public:
      * Property method returning currently used threshold value.
      * @return Current threshold value.
      */
-    int threshold() const
-    {
-        return qvariant_cast< int >(((OrientationInterpreter *)orientationInterpreterFilter_)->property("threshold"));
-    }
+    //int threshold() const
+    //{
+        //return qvariant_cast< int >(((OrientationInterpreter *)orientationInterpreterFilter_)->property("threshold"));
+    //}
 
     /**
      * Property method for setting the threshold value.
      * @param threshold New threshold value.
      */
-    void setThreshold(int threshold)
-    {
-        signalPropertyChanged("threshold");
-        ((OrientationInterpreter*)orientationInterpreterFilter_)->setProperty("threshold", threshold);
-    }
+    //void setThreshold(int threshold)
+    //{
+        //signalPropertyChanged("threshold");
+        //((OrientationInterpreter*)orientationInterpreterFilter_)->setProperty("threshold", threshold);
+    //}
 
 public Q_SLOTS:
     bool start();
@@ -113,16 +113,12 @@ protected:
 
 private:
     PoseData                         prevOrientation;
-    static double                    aconv_[3][3];
     Bin*                             filterBin_;
     Bin*                             marshallingBin_;
 
-    AbstractChain*                   accelerometerChain_;
+    AbstractChain*                   orientationChain_;
 
-    BufferReader<OrientationData>*   accelerometerReader_;
-
-    FilterBase*                      accCoordinateAlignFilter_;
-    FilterBase*                      orientationInterpreterFilter_;
+    BufferReader<PoseData>*   orientationReader_;
 
     RingBuffer<PoseData>*            outputBuffer_;
 

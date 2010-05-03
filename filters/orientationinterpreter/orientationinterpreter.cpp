@@ -112,9 +112,9 @@ void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
                 if (newAxis_ != 2) {
                     if (abs(v[newAxis_]) > 550) {
                         if (newAxis_ == 0)
-                            newPose.orientation_ = (v[1] > 0?PoseData::LeftUp:PoseData::RightUp);
+                            newPose.orientation_ = (v[0] > 0?PoseData::LeftUp:PoseData::RightUp);
                         if (newAxis_ == 1)
-                            newPose.orientation_ = (v[2] > 0?PoseData::BottomUp:PoseData::BottomDown);
+                            newPose.orientation_ = (v[1] > 0?PoseData::BottomUp:PoseData::BottomDown);
                     }
                 } else {
                     newPose.orientation_ = (v[2] > 0?PoseData::FaceDown:PoseData::FaceUp);
