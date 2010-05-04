@@ -1,3 +1,9 @@
+sensord (0.6.10) unstable; urgency=low
+
+  * Version bump for a new tag (0.6.9 failure fix)
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 04 May 2010 09:04:49 +0300
+
 sensord (0.6.9) unstable; urgency=low
 
   [Timo Rongas]
