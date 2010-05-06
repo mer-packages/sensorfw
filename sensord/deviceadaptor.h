@@ -32,6 +32,8 @@
 #include <QString>
 #include <QHash>
 #include <QDebug>
+#include "logging.h"
+
 class RingBufferBase;
 
 class AdaptedSensorEntry : public QObject {
@@ -98,7 +100,7 @@ public:
 
     void setStandbyOverride(unsigned override) {
         standbyOverride_ = (override>0) ? true : false;
-        qDebug() << "standbyOverride Changed:" << id_ << standbyOverride_;
+        sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
     }
 
     const QString& id() const { return id_; }

@@ -443,7 +443,7 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
             QString type = deviceAdaptorInstanceMap_[id].type_;
             if ( deviceAdaptorFactoryMap_.contains(type) )
             {
-                //sensordLogD() << __PRETTY_FUNCTION__ << "new instance created";
+                sensordLogD() << __PRETTY_FUNCTION__ << "new instance created:" << id;
                 da = deviceAdaptorFactoryMap_[type](id);
                 Q_ASSERT( da );
 

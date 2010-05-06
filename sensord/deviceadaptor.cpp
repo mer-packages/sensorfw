@@ -26,7 +26,6 @@
    </p>
  */
 
-#include "logging.h"
 #include "deviceadaptor.h"
 
 DeviceAdaptor::~DeviceAdaptor()

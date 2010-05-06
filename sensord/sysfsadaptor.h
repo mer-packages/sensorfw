@@ -177,6 +177,7 @@ private:
      * 
      */
     void stopReaderThread();
+    bool startReaderThread();
 
     SysfsAdaptorReader  reader_;
     
@@ -191,6 +192,7 @@ private:
     bool initNotDone;
     bool inStandbyMode_;
     bool running_;
+    bool shouldBeRunning_;
 
     friend class SysfsAdaptorReader;
 };
