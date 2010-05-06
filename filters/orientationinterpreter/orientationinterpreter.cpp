@@ -33,6 +33,7 @@ OrientationInterpreter::OrientationInterpreter() :
         newAxis_(0),
         prevAxis_(0)
 {
+    qRegisterMetaType<PoseData>("PoseData");
     threshold_(DEFAULT_THRESHOLD);
 }
 

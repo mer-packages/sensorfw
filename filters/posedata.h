@@ -93,4 +93,6 @@ public:
     PoseData(Orientation orientation) : TimedData(0), orientation_(orientation) {}
 };
 
+Q_DECLARE_METATYPE(PoseData)
+
 #endif // POSEDATA_H

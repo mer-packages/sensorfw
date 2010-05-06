@@ -74,7 +74,8 @@ public:
     */
     Unsigned orientation() const
     {
-        return TimedUnsigned(prevOrientation.timestamp_, prevOrientation.orientation_);
+        TimedUnsigned o = orientationChain_->property("orientation").value<TimedUnsigned>();
+        return Unsigned(o);
     }
 
     /**

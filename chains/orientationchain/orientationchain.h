@@ -34,6 +34,8 @@
 #include "sensord/bin.h"
 #include "orientationdata.h"
 #include "posedata.h"
+#include "datatypes/unsigned.h"
+#include "orientationinterpreter/orientationinterpreter.h"
 
 class Bin;
 template <class TYPE> class BufferReader;
@@ -50,6 +52,8 @@ class OrientationChain : public AbstractChain
 {
     Q_OBJECT;
 
+    Q_PROPERTY(TimedUnsigned orientation READ orientation);
+
 public:
     /**
      * Factory method for OrientationChain.
@@ -60,6 +64,17 @@ public:
         OrientationChain* sc = new OrientationChain(id);
         return sc;
     }
+
+    /**
+     * Property method returning current orientation.
+     * @return Current orientation.
+     */
+    TimedUnsigned orientation() const
+    {
+        PoseData pose = qvariant_cast< PoseData >(((OrientationInterpreter*)orientationInterpreterFilter_)->property("orientation"));
+        return TimedUnsigned(pose.timestamp_, pose.orientation_);
+    }
+
 
 public Q_SLOTS:
     bool start();
