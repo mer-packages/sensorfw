@@ -151,6 +151,8 @@ private:
     {
         QMutexLocker locker(&mutex);
 
+        sensordLogT() << "joining reader to ringbuffer.";
+
         RingBufferReader<TYPE>* r =
             dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {

@@ -31,6 +31,7 @@
 OrientationChain::OrientationChain(const QString& id) :
     AbstractChain(id)
 {
+    qRegisterMetaType<TimedUnsigned>("TimedUnsigned");
     SensorManager& sm = SensorManager::instance();
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");

@@ -28,6 +28,7 @@
 
 #include <QObject>
 #include "posedata.h"
+#include "datatypes/unsigned.h"
 #include "orientationdata.h"
 #include "sensord/filter.h"
 #include "sensord/filterproperty.h"
@@ -56,7 +57,8 @@ class OrientationInterpreter : public QObject, public Filter<TimedXyzData, Orien
     /**
      * Holds the threshold value for the orientation calculation.
      */
-    Q_PROPERTY(int threshold READ threshold_ WRITE threshold_)
+    Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
+    Q_PROPERTY(PoseData orientation READ orientation);
 
 public:
     /**
@@ -67,6 +69,16 @@ public:
     {
         return new OrientationInterpreter();
     }
+
+    /**
+     * Property method for getting the current orientation
+     * @returns Current Orientation
+     */
+    PoseData orientation() const
+    {
+        return pose;
+    }
+
 
 private:
     FilterProperty<int> threshold_;
