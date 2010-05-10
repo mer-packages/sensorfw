@@ -69,7 +69,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     outputBuffer_->join(this);
 
     /// Enlist used adaptors
-    adaptorList_ << "magnetometeradaptor";
+    adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
 }
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()

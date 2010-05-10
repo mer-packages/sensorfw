@@ -72,8 +72,7 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     outputBuffer_->join(this);
 
     /// Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor";
-
+    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
 }
 
 CompassSensorChannel::~CompassSensorChannel()

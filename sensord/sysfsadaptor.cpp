@@ -45,7 +45,8 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     interval_(*this),
     initNotDone(true),
     inStandbyMode_(false),
-    running_(false)
+    running_(false),
+    shouldBeRunning_(false)
 {
     if (!path.isEmpty()) {
         addPath(path, pathId);
@@ -100,7 +101,7 @@ void SysfsAdaptor::stopAdaptor()
         }
 
         if ( entry->isRunning() ) {
-            //XXX: Should we drop refcount, so that we will definitely stop?
+            //TODO: Drop refcount, so that we will definitely stop.
             stopSensor(entry->name());
         }
     }
@@ -111,38 +112,39 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {
-        // TODO: Set error
+        sensordLogW() << "Sensor not found" << sensorId;
         return false;
     }
 
     // Increase listener count
     entry->addReference();
 
-    // Check from entry
-    if (entry->isRunning()) {
+    /// Check from entry
+    if (isRunning()) {
         return true;
     }
 
-    running_ = true;
+    shouldBeRunning_ = true;
 
     // Do not open if in standby mode.
     if (inStandbyMode_ && !standbyOverride_) {
         return true;
     }
 
-    if (!openFds()) {
-        sensordLogW() << "Failed to open file descriptors to device drivers.";
+    /// We are waking up from standby or starting fresh, no matter
+    inStandbyMode_ = false;
 
+    if (!startReaderThread()) {
+        sensordLogW() << "Failed to start adaptor" << sensorId;
         entry->removeReference();
-        closeAllFds();
+        entry->setIsRunning(false);
+        running_ = false;
+        shouldBeRunning_ = false;
         return false;
     }
 
-    // start the thread
-    reader_.running_ = true;
     entry->setIsRunning(true);
-
-    reader_.start();
+    running_ = true;
 
     return true;
 }
@@ -153,22 +155,23 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
 
     if (entry == NULL) {
         // TODO: set error
-        qDebug() << __PRETTY_FUNCTION__ << sensorId << "Sensor not found";
+        sensordLogW() << "Sensor not found" << sensorId;
         return;
     }
 
-    if (!isRunning()) {
-        // TODO: set error (not an error really)
+    if (!shouldBeRunning_) {
         return;
     }
-    qDebug() << entry->removeReference();
-    if ( entry->referenceCount() <= 0) {
+
+    entry->removeReference();
+    if (entry->referenceCount() <= 0) {
         if (!inStandbyMode_) {
             stopReaderThread();
-            entry->setIsRunning(false);
             closeAllFds();
         }
+        entry->setIsRunning(false);
         running_ = false;
+        shouldBeRunning_ = false;
     }
 }
 
@@ -180,12 +183,15 @@ bool SysfsAdaptor::standby()
     inStandbyMode_ = true;
 
     if (!isRunning()) {
+        sensordLogD() << id_ << "not going to standby: not running";
         return true;
     }
 
     sensordLogD() << id_ << "going to standby";
     stopReaderThread();
     closeAllFds();
+
+    running_ = false;
 
     return true;
 }
@@ -199,17 +205,19 @@ bool SysfsAdaptor::resume()
 
     inStandbyMode_ = false;
 
-    if (!isRunning()) {
+    if (!shouldBeRunning_) {
+        sensordLogD() << id_ << "not resuming from standby: not running";
         return true;
     }
 
     sensordLogD() << id_ << "resuming from standby";
 
-    openFds();
+    if (!startReaderThread()) {
+        sensordLogW() << "Failed to resume" << id_ << "from standby!";
+        return false;
+    }
 
-    reader_.running_ = true;
-    reader_.start();
-
+    running_ = true;
     return true;
 }
 
@@ -302,6 +310,20 @@ void SysfsAdaptor::stopReaderThread()
     }
 
     reader_.wait();
+}
+
+bool SysfsAdaptor::startReaderThread()
+{
+    if (!openFds()) {
+
+        closeAllFds();
+        return false;
+    }
+
+    reader_.running_ = true;
+    reader_.start();
+
+    return true;
 }
 
 bool SysfsAdaptor::writeToFile(QString path, QString content)
