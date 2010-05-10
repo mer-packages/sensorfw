@@ -58,7 +58,7 @@ class RingBufferReader : public RingBufferReaderBase
 friend class RingBuffer<TYPE>;
 
 public:
-    RingBufferReader() {}
+    RingBufferReader() : readCount_(0) {}
 
     int typeId() { return 0; } // TODO
 

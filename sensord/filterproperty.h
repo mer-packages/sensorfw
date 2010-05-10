@@ -123,6 +123,10 @@ public:
         current_(new T),
         tracker_(tracker) {}
 
+    ~FilterProperty() {
+        delete current_;
+    }
+
     T*& operator()()
     {
         T* p = future_.fetchAndStoreRelaxed(0);

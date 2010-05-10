@@ -155,7 +155,7 @@ void InputDevAdaptor::processSample(int pathId, int fd)
 bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool strictChecks)
 {
     int fd;
-    char deviceName[256];
+    char deviceName[256] = {0,};
     bool check = true;
     
     fd = open(path.toLocal8Bit().constData(), O_RDONLY);
@@ -164,8 +164,8 @@ bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool s
     }
 
     if (strictChecks) {
-        ioctl(fd, EVIOCGNAME(sizeof(deviceName)), deviceName);
-        if (deviceName == NULL) {
+        int result = ioctl(fd, EVIOCGNAME(sizeof(deviceName)), deviceName);
+        if (result == -1) {
            sensordLogW() << "Could not read devicename for" << path;
            check = false;
         } else
