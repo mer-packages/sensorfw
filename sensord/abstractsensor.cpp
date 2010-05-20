@@ -35,8 +35,7 @@
 #include "abstractsensor.h"
 
 AbstractSensorChannel::AbstractSensorChannel(const QString& id)
-    : interval_(0)
-    , description_("no description available")
+    : description_("no description available")
   //, state_(STOPPED)
     , errorCode_(SNoError)
     , isValid_(false)

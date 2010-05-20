@@ -47,6 +47,7 @@ class MagnetometerSensorChannel :
 {
     Q_OBJECT;
     Q_PROPERTY(MagneticField magneticField READ magneticField);
+    Q_PROPERTY(int reset WRITE reset_);
     
 public:
     /**
@@ -69,13 +70,14 @@ public:
 public Q_SLOTS:
     bool start();
     bool stop();
-    
+
 signals:
     /**
      * Sent when new measurement data has become available.
      * @param data Newly measured data.
      */
     void dataAvailable(const MagneticField& data);
+    void internalData(const MagneticField& data);
     
 protected:
     MagnetometerSensorChannel(const QString& id);
@@ -90,6 +92,7 @@ private:
     CalibratedMagneticFieldData                prevMeasurement_;
 
     void emitToDbus(const CalibratedMagneticFieldData& value);
+    void reset_(int dummy);
 };
 
 #endif // MAGNETOMETER_SENSOR_CHANNEL_H

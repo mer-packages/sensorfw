@@ -81,6 +81,9 @@ public:
 public Q_SLOTS: // METHODS
     void dataReceived();
 
+public Q_SLOTS:
+    QDBusReply<void> reset();
+
 Q_SIGNALS: // SIGNALS
     /**
      * Sent when new measurement is available.

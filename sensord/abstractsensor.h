@@ -171,7 +171,6 @@ protected:
     */
 
     QString             id_;
-    int                 interval_;
     QString             name_;
     QString             description_;
     //SensorState         state_;
