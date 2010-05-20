@@ -132,7 +132,7 @@ void SensorManager::setError(SensorManagerError errorCode, const QString& errorS
     emit errorSignal(errorCode);
 }
 
-void SensorManager::registerService()
+bool SensorManager::registerService()
 {
     clearError();
 
@@ -141,7 +141,7 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmNotConnected, error.message());
-        return;
+        return false;
     }
 
     ok = bus().registerObject( OBJECT_PATH, this );
@@ -149,7 +149,7 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterObject, error.message());
-        return;
+        return false;
     }
 
     ok = bus().registerService ( SERVICE_NAME );
@@ -157,7 +157,9 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterService, error.message());
+        return false;
     }
+    return true;
 }
 
 AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId, bool controllingSession)

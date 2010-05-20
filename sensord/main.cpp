@@ -85,7 +85,11 @@ int main(int argc, char *argv[])
 
 #endif
 
-    sm.registerService();
+    if (!sm.registerService())
+    {
+        sensordLogW() << "Failed to register service on D-Bus. Aborting.";
+        exit(1);
+    }
     
     return app.exec();
 }

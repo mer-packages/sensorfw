@@ -93,7 +93,7 @@ public:
     QString errorString() const { return errorString_; }
 
     static SensorManager& instance();
-    void registerService();
+    bool registerService();
     
     template<class SENSOR_TYPE>
     void registerSensor(const QString& sensorName)
