@@ -3,7 +3,7 @@
   <!-- Test suite, sensord-tests for automated testing of sensord -->
   <suite name="Sensord-tests" domain="System Software">
     <!-- At least one set per suite, name and description mandatory -->
-    <set name="Sensord-automated-tests" description="Unit test cases for sensord" feature="Sensor Framework" requirement="SensorFw Testing and automation">
+    <set name="Sensord-automated-tests" description="Unit test cases for sensord" feature="Sensor Framework" requirement="88917">
       <case name="Sensord_Filters" level="Component" type="Functional" description="Unit test cases for sensor filters" timeout="15" subfeature="Sensor Framework">
         <step expected_result="0">/usr/bin/sensorfilters-test</step>
       </case>
