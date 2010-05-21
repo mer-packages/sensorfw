@@ -57,6 +57,7 @@ private:
 
     const float threshold;
     bool isCovered;
+    PoseData::Orientation lastOrientation;
 };
 
 #endif
