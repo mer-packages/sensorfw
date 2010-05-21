@@ -42,6 +42,9 @@ public:
 
     MagnetometerSensorChannelAdaptor(QObject* parent);
 
+public Q_SLOTS:
+    void reset();
+
 Q_SIGNALS:
     void dataAvailable(const MagneticField& data);
 };
