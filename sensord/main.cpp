@@ -38,6 +38,7 @@
 #include "datatypes/compass.h"
 #include "logging.h"
 #include "datatypes/orientation.h"
+#include "calibrationhandler.h"
 
 #ifdef USE_INTERNAL
 #include "datatypes/tap.h"
@@ -68,22 +69,26 @@ int main(int argc, char *argv[])
 // TODO: this results in error messages in case only Ariane is used
 #ifdef USE_INTERNAL
     // Leave loading for client app. ALS loaded for context fw.
-    //sensordLog() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
-    //sensordLog() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
-    sensordLog() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
-    //sensordLog() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
-    //sensordLog() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
-    //sensordLog() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
+    //sensordLogD() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
+    //sensordLogD() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
+    sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
+    //sensordLogD() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
+    //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
+    //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
 #endif
 
 #ifdef PROVIDE_CONTEXT_INFO    
-    sensordLog() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
+    sensordLogD() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
 
     // FIXME: A HACK: make sure the AlsSensorChannel & ContextSensorChannel are created
     sm.requestControlSensor("alssensor");
     sm.requestControlSensor("contextsensor");
-
 #endif
+
+    CalibrationHandler* calibrationHandler_ = new CalibrationHandler(NULL);
+    calibrationHandler_->initiateSession();
+
+    QObject::connect(&sm, SIGNAL(displayOn()), calibrationHandler_, SLOT(resumeCalibration()));
 
     sm.registerService();
     
