@@ -39,7 +39,8 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     topEdgeProperty(topEdgeProperty),
     isCoveredProperty(isCoveredProperty),
     threshold(230),
-    isCovered(false)
+    isCovered(false),
+    lastOrientation(PoseData::BottomDown)
 {
     //qDebug() << "Creating the ScreenInterpreterFilter";
 }
@@ -57,31 +58,36 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
     QString topEdge;
 
     if (orientation != PoseData::Undefined) {
-        sensordLogT() << "Screen orientation:" << orientation;
-
-        switch (orientation) {
-            case PoseData::FaceUp:
-                isCovered = false;
-                break;
-            case PoseData::FaceDown:
-                isCovered = true;
-                break;
-            case PoseData::LeftUp:
-                topEdge = "left";
-                break;
-            case PoseData::RightUp:
-                topEdge = "right";
-                break;
-            case PoseData::BottomDown:
-                topEdge = "top";
-                break;
-            case PoseData::BottomUp:
-                topEdge = "bottom";
-                break;
-        }
-
-        topEdgeProperty->setValue(topEdge);
+        lastOrientation = orientation;
     }
+
+    sensordLogT() << "Screen orientation:" << lastOrientation;
+
+    switch (lastOrientation) {
+        case PoseData::FaceUp:
+            isCovered = false;
+            break;
+        case PoseData::FaceDown:
+            isCovered = true;
+            break;
+        case PoseData::LeftUp:
+            topEdge = "left";
+            break;
+        case PoseData::RightUp:
+            topEdge = "right";
+            break;
+        case PoseData::BottomDown:
+            topEdge = "top";
+            break;
+        case PoseData::BottomUp:
+            topEdge = "bottom";
+            break;
+        default:
+            topEdge = "top";
+            break;
+    }
+
+    topEdgeProperty->setValue(topEdge);
     isCoveredProperty->setValue(isCovered);
 
 }
