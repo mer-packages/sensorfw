@@ -26,17 +26,18 @@
 #include "magnetometerplugin.h"
 #include "magnetometersensor.h"
 #include "sensormanager.h"
+#include "sensord/logging.h"
 #include <QtDebug>
 
 void MagnetometerPlugin::Register(class Loader&)
 {
-    qDebug() << "registering rotationsensor";
+    sensordLogD() << "registering magnetometersensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<MagnetometerSensorChannel>("magnetometersensor");
 }
 
 QStringList MagnetometerPlugin::Dependencies() {
-    return QString("magnetometeradaptor").split(":", QString::SkipEmptyParts);
+    return QString("compasschain").split(":", QString::SkipEmptyParts);
 }
 
 Q_EXPORT_PLUGIN2(magnetometersensor, MagnetometerPlugin)

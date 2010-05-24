@@ -31,7 +31,8 @@ HEADERS += chainstest.h \
     ../../sensord/inputdevadaptor.h \
     ../../sensord/sockethandler.h \
     ../../sensord/propertyhandler.h \
-    ../../sensord/mcewatcher.h
+    ../../sensord/mcewatcher.h \
+    ../../sensord/calibrationhandler.h
 
 SOURCES += chainstest.cpp \
     ../../sensord/producer.cpp \
@@ -54,7 +55,8 @@ SOURCES += chainstest.cpp \
     ../../sensord/inputdevadaptor.cpp \
     ../../sensord/sockethandler.cpp \
     ../../sensord/propertyhandler.cpp \
-    ../../sensord/mcewatcher.cpp
+    ../../sensord/mcewatcher.cpp \
+    ../../sensord/calibrationhandler.cpp
 
 INCLUDEPATH += ../.. \
     ../../include \

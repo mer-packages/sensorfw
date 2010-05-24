@@ -76,6 +76,7 @@ signals:
      * @param data Newly measured data.
      */
     void dataAvailable(const MagneticField& data);
+    void internalData(const MagneticField& data);
     
 protected:
     MagnetometerSensorChannel(const QString& id);

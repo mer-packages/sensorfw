@@ -217,6 +217,7 @@ int InputDevAdaptor::getPollingInterval()
 
 bool InputDevAdaptor::setPollingInterval(int f)
 {
+    sensordLogD() << "Setting poll interval for" << deviceString_ << " to " << f;
 
     // TODO: Clean this up somehow.. 
     // Check if this device name is defined in configuration

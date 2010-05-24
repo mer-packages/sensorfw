@@ -117,6 +117,7 @@ void MagnetometerSensorChannel::emitToDbus(const CalibratedMagneticFieldData& va
     prevMeasurement_ = value; // TODO: Does this need locking?
 #ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));
+    emit internalData(value);
 #else
     //~ TimedXyzData tmpValue(value.timestamp_, value.calibratedData.x_, value.calibratedData.y_, value.calibratedData.z_);
     emit dataAvailable(value);

@@ -33,6 +33,7 @@
 #include "idutils.h"
 #include "logging.h"
 #include "mcewatcher.h"
+#include "calibrationhandler.h"
 
 #ifdef USE_SOCKET
 #include <QSocketNotifier>
@@ -599,6 +600,11 @@ void SensorManager::propertyRequest(QString property, QString adaptor)
 void SensorManager::displayStateChanged(const bool displayState)
 {
     sensordLogD() << "Signal detected, display state changed to:" << displayState;
+
+    if (displayState) {
+        /// Emit signal to make background calibration resume from sleep
+        emit displayOn();
+    }
 
     foreach (DeviceAdaptorInstanceEntry adaptor, deviceAdaptorInstanceMap_) {
         if (adaptor.adaptor_) {
