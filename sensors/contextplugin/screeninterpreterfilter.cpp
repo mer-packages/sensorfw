@@ -40,7 +40,8 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     isCoveredProperty(isCoveredProperty),
     threshold(230),
     isCovered(false),
-    lastOrientation(PoseData::BottomDown)
+    lastOrientation(PoseData::BottomDown),
+    topEdge("top")
 {
     //qDebug() << "Creating the ScreenInterpreterFilter";
 }
@@ -54,9 +55,6 @@ void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)
 
 void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientation)
 {
-    // Provide
-    QString topEdge;
-
     if (orientation != PoseData::Undefined) {
         lastOrientation = orientation;
     }
