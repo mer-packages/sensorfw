@@ -38,13 +38,14 @@
 #include "parameterparser.h"
 #include "propertyhandler.h"
 
+
 #ifdef USE_SOCKET
 class QSocketNotifier;
 class SocketHandler;
 #endif 
+
 class MceWatcher;
 
-//#define SM_PRINT
 
 class SensorInstanceEntry {
 public:
@@ -226,6 +227,7 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void errorSignal(int error);
+    void displayOn();
 
 protected:
     SensorManager();
