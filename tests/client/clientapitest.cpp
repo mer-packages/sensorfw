@@ -187,10 +187,13 @@ void ClientApiTest::testMagnetometerSensor()
     // Test properties
     sensorIfc->setInterval(100);
 
+
     // Need simulated data to make sensible test ouf of this.
     MagneticField sample1 = sensorIfc->magneticField();
     MagneticField sample2 = qvariant_cast<MagneticField>(sensorIfc->property("magneticField"));
-    QVERIFY(sample1 == sample2);
+    // Background process keeps magnetometer on -- values are changing, and subsequent
+    // calls are likely to give different values. This makes thus no sense.
+    // QVERIFY(sample1 == sample2);
 
     // test start
     QDBusReply<void> reply = sensorIfc->start();
