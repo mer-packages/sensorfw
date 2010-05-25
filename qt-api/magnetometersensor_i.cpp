@@ -66,8 +66,8 @@ void MagnetometerSensorChannelInterface::dataReceived()
     }
 }
 
-QDBusReply<void> MagnetometerSensorChannelInterface::reset()
+void MagnetometerSensorChannelInterface::reset()
 {
     QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+    callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
 }
