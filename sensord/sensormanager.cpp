@@ -90,9 +90,11 @@ SensorManager::SensorManager()
     connect(&propertyHandler_, SIGNAL(propertyRequestReceived(QString, QString)),
             this, SLOT(propertyRequest(QString, QString)));
 
+#ifdef SENSORFW_MCE_WATCHER
     mceWatcher_ = new MceWatcher(this);
     connect(mceWatcher_, SIGNAL(displayStateChanged(const bool)),
             this, SLOT(displayStateChanged(const bool)));
+#endif SENSORFW_MCE_WATCHER
 }
 
 SensorManager::~SensorManager()
@@ -120,7 +122,9 @@ SensorManager::~SensorManager()
     if (pipefds_[1]) close(pipefds_[1]);
 #endif
 
+#ifdef SENSORFW_MCE_WATCHER
     delete mceWatcher_;
+#endif SENSORFW_MCE_WATCHER
 }
 
 void SensorManager::setError(SensorManagerError errorCode, const QString& errorString)

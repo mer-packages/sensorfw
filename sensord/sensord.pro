@@ -48,7 +48,6 @@ SOURCES += main.cpp \
     inputdevadaptor.cpp \
     config.cpp \
     propertyhandler.cpp \
-    mcewatcher.cpp \
     calibrationhandler.cpp
 
 HEADERS += sensormanager.h \
@@ -79,8 +78,13 @@ HEADERS += sensormanager.h \
     inputdevadaptor.h \
     config.h \
     propertyhandler.h \
-    mcewatcher.h \
     calibrationhandler.h
+
+!mce_disable {
+    SOURCES += mcewatcher.cpp
+    HEADERS += mcewatcher.h
+    DEFINES += SENSORFW_MCE_WATCHER
+}
 
 internal:DEFINES += USE_INTERNAL
 

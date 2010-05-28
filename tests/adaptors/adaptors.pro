@@ -29,7 +29,6 @@ HEADERS += adaptortest.h \
     ../../filters/utils.h \
     ../../sensord/sockethandler.h \
     ../../sensord/propertyhandler.h \
-    ../../sensord/mcewatcher.h \
     ../../sensord/calibrationhandler.h \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.h \
     ../../adaptors/magnetometeradaptor/magnetometeradaptor.h \
@@ -61,7 +60,6 @@ SOURCES += adaptortest.cpp \
     ../../filters/utils.cpp \
     ../../sensord/sockethandler.cpp \
     ../../sensord/propertyhandler.cpp \
-    ../../sensord/mcewatcher.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.cpp \
     ../../adaptors/magnetometeradaptor/magnetometeradaptor.cpp \
