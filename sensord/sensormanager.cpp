@@ -90,9 +90,11 @@ SensorManager::SensorManager()
     connect(&propertyHandler_, SIGNAL(propertyRequestReceived(QString, QString)),
             this, SLOT(propertyRequest(QString, QString)));
 
+#ifdef SENSORFW_MCE_WATCHER
     mceWatcher_ = new MceWatcher(this);
     connect(mceWatcher_, SIGNAL(displayStateChanged(const bool)),
             this, SLOT(displayStateChanged(const bool)));
+#endif SENSORFW_MCE_WATCHER
 }
 
 SensorManager::~SensorManager()
@@ -120,7 +122,9 @@ SensorManager::~SensorManager()
     if (pipefds_[1]) close(pipefds_[1]);
 #endif
 
+#ifdef SENSORFW_MCE_WATCHER
     delete mceWatcher_;
+#endif SENSORFW_MCE_WATCHER
 }
 
 void SensorManager::setError(SensorManagerError errorCode, const QString& errorString)
@@ -133,7 +137,7 @@ void SensorManager::setError(SensorManagerError errorCode, const QString& errorS
     emit errorSignal(errorCode);
 }
 
-void SensorManager::registerService()
+bool SensorManager::registerService()
 {
     clearError();
 
@@ -142,7 +146,7 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmNotConnected, error.message());
-        return;
+        return false;
     }
 
     ok = bus().registerObject( OBJECT_PATH, this );
@@ -150,7 +154,7 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterObject, error.message());
-        return;
+        return false;
     }
 
     ok = bus().registerService ( SERVICE_NAME );
@@ -158,7 +162,9 @@ void SensorManager::registerService()
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterService, error.message());
+        return false;
     }
+    return true;
 }
 
 AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId, bool controllingSession)

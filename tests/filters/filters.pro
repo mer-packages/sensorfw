@@ -28,7 +28,6 @@ HEADERS += filtertests.h \
     ../../sensord/config.h \
     ../../sensord/sockethandler.h \
     ../../sensord/propertyhandler.h \
-    ../../sensord/mcewatcher.h \
     ../../sensord/calibrationhandler.h \
     ../../filters/orientationinterpreter/orientationinterpreter.h \
     ../../filters/coordinatealignfilter/coordinatealignfilter.h \
@@ -55,7 +54,6 @@ SOURCES += filtertests.cpp \
     ../../sensord/config.cpp \
     ../../sensord/sockethandler.cpp \
     ../../sensord/propertyhandler.cpp \
-    ../../sensord/mcewatcher.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../filters/orientationinterpreter/orientationinterpreter.cpp \
     ../../filters/coordinatealignfilter/coordinatealignfilter.cpp \

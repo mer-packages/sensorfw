@@ -85,12 +85,16 @@ int main(int argc, char *argv[])
     sm.requestControlSensor("contextsensor");
 #endif
 
+    if (!sm.registerService())
+    {
+        sensordLogW() << "Failed to register service on D-Bus. Aborting.";
+        exit(1);
+    }
+
     CalibrationHandler* calibrationHandler_ = new CalibrationHandler(NULL);
     calibrationHandler_->initiateSession();
 
     QObject::connect(&sm, SIGNAL(displayOn()), calibrationHandler_, SLOT(resumeCalibration()));
-
-    sm.registerService();
     
     return app.exec();
 }
