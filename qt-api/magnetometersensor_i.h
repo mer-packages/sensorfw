@@ -58,10 +58,8 @@ public:
 
     inline MagneticField magneticField() const
     { 
-        return qvariant_cast< MagneticField >(internalPropGet("magneticfield")); 
+        return qvariant_cast< MagneticField >(internalPropGet("magneticField"));
     }
-
-    void reset();
 
 public:
     MagnetometerSensorChannelInterface(const QString &path, int sessionId);
@@ -82,6 +80,7 @@ public:
 
 public Q_SLOTS: // METHODS
     void dataReceived();
+    QDBusReply<void> reset();
 
 Q_SIGNALS: // SIGNALS
     /**

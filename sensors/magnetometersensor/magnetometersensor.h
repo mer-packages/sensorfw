@@ -47,7 +47,7 @@ class MagnetometerSensorChannel :
 {
     Q_OBJECT;
     Q_PROPERTY(MagneticField magneticField READ magneticField);
-    Q_PROPERTY(int reset WRITE reset_);
+    Q_PROPERTY(int resetCalibration WRITE reset_);
     
 public:
     /**

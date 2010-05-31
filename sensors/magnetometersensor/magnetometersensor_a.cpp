@@ -38,5 +38,5 @@ MagneticField MagnetometerSensorChannelAdaptor::magneticField() const
 
 void MagnetometerSensorChannelAdaptor::reset()
 {
-    parent()->setProperty("reset", 0);
+    parent()->setProperty("resetCalibration", 0);
 }
