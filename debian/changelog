@@ -2,6 +2,8 @@ sensord (0.6.12) unstable; urgency=low
 
   [Timo Rongas]
   * Implements: SWP#MaSSW-1381, SWP#MaSSW-1569
+  * Fixed errors in magnetometer sensor, including reset method and
+  magneticField property.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Thu, 20 May 2010 13:14:48 +0300
 
