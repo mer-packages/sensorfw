@@ -74,7 +74,6 @@ private:
 class SysfsAdaptor : public DeviceAdaptor, public PropertyTracker
 {
     Q_OBJECT;
-    //Q_PROPERTY(int interval READ interval_ WRITE interval_);
 
 public:
     enum PollMode {
@@ -154,10 +153,10 @@ protected:
      */
     bool writeToFile(QString path, QString content);
 
-    virtual int getPollingInterval() { return 0; }
+    virtual int getPollingInterval() { return interval_(); }
     virtual bool setPollingInterval(int f) {
-        Q_UNUSED(f);
-        return false;
+        interval_(f);
+        return true;
     }
 
     QList<int> sysfsDescriptors_; /**< List of open file descriptors. */

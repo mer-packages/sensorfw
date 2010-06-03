@@ -25,6 +25,7 @@
 */
 
 #include "logging.h"
+#include "config.h"
 #include "magnetometeradaptor.h"
 #include <errno.h>
 #include <fcntl.h>
@@ -32,22 +33,36 @@
 #include "filters/utils.h"
 #include <QFile>
 
-#define DEVICE_MATCH_STRING "magnetometer"
+/* Device name: /dev/ak8974n, where n is a running number (0 in case on single chip configuration) */
+struct ak8974_data {
+        __s32 x; /* nanoTeslas */
+        __s32 y; /* nanoTeslas */
+        __s32 z; /* nanoTeslas */
+        __u16 valid;
+} __attribute__((packed));
+
+/* Device name: /dev/ak8975n, where n is a running number (0 in case on single chip configuration) */
+struct ak8975_data {
+        __s32 x; /* nanoTeslas */
+        __s32 y; /* nanoTeslas */
+        __s32 z; /* nanoTeslas */
+        __u16 valid;
+} __attribute__((packed));
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
-    InputDevAdaptor(id, 1),
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
     originalPollingRate_(0)
 {
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices(DEVICE_MATCH_STRING)) {
-        sensordLogW() << "Input device not found.";
-    }
 
-    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<MagnetometerData>(1024);
-    addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
+    QString driverHandle = getDriverHandle();
+    if (driverHandle.size() == 0) {
+        sensordLogW() << "Input device not found.";
+    } else {
+        sensordLogD() << "Detected magnetometer driver at " << driverHandle;
+        addPath(driverHandle, 0);
+        magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1024);
+        addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
+    }
 
     introduceAvailableDataRange(DataRange(-4096, 4096, 1));
 }
@@ -57,44 +72,45 @@ MagnetometerAdaptor::~MagnetometerAdaptor()
     delete magnetometerBuffer_;
 }
 
-void MagnetometerAdaptor::interpretEvent(int src, struct input_event *ev)
+QString MagnetometerAdaptor::getDriverHandle()
 {
-    Q_UNUSED(src);
+    QString magFile = Config::configuration()->value("mag_ak8974_dev_path").toString();
+    if (magFile.size() > 0 && QFile::exists(magFile)) {
+        return magFile;
+    }
 
-    switch (ev->type) {
-        case EV_ABS:
-            switch (ev->code) {
-                case ABS_X:
-                    magnetometerValue_.x_ = ev->value;
-                    break;
-                case ABS_Y:
-                    magnetometerValue_.y_ = ev->value;
-                    break;
-                case ABS_Z:
-                    magnetometerValue_.z_ = ev->value;
-                    break;
-            }
-            break;
+    magFile = Config::configuration()->value("mag_ak8975_dev_path").toString();
+    if (magFile.size() > 0 && QFile::exists(magFile)) {
+        return magFile;
+    }
 
+    return "";
+}
+
+void MagnetometerAdaptor::processSample(int pathId, int fd)
+{
+    Q_UNUSED(pathId);
+
+    struct ak8974_data mag_data;
+
+    unsigned int bytesRead = read(fd, &mag_data, sizeof(mag_data));
+
+    if (bytesRead < sizeof(mag_data)) {
+        sensordLogW() << "read():" << strerror(errno);
+        return;
+    }
+
+    if (mag_data.valid) {
+        TimedXyzData* sample = magnetometerBuffer_->nextSlot();
+
+        sample->timestamp_ = Utils::getTimeStamp();
+        sample->x_ = mag_data.x;
+        sample->y_ = mag_data.y;
+        sample->z_ = mag_data.z;
+
+        magnetometerBuffer_->commit();
+        magnetometerBuffer_->wakeUpReaders();
+    } else {
+        sensordLogD() << "Invalid sample received from magnetometer";
     }
 }
-
-void MagnetometerAdaptor::interpretSync(int src)
-{
-    Q_UNUSED(src);
-    commitOutput();
-}
-
-void MagnetometerAdaptor::commitOutput()
-{
-    OrientationData* d = magnetometerBuffer_->nextSlot();
-
-    d->timestamp_ = Utils::getTimeStamp();
-    d->x_ = magnetometerValue_.x_;
-    d->y_ = magnetometerValue_.y_;
-    d->z_ = magnetometerValue_.z_;
-
-    magnetometerBuffer_->commit();
-    magnetometerBuffer_->wakeUpReaders();
-}
-

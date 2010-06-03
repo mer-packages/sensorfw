@@ -27,22 +27,24 @@
 #ifndef MAGNETOMETERADAPTOR_H
 #define MAGNETOMETERADAPTOR_H
 
-#include "inputdevadaptor.h"
+#include "sensord/sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/orientationdata.h"
+#include "filters/genericdata.h"
 #include <QTime>
+#include <QString>
 
 /**
  * @brief Adaptor for internal magnetometer.
  *
  * Uses Input Device system as driver interface. Measures values from the magnetometer
- * with sysfsadaptor SelectMode.
+ * with sysfsadaptor IntervalMode.
  *
  */
-class MagnetometerAdaptor : public InputDevAdaptor
+class MagnetometerAdaptor : public SysfsAdaptor
 {
     Q_OBJECT;
 public:
+
     /**
      * Factory method for gaining a new instance of MagnetometerAdaptor class.
      * @param id Identifier for the adaptor.
@@ -62,13 +64,24 @@ protected:
 
 private:
 
-    void interpretEvent(int src, struct input_event *ev);
-    void commitOutput();
-    void interpretSync(int src);
+    /**
+     * Read and process data. Run when sysfsadaptor has detected new available
+     * data.
+     * @param pathId PathId for the file that had event. Always 0, as we monitor
+     *               only single file and don't set any proper id.
+     * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
+     */
+    void processSample(int pathId, int fd);
+
+    /**
+     * Locate the magnetometer driver and return path to it.
+     *
+     * @return Location of magnetometer driver handle.
+     */
+    QString getDriverHandle();
 
     QTime time;
-    DeviceAdaptorRingBuffer<MagnetometerData>* magnetometerBuffer_;
-    MagnetometerData magnetometerValue_;
+    DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
     int originalPollingRate_;
 };
 
