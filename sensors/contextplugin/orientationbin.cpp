@@ -39,6 +39,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),
     orientationReader(10),
+    faceReader(10),
     screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty),
     cutterFilter(4.0),
     avgVarFilter(100),
@@ -55,6 +56,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
 
     add(&accelerometerReader, "accelerometer");
     add(&orientationReader, "orientation");
+    add(&faceReader, "face");
     add(&screenInterpreterFilter, "screeninterpreterfilter");
     add(&normalizerFilter, "normalizerfilter");
     add(&cutterFilter, "cutterfilter");
@@ -63,6 +65,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
 
     // Create a branching filter chain
     join("orientation", "source", "screeninterpreterfilter", "sink");
+    join("face", "source", "screeninterpreterfilter", "sink");
 
     join("accelerometer", "source", "normalizerfilter", "sink");
     join("normalizerfilter", "source", "cutterfilter", "sink");
@@ -77,6 +80,10 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     rb = orientationChain->findBuffer("orientation");
     Q_ASSERT(rb);
     rb->join(&orientationReader);
+
+    rb = orientationChain->findBuffer("face");
+    Q_ASSERT(rb);
+    rb->join(&faceReader);
 
     // Context group
     group.add(topEdgeProperty);

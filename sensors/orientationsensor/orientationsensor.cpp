@@ -47,6 +47,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
 
 
     orientationReader_ = new BufferReader<PoseData>(1024);
+    faceReader_ = new BufferReader<PoseData>(1024);
 
     outputBuffer_ = new RingBuffer<PoseData>(1024);
 
@@ -54,16 +55,23 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     filterBin_ = new Bin;
 
     filterBin_->add(orientationReader_, "orientation");
+    filterBin_->add(faceReader_, "face");
     filterBin_->add(outputBuffer_, "buffer");
 
     // Join filterchain buffers
     filterBin_->join("orientation", "source", "buffer", "sink");
+    filterBin_->join("face", "source", "buffer", "sink");
 
     // Join datasources to the chain
     RingBufferBase* rb;
     rb = orientationChain_->findBuffer("orientation");
     Q_ASSERT(rb);
     rb->join(orientationReader_);
+
+    rb = NULL;
+    rb = orientationChain_->findBuffer("face");
+    Q_ASSERT(rb);
+    rb->join(faceReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");

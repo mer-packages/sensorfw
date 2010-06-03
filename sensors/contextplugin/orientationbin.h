@@ -66,6 +66,7 @@ private:
 
     BufferReader<AccelerationData> accelerometerReader;
     BufferReader<PoseData> orientationReader;
+    BufferReader<PoseData> faceReader;
     DeviceAdaptor* accelerometerAdaptor;
 
     AbstractChain* orientationChain;

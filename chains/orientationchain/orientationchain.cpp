@@ -45,20 +45,29 @@ OrientationChain::OrientationChain(const QString& id) :
     accelerometerReader_ = new BufferReader<AccelerationData>(1024);
 
     orientationInterpreterFilter_ = sm.instantiateFilter("orientationinterpreter");
+    faceInterpreterFilter_ = sm.instantiateFilter("faceinterpreter");
 
-    outputBuffer_ = new RingBuffer<PoseData>(1024);
-    nameOutputBuffer("orientation", outputBuffer_);
+    orientationOutput_ = new RingBuffer<PoseData>(1024);
+    nameOutputBuffer("orientation", orientationOutput_);
+
+    faceOutput_ = new RingBuffer<PoseData>(1024);
+    nameOutputBuffer("face", faceOutput_);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
 
     filterBin_->add(accelerometerReader_, "accelerometer");
     filterBin_->add(orientationInterpreterFilter_, "orientationinterpreter");
-    filterBin_->add(outputBuffer_, "buffer");
+    filterBin_->add(faceInterpreterFilter_, "faceinterpreter");
+    filterBin_->add(orientationOutput_, "orientationbuffer");
+    filterBin_->add(faceOutput_, "facebuffer");
 
     // Join filterchain buffers
     filterBin_->join("accelerometer", "source", "orientationinterpreter", "sink");
-    filterBin_->join("orientationinterpreter", "source", "buffer", "sink");
+    filterBin_->join("orientationinterpreter", "source", "orientationbuffer", "sink");
+
+    filterBin_->join("accelerometer", "source", "faceinterpreter", "sink");
+    filterBin_->join("faceinterpreter", "source", "facebuffer", "sink");
 
     // Join datasources to the chain
     RingBufferBase* rb;
@@ -78,7 +87,9 @@ OrientationChain::~OrientationChain()
 
     delete accelerometerReader_;
     delete orientationInterpreterFilter_;
-    delete outputBuffer_;
+    delete faceInterpreterFilter_;
+    delete orientationOutput_;
+    delete faceOutput_;
     delete filterBin_;
 }
 

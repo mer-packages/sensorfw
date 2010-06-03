@@ -120,6 +120,7 @@ private:
     AbstractChain*                   orientationChain_;
 
     BufferReader<PoseData>*   orientationReader_;
+    BufferReader<PoseData>*   faceReader_;
 
     RingBuffer<PoseData>*            outputBuffer_;
 

@@ -35,7 +35,6 @@
 #include "orientationdata.h"
 #include "posedata.h"
 #include "datatypes/unsigned.h"
-#include "orientationinterpreter/orientationinterpreter.h"
 
 class Bin;
 template <class TYPE> class BufferReader;
@@ -71,8 +70,11 @@ public:
      */
     TimedUnsigned orientation() const
     {
-        PoseData pose = qvariant_cast< PoseData >(((OrientationInterpreter*)orientationInterpreterFilter_)->property("orientation"));
-        return TimedUnsigned(pose.timestamp_, pose.orientation_);
+        PoseData pose = qvariant_cast< PoseData >(((QObject*)orientationInterpreterFilter_)->property("orientation"));
+        PoseData pose2 = qvariant_cast< PoseData >(((QObject*)orientationInterpreterFilter_)->property("orientation"));
+        if (pose.timestamp_ > pose2.timestamp_)
+            return TimedUnsigned(pose.timestamp_, pose.orientation_);
+        return TimedUnsigned(pose2.timestamp_, pose2.orientation_);
     }
 
 
@@ -91,7 +93,9 @@ private:
     AbstractChain*                   accelerometerChain_;
     BufferReader<AccelerationData>*  accelerometerReader_;
     FilterBase*                      orientationInterpreterFilter_;
-    RingBuffer<PoseData>*    outputBuffer_;
+    FilterBase*                      faceInterpreterFilter_;
+    RingBuffer<PoseData>*            orientationOutput_;
+    RingBuffer<PoseData>*            faceOutput_;
 };
 
 #endif // ORIENTATIONCHAIN_H

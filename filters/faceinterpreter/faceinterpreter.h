@@ -1,11 +1,11 @@
 /**
-   @file orientationinterpreter.h
-   @brief OrientationInterpreterFilter
+   @file faceinterpreter.h
+   @brief FaceInterpreter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -23,8 +23,8 @@
    </p>
  */
 
-#ifndef ORIENTATIONINTERPRETER_H
-#define ORIENTATIONINTERPRETER_H
+#ifndef FACEINTERPRETER_H
+#define FACEINTERPRETER_H
 
 #include <QObject>
 #include "posedata.h"
@@ -36,14 +36,12 @@
 #define DEFAULT_THRESHOLD 50
 
 /**
- * @brief Filter for calculating the device orientation.
+ * @brief Filter for calculating the face orientation.
  *
- * Filter for calculating the device orientation. The orientation is given in
- * 2 axis and 2 directions per axis.
+ * This filter reports if the device screen is facing upwards or downwards.
  *
- * Orientation of the face is handled in the #FaceInterpreter filter.
  */
-class OrientationInterpreter : public QObject, public Filter<TimedXyzData, OrientationInterpreter, PoseData>, public PropertyTracker
+class FaceInterpreter : public QObject, public Filter<TimedXyzData, FaceInterpreter, PoseData>, public PropertyTracker
 {
     Q_OBJECT;
 
@@ -51,23 +49,23 @@ class OrientationInterpreter : public QObject, public Filter<TimedXyzData, Orien
      * Holds the threshold value for the orientation calculation.
      */
     Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
-    Q_PROPERTY(PoseData orientation READ orientation);
+    Q_PROPERTY(PoseData face READ face);
 
 public:
     /**
      * Factory method.
-     * @return New OrientationInterpreter instance as FilterBase*.
+     * @return New FaceInterpreter instance as FilterBase*.
      */
     static FilterBase* factoryMethod()
     {
-        return new OrientationInterpreter();
+        return new FaceInterpreter();
     }
 
     /**
      * Property method for getting the current orientation
-     * @returns Current Orientation
+     * @returns Current Face
      */
-    PoseData orientation() const
+    PoseData face() const
     {
         return pose;
     }
@@ -79,11 +77,11 @@ private:
     /**
      * Default constructor.
      */
-    OrientationInterpreter();
+    FaceInterpreter();
 
     void interpret(unsigned, const TimedXyzData*);
     PoseData pose;
     PoseData newPose;
 };
 
-#endif // ORIENTATIONINTERPRETER_H
+#endif // FACEINTERPRETER_H

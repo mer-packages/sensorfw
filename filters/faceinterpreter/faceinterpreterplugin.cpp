@@ -1,12 +1,11 @@
 /**
-   @file accelerometerchainplugin.cpp
-   @brief Plugin for AccelerometerChain
+   @file orientationinterpreterplugin.cpp
+   @brief Plugin for OrientationInterpreterFilter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,20 +23,16 @@
    </p>
  */
 
-#include "orientationchainplugin.h"
-#include "orientationchain.h"
+#include "faceinterpreterplugin.h"
+#include "faceinterpreter.h"
 #include "sensormanager.h"
 #include "sensord/logging.h"
 
-void OrientationChainPlugin::Register(class Loader&)
+void FaceInterpreterPlugin::Register(class Loader&)
 {
-    sensordLogD() << "registering orientationchain";
+    sensordLogD() << "registering faceinterpreter";
     SensorManager& sm = SensorManager::instance();
-    sm.registerChain<OrientationChain>("orientationchain");
+    sm.registerFilter<FaceInterpreter>("faceinterpreter");
 }
 
-QStringList OrientationChainPlugin::Dependencies() {
-    return QString("orientationinterpreter:faceinterpreter:accelerometerchain").split(":", QString::SkipEmptyParts);
-}
-
-Q_EXPORT_PLUGIN2(orientationchain, OrientationChainPlugin)
+Q_EXPORT_PLUGIN2(faceinterpreter, FaceInterpreterPlugin)
