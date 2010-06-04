@@ -51,7 +51,7 @@ struct ak8975_data {
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
-    originalPollingRate_(0)
+    originalPollingRate_(1000)
 {
 
     QString driverHandle = getDriverHandle();
