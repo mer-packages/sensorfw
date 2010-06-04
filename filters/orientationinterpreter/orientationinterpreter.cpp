@@ -26,6 +26,7 @@
 #include "orientationinterpreter.h"
 #include "sensord/logging.h"
 
+#define DEFAULT_THRESHOLD 250
 
 OrientationInterpreter::OrientationInterpreter() :
         Filter<TimedXyzData, OrientationInterpreter, PoseData>(this, &OrientationInterpreter::interpret),
@@ -42,6 +43,7 @@ void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
     int y = data->y_;
     int z = data->z_;
     sensordLogT() << "orientation vector:" << x << "," << y << "," << z;
+    int t = threshold_();
 
     int gVector = ((x*x + y*y + z*z)/1000);
     bool goodVector = ((gVector >= 800) && (gVector <=1250)) ? true : false;
@@ -51,21 +53,21 @@ void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
     if ( goodVector && (abs(x) >= 200 || abs(y) >=200) ) {
         if (pose.orientation_ == PoseData::Undefined) {
             /*Change orientation away from unknown when x or y
-             * goes above 400.*/
-            if ( abs(y) > 400 &&
+             * goes above t.*/
+            if ( abs(y) > t &&
                     (abs(y) > abs(x)) )
                 newPose.orientation_ = (y>0?PoseData::BottomUp : PoseData::BottomDown);
-            else if ( abs(x) > 400 &&
+            else if ( abs(x) > t &&
                     (abs(x) > abs (y)) )
                 newPose.orientation_ = (x>0?PoseData::LeftUp : PoseData::RightUp);
         } else if (pose.orientation_ == PoseData::LeftUp || pose.orientation_ == PoseData::RightUp) {
-            if (abs(y) > abs(x) + 300) {
+            if (abs(y) > abs(x) + t) {
                 newPose.orientation_ = (y > 0?PoseData::BottomUp:PoseData::BottomDown);
             } else {
                 newPose.orientation_ = (x > 0?PoseData::LeftUp:PoseData::RightUp);
             }
         } else if (pose.orientation_ == PoseData::BottomUp || pose.orientation_ == PoseData::BottomDown) {
-            if (abs(x) > abs(y) + 300) {
+            if (abs(x) > abs(y) + t) {
                 newPose.orientation_ = (x > 0?PoseData::LeftUp:PoseData::RightUp);
             } else {
                 newPose.orientation_ = (y > 0?PoseData::BottomUp:PoseData::BottomDown);

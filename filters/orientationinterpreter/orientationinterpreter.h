@@ -33,8 +33,6 @@
 #include "sensord/filter.h"
 #include "sensord/filterproperty.h"
 
-#define DEFAULT_THRESHOLD 50
-
 /**
  * @brief Filter for calculating the device orientation.
  *
