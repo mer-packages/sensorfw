@@ -270,8 +270,6 @@ void FilterApiTest::testOrientationInterpretationFilter()
         TimedXyzData(0, 981,   0,   0),
         TimedXyzData(0,   0,-981,   0),
         TimedXyzData(0,   0, 981,   0),
-        TimedXyzData(0,   0,   0,-981),
-        TimedXyzData(0,   0,   0, 981)
     };
 
     // Expected output data
@@ -280,8 +278,6 @@ void FilterApiTest::testOrientationInterpretationFilter()
         PoseData(PoseData::LeftUp),
         PoseData(PoseData::BottomDown),
         PoseData(PoseData::BottomUp),
-        PoseData(PoseData::FaceUp),
-        PoseData(PoseData::FaceDown)
     };
 
     QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
