@@ -29,7 +29,7 @@
 FaceInterpreter::FaceInterpreter() :
         Filter<TimedXyzData, FaceInterpreter, PoseData>(this, &FaceInterpreter::interpret),
         threshold_(*this),
-        pose(PoseData::FaceUp)
+        pose(PoseData::Undefined)
 {
     qRegisterMetaType<PoseData>("PoseData");
     threshold_(DEFAULT_THRESHOLD);
@@ -53,7 +53,7 @@ void FaceInterpreter::interpret(unsigned, const TimedXyzData* data)
     //}
 
     if  (abs(z) >= 300)
-        newPose.orientation_ = (z>=0)? PoseData::FaceDown : PoseData::FaceUp;
+        newPose.orientation_ = ((z>=0)? PoseData::FaceDown : PoseData::FaceUp);
 
     if (pose.orientation_ != newPose.orientation_) {
         // Axis direction changed directly or difference larger than threshold

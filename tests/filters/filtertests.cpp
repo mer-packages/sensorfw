@@ -38,6 +38,7 @@
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
 #include "orientationinterpreter.h"
+#include "faceinterpreter.h"
 #include "declinationfilter.h"
 #include "rotationfilter.h"
 #include "filtertests.h"
@@ -269,7 +270,7 @@ void FilterApiTest::testOrientationInterpretationFilter()
         TimedXyzData(0,-981,   0,   0),
         TimedXyzData(0, 981,   0,   0),
         TimedXyzData(0,   0,-981,   0),
-        TimedXyzData(0,   0, 981,   0),
+        TimedXyzData(0,   0, 981,   0)
     };
 
     // Expected output data
@@ -327,6 +328,69 @@ void FilterApiTest::testOrientationInterpretationFilter()
     QCOMPARE (dummyAdaptor.getDataCount(), dbusEmitter.numSamplesReceived());
 
     delete orientationInterpreterFilter;
+}
+
+void FilterApiTest::testFaceInterpretationFilter()
+{
+    // Input data to feed to the filter
+    TimedXyzData inputData[] = {
+        TimedXyzData(0,   0,   0, -981),
+        TimedXyzData(0,   0,   0,  981)
+    };
+
+    // Expected output data
+    PoseData expectedResult[] = {
+        PoseData(PoseData::FaceUp),
+        PoseData(PoseData::FaceDown)
+    };
+
+    QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
+             "Test function error: Input and output count does not match.");
+
+    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+
+    // Build data pipeline
+    Bin filterBin;
+    DummyAdaptor<TimedXyzData> dummyAdaptor;
+
+    FilterBase* faceInterpreterFilter = FaceInterpreter::factoryMethod();
+
+    RingBuffer<PoseData> outputBuffer(10);
+
+    filterBin.add(&dummyAdaptor, "adapter");
+    filterBin.add(faceInterpreterFilter, "filter");
+    filterBin.add(&outputBuffer, "buffer");
+    filterBin.join("adapter", "source", "filter", "sink");
+    filterBin.join("filter", "source", "buffer", "sink");
+
+    DummyDbusEmitter<PoseData> dbusEmitter;
+    Bin marshallingBin;
+    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    outputBuffer.join(&dbusEmitter);
+
+    // Setup data
+    dummyAdaptor.setTestData(numInputs, inputData, false);
+    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+
+    marshallingBin.start();
+    filterBin.start();
+
+    // Start sends data once, so start from index 1.
+    for (int i=1; i < numInputs; i++) {
+        dummyAdaptor.pushNewData();
+    }
+
+    int waitRounds = 0;
+    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
+        QTest::qWait(WAIT_ROUND_DELAY);
+    }
+
+    filterBin.stop();
+    marshallingBin.stop();
+
+    QCOMPARE (dummyAdaptor.getDataCount(), dbusEmitter.numSamplesReceived());
+
+    delete faceInterpreterFilter;
 }
 
 void FilterApiTest::testDeclinationFilter()

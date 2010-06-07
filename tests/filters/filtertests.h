@@ -38,6 +38,7 @@ private slots:
 
     void testCoordinateAlignFilter();
     void testOrientationInterpretationFilter();
+    void testFaceInterpretationFilter();
     void testDeclinationFilter();
     void testRotationFilter();
     
