@@ -44,11 +44,11 @@ OrientationChain::OrientationChain(const QString& id) :
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1024);
 
-    orientationInterpreterFilter_ = sm.instantiateFilter("orientationinterpreter");
+    topEdgeInterpreterFilter_ = sm.instantiateFilter("topedgeinterpreter");
     faceInterpreterFilter_ = sm.instantiateFilter("faceinterpreter");
 
-    orientationOutput_ = new RingBuffer<PoseData>(1024);
-    nameOutputBuffer("orientation", orientationOutput_);
+    topEdgeOutput_ = new RingBuffer<PoseData>(1024);
+    nameOutputBuffer("topedge", topEdgeOutput_);
 
     faceOutput_ = new RingBuffer<PoseData>(1024);
     nameOutputBuffer("face", faceOutput_);
@@ -57,14 +57,14 @@ OrientationChain::OrientationChain(const QString& id) :
     filterBin_ = new Bin;
 
     filterBin_->add(accelerometerReader_, "accelerometer");
-    filterBin_->add(orientationInterpreterFilter_, "orientationinterpreter");
+    filterBin_->add(topEdgeInterpreterFilter_, "topedgeinterpreter");
     filterBin_->add(faceInterpreterFilter_, "faceinterpreter");
-    filterBin_->add(orientationOutput_, "orientationbuffer");
+    filterBin_->add(topEdgeOutput_, "topedgebuffer");
     filterBin_->add(faceOutput_, "facebuffer");
 
     // Join filterchain buffers
-    filterBin_->join("accelerometer", "source", "orientationinterpreter", "sink");
-    filterBin_->join("orientationinterpreter", "source", "orientationbuffer", "sink");
+    filterBin_->join("accelerometer", "source", "topedgeinterpreter", "sink");
+    filterBin_->join("topedgeinterpreter", "source", "topedgebuffer", "sink");
 
     filterBin_->join("accelerometer", "source", "faceinterpreter", "sink");
     filterBin_->join("faceinterpreter", "source", "facebuffer", "sink");
@@ -86,9 +86,9 @@ OrientationChain::~OrientationChain()
     rb->unjoin(accelerometerReader_);
 
     delete accelerometerReader_;
-    delete orientationInterpreterFilter_;
+    delete topEdgeInterpreterFilter_;
     delete faceInterpreterFilter_;
-    delete orientationOutput_;
+    delete topEdgeOutput_;
     delete faceOutput_;
     delete filterBin_;
 }

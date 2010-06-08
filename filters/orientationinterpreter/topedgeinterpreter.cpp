@@ -1,6 +1,6 @@
 /**
-   @file orientationinterpreter.cpp
-   @brief OrientationInterpreterFilter
+   @file topedgeinterpreter.cpp
+   @brief TopEdgeInterpreterFilter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -23,13 +23,13 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
  */
-#include "orientationinterpreter.h"
+#include "topedgeinterpreter.h"
 #include "sensord/logging.h"
 
 #define DEFAULT_THRESHOLD 250
 
-OrientationInterpreter::OrientationInterpreter() :
-        Filter<TimedXyzData, OrientationInterpreter, PoseData>(this, &OrientationInterpreter::interpret),
+TopEdgeInterpreter::TopEdgeInterpreter() :
+        Filter<TimedXyzData, TopEdgeInterpreter, PoseData>(this, &TopEdgeInterpreter::interpret),
         threshold_(*this),
         pose(PoseData::Undefined)
 {
@@ -37,7 +37,7 @@ OrientationInterpreter::OrientationInterpreter() :
     threshold_(DEFAULT_THRESHOLD);
 }
 
-void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
+void TopEdgeInterpreter::interpret(unsigned, const TimedXyzData* data)
 {
     int x = data->x_;
     int y = data->y_;
@@ -52,7 +52,7 @@ void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
 
     if ( goodVector && (abs(x) >= 200 || abs(y) >=200) ) {
         if (pose.orientation_ == PoseData::Undefined) {
-            /*Change orientation away from unknown when x or y
+            /*Change topedge away from unknown when x or y
              * goes above t.*/
             if ( abs(y) > t &&
                     (abs(y) > abs(x)) )
@@ -80,7 +80,7 @@ void OrientationInterpreter::interpret(unsigned, const TimedXyzData* data)
     if (pose.orientation_ != newPose.orientation_) {
         // Axis direction changed directly or difference larger than threshold
         pose.orientation_ = newPose.orientation_;
-        sensordLogT() << "Orientation is:" << pose.orientation_;
+        sensordLogT() << "TopEdge is:" << pose.orientation_;
         pose.timestamp_ = data->timestamp_;
         source_.propagate(1, &pose);
     }

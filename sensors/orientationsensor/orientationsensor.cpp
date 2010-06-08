@@ -46,7 +46,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     }
 
 
-    orientationReader_ = new BufferReader<PoseData>(1024);
+    topEdgeReader_ = new BufferReader<PoseData>(1024);
     faceReader_ = new BufferReader<PoseData>(1024);
 
     outputBuffer_ = new RingBuffer<PoseData>(1024);
@@ -54,19 +54,19 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     // Create buffers for filter chain
     filterBin_ = new Bin;
 
-    filterBin_->add(orientationReader_, "orientation");
+    filterBin_->add(topEdgeReader_, "topedge");
     filterBin_->add(faceReader_, "face");
     filterBin_->add(outputBuffer_, "buffer");
 
     // Join filterchain buffers
-    filterBin_->join("orientation", "source", "buffer", "sink");
+    filterBin_->join("topedge", "source", "buffer", "sink");
     filterBin_->join("face", "source", "buffer", "sink");
 
     // Join datasources to the chain
     RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("orientation");
+    rb = orientationChain_->findBuffer("topedge");
     Q_ASSERT(rb);
-    rb->join(orientationReader_);
+    rb->join(topEdgeReader_);
 
     rb = NULL;
     rb = orientationChain_->findBuffer("face");
@@ -87,13 +87,17 @@ OrientationSensorChannel::~OrientationSensorChannel()
     SensorManager& sm = SensorManager::instance();
 
     RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("orientation");
+    rb = orientationChain_->findBuffer("topedge");
     Q_ASSERT(rb);
-    rb->unjoin(orientationReader_);
+    rb->unjoin(topEdgeReader_);
+
+    rb = orientationChain_->findBuffer("face");
+    Q_ASSERT(rb);
+    rb->unjoin(faceReader_);
 
     sm.releaseChain("orientationchain");
 
-    delete orientationReader_;
+    delete topEdgeReader_;
     delete outputBuffer_;
     delete marshallingBin_;
     delete filterBin_;
@@ -125,7 +129,8 @@ bool OrientationSensorChannel::stop()
 
 void OrientationSensorChannel::emitToDbus(const PoseData& value)
 {
-    if (value.orientation_ != prevOrientation.orientation_) {
+    if ((value.orientation_ != prevOrientation.orientation_) &&
+        (value.orientation_ != PoseData::Undefined) )  {
         prevOrientation.orientation_ = value.orientation_;
 #ifdef USE_SOCKET
         writeToClients((const void *)&value, sizeof(value));

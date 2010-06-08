@@ -37,7 +37,7 @@ private slots:
     void init() {}
 
     void testCoordinateAlignFilter();
-    void testOrientationInterpretationFilter();
+    void testTopEdgeInterpretationFilter();
     void testFaceInterpretationFilter();
     void testDeclinationFilter();
     void testRotationFilter();

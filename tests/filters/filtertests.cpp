@@ -37,7 +37,7 @@
 #include "sensord/dbusemitter.h"
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
-#include "orientationinterpreter.h"
+#include "topedgeinterpreter.h"
 #include "faceinterpreter.h"
 #include "declinationfilter.h"
 #include "rotationfilter.h"
@@ -263,7 +263,7 @@ void FilterApiTest::testCoordinateAlignFilter()
 }
 
 // TODO: Add some state changes to verify functionality of threshold setting.
-void FilterApiTest::testOrientationInterpretationFilter()
+void FilterApiTest::testTopEdgeInterpretationFilter()
 {
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
@@ -290,12 +290,12 @@ void FilterApiTest::testOrientationInterpretationFilter()
     Bin filterBin;
     DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-    FilterBase* orientationInterpreterFilter = OrientationInterpreter::factoryMethod();
+    FilterBase* topEdgeInterpreterFilter = TopEdgeInterpreter::factoryMethod();
 
     RingBuffer<PoseData> outputBuffer(10);
 
     filterBin.add(&dummyAdaptor, "adapter");
-    filterBin.add(orientationInterpreterFilter, "filter");
+    filterBin.add(topEdgeInterpreterFilter, "filter");
     filterBin.add(&outputBuffer, "buffer");
     filterBin.join("adapter", "source", "filter", "sink");
     filterBin.join("filter", "source", "buffer", "sink");
@@ -327,7 +327,7 @@ void FilterApiTest::testOrientationInterpretationFilter()
 
     QCOMPARE (dummyAdaptor.getDataCount(), dbusEmitter.numSamplesReceived());
 
-    delete orientationInterpreterFilter;
+    delete topEdgeInterpreterFilter;
 }
 
 void FilterApiTest::testFaceInterpretationFilter()

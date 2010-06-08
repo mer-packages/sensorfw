@@ -70,8 +70,8 @@ public:
      */
     TimedUnsigned orientation() const
     {
-        PoseData pose = qvariant_cast< PoseData >(((QObject*)orientationInterpreterFilter_)->property("orientation"));
-        PoseData pose2 = qvariant_cast< PoseData >(((QObject*)orientationInterpreterFilter_)->property("orientation"));
+        PoseData pose = qvariant_cast< PoseData >(((QObject*)topEdgeInterpreterFilter_)->property("orientation"));
+        PoseData pose2 = qvariant_cast< PoseData >(((QObject*)faceInterpreterFilter_)->property("face"));
         if (pose.timestamp_ > pose2.timestamp_)
             return TimedUnsigned(pose.timestamp_, pose.orientation_);
         return TimedUnsigned(pose2.timestamp_, pose2.orientation_);
@@ -92,9 +92,9 @@ private:
 
     AbstractChain*                   accelerometerChain_;
     BufferReader<AccelerationData>*  accelerometerReader_;
-    FilterBase*                      orientationInterpreterFilter_;
+    FilterBase*                      topEdgeInterpreterFilter_;
     FilterBase*                      faceInterpreterFilter_;
-    RingBuffer<PoseData>*            orientationOutput_;
+    RingBuffer<PoseData>*            topEdgeOutput_;
     RingBuffer<PoseData>*            faceOutput_;
 };
 

@@ -27,7 +27,6 @@ SENSORDCONFIGFILES.path = /etc
 
 internal {
     SUBDIRS += filters/orientationinterpreter \
-          filters/faceinterpreter \
           filters/coordinatealignfilter \
           filters/declinationfilter \
           filters/rotationfilter \

@@ -1,6 +1,6 @@
 /**
-   @file orientationinterpreter.h
-   @brief OrientationInterpreterFilter
+   @file topedgeinterpreter.h
+   @brief TopEdgeInterpreterFilter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -34,14 +34,14 @@
 #include "sensord/filterproperty.h"
 
 /**
- * @brief Filter for calculating the device orientation.
+ * @brief Filter for calculating the device topedge.
  *
- * Filter for calculating the device orientation. The orientation is given in
+ * Filter for calculating the device topedge. The orientation is given in
  * 2 axis and 2 directions per axis.
  *
  * Orientation of the face is handled in the #FaceInterpreter filter.
  */
-class OrientationInterpreter : public QObject, public Filter<TimedXyzData, OrientationInterpreter, PoseData>, public PropertyTracker
+class TopEdgeInterpreter : public QObject, public Filter<TimedXyzData, TopEdgeInterpreter, PoseData>, public PropertyTracker
 {
     Q_OBJECT;
 
@@ -49,23 +49,23 @@ class OrientationInterpreter : public QObject, public Filter<TimedXyzData, Orien
      * Holds the threshold value for the orientation calculation.
      */
     Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
-    Q_PROPERTY(PoseData orientation READ orientation);
+    Q_PROPERTY(PoseData topEdge READ topEdge);
 
 public:
     /**
      * Factory method.
-     * @return New OrientationInterpreter instance as FilterBase*.
+     * @return New TopEdgeInterpreter instance as FilterBase*.
      */
     static FilterBase* factoryMethod()
     {
-        return new OrientationInterpreter();
+        return new TopEdgeInterpreter();
     }
 
     /**
      * Property method for getting the current orientation
-     * @returns Current Orientation
+     * @returns Current top edge.
      */
-    PoseData orientation() const
+    PoseData topEdge() const
     {
         return pose;
     }
@@ -77,7 +77,7 @@ private:
     /**
      * Default constructor.
      */
-    OrientationInterpreter();
+    TopEdgeInterpreter();
 
     void interpret(unsigned, const TimedXyzData*);
     PoseData pose;

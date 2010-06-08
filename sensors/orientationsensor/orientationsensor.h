@@ -32,7 +32,6 @@
 #include "sensord/dbusemitter.h"
 #include "filters/orientationdata.h"
 #include "filters/posedata.h"
-#include "orientationinterpreter/orientationinterpreter.h"
 #include "datatypes/unsigned.h"
 
 class Bin;
@@ -119,7 +118,7 @@ private:
 
     AbstractChain*                   orientationChain_;
 
-    BufferReader<PoseData>*   orientationReader_;
+    BufferReader<PoseData>*   topEdgeReader_;
     BufferReader<PoseData>*   faceReader_;
 
     RingBuffer<PoseData>*            outputBuffer_;

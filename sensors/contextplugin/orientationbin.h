@@ -65,7 +65,7 @@ private:
     ContextProvider::Group group;
 
     BufferReader<AccelerationData> accelerometerReader;
-    BufferReader<PoseData> orientationReader;
+    BufferReader<PoseData> topEdgeReader;
     BufferReader<PoseData> faceReader;
     DeviceAdaptor* accelerometerAdaptor;
 

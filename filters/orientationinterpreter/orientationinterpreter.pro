@@ -17,10 +17,12 @@ SENSORFW_INCLUDEPATHS = ../.. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-HEADERS += orientationinterpreter.h \
+HEADERS += topedgeinterpreter.h \
+           faceinterpreter.h \
            orientationinterpreterplugin.h
 
-SOURCES += orientationinterpreter.cpp \
+SOURCES += topedgeinterpreter.cpp \
+           faceinterpreter.cpp \
            orientationinterpreterplugin.cpp
 
 include(../../common-install.pri)
