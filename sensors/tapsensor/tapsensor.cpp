@@ -64,6 +64,9 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
 
     isValid_ = true;
 
+    // Set sensor description
+    description_ = "device tap events";
+
     /// Enlist used adaptors
     // TODO: Should tap control anything? Probably not.
     //adaptorList_ << "accelerometeradaptor";

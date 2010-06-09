@@ -56,17 +56,10 @@ QString AbstractSensorChannelAdaptor::id() const
     return qvariant_cast< QString >(parent()->property("id"));
 }
 
-//~ int AbstractSensorChannelAdaptor::interval() const
-//~ {
-    //~ // get the value of property interval
-    //~ return qvariant_cast< int >(parent()->property("interval"));
-//~ }
-//~ 
-//~ void AbstractSensorChannelAdaptor::setInterval(int value)
-//~ {
-    //~ // set the value of property interval
-    //~ parent()->setProperty("interval", value);
-//~ }
+int AbstractSensorChannelAdaptor::interval() const
+{
+    return qvariant_cast< int >(parent()->property("interval"));
+}
 
 /*
 SensorState AbstractSensorChannelAdaptor::state() const
@@ -102,4 +95,61 @@ void AbstractSensorChannelAdaptor::setInterval(int sessionId, int value)
 void AbstractSensorChannelAdaptor::setStandbyOverride(int sessionId, bool value)
 {
     QMetaObject::invokeMethod(parent(), "setStandbyOverride", Q_ARG(int, sessionId), Q_ARG(bool, value));
+}
+
+int AbstractSensorChannelAdaptor::getDataRangeCount()
+{
+    QList<DataRange> dataRanges;
+    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
+    return dataRanges.size();
+}
+
+DataRange AbstractSensorChannelAdaptor::getAvailableDataRange(int index)
+{
+    QList<DataRange> dataRanges;
+    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
+
+    if (dataRanges.size() > index && index >= 0)
+    {
+        return dataRanges.at(index);
+    } else {
+        return DataRange();
+    }
+}
+
+DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
+{
+    DataRange range;
+    QMetaObject::invokeMethod(parent(), "getCurrentDataRange", Q_RETURN_ARG(DataRange, range));
+    return range;
+}
+
+void AbstractSensorChannelAdaptor::requestDataRange(int sessionId, DataRange range)
+{
+    QMetaObject::invokeMethod(parent(), "requestDataRange", Q_ARG(int, sessionId), Q_ARG(DataRange, range));
+}
+
+void AbstractSensorChannelAdaptor::removeDataRangeRequest(int sessionId)
+{
+    QMetaObject::invokeMethod(parent(), "removeDataRangeRequest", Q_ARG(int, sessionId));
+}
+
+int AbstractSensorChannelAdaptor::getIntervalCount()
+{
+    QList<DataRange> intervals;
+    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
+    return intervals.size();
+}
+
+DataRange AbstractSensorChannelAdaptor::getAvailableInterval(int index)
+{
+    QList<DataRange> intervals;
+    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
+
+    if (intervals.size() > index && index >= 0)
+    {
+        return intervals.at(index);
+    } else {
+        return DataRange();
+    }
 }

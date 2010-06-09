@@ -324,6 +324,7 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
     /// Remove any property requests by this session
     propertyHandler_.clearRequests(sessionId);
+    sensorInstanceMap_[id].sensor_->removeDataRangeRequest(sessionId);
 
     if ( (sensorInstanceMap_[id].controllingSession_ < 0) && (sensorInstanceMap_[id].listenSessions_.empty()))
     {

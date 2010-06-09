@@ -39,6 +39,7 @@
 #include "logging.h"
 #include "datatypes/orientation.h"
 #include "calibrationhandler.h"
+#include "datatypes/datarange.h"
 
 #ifdef USE_INTERNAL
 #include "datatypes/tap.h"
@@ -62,7 +63,7 @@ int main(int argc, char *argv[])
 #ifdef USE_INTERNAL
     qDBusRegisterMetaType<Tap>();
 #endif
-
+    qDBusRegisterMetaType<DataRange>();
 
     SensorManager& sm = SensorManager::instance();
 

@@ -72,6 +72,7 @@ SOURCES += adaptortest.cpp \
 INCLUDEPATH += ../.. \
     ../../include \
     ../../sensord \
+    ../../datatypes \
     ../../filters \
     ../../adaptors/sysfsadaptor \
     ../../adaptors/touchadaptor \

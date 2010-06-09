@@ -34,6 +34,20 @@
 
 #include "logging.h"
 #include "sfwerror.h"
+#include "datarange.h"
+
+class DataRangeRequest {
+public:
+    int       id_;
+    DataRange range_;
+
+    bool operator==(const DataRangeRequest& right) const
+    {
+        return (id_ == right.id_ && range_ == right.range_);
+    }
+
+};
+
 
 class AbstractSensorChannel : public QObject {
     Q_OBJECT
@@ -60,8 +74,8 @@ class AbstractSensorChannel : public QObject {
     Q_PROPERTY(bool running READ running);
 
     /** Interval between samples */
-    //XXX: Q_PROPERTY(int interval READ interval WRITE setInterval)
-    //XXX: add prop for getting standby (same as with interval, is it 
+    Q_PROPERTY(int interval READ interval)
+    //XXX: add prop for getting standby (same as with interval, is it
     //     better to provide truth or own request?)
 
 public:
@@ -79,13 +93,21 @@ public:
 
     bool running() { return (bool)(cnt_ > 0); }
 
-    //virtual int  interval() const;
-    //virtual void setInterval(int interval);
+    /**
+     * Get the currently active interval value for sensor.
+     *
+     * If sensor has exactly one adaptor (or one + kbslider), the rate
+     * of that adaptor will be returned. Otherwise, the sensor is expected
+     * to reimplement this function and return approriate value.
+     *
+     * @returns Currently used interval value.
+     */
+    virtual int interval() const;
 
 public Q_SLOTS:
     /**
      * @brief Start data flow.
-     * 
+     *
      * This base class implementation is responsible for reference counting.
      * Each child implementation should call the base class method, and verify
      * the return value.
@@ -123,7 +145,7 @@ public Q_SLOTS:
      *
      * Interval requests are pushed to SensorManager for each adaptor this
      * sensor wants to affect (enlisted in constructor). Reimplement in child
-     * if adaptors need separate interval values to keep in sync. (Note that 
+     * if adaptors need separate interval values to keep in sync. (Note that
      * this does not force any adaptors to work with given speed, any other
      * client can request higher speed).
      * @param sessionId Session ID for the requester
@@ -133,12 +155,54 @@ public Q_SLOTS:
 
     /**
      * @brief Set standby mode override flag.
-     * 
+     *
      * @todo Provide desc.
      * @param sessionId Session ID for the requester
      * @param value On for override, off for normal behavior.
      */
     virtual void setStandbyOverride(int sessionId, bool value);
+
+    /**
+     * Returns list of possible intervals for the sensor. If \c min and
+     * \c max value are the same, the value is discrete. If they are
+     * different, any value between \c min and \c max can be requested.
+     * \c Resolution can be ignored.
+     *
+     * @return List of possible intervals for this sensor.
+     */
+    QList<DataRange> getAvailableIntervals();
+
+    /**
+     * Get list of available data ranges for this sensor.
+     *
+     * @return QList of available data ranges for this sensor.
+     */
+    QList<DataRange> getAvailableDataRanges();
+
+    /**
+     * Get the DataRange currently in use for the sensor.
+     *
+     * @return \c DataRange currently in use.
+     */
+    DataRange getCurrentDataRange();
+
+    /**
+     * Places a request for the given data range into queue. The range
+     * will be activated once all earlier requests have been released.
+     *
+     * If the range is not valid, the request will be dropped
+     * immediately.
+     *
+     * @param sessionId session ID for the client making the request.
+     * @param range The requested data range
+     */
+    void requestDataRange(int sessionId, DataRange range);
+
+    /**
+     * Remove a range request.
+     * @param sessionID ID of the session whose request to remove.
+     */
+     void removeDataRangeRequest(int sessionId);
 
 Q_SIGNALS:
     //void stateChanged(SensorState state);
@@ -180,9 +244,14 @@ protected:
 
     bool                isValid_;
     int                 cnt_;
-    
+
     QList<int>          activeSessions_;
     QStringList         adaptorList_;
+
+    QList<DataRange>        dataRangeList_;   /// List of possible ranges
+    QList<DataRangeRequest> dataRangeQueue_;  /// List of requests for range
+
+    QList<DataRange>        intervalList_;
 };
 
 typedef AbstractSensorChannel* (*SensorChannelFactoryMethod)(const QString& id);

@@ -14,7 +14,8 @@ HEADERS += xyz.h \
     orientation.h \
     unsigned.h \
     magneticfield.h \
-    compass.h
+    compass.h \
+    datarange.h
 
 SOURCES += xyz.cpp \
     orientation.cpp \

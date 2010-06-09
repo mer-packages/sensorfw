@@ -70,6 +70,8 @@ public:
         return hasZ_;
     }
 
+    virtual int interval() const;
+
 public Q_SLOTS:
     bool start();
     bool stop();

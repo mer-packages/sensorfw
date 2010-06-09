@@ -19,6 +19,9 @@
       <case name="Sensor_Client_API" level="Component" type="Functional" description="Client API tests for sensord" timeout="15" subfeature="Sensor Framework">
         <step expected_result="0">/usr/bin/sensorapi-test</step>
       </case>
+      <case name="Sensor_MetaData" level="Component" type="Functional" description="Sensor metadata tests for sensord" timeout="15" subfeature="Sensor Framework">
+        <step expected_result="0">/usr/bin/sensormetadata-test</step>
+      </case>
       <case name="Dead_Client" type="Functional" level="Component" description="Unit test for properly detecting dead clients." timeout="60" subfeature="Sensor Framework">
         <step expected_result="0">/usr/share/sensord-tests/sensord-deadclienttest.py</step>
       </case>
