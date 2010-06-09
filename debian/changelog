@@ -2,7 +2,9 @@ sensord (0.6.13) unstable; urgency=low
 
   * Orientation interpretation in split into two parts, face direction and
     edge directon.
-  * Fixes: NB#170716
+  * Fixes: NB#170716 - Orientation change works unreliably
+  * Fixes: NB#169728 - Screen.TopEdge should not be set to Null when
+    orientation is set to FaceUp or FaceDown
 
  -- Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>  Fri, 04 Jun 2010 11:10:09 +0300
 
