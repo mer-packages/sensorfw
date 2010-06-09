@@ -40,8 +40,9 @@ private slots:
     void testTopEdgeInterpretationFilter();
     void testFaceInterpretationFilter();
     void testDeclinationFilter();
+    void testOrientationInterpretationFilter();
     void testRotationFilter();
-    
+
     void cleanup() {}
     void cleanupTestCase() {}
 };

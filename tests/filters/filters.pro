@@ -30,6 +30,7 @@ HEADERS += filtertests.h \
     ../../sensord/propertyhandler.h \
     ../../sensord/calibrationhandler.h \
     ../../filters/orientationinterpreter/topedgeinterpreter.h \
+    ../../filters/orientationinterpreter/orientationinterpreter.h \
     ../../filters/orientationinterpreter/faceinterpreter.h \
     ../../filters/coordinatealignfilter/coordinatealignfilter.h \
     ../../filters/declinationfilter/declinationfilter.h \
@@ -58,6 +59,7 @@ SOURCES += filtertests.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../filters/orientationinterpreter/topedgeinterpreter.cpp \
     ../../filters/orientationinterpreter/faceinterpreter.cpp \
+    ../../filters/orientationinterpreter/orientationinterpreter.cpp \
     ../../filters/coordinatealignfilter/coordinatealignfilter.cpp \
     ../../filters/declinationfilter/declinationfilter.cpp \
     ../../filters/rotationfilter/rotationfilter.cpp

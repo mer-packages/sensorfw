@@ -39,12 +39,12 @@ OrientationInterpreter::OrientationInterpreter() :
 
 void OrientationInterpreter::faceDataAvailable(unsigned, const PoseData* data)
 {
-    face = *data;
+    face.orientation_ = data->orientation_;
 }
 
 void OrientationInterpreter::topEdgeDataAvailable(unsigned, const PoseData* data)
 {
-    topEdge = *data;
+    topEdge.orientation_ = data->orientation_;
 }
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* data)
