@@ -110,12 +110,6 @@ void ClientApiTest::testOrientationSensor()
     sensorIfc->setInterval(100);
 
     QVERIFY(sensorIfc->orientation() == qvariant_cast<Unsigned>(sensorIfc->property("orientation")));
-    QVERIFY(sensorIfc->threshold() == sensorIfc->property("threshold"));
-    int offset = 200;
-    int threshold = sensorIfc->threshold();
-    sensorIfc->setThreshold(threshold + offset);
-    QVERIFY(threshold+offset == sensorIfc->threshold());
-    sensorIfc->setThreshold(threshold);
 
     // test start
     QDBusReply<void> reply = sensorIfc->start();
