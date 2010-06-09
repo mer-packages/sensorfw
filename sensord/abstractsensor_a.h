@@ -29,6 +29,7 @@
 #define ABSTRACTSENSORADAPTOR_H
 
 #include <QtDBus/QtDBus>
+#include "datatypes/datarange.h"
 
 class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
 {
@@ -53,9 +54,8 @@ public: // PROPERTIES
     Q_PROPERTY(QString id READ id)
     QString id() const;
 
-    //~ Q_PROPERTY(int interval READ interval WRITE setInterval)
-    //~ int interval() const;
-    //~ void setInterval(int value);
+    Q_PROPERTY(int interval READ interval)
+    int interval() const;
 
     // TODO: put state back
     /*
@@ -73,9 +73,19 @@ private: // PROPERTIES
 public Q_SLOTS: // METHODS
     void start(int sessionId);
     void stop(int sessionId);
+
     void setInterval(int sessionId, int value);
+    int getIntervalCount();
+    DataRange getAvailableInterval(int index);
+
     void setStandbyOverride(int sessionId, bool value);
-    
+
+    int getDataRangeCount();
+    DataRange getAvailableDataRange(int index);
+    DataRange getCurrentDataRange();
+    void requestDataRange(int sessionId, DataRange range);
+    void removeDataRangeRequest(int sessionId);
+
 Q_SIGNALS: // SIGNALS
     void propertyChanged(const QString& name);
 };

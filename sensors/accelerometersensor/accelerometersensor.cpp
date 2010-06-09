@@ -67,9 +67,18 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
-    
-    /// Enlist used adaptors
+
+    // Set sensor description
+    description_ = "x, y, and z axes accelerations in m/s^2";
+
+    // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor";
+
+    // List possible data ranges
+    // TODO: Figure out correct datarange
+    dataRangeList_.append(DataRange(-2048, 2048, 1));
+    //dataRangeList_.append(DataRange(-8192, 8192, 1));
+    intervalList_.append(DataRange(0, 2000,0));
 }
 
 AccelerometerSensorChannel::~AccelerometerSensorChannel()

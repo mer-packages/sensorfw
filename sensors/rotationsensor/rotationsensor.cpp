@@ -89,8 +89,16 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    /// Enlist used adaptors
+    // Set sensor description
+    description_ = "x, y, and z axes rotation in degrees";
+
+    // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
+
+    // List possible data ranges
+    // TODO: Figure out correct datarange
+    dataRangeList_.append(DataRange(-179, 180, 1));
+    intervalList_.append(DataRange(0, 2000,0));
 }
 
 RotationSensorChannel::~RotationSensorChannel()
@@ -152,4 +160,10 @@ void RotationSensorChannel::emitToDbus(const TimedXyzData& value)
 #else
     emit dataAvailable(value);
 #endif
+}
+
+int RotationSensorChannel::interval() const
+{
+    /* Pace is defined by accelerometer output. */
+    return SensorManager::instance().propertyHandler().getHighestValue("interval", "accelerometeradaptor");
 }

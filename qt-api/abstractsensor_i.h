@@ -30,10 +30,12 @@
 
 #include <QtDBus/QtDBus>
 #include <QLocalSocket>
+#include <QList>
 
 #include "sfwerror.h"
 #include "serviceinfo.h"
 #include "socketreader.h"
+#include "datatypes/datarange.h"
 
 /*
  * Proxy class for interface local.Sensor
@@ -80,7 +82,7 @@ public:
 
     Q_PROPERTY(int interval READ interval WRITE setInterval)
     inline int interval() const
-    { return interval_; }
+    { return qvariant_cast< int >(internalPropGet("interval")); }
     inline void setInterval(int value)
     { 
         interval_ = value;
@@ -112,6 +114,18 @@ public:
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
 
+    /**
+     * Get the list of available intervals for the sensor.
+     *
+     * @return List of available intervals (or interval ranges)
+     */
+    QList<DataRange> getAvailableIntervals();
+
+    QList<DataRange> getAvailableDataRanges();
+    DataRange getCurrentDataRange();
+    void requestDataRange(DataRange range);
+    void removeDataRangeRequest();
+
 private: // this exists as a hack because enums cannot be marshalled over D-BUS
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     int errorCodeInt() const
@@ -120,6 +134,8 @@ private: // this exists as a hack because enums cannot be marshalled over D-BUS
     void setError(SensorError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SNoError; errorString_.clear(); }
 
+
+public Q_SLOTS:
 
 protected Q_SLOTS:
     QDBusReply<void> setInterval(int sessionId, int value);

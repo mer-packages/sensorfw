@@ -63,5 +63,6 @@ INCLUDEPATH += ../.. \
     ../../sensord \
     ../../chains \    
     ../../adaptors \
+    ../../datatypes
 
 QMAKE_LIBDIR_FLAGS += -L../../builddir/filters -L../../filters/ -lfilters

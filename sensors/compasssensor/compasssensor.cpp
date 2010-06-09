@@ -71,8 +71,15 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    /// Enlist used adaptors
+    // Set sensor description
+    description_ = "compass north in degrees";
+
+    // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
+
+    // List possible data ranges
+    dataRangeList_.append(DataRange(0, 359, 1));
+    intervalList_.append(DataRange(0, 2000, 0));
 }
 
 CompassSensorChannel::~CompassSensorChannel()
@@ -170,3 +177,8 @@ void CompassSensorChannel::emitToDbus(const CompassData& value)
 #endif
 }
 
+int CompassSensorChannel::interval() const
+{
+    /* Compass pace is defined by accelerometer output. */
+    return SensorManager::instance().propertyHandler().getHighestValue("interval", "accelerometeradaptor");
+}

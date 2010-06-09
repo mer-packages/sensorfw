@@ -4,6 +4,7 @@
 #
 #
 
+QT += dbus
 CONFIG += debug
 
 # Maemo specific options

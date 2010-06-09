@@ -53,27 +53,29 @@ void AbstractSensorChannel::setError(SensorError errorCode, const QString& error
 
     emit errorSignal(errorCode);
 }
-//~ 
-//~ int AbstractSensorChannel::interval() const
-//~ {
-    //~ // TODO: Verify whether we return current active interval (ask from
-    //~ //       propertyHandler) or our own request.
-    //~ return interval_;
-//~ }
-//~ 
-//~ void AbstractSensorChannel::setInterval(int interval)
-//~ {
-        //~ interval_ = interval;
-//~ 
-        //~ /// Make an interval request for all listed adaptors.
-        //~ foreach (QString adaptor, adaptorList_) {
-            //~ // TODO: remove hardcoded session ID
-            //~ qDebug() << "[AbstractSensor]: setting request for " << adaptor << interval;
-            //~ SensorManager::instance().propertyHandler().setRequest("interval", adaptor, 0, interval);
-        //~ }
-//~ 
-        //~ signalPropertyChanged("interval");
-//~ }
+
+int AbstractSensorChannel::interval() const
+{
+    QString kbName = "kbslideradaptor";
+    if ((adaptorList_.size() == 1) || (adaptorList_.size() == 2 && adaptorList_.contains(kbName)))
+    {
+        int index = 0;
+        if (adaptorList_.at(index) == kbName) {
+            index++;
+        }
+
+        return SensorManager::instance().propertyHandler().getHighestValue("interval", adaptorList_.at(index));
+    }
+
+    sensordLogC() << "Running a sensor (" << name_ <<") that does not reimplement interval() function but uses more than one adaptor (or none).";
+
+    if (adaptorList_.size() == 0) {
+        return 0;
+    }
+
+    return SensorManager::instance().propertyHandler().getHighestValue("interval", adaptorList_.at(0));
+}
+
 
 
 bool AbstractSensorChannel::start(int sessionId) {
@@ -122,18 +124,112 @@ bool AbstractSensorChannel::stop()
 
 void AbstractSensorChannel::setInterval(int sessionId, int value)
 {
-    /// Make an interval request for all listed adaptors.
+    // Verify that requested value is in list of allowed values.
+    bool validRequest = false;
+    for (int i = 0; i < intervalList_.size(); i++) {
+        if (intervalList_.at(i).min <= value &&
+            intervalList_.at(i).max >= value) {
+                validRequest = true;
+            }
+    }
+
+    if (!validRequest) {
+        sensordLogD() << "Requested invalid interval" << value;
+    }
+
+    // Make an interval request for all listed adaptors.
     foreach (QString adaptor, adaptorList_) {
         SensorManager::instance().propertyHandler().setRequest("interval", adaptor, sessionId, value);
     }
 
-    //??? signalPropertyChanged("interval");
+    // TODO: Signal only when rate has actually changed
+    signalPropertyChanged("interval");
 }
 
 void AbstractSensorChannel::setStandbyOverride(int sessionId, bool value)
 {
     foreach (QString adaptor, adaptorList_) {
         SensorManager::instance().propertyHandler().setRequest("standbyOverride", adaptor, sessionId, value);
+    }
+}
+
+QList<DataRange> AbstractSensorChannel::getAvailableIntervals()
+{
+    return intervalList_;
+}
+
+QList<DataRange> AbstractSensorChannel::getAvailableDataRanges()
+{
+    return dataRangeList_;
+}
+
+DataRange AbstractSensorChannel::getCurrentDataRange()
+{
+    if (dataRangeQueue_.empty()) {
+        return dataRangeList_.at(0);
+    } else {
+        return dataRangeQueue_.at(0).range_;
+    }
+}
+
+void AbstractSensorChannel::requestDataRange(int sessionId, DataRange range)
+{
+    // Do not process invalid ranges
+    if (!(dataRangeList_.contains(range))) {
+        return;
+    }
+
+    // Check if the range is going to change (no requests or we have the
+    // active request)
+    bool rangeChanged = false;
+    if (dataRangeQueue_.empty())
+    {
+        rangeChanged = true;
+    } else {
+        if (dataRangeQueue_.at(0).id_ == sessionId && !(dataRangeQueue_.at(0).range_ == range)) {
+            rangeChanged = true;
+        }
+    }
+
+    // If an earlier request exists by same id, replace.
+    bool hadPreviousRequest = false;
+    for (int i = 0; i < dataRangeQueue_.size(); i++) {
+        if (dataRangeQueue_[i].id_ == sessionId) {
+            dataRangeQueue_[i].range_ = range;
+            hadPreviousRequest = true;
+        }
+    }
+    if (!hadPreviousRequest) {
+        DataRangeRequest request = { sessionId, range };
+        dataRangeQueue_.append(request);
+    }
+
+    if (rangeChanged)
+    {
+        signalPropertyChanged("datarange");
+    }
+}
+
+void AbstractSensorChannel::removeDataRangeRequest(int sessionId)
+{
+    int index = -1;
+    for (int i = 0; i < dataRangeQueue_.size() && index ==- 1; i++) {
+        if (dataRangeQueue_.at(i).id_ == sessionId) {
+            index = i;
+        }
+    }
+
+    if (index < 0) {
+        sensordLogD() << "No data range request for id " << sessionId;
+        return;
+    }
+
+    dataRangeQueue_.removeAt(index);
+
+    if (index == 0) {
+        // TODO: re-evaluate range setting
+
+        signalPropertyChanged("datarange");
     }
 }
 

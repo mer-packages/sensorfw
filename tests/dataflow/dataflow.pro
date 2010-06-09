@@ -61,6 +61,7 @@ INCLUDEPATH += ../.. \
     ../../filters \
     ../../chains \
     ../../sensord \
+    ../../datatypes \
     ../../chains \    
     ../../adaptors \
     ../../adaptors/sysfsadaptor 

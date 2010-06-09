@@ -11,6 +11,7 @@ SUBDIRS = filters\
           testutils \
           deadclient \
           powermanagement \
+          metadata \
           external
 
 testdefinition.files = tests.xml

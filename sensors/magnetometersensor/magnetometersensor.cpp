@@ -68,8 +68,16 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    /// Enlist used adaptors
+    // Set sensor description
+    description_ = "magnetic flux density in teslas";
+
+    // Enlist used adaptors
     adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
+
+    // List possible data ranges
+    // TODO: Figure out correct datarange
+    dataRangeList_.append(DataRange(-2048, 2048, 1));
+    intervalList_.append(DataRange(0, 100000, 0));
 }
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()

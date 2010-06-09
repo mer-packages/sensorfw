@@ -40,6 +40,8 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &pa
     }
 #endif
 
+    qDBusRegisterMetaType<DataRange>();
+
     Q_ASSERT ( isValid() );
 }
 
@@ -143,6 +145,7 @@ QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int 
     argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
     return callWithArgumentList(QDBus::Block, QLatin1String("setInterval"), argumentList);
 }
+
 QDBusReply<void> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
 {
     clearError();
@@ -150,4 +153,53 @@ QDBusReply<void> AbstractSensorChannelInterface::setStandbyOverride(int sessionI
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
     return callWithArgumentList(QDBus::Block, QLatin1String("setStandbyOverride"), argumentList);
+}
+
+QList<DataRange> AbstractSensorChannelInterface::getAvailableDataRanges()
+{
+    clearError();
+
+    QList<DataRange> dataRanges;
+
+    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getDataRangeCount"));
+
+    for (int i = 0; i < retVal.value(); i++) {
+        QDBusReply<DataRange> range = call(QDBus::Block, QLatin1String("getAvailableDataRange"), qVariantFromValue(i));
+        dataRanges.append(range.value());
+    }
+    return dataRanges;
+}
+
+DataRange AbstractSensorChannelInterface::getCurrentDataRange()
+{
+    clearError();
+    QDBusReply<DataRange> retVal = call(QDBus::Block, QLatin1String("getCurrentDataRange"));
+    return retVal.value();
+}
+
+void AbstractSensorChannelInterface::requestDataRange(DataRange range)
+{
+    clearError();
+    call(QDBus::Block, QLatin1String("requestDataRange"), qVariantFromValue(sessionId_), qVariantFromValue(range));
+}
+
+void AbstractSensorChannelInterface::removeDataRangeRequest()
+{
+    clearError();
+    call(QDBus::Block, QLatin1String("removeDataRangeRequest"), qVariantFromValue(sessionId_));
+}
+
+QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()
+{
+    clearError();
+
+    QList<DataRange> intervals;
+
+    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getIntervalCount"));
+
+    for (int i = 0; i < retVal.value(); i++) {
+        QDBusReply<DataRange> interval = call(QDBus::Block, QLatin1String("getAvailableInterval"), qVariantFromValue(i));
+        intervals.append(interval.value());
+    }
+    return intervals;
 }
