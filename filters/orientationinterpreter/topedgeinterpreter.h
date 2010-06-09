@@ -23,8 +23,8 @@
    </p>
  */
 
-#ifndef ORIENTATIONINTERPRETER_H
-#define ORIENTATIONINTERPRETER_H
+#ifndef TOPEDGEINTERPRETER_H
+#define TOPEDGEINTERPRETER_H
 
 #include <QObject>
 #include "posedata.h"
@@ -84,4 +84,4 @@ private:
     PoseData newPose;
 };
 
-#endif // ORIENTATIONINTERPRETER_H
+#endif // TOPEDGEINTERPRETER_H

@@ -19,10 +19,12 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 HEADERS += topedgeinterpreter.h \
            faceinterpreter.h \
+           orientationinterpreter.h \
            orientationinterpreterplugin.h
 
 SOURCES += topedgeinterpreter.cpp \
            faceinterpreter.cpp \
+           orientationinterpreter.cpp \
            orientationinterpreterplugin.cpp
 
 include(../../common-install.pri)

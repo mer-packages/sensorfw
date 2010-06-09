@@ -36,7 +36,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
         prevOrientation(PoseData::Undefined)
 {
     SensorManager& sm = SensorManager::instance();
-    
+
     orientationChain_ = sm.requestChain("orientationchain");
     Q_ASSERT( orientationChain_ );
     if (!orientationChain_->isValid()) {
@@ -46,32 +46,25 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     }
 
 
-    topEdgeReader_ = new BufferReader<PoseData>(1024);
-    faceReader_ = new BufferReader<PoseData>(1024);
+    orientationReader_ = new BufferReader<PoseData>(1024);
 
     outputBuffer_ = new RingBuffer<PoseData>(1024);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
 
-    filterBin_->add(topEdgeReader_, "topedge");
-    filterBin_->add(faceReader_, "face");
+    filterBin_->add(orientationReader_, "orientation");
     filterBin_->add(outputBuffer_, "buffer");
 
     // Join filterchain buffers
-    filterBin_->join("topedge", "source", "buffer", "sink");
+    filterBin_->join("orientation", "source", "buffer", "sink");
     filterBin_->join("face", "source", "buffer", "sink");
 
     // Join datasources to the chain
     RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("topedge");
+    rb = orientationChain_->findBuffer("orientation");
     Q_ASSERT(rb);
-    rb->join(topEdgeReader_);
-
-    rb = NULL;
-    rb = orientationChain_->findBuffer("face");
-    Q_ASSERT(rb);
-    rb->join(faceReader_);
+    rb->join(orientationReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -87,17 +80,13 @@ OrientationSensorChannel::~OrientationSensorChannel()
     SensorManager& sm = SensorManager::instance();
 
     RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("topedge");
+    rb = orientationChain_->findBuffer("orientation");
     Q_ASSERT(rb);
-    rb->unjoin(topEdgeReader_);
-
-    rb = orientationChain_->findBuffer("face");
-    Q_ASSERT(rb);
-    rb->unjoin(faceReader_);
+    rb->unjoin(orientationReader_);
 
     sm.releaseChain("orientationchain");
 
-    delete topEdgeReader_;
+    delete orientationReader_;
     delete outputBuffer_;
     delete marshallingBin_;
     delete filterBin_;
