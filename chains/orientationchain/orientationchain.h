@@ -70,7 +70,8 @@ public:
      */
     TimedUnsigned orientation() const
     {
-        PoseData pose = qvariant_cast< PoseData >(((QObject*)orientationInterpreterFilter_)->property("orientation"));
+        QObject *filter = dynamic_cast<QObject*>(orientationInterpreterFilter_);
+        PoseData pose = qvariant_cast< PoseData >(filter->property("orientation"));
         return TimedUnsigned(pose.timestamp_, pose.orientation_);
     }
 
