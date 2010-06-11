@@ -37,8 +37,6 @@
 #include "sensord/dbusemitter.h"
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
-#include "topedgeinterpreter.h"
-#include "faceinterpreter.h"
 #include "orientationinterpreter.h"
 #include "declinationfilter.h"
 #include "rotationfilter.h"
@@ -291,15 +289,15 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
     Bin filterBin;
     DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-    FilterBase* topEdgeInterpreterFilter = TopEdgeInterpreter::factoryMethod();
+    FilterBase* topEdgeInterpreterFilter = OrientationInterpreter::factoryMethod();
 
     RingBuffer<PoseData> outputBuffer(10);
 
     filterBin.add(&dummyAdaptor, "adapter");
     filterBin.add(topEdgeInterpreterFilter, "filter");
     filterBin.add(&outputBuffer, "buffer");
-    filterBin.join("adapter", "source", "filter", "sink");
-    filterBin.join("filter", "source", "buffer", "sink");
+    filterBin.join("adapter", "source", "filter", "accsink");
+    filterBin.join("filter", "topedge", "buffer", "sink");
 
     DummyDbusEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
@@ -354,15 +352,15 @@ void FilterApiTest::testFaceInterpretationFilter()
     Bin filterBin;
     DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-    FilterBase* faceInterpreterFilter = FaceInterpreter::factoryMethod();
+    FilterBase* faceInterpreterFilter = OrientationInterpreter::factoryMethod();
 
     RingBuffer<PoseData> outputBuffer(10);
 
     filterBin.add(&dummyAdaptor, "adapter");
     filterBin.add(faceInterpreterFilter, "filter");
     filterBin.add(&outputBuffer, "buffer");
-    filterBin.join("adapter", "source", "filter", "sink");
-    filterBin.join("filter", "source", "buffer", "sink");
+    filterBin.join("adapter", "source", "filter", "accsink");
+    filterBin.join("filter", "face", "buffer", "sink");
 
     DummyDbusEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
@@ -426,21 +424,13 @@ void FilterApiTest::testOrientationInterpretationFilter()
     DummyAdaptor<TimedXyzData> dummyAdaptor;
 
     FilterBase* orientationInterpreterFilter = OrientationInterpreter::factoryMethod();
-    FilterBase* faceInterpreterFilter = FaceInterpreter::factoryMethod();
-    FilterBase* topEdgeInterpreterFilter = TopEdgeInterpreter::factoryMethod();
 
     RingBuffer<PoseData> outputBuffer(10);
 
     filterBin.add(&dummyAdaptor, "adapter");
     filterBin.add(orientationInterpreterFilter, "orientationfilter");
-    filterBin.add(faceInterpreterFilter, "facefilter");
-    filterBin.add(topEdgeInterpreterFilter, "topfilter");
     filterBin.add(&outputBuffer, "buffer");
-    filterBin.join("adapter", "source", "topfilter", "sink");
-    filterBin.join("adapter", "source", "facefilter", "sink");
     filterBin.join("adapter", "source", "orientationfilter", "accsink");
-    filterBin.join("topfilter", "source", "orientationfilter", "topedgesink");
-    filterBin.join("facefilter", "source", "orientationfilter", "facesink");
     filterBin.join("orientationfilter", "orientation", "buffer", "sink");
 
     DummyDbusEmitter<PoseData> dbusEmitter;

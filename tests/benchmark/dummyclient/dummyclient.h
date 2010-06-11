@@ -44,7 +44,7 @@ public:
         //~ sensor = OrientationSensorChannelInterface::controlInterface("orientationsensor");
         sensor = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
         if (sensor == NULL || !sensor->isValid()) {
-            qDebug() << "[DummyClient] Unable to get listen session:" << sensor->errorString();
+            qDebug() << "[DummyClient] Unable to get listen session:" << sm.errorString();
         } else {
             sensor->start();
         }

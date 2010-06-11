@@ -25,19 +25,13 @@
  */
 
 #include "orientationinterpreterplugin.h"
-#include "topedgeinterpreter.h"
-#include "faceinterpreter.h"
 #include "orientationinterpreter.h"
 #include "sensormanager.h"
 #include "sensord/logging.h"
 
 void OrientationInterpreterPlugin::Register(class Loader&)
 {
-    sensordLogD() << "registering topedgeinterpreter";
     SensorManager& sm = SensorManager::instance();
-    sm.registerFilter<TopEdgeInterpreter>("topedgeinterpreter");
-    sensordLogD() << "registering faceinterpreter";
-    sm.registerFilter<FaceInterpreter>("faceinterpreter");
     sensordLogD() << "registering orientationinterpreter";
     sm.registerFilter<OrientationInterpreter>("orientationinterpreter");
 }

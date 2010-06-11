@@ -31,7 +31,7 @@
 
 static Config *static_configuration = 0;
 
-Config::Config() {
+Config::Config() : m_settings(NULL) {
 }
 
 Config::~Config() {

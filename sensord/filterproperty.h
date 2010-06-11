@@ -83,6 +83,14 @@ public:
         tracker_(tracker) {}
 
     /**
+     * Destructor.
+     */
+    ~FilterProperty()
+    {
+        delete current_;
+    }
+
+    /**
      * Accessor function for the property.
      */
     const T& operator()()
