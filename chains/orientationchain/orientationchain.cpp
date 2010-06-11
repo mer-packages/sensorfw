@@ -44,8 +44,6 @@ OrientationChain::OrientationChain(const QString& id) :
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1024);
 
-    topEdgeInterpreterFilter_ = sm.instantiateFilter("topedgeinterpreter");
-    faceInterpreterFilter_ = sm.instantiateFilter("faceinterpreter");
     orientationInterpreterFilter_ = sm.instantiateFilter("orientationinterpreter");
 
     topEdgeOutput_ = new RingBuffer<PoseData>(1024);
@@ -61,23 +59,15 @@ OrientationChain::OrientationChain(const QString& id) :
     filterBin_ = new Bin;
 
     filterBin_->add(accelerometerReader_, "accelerometer");
-    filterBin_->add(topEdgeInterpreterFilter_, "topedgeinterpreter");
-    filterBin_->add(faceInterpreterFilter_, "faceinterpreter");
     filterBin_->add(orientationInterpreterFilter_, "orientationinterpreter");
     filterBin_->add(topEdgeOutput_, "topedgebuffer");
     filterBin_->add(faceOutput_, "facebuffer");
     filterBin_->add(orientationOutput_, "orientationbuffer");
 
     // Join filterchain buffers
-    filterBin_->join("accelerometer", "source", "topedgeinterpreter", "sink");
-    filterBin_->join("topedgeinterpreter", "source", "topedgebuffer", "sink");
-
-    filterBin_->join("accelerometer", "source", "faceinterpreter", "sink");
-    filterBin_->join("faceinterpreter", "source", "facebuffer", "sink");
-
     filterBin_->join("accelerometer", "source", "orientationinterpreter", "accsink");
-    filterBin_->join("topedgeinterpreter", "source", "orientationinterpreter", "topedgesink");
-    filterBin_->join("faceinterpreter", "source", "orientationinterpreter", "facesink");
+    filterBin_->join("orientationinterpreter", "topedge", "topedgebuffer", "sink");
+    filterBin_->join("orientationinterpreter", "face", "facebuffer", "sink");
     filterBin_->join("orientationinterpreter", "orientation", "orientationbuffer", "sink");
 
     // Join datasources to the chain
@@ -85,8 +75,6 @@ OrientationChain::OrientationChain(const QString& id) :
     rb = accelerometerChain_->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->join(accelerometerReader_);
-
-
 }
 
 OrientationChain::~OrientationChain()
@@ -97,8 +85,6 @@ OrientationChain::~OrientationChain()
     rb->unjoin(accelerometerReader_);
 
     delete accelerometerReader_;
-    delete topEdgeInterpreterFilter_;
-    delete faceInterpreterFilter_;
     delete topEdgeOutput_;
     delete faceOutput_;
     delete filterBin_;

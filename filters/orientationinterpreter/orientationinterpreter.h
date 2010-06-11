@@ -43,20 +43,28 @@ class OrientationInterpreter : public QObject, public PropertyTracker, public Fi
     Q_OBJECT;
 
     Q_PROPERTY(PoseData orientation READ orientation);
+    Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
+
 private:
-    Sink<OrientationInterpreter, PoseData> faceSink;
-    Sink<OrientationInterpreter, PoseData> topEdgeSink;
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
+    Source<PoseData> topEdgeSource;
+    Source<PoseData> faceSource;
     Source<PoseData> orientationSource;
 
-    void faceDataAvailable(unsigned, const PoseData*);
-    void topEdgeDataAvailable(unsigned, const PoseData*);
     void accDataAvailable(unsigned, const AccelerationData*);
+
+    bool overFlowCheck();
+    void processTopEdge();
+    void processFace();
+    void processOrientation();
 
     OrientationInterpreter();
 
+    FilterProperty<int> threshold_;
+
     PoseData topEdge;
     PoseData face;
+    AccelerationData data;
 
     PoseData o_;
 
