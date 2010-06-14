@@ -30,6 +30,9 @@
 #include "sensord/logging.h"
 #include "sensord/config.h"
 #include <linux/types.h>
+#include <QFile>
+
+#define THRESHOLD_FILE_PATH "/sys/class/misc/bh1770glc_ps/device/ps_threshold"
 
 struct bh1770glc_ps {
     __u8 led1;
@@ -38,10 +41,17 @@ struct bh1770glc_ps {
 } __attribute__((packed));
 
 ProximityAdaptor::ProximityAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("proximity_dev_path").toString())
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("proximity_dev_path").toString()),
+    m_threshold(35)
 {
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
+
+    m_threshold = readThreshold();
+    if (m_threshold <= 0) {
+        sensordLogW() << "Received value 0 for proximity threshold. Falling back to default (35)";
+        m_threshold = 35;
+    }
 }
 
 ProximityAdaptor::~ProximityAdaptor()
@@ -67,7 +77,7 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         return;
     } 
 
-    if ( ps_data.led1 > 30 ) {
+    if ( ps_data.led1 > m_threshold ) {
         ret = 1;
     }
 
@@ -79,4 +89,31 @@ void ProximityAdaptor::processSample(int pathId, int fd)
 
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();
+}
+
+int ProximityAdaptor::readThreshold()
+{
+    int value = 0;
+    QFile thresholdFile;
+    QString configKey = "proximity_threshold";
+
+    if (Config::configuration()->value(configKey, "").toString().size() > 0) {
+        thresholdFile.setFileName(Config::configuration()->value(configKey, "").toString());
+    } else {
+        thresholdFile.setFileName(THRESHOLD_FILE_PATH);
+    }
+
+    if (!(thresholdFile.exists() && thresholdFile.open(QIODevice::ReadOnly))) {
+        sensordLogW() << "Unable to locate threshold setting for" << id();
+        return value;
+    }
+
+    char buf[16];
+    if (thresholdFile.readLine(buf, sizeof(buf)) > 0) {
+        value = QString(buf).split(" ").at(0).toInt();
+    }
+
+    thresholdFile.close();
+
+    return value;
 }

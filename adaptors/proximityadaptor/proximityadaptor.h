@@ -70,6 +70,17 @@ private:
      * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
      */
     void processSample(int pathId, int fd);
+
+    /**
+     * Reads and returns the correct threshold value for proximity off.
+     * Any values below threshold should be considered off values for
+     * proximity.
+     *
+     * @return Threshold value for proximity. \c 0 on error.
+     */
+    int readThreshold();
+
+    int m_threshold;
 };
 
 #endif
