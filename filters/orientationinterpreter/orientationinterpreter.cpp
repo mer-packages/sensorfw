@@ -103,7 +103,6 @@ void OrientationInterpreter::processTopEdge()
     if (topEdge.orientation_ != newTopEdge.orientation_) {
         topEdge.orientation_ = newTopEdge.orientation_;
         sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
-        qDebug() << "new TopEdge value:" << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;
         topEdgeSource.propagate(1, &topEdge);
     }
@@ -122,7 +121,6 @@ void OrientationInterpreter::processFace()
     {
         face.orientation_ = newFace.orientation_;
         sensordLogT() << "New face value:" << face.orientation_;
-        qDebug() << "New face value:" << face.orientation_;
         face.timestamp_ = data.timestamp_;
         faceSource.propagate(1, &face);
     }
@@ -141,7 +139,6 @@ void OrientationInterpreter::processOrientation()
     if (newPose.orientation_ != o_.orientation_) {
         o_.orientation_ = newPose.orientation_;
         sensordLogT() << "New orientation value:" << o_.orientation_;
-        qDebug() << "New orientation value:" << o_.orientation_;
         o_.timestamp_ = data.timestamp_;
         orientationSource.propagate(1, &o_);
     }
