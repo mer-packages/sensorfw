@@ -4,7 +4,7 @@ QT -= gui
 
 include(../common-config.pri)
 
-QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../../datatypes -L../../../datatypes -lsensordatatypes
 
 #target.path = /usr/lib/sensord-tests
 target.path = /usr/bin
