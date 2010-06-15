@@ -37,6 +37,7 @@
 #include "idutils.h"
 #include "parameterparser.h"
 #include "propertyhandler.h"
+#include "logging.h"
 
 
 #ifdef USE_SOCKET
@@ -268,6 +269,9 @@ private:
 
     SensorManagerError                             errorCode_;
     QString                                        errorString_;
+
+    // Declare SensordLogger as friend to allow flushing current state
+    friend class SensordLogger;
 };
 
 #endif // SENSORMANAGER_H

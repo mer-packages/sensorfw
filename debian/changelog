@@ -2,6 +2,7 @@ sensord (0.6.15) unstable; urgency=low
 
   [Timo Rongas]
   * Fixes: NB#173973 - Proximity sensor stays "on" if I move my hand away slowly
+  * Implements: SWP#MaSSW-1897
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 14 Jun 2010 10:45:37 +0300
 

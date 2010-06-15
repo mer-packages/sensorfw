@@ -32,6 +32,7 @@
 #include <QFile>
 #include <iostream>
 #include <signal.h>
+#include <sensormanager.h>
 
 #ifdef SENSORD_USE_SYSLOG
 #include <syslog.h>
@@ -49,6 +50,7 @@ SensordLogger::SensordLogger (const char *module, const char* func,
     printLog = ((level >= SensordLogTest) && (level < SensordLogN)) && (level >= outputLevel);
 
     signal(SIGUSR1, signalHandler);
+    signal(SIGUSR2, signalFlush);
 
     setString(&data);
 
@@ -128,4 +130,49 @@ void SensordLogger::signalHandler(int param)
     std::cerr << "Signal Handled \n";
     std::cerr << "New debugging level: " << outputLevel << "\n";
     //std::cerr << "Debugging output " << (printDebug?"enabled":"disabled") << "\n";
+}
+
+void SensordLogger::signalFlush(int param)
+{
+    Q_UNUSED(param);
+
+    QStringList output;
+
+    output.append("Flushing sensord state\n");
+    output.append(QString("  Logging level: %1\n").arg(outputLevel));
+
+    SensorManager& sm = SensorManager::instance();
+    output.append("  Adaptors:\n");
+    foreach (QString key, sm.deviceAdaptorInstanceMap_.keys()) {
+        DeviceAdaptorInstanceEntry& entry = sm.deviceAdaptorInstanceMap_[key];
+        output.append(QString("    %1 [%2 listener(s)]\n").arg(entry.type_).arg(entry.cnt_));
+    }
+
+    output.append("  Chains:\n");
+    foreach (QString key, sm.chainInstanceMap_.keys()) {
+        ChainInstanceEntry& entry = sm.chainInstanceMap_[key];
+        output.append(QString("    %1 [%2 listener(s)]. %3\n").arg(entry.type_).arg(entry.cnt_).arg(entry.chain_->running()?"Running":"Stopped"));
+    }
+
+    output.append("  Logical sensors:\n");
+    foreach (QString key, sm.sensorInstanceMap_.keys()) {
+        SensorInstanceEntry& entry = sm.sensorInstanceMap_[key];
+        bool control = true;
+        if (entry.controllingSession_ <= 0) {
+            control = false;
+        }
+        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control? "Control +":"No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running()?"Running":"Stopped"));
+    }
+
+    foreach (QString line, output) {
+
+#ifdef SENSORD_USE_SYSLOG
+        openlog(NULL, LOG_PERROR, LOG_DAEMON);
+        syslog(LOG_DEBUG, line.toLocal8Bit().data());
+        closelog();
+#else
+        fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
+        QTextStream(stderr) << line;
+#endif
+    }
 }

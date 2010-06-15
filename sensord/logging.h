@@ -58,6 +58,8 @@ private:
     static SensordLogLevel outputLevel;
     bool printLog;
     static void signalHandler(int param);
+    static void signalFlush(int param);
+
     const char* moduleName;
     SensordLogLevel currentLevel;
     QString data;
