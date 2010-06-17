@@ -24,6 +24,8 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
 */
+#include <QTime>
+#include <QTimer>
 
 #include "tapadaptor.h"
 #include "config.h"
@@ -31,9 +33,21 @@
 
 #include <errno.h>
 
+#define DEVICE_MATCH_STRING "accelerometer"
+#define DOUBLECLICK_INTERVAL 500
+
 TapAdaptor::TapAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("tap_event_path").toString())
+    InputDevAdaptor(id, 1),
+    waitingForDouble(false)
 {
+    //This was previously in the base class, but it's not
+    //possible call virtual methods from base class constructor.
+    //TODO: find a way to get rid of all child classes calling this
+    //manually.
+    if (!getInputDevices(DEVICE_MATCH_STRING)) {
+        sensordLogW() << "Input device not found.";
+    }
+
     tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(1024);
     addAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
 }
@@ -43,32 +57,57 @@ TapAdaptor::~TapAdaptor()
     delete tapBuffer_;
 }
 
-void TapAdaptor::processSample(int pathId, int fd)
+void TapAdaptor::interpretEvent(int src, struct input_event *ev)
 {
-    Q_UNUSED(pathId);
+    Q_UNUSED(src);
 
-    read(fd, &ev_, sizeof(struct input_event));
+    TapData::Direction dir;
 
-    if (ev_.type == EV_MSC && ev_.code == MSC_GESTURE) {
-
-        TapData* td = tapBuffer_->nextSlot();
-
-        if (ev_.value == 0 || ev_.value == 1) {
-            td->direction_ = TapData::X;
+    if (ev->type == EV_KEY && ev->value == 1) {
+        switch (ev->code) {
+            case BTN_X:
+                dir = TapData::X;
+                break;
+            case BTN_Y:
+                dir = TapData::Y;
+                break;
+            case BTN_Z:
+                dir = TapData::Z;
+                break;
         }
-        else if (ev_.value == 2 || ev_.value == 3) {
-            td->direction_ = TapData::Y;
-        }
-        else if (ev_.value == 4 || ev_.value == 5) {
-            td->direction_ = TapData::Z;
-        }
+        if ( (dir == tapValue_.direction_) &&
+                (waitingForDouble) )
+            tapValue_.type_ = TapData::DoubleTap;
+        else tapValue_.type_ = TapData::SingleTap;
 
-        td->timestamp_ = Utils::getTimeStamp();
-
-        // Every second is single, every second is double
-        td->type_ = (ev_.value%2) ? TapData::DoubleTap : TapData::SingleTap;
-
-        tapBuffer_->commit();
-        tapBuffer_->wakeUpReaders();
+        tapValue_.direction_ = dir;
     }
+}
+
+void TapAdaptor::interpretSync(int src)
+{
+    Q_UNUSED(src);
+    if (!waitingForDouble) {
+        timerId = startTimer(DOUBLECLICK_INTERVAL);
+        waitingForDouble = true;
+    }
+}
+
+void TapAdaptor::timerEvent(QTimerEvent* event)
+{
+    waitingForDouble = false;
+    commitOutput();
+    killTimer(timerId);
+}
+
+void TapAdaptor::commitOutput()
+{
+    TapData* d = tapBuffer_->nextSlot();
+
+    d->timestamp_ = Utils::getTimeStamp();
+    d->direction_ = tapValue_.direction_;
+    d->type_ = tapValue_.type_;
+
+    tapBuffer_->commit();
+    tapBuffer_->wakeUpReaders();
 }

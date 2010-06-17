@@ -27,11 +27,9 @@
 #ifndef TAPADAPTOR_H
 #define TAPADAPTOR_H
 
-#include "sysfsadaptor.h"
+#include "inputdevadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
 #include "filters/tapdata.h"
-#include <QTime>
-#include <linux/input.h>
 
 /**
  * @brief Adaptor class for detecting device tap events.
@@ -43,7 +41,7 @@
  * @todo Add support for adjusting sensor sensitivity
  * @todo Add detection of correct event handle (currently hardcoded to 4)
  */
-class TapAdaptor : public SysfsAdaptor
+class TapAdaptor : public InputDevAdaptor
 {
     Q_OBJECT;
 public:
@@ -65,17 +63,17 @@ protected:
     ~TapAdaptor();
 
 private:
-    input_event                       ev_;
+    TapData tapValue_;
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */
 
-    /**
-     * Runs whenever an event has been received. Contains logic for figuring
-     * which event was fired, and passes the data on to filterchain.
-     * @param pathId PathId for the file that had event. Always 0, as we monitor
-     *               only single file and don't set any proper id.
-     * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
-     */
-    void processSample(int pathId, int fd);
+    bool waitingForDouble;
+    int timerId;
+
+    void interpretEvent(int src, struct input_event *ev);
+    void interpretSync(int src);
+
+    void timerEvent(QTimerEvent* event);
+    void commitOutput();
 };
 
 #endif
