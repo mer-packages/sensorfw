@@ -1,0 +1,67 @@
+#!/bin/sh
+
+# Init file for sensorfw daemon
+
+### BEGIN INIT INFO
+# Provides:             sensord
+# Default-Start:        2 3 4 5
+# Default-Stop:         0 1 6
+# Short-Description:    sensord
+### END INIT INFO
+
+# source function library
+. /etc/rc.d/init.d/functions
+
+servicename=sensord
+processname=sensord
+sbindir=/usr/sbin
+
+RETVAL=0
+
+start() {
+    echo -n "Starting sensord: "
+    daemon --check $servicename $sbindir/$processname &> /dev/null &
+    RETVAL=$?
+    [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$servicename
+    success
+    echo
+    return $RETVAL
+}
+
+stop() {
+    echo -n "Stopping sensord: "
+    killproc $processname
+    RETVAL=$?
+    echo
+    [ $RETVAL -eq 0 ] && rm -f /var/lock/subsys/$servicename
+    return $RETVAL
+}
+
+case "$1" in
+    start)
+	start
+	;;
+    stop)
+	stop
+	;;
+    restart|reload)
+	stop
+	start
+	;;
+    condrestart)
+        if [ -f /var/lock/subsys/$servicename ]; then
+            stop
+            start
+        fi
+        ;;
+    status)
+	status $processname
+	RETVAL=$?
+	;;
+    *)
+	echo "Usage: $0 {start|stop|restart|reload|condrestart|status}"
+	RETVAL=1
+	;;
+esac
+
+exit $RETVAL
