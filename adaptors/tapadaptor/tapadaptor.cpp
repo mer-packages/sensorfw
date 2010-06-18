@@ -26,6 +26,7 @@
 */
 #include <QTime>
 #include <QTimer>
+#include <QTimerEvent>
 
 #include "tapadaptor.h"
 #include "config.h"
@@ -88,7 +89,7 @@ void TapAdaptor::interpretSync(int src)
 {
     Q_UNUSED(src);
     if (!waitingForDouble) {
-        timerId = startTimer(DOUBLECLICK_INTERVAL);
+        startTimer(DOUBLECLICK_INTERVAL);
         waitingForDouble = true;
     }
 }
@@ -96,8 +97,8 @@ void TapAdaptor::interpretSync(int src)
 void TapAdaptor::timerEvent(QTimerEvent* event)
 {
     waitingForDouble = false;
+    killTimer(event->timerId());
     commitOutput();
-    killTimer(timerId);
 }
 
 void TapAdaptor::commitOutput()

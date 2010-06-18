@@ -67,7 +67,6 @@ private:
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */
 
     bool waitingForDouble;
-    int timerId;
 
     void interpretEvent(int src, struct input_event *ev);
     void interpretSync(int src);
