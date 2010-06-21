@@ -2,6 +2,7 @@ sensord (0.6.17) unstable; urgency=low
 
   [Timo Rongas]
   * Implements: SWP#MaSSW-1931
+  * Fixes: NB#175555: Orientation change policy incorrect
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 18 Jun 2010 16:00:22 +0300
 
