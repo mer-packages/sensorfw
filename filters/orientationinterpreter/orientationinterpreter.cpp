@@ -33,6 +33,9 @@
 #define ANGLE_LIMIT 45
 #define SAME_AXIS_LIMIT 5
 
+#define OVERFLOW_LOW 650
+#define OVERFLOW_HIGH 1400
+
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),
@@ -70,7 +73,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 bool OrientationInterpreter::overFlowCheck()
 {
     int gVector = ((data.x_*data.x_ + data.y_*data.y_ + data.z_*data.z_)/1000);
-    return !((gVector >= 800) && (gVector <=1250));
+    return !((gVector >= OVERFLOW_LOW) && (gVector <=OVERFLOW_HIGH));
 }
 
 void OrientationInterpreter::processTopEdge()
