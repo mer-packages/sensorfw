@@ -26,12 +26,20 @@
 
 #include "orientationinterpreter.h"
 #include <sensord/logging.h>
+#include <math.h>
 
 #define DEFAULT_THRESHOLD 250
+#define RADIANS_TO_DEGREES 180.0/M_PI
+#define ANGLE_LIMIT 45
+#define SAME_AXIS_LIMIT 5
+
+#define OVERFLOW_LOW 650
+#define OVERFLOW_HIGH 1400
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),
+        topEdge(PoseData::BottomDown),
         o_(PoseData::Undefined)
 {
     addSink(&accDataSink, "accsink");
@@ -65,47 +73,89 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 bool OrientationInterpreter::overFlowCheck()
 {
     int gVector = ((data.x_*data.x_ + data.y_*data.y_ + data.z_*data.z_)/1000);
-    return !((gVector >= 800) && (gVector <=1250));
+    return !((gVector >= OVERFLOW_LOW) && (gVector <=OVERFLOW_HIGH));
 }
 
 void OrientationInterpreter::processTopEdge()
 {
-    int t = threshold_();
-    PoseData newTopEdge;
+    // Provide something on the first run (topEdge + Face)
 
-    if (abs(data.x_) >= 200 || abs(data.y_) >=200) {
-        if (topEdge.orientation_ == PoseData::Undefined) {
-            /*Change topedge away from unknown when x or y
-             * goes above t.*/
-            if ( abs(data.y_) > t &&
-                    (abs(data.y_) > abs(data.x_)) )
-                newTopEdge.orientation_ = (data.y_>0 ? PoseData::BottomUp : PoseData::BottomDown);
-            else if ( abs(data.x_) > t &&
-                    (abs(data.x_) > abs (data.y_)) )
-                newTopEdge.orientation_ = (data.x_>0?PoseData::LeftUp : PoseData::RightUp);
-        } else if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
-            if (abs(data.y_) > abs(data.x_) + t) {
-                newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
-            } else {
-                newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
-            }
-        } else if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
-            if (abs(data.x_) > abs(data.y_) + t) {
-                newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
-            } else {
-                newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
+    int rotation;
+    PoseData newTopEdge = topEdge;
+
+    // Portrait check
+    rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+    if (abs(rotation) > ANGLE_LIMIT) {
+        newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
+
+        // Some threshold to switching between portrait modes
+        if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
+            //if (topEdge.orientation_ != newTopEdge.orientation_ && rotation < SAME_AXIS_LIMIT) {
+            if (abs(rotation) < SAME_AXIS_LIMIT) {
+                newTopEdge.orientation_ = topEdge.orientation_;
             }
         }
+
     } else {
-        newTopEdge.orientation_ = PoseData::Undefined;
+        // Landscape check
+        rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+        if (abs(rotation) > ANGLE_LIMIT) {
+            newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
+
+            // Some threshold to switching between landscape modes
+            if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
+                //if (topEdge.orientation_ != newTopEdge.orientation_ && rotation < SAME_AXIS_LIMIT) {
+                if (abs(rotation) < SAME_AXIS_LIMIT) {
+                    newTopEdge.orientation_ = topEdge.orientation_;
+                }
+            }
+        }
     }
 
+    // Propagate if changed
     if (topEdge.orientation_ != newTopEdge.orientation_) {
         topEdge.orientation_ = newTopEdge.orientation_;
         sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;
         topEdgeSource.propagate(1, &topEdge);
     }
+
+    //~ int t = threshold_();
+    //~ PoseData newTopEdge;
+//~
+    //~ if (abs(data.x_) >= 200 || abs(data.y_) >=200) {
+        //~ if (topEdge.orientation_ == PoseData::Undefined) {
+            //~ /*Change topedge away from unknown when x or y
+             //~ * goes above t.*/
+            //~ if ( abs(data.y_) > t &&
+                    //~ (abs(data.y_) > abs(data.x_)) )
+                //~ newTopEdge.orientation_ = (data.y_>0 ? PoseData::BottomUp : PoseData::BottomDown);
+            //~ else if ( abs(data.x_) > t &&
+                    //~ (abs(data.x_) > abs (data.y_)) )
+                //~ newTopEdge.orientation_ = (data.x_>0?PoseData::LeftUp : PoseData::RightUp);
+        //~ } else if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
+            //~ if (abs(data.y_) > abs(data.x_) + t) {
+                //~ newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
+            //~ } else {
+                //~ newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
+            //~ }
+        //~ } else if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
+            //~ if (abs(data.x_) > abs(data.y_) + t) {
+                //~ newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
+            //~ } else {
+                //~ newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
+            //~ }
+        //~ }
+    //~ } else {
+        //~ newTopEdge.orientation_ = PoseData::Undefined;
+    //~ }
+//~
+    //~ if (topEdge.orientation_ != newTopEdge.orientation_) {
+        //~ topEdge.orientation_ = newTopEdge.orientation_;
+        //~ sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
+        //~ topEdge.timestamp_ = data.timestamp_;
+        //~ topEdgeSource.propagate(1, &topEdge);
+    //~ }
 }
 
 void OrientationInterpreter::processFace()
