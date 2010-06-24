@@ -69,7 +69,7 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
 
     /// Enlist used adaptors
     // TODO: Should tap control anything? Probably not.
-    //adaptorList_ << "accelerometeradaptor";
+    adaptorList_ << "tapadaptor";
 }
 
 TapSensorChannel::~TapSensorChannel()
