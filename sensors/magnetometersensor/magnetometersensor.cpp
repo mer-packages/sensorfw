@@ -75,8 +75,12 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
 
     // List possible data ranges
-    // TODO: Figure out correct datarange
-    dataRangeList_.append(DataRange(-2048, 2048, 1));
+    dataRangeList_.append(DataRange(-4096, 4096, 1));
+
+    // Real values for AK8974 - need to propagate from adaptor to
+    // distinguish which should be used.
+    //dataRangeList_.append(DataRange(-2048, 2048, 1));
+
     intervalList_.append(DataRange(0, 100000, 0));
 }
 

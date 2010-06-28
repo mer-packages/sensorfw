@@ -72,7 +72,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     outputBuffer_->join(this);
 
     // Set sensor description
-    description_ = "device orientation as enumeration of top edge";
+    description_ = "orientation of the device screen as 6 pre-defined positions";
 
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor";
@@ -80,7 +80,8 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     // List possible data ranges
     // TODO: Figure out correct datarange
     dataRangeList_.append(DataRange(0, 6, 1));
-    intervalList_.append(DataRange(0, 2000,0));
+    intervalList_.append(DataRange(0, 0, 0));
+    intervalList_.append(DataRange(1, 2000, 0));
 }
 
 OrientationSensorChannel::~OrientationSensorChannel()

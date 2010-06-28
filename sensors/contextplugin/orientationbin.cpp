@@ -28,6 +28,8 @@
 
 #include <QDebug>
 
+#define SESSION_ID 1
+
 #define STABILITY_THRESHOLD 7
 #define UNSTABILITY_THRESHOLD 300
 #define STABILITY_HYSTERESIS 0.1
@@ -120,10 +122,15 @@ void OrientationBin::startRun()
     start();
     accelerometerAdaptor->startSensor("accelerometer");
     orientationChain->start();
+
+    // Request 4hz updates (until good HW wakeup setup has been figured out
+    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 250);
 }
 
 void OrientationBin::stopRun()
 {
+    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
+
     //qDebug() << "Stopping the run on the orientationbin";
     accelerometerAdaptor->stopSensor("accelerometer");
     orientationChain->stop();

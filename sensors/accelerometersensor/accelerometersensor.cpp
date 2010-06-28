@@ -75,10 +75,12 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
     adaptorList_ << "accelerometeradaptor";
 
     // List possible data ranges
-    // TODO: Figure out correct datarange
     dataRangeList_.append(DataRange(-2048, 2048, 1));
     //dataRangeList_.append(DataRange(-8192, 8192, 1));
-    intervalList_.append(DataRange(0, 2000,0));
+
+    // List possible intervals
+    intervalList_.append(DataRange(0, 0, 0));
+    intervalList_.append(DataRange(0, 2000, 0));
 }
 
 AccelerometerSensorChannel::~AccelerometerSensorChannel()
