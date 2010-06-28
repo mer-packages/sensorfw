@@ -100,17 +100,19 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
         return;
     }
 
-    if (mag_data.valid) {
-        TimedXyzData* sample = magnetometerBuffer_->nextSlot();
-
-        sample->timestamp_ = Utils::getTimeStamp();
-        sample->x_ = mag_data.x;
-        sample->y_ = mag_data.y;
-        sample->z_ = mag_data.z;
-
-        magnetometerBuffer_->commit();
-        magnetometerBuffer_->wakeUpReaders();
-    } else {
+    if (!mag_data.valid) {
+        // Can't trust this, printed for curiosity
         sensordLogD() << "Invalid sample received from magnetometer";
     }
+
+    TimedXyzData* sample = magnetometerBuffer_->nextSlot();
+
+    sample->timestamp_ = Utils::getTimeStamp();
+    sample->x_ = mag_data.x;
+    sample->y_ = mag_data.y;
+    sample->z_ = mag_data.z;
+
+    magnetometerBuffer_->commit();
+    magnetometerBuffer_->wakeUpReaders();
+
 }
