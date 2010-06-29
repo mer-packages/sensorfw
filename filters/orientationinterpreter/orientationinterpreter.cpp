@@ -33,8 +33,8 @@
 #define ANGLE_LIMIT 45
 #define SAME_AXIS_LIMIT 5
 
-#define OVERFLOW_LOW 650
-#define OVERFLOW_HIGH 1400
+#define OVERFLOW_LOW 800
+#define OVERFLOW_HIGH 1250
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),

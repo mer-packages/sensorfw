@@ -98,7 +98,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     // List possible data ranges
     // TODO: Figure out correct datarange
     dataRangeList_.append(DataRange(-179, 180, 1));
-    intervalList_.append(DataRange(0, 2000,0));
+    intervalList_.append(DataRange(1, 200,0));
 }
 
 RotationSensorChannel::~RotationSensorChannel()

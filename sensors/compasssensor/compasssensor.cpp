@@ -79,7 +79,10 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
 
     // List possible data ranges
     dataRangeList_.append(DataRange(0, 359, 1));
-    intervalList_.append(DataRange(0, 2000, 0));
+
+    // Interval limited to 5hz - 1000hz (theoretical). Keeps calibration
+    // sane.
+    intervalList_.append(DataRange(1, 200, 0));
 }
 
 CompassSensorChannel::~CompassSensorChannel()

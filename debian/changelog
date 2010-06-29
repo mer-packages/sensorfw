@@ -1,6 +1,7 @@
 sensord (0.6.18) unstable; urgency=low
 
-  *
+  * 4hz rate for desktop orientation detection
+  * MetaData value changes
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 21 Jun 2010 17:36:33 +0300
 
