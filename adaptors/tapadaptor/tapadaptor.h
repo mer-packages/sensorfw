@@ -63,7 +63,7 @@ protected:
     ~TapAdaptor();
 
 private:
-    TapData tapValue_;
+    QList<TapData> tapValues_;
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */
 
     bool waitingForDouble;

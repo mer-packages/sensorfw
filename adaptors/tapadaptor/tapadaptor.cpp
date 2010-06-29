@@ -63,6 +63,7 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
     Q_UNUSED(src);
 
     TapData::Direction dir;
+    TapData tapValue;
 
     if (ev->type == EV_KEY && ev->value == 1) {
         switch (ev->code) {
@@ -76,12 +77,19 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
                 dir = TapData::Z;
                 break;
         }
-        if ( (dir == tapValue_.direction_) &&
-                (waitingForDouble) )
-            tapValue_.type_ = TapData::DoubleTap;
-        else tapValue_.type_ = TapData::SingleTap;
 
-        tapValue_.direction_ = dir;
+        tapValue.direction_ = dir;
+        tapValue.timestamp_ = Utils::getTimeStamp();
+        tapValue.type_ = TapData::SingleTap;
+
+        if ((!tapValues_.isEmpty()) &&
+            (tapValues_.first().direction_ == dir)) {
+            tapValues_.removeFirst();
+            tapValue.type_ = TapData::DoubleTap;
+            tapValues_.prepend(tapValue);
+        }
+
+        tapValues_.prepend(tapValue);
     }
 }
 
@@ -98,14 +106,21 @@ void TapAdaptor::timerEvent(QTimerEvent* event)
 {
     waitingForDouble = false;
     killTimer(event->timerId());
-    commitOutput();
+    while (!tapValues_.isEmpty())
+        commitOutput();
 }
 
 void TapAdaptor::commitOutput()
 {
+    if (tapValues_.isEmpty())
+        return;
+
+    TapData tapValue_ = tapValues_.last();
+    tapValues_.removeLast();
+
     TapData* d = tapBuffer_->nextSlot();
 
-    d->timestamp_ = Utils::getTimeStamp();
+    d->timestamp_ = tapValue_.timestamp_;
     d->direction_ = tapValue_.direction_;
     d->type_ = tapValue_.type_;
 
