@@ -48,6 +48,8 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
 
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<MagnetometerData>(1024);
     addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
+
+    introduceAvailableDataRange(DataRange(-4096, 4096, 1));
 }
 
 MagnetometerAdaptor::~MagnetometerAdaptor()

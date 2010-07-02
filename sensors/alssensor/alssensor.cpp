@@ -86,15 +86,12 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
 
 #endif
 
-    // Set sensor description
-    description_ = "ambient light intensity in lux";
+    setDescription("ambient light intensity in lux");
 
     // Enlist used adaptors
     adaptorList_ << "alsadaptor";
 
-    // List possible data ranges
-    // TODO: Figure out correct datarange
-    dataRangeList_.append(DataRange(0, 500, 1));
+    setRangeSource(alsAdaptor_);
     intervalList_.append(DataRange(0, 0, 0));
 
     isValid_ = true;

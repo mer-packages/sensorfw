@@ -35,9 +35,8 @@
 #include "abstractsensor.h"
 
 AbstractSensorChannel::AbstractSensorChannel(const QString& id)
-    : description_("no description available")
-  //, state_(STOPPED)
-    , errorCode_(SNoError)
+    : //, state_(STOPPED),
+    errorCode_(SNoError)
     , isValid_(false)
     , cnt_(0)
 {
@@ -156,81 +155,6 @@ void AbstractSensorChannel::setStandbyOverride(int sessionId, bool value)
 QList<DataRange> AbstractSensorChannel::getAvailableIntervals()
 {
     return intervalList_;
-}
-
-QList<DataRange> AbstractSensorChannel::getAvailableDataRanges()
-{
-    return dataRangeList_;
-}
-
-DataRange AbstractSensorChannel::getCurrentDataRange()
-{
-    if (dataRangeQueue_.empty()) {
-        return dataRangeList_.at(0);
-    } else {
-        return dataRangeQueue_.at(0).range_;
-    }
-}
-
-void AbstractSensorChannel::requestDataRange(int sessionId, DataRange range)
-{
-    // Do not process invalid ranges
-    if (!(dataRangeList_.contains(range))) {
-        return;
-    }
-
-    // Check if the range is going to change (no requests or we have the
-    // active request)
-    bool rangeChanged = false;
-    if (dataRangeQueue_.empty())
-    {
-        rangeChanged = true;
-    } else {
-        if (dataRangeQueue_.at(0).id_ == sessionId && !(dataRangeQueue_.at(0).range_ == range)) {
-            rangeChanged = true;
-        }
-    }
-
-    // If an earlier request exists by same id, replace.
-    bool hadPreviousRequest = false;
-    for (int i = 0; i < dataRangeQueue_.size(); i++) {
-        if (dataRangeQueue_[i].id_ == sessionId) {
-            dataRangeQueue_[i].range_ = range;
-            hadPreviousRequest = true;
-        }
-    }
-    if (!hadPreviousRequest) {
-        DataRangeRequest request = { sessionId, range };
-        dataRangeQueue_.append(request);
-    }
-
-    if (rangeChanged)
-    {
-        signalPropertyChanged("datarange");
-    }
-}
-
-void AbstractSensorChannel::removeDataRangeRequest(int sessionId)
-{
-    int index = -1;
-    for (int i = 0; i < dataRangeQueue_.size() && index ==- 1; i++) {
-        if (dataRangeQueue_.at(i).id_ == sessionId) {
-            index = i;
-        }
-    }
-
-    if (index < 0) {
-        sensordLogD() << "No data range request for id " << sessionId;
-        return;
-    }
-
-    dataRangeQueue_.removeAt(index);
-
-    if (index == 0) {
-        // TODO: re-evaluate range setting
-
-        signalPropertyChanged("datarange");
-    }
 }
 
 #ifdef USE_SOCKET

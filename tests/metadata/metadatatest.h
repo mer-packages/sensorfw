@@ -65,6 +65,8 @@ private slots:
     void cleanup();
     void cleanupTestCase();
 
+    void printMetaData();
+
     void testDescription();
 
     void testChangeNotifications();

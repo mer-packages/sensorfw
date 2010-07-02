@@ -91,6 +91,8 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
 
         tapValues_.prepend(tapValue);
     }
+
+    introduceAvailableDataRange(DataRange(0, 2, 1));
 }
 
 void TapAdaptor::interpretSync(int src)

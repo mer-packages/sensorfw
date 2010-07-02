@@ -51,6 +51,8 @@ KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
 
     kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(3);
     addAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
+
+    introduceAvailableDataRange(DataRange(0, 2, 1));
 }
 
 KeyboardSliderAdaptor::~KeyboardSliderAdaptor()

@@ -90,14 +90,14 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     outputBuffer_->join(this);
 
     // Set sensor description
-    description_ = "x, y, and z axes rotation in degrees";
+    setDescription("x, y, and z axes rotation in degrees");
 
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
 
     // List possible data ranges
     // TODO: Figure out correct datarange
-    dataRangeList_.append(DataRange(-179, 180, 1));
+    introduceAvailableDataRange(DataRange(-179, 180, 1));
     intervalList_.append(DataRange(1, 200,0));
 }
 

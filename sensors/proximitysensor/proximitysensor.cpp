@@ -65,15 +65,12 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
 
     isValid_ = true;
 
-    // Set sensor description
-    description_ = "whether an object is close to device screen";
+    setDescription("whether an object is close to device screen");
 
     // Enlist used adaptors
     adaptorList_ << "proximityadaptor";
 
-    // List possible data ranges
-    // TODO: Figure out correct datarange
-    dataRangeList_.append(DataRange(0, 1, 1));
+    setRangeSource(proximityAdaptor_);
     intervalList_.append(DataRange(0, 0,0));
 }
 

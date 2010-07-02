@@ -25,6 +25,13 @@
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/accelerometersensor_i.h"
+#include "qt-api/magnetometersensor_i.h"
+#include "qt-api/alssensor_i.h"
+#include "qt-api/compasssensor_i.h"
+#include "qt-api/rotationsensor_i.h"
+#include "qt-api/tapsensor_i.h"
+#include "qt-api/proximitysensor_i.h"
+#include "qt-api/orientationsensor_i.h"
 
 #include "metadatatest.h"
 
@@ -36,8 +43,22 @@ void MetaDataTest::initTestCase()
 
     // Load plugins (should test running depend on plug-in load result?)
     remoteSensorManager.loadPlugin("accelerometersensor");
+    remoteSensorManager.loadPlugin("magnetometersensor");
+    remoteSensorManager.loadPlugin("alssensor");
+    remoteSensorManager.loadPlugin("orientationsensor");
+    remoteSensorManager.loadPlugin("tapsensor");
+    remoteSensorManager.loadPlugin("rotationsensor");
+    remoteSensorManager.loadPlugin("compasssensor");
+    remoteSensorManager.loadPlugin("proximitysensor");
 
     remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>("accelerometersensor");
+    remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>("magnetometersensor");
+    remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>("alssensor");
+    remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>("orientationsensor");
+    remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>("tapsensor");
+    remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>("rotationsensor");
+    remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>("compasssensor");
+    remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>("proximitysensor");
 }
 
 void MetaDataTest::init()
@@ -154,22 +175,25 @@ void MetaDataTest::testChangeNotifications()
     QList<DataRange> dataRangeList = sensorIfc->getAvailableDataRanges();
     QVERIFY2(dataRangeList.size() > 0, "No data ranges received from sensor");
 
-    // Connect change notification signal
-    connect(sensorIfc, SIGNAL(propertyChanged(const QString&)), &dummy, SLOT(propertyChanged(const QString&)));
+    if (dataRangeList.size() > 1)
+    {
+        // Connect change notification signal
+        connect(sensorIfc, SIGNAL(propertyChanged(const QString&)), &dummy, SLOT(propertyChanged(const QString&)));
 
-    // Make some requests
-    sensorIfc->requestDataRange(dataRangeList.last());
-    sensorIfc->start();
-    sensorIfc->setInterval(50);
-    sensorIfc->stop();
+        // Make some requests
+        sensorIfc->requestDataRange(dataRangeList.last());
+        sensorIfc->start();
+        sensorIfc->setInterval(50);
+        sensorIfc->stop();
 
-    // Allow signals some time ...
-    QTest::qWait(200);
+        // Allow signals some time ...
+        QTest::qWait(200);
+
+        QVERIFY2(dummy.hasReceived("datarange"), "Property notification for \"DataRange\" not received");
+        QVERIFY2(dummy.hasReceived("interval"), "Property notification for \"Interval\" not received");
+    }
 
     delete sensorIfc;
-
-    QVERIFY2(dummy.hasReceived("datarange"), "Property notification for \"DataRange\" not received");
-    QVERIFY2(dummy.hasReceived("interval"), "Property notification for \"Interval\" not received");
 }
 
 void MetaDataTest::testAvailableIntervals()
@@ -190,6 +214,77 @@ void MetaDataTest::testAvailableIntervals()
     delete sensorIfc;
 
     QVERIFY2(intervalList.size() > 0, "No intervals received from sensor");
+}
+
+void MetaDataTest::printMetaData()
+{
+    QList<QString> sensorNameList;
+    QList<AbstractSensorChannelInterface*> sensorList;
+
+    // Initiate sensors
+    sensorNameList << "accelerometer";
+    sensorList << const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+
+    sensorNameList << "magnetometer";
+    sensorList << const_cast<MagnetometerSensorChannelInterface*>(MagnetometerSensorChannelInterface::listenInterface("magnetometersensor"));
+
+    sensorNameList << "als";
+    sensorList << const_cast<ALSSensorChannelInterface*>(ALSSensorChannelInterface::listenInterface("alssensor"));
+
+    sensorNameList << "proximity";
+    sensorList << const_cast<ProximitySensorChannelInterface*>(ProximitySensorChannelInterface::listenInterface("proximitysensor"));
+
+    sensorNameList << "orientation";
+    sensorList << const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
+
+    sensorNameList << "tap";
+    sensorList << const_cast<TapSensorChannelInterface*>(TapSensorChannelInterface::listenInterface("tapsensor"));
+
+    sensorNameList << "compass";
+    sensorList << const_cast<CompassSensorChannelInterface*>(CompassSensorChannelInterface::listenInterface("compasssensor"));
+
+    sensorNameList << "rotation";
+    sensorList << const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::listenInterface("rotationsensor"));
+
+    AbstractSensorChannelInterface* sensor;
+    while (sensorList.size() > 0)
+    {
+        qDebug() << "[" << sensorNameList.takeFirst() << "]:";
+        sensor = sensorList.takeFirst();
+        if (sensor != NULL)
+        {
+            qDebug() << "   Description    :" << sensor->description().toAscii().data();
+
+            qDebug() << "   Interval       :" << sensor->interval();
+            qDebug() << "   Possible rates :";
+            QList<DataRange> rateList = sensor->getAvailableIntervals();
+            for (int i = 1; i <= rateList.size(); i++)
+            {
+                DataRange r = rateList.at(i-1);
+                if (r.min == r.max)
+                {
+                    qDebug() << QString("                    %1. %2").arg(i).arg(r.min).toAscii().data();
+                } else {
+                    qDebug() << QString("                    %1. [%2, %3]").arg(i).arg(r.min).arg(r.max).toAscii().data();
+                }
+            }
+
+            DataRange r = sensor->getCurrentDataRange();
+            qDebug() << QString("   Data Range     : [%1, %2], resolution %3").arg(r.min).arg(r.max).arg(r.resolution).toAscii().data();
+            qDebug() << "   Possible ranges:";
+            QList<DataRange> rangeList = sensor->getAvailableDataRanges();
+            for (int i = 1; i <= rangeList.size(); i++)
+            {
+                r = rangeList.at(i-1);
+                qDebug() << QString("                    %1. [%2, %3], resolution %4").arg(i).arg(r.min).arg(r.max).arg(r.resolution).toAscii().data();
+            }
+
+            delete sensor;
+        } else {
+            qDebug() << "   <sensor initialisation failed>";
+        }
+        qDebug() << "";
+    }
 }
 
 QTEST_MAIN(MetaDataTest)

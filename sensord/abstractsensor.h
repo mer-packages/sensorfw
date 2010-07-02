@@ -32,24 +32,12 @@
 #include <QTimer>
 #include <QStringList>
 
+#include "nodebase.h"
 #include "logging.h"
 #include "sfwerror.h"
 #include "datarange.h"
 
-class DataRangeRequest {
-public:
-    int       id_;
-    DataRange range_;
-
-    bool operator==(const DataRangeRequest& right) const
-    {
-        return (id_ == right.id_ && range_ == right.range_);
-    }
-
-};
-
-
-class AbstractSensorChannel : public QObject {
+class AbstractSensorChannel : public NodeBase {
     Q_OBJECT
 
     // Note: Q_ENUMS makes enumerator names available for QObject::setProperty()
@@ -66,8 +54,6 @@ class AbstractSensorChannel : public QObject {
     /** Type of the sensor channel */
     Q_PROPERTY(QString type READ type)
 
-    /** Description of the sensor channel */
-    Q_PROPERTY(QString description READ description)
     //Q_PROPERTY(SensorState state READ state)
 
     /** Whether sensor is running or not */
@@ -88,7 +74,6 @@ public:
     const QString& id() const { return id_; }
     const QString type() const { return metaObject()->className(); }
 
-    QString description() const { return description_; }
     //SensorState state() const { qDebug() << __PRETTY_FUNCTION__; return state_; }
 
     bool running() { return (bool)(cnt_ > 0); }
@@ -172,41 +157,8 @@ public Q_SLOTS:
      */
     QList<DataRange> getAvailableIntervals();
 
-    /**
-     * Get list of available data ranges for this sensor.
-     *
-     * @return QList of available data ranges for this sensor.
-     */
-    QList<DataRange> getAvailableDataRanges();
-
-    /**
-     * Get the DataRange currently in use for the sensor.
-     *
-     * @return \c DataRange currently in use.
-     */
-    DataRange getCurrentDataRange();
-
-    /**
-     * Places a request for the given data range into queue. The range
-     * will be activated once all earlier requests have been released.
-     *
-     * If the range is not valid, the request will be dropped
-     * immediately.
-     *
-     * @param sessionId session ID for the client making the request.
-     * @param range The requested data range
-     */
-    void requestDataRange(int sessionId, DataRange range);
-
-    /**
-     * Remove a range request.
-     * @param sessionID ID of the session whose request to remove.
-     */
-     void removeDataRangeRequest(int sessionId);
-
 Q_SIGNALS:
     //void stateChanged(SensorState state);
-    void propertyChanged(const QString& name);
     void errorSignal(int error);
 
 protected:
@@ -236,7 +188,6 @@ protected:
 
     QString             id_;
     QString             name_;
-    QString             description_;
     //SensorState         state_;
 
     SensorError         errorCode_;
@@ -247,9 +198,6 @@ protected:
 
     QList<int>          activeSessions_;
     QStringList         adaptorList_;
-
-    QList<DataRange>        dataRangeList_;   /// List of possible ranges
-    QList<DataRangeRequest> dataRangeQueue_;  /// List of requests for range
 
     QList<DataRange>        intervalList_;
 };

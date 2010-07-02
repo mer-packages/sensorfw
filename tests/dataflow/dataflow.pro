@@ -31,7 +31,9 @@ HEADERS += dataflowtests.h \
     ../../sensord/inputdevadaptor.h \
     ../../sensord/sockethandler.h \
     ../../sensord/propertyhandler.h \
-    ../../sensord/calibrationhandler.h
+    ../../sensord/calibrationhandler.h \
+    ../../sensord/nodebase.h
+
 
 SOURCES += dataflowtests.cpp \
     ../../sensord/producer.cpp \
@@ -54,7 +56,8 @@ SOURCES += dataflowtests.cpp \
     ../../sensord/inputdevadaptor.cpp \
     ../../sensord/sockethandler.cpp \
     ../../sensord/propertyhandler.cpp \
-    ../../sensord/calibrationhandler.cpp
+    ../../sensord/calibrationhandler.cpp \
+    ../../sensord/nodebase.cpp
 
 INCLUDEPATH += ../.. \
     ../../include \

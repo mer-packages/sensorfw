@@ -68,14 +68,13 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    // Set sensor description
-    description_ = "magnetic flux density in teslas";
+    setDescription("magnetic flux density in 0.3T");
 
     // Enlist used adaptors
     adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
 
     // List possible data ranges
-    dataRangeList_.append(DataRange(-4096, 4096, 1));
+    setRangeSource(compassChain_);
 
     // Real values for AK8974 - need to propagate from adaptor to
     // distinguish which should be used.

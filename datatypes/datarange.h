@@ -88,4 +88,18 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
     return argument;
 }
 
+/**
+ * Request class. Contains id of the requester and the range.
+ */
+class DataRangeRequest {
+public:
+    int       id_;
+    DataRange range_;
+
+    bool operator==(const DataRangeRequest& right) const
+    {
+        return (id_ == right.id_ && range_ == right.range_);
+    }
+};
+
 #endif // DATARANGE_H

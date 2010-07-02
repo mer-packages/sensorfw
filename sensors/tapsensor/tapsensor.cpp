@@ -64,10 +64,14 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
 
     isValid_ = true;
 
-    // Set sensor description
-    description_ = "either single or double device taps, and tap axis";
+    setDescription("either single or double device taps, and tap axis");
 
-    /// Enlist used adaptors
+    setRangeSource(tapAdaptor_);
+
+    // List possible intervals
+    intervalList_.append(DataRange(0, 0, 0));
+
+    // Enlist used adaptors
     // TODO: Should tap control anything? Probably not.
     adaptorList_ << "tapadaptor";
 }

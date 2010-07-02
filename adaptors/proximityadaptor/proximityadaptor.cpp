@@ -52,6 +52,8 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         sensordLogW() << "Received value 0 for proximity threshold. Falling back to default (35)";
         m_threshold = 35;
     }
+
+    introduceAvailableDataRange(DataRange(0, 1, 1));
 }
 
 ProximityAdaptor::~ProximityAdaptor()

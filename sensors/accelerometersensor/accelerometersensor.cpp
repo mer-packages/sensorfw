@@ -68,15 +68,14 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    // Set sensor description
-    description_ = "x, y, and z axes accelerations in m/s^2";
+    setDescription("x, y, and z axes accelerations in m/s^2");
 
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor";
 
     // List possible data ranges
-    dataRangeList_.append(DataRange(-2048, 2048, 1));
-    //dataRangeList_.append(DataRange(-8192, 8192, 1));
+    setRangeSource(accelerometerChain_);
+    //~ introduceAvailableDataRange(DataRange(-2048, 2048, 1));
 
     // List possible intervals
     intervalList_.append(DataRange(0, 0, 0));

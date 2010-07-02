@@ -33,9 +33,13 @@
 #include <QHash>
 #include <QDebug>
 #include "logging.h"
+#include "nodebase.h"
 
 class RingBufferBase;
 
+/**
+ * Represents a single adapted sensor.
+ */
 class AdaptedSensorEntry : public QObject {
     Q_OBJECT
 
@@ -77,7 +81,10 @@ protected:
     int             count_;
 };
 
-class DeviceAdaptor : public QObject
+/**
+ * Device adaptor class. Can contain any number of adapted sensors.
+ */
+class DeviceAdaptor : public NodeBase
 {
     Q_OBJECT;
 

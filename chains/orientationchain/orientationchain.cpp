@@ -76,6 +76,8 @@ OrientationChain::OrientationChain(const QString& id) :
     rb = accelerometerChain_->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->join(accelerometerReader_);
+
+    introduceAvailableDataRange(DataRange(0, 6, 1));
 }
 
 OrientationChain::~OrientationChain()

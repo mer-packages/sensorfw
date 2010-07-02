@@ -47,14 +47,19 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
+    setDescription("Input device accelerometer adaptor (lis302d)");
+
     accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1024);
     addAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
+
+    introduceAvailableDataRange(DataRange(-2048, 2048, 1));
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()
 {
     delete accelerometerBuffer_;
 }
+
 void AccelerometerAdaptor::interpretEvent(int src, struct input_event *ev)
 {
     Q_UNUSED(src);

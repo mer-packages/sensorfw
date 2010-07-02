@@ -76,7 +76,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     Q_ASSERT(rb);
     rb->join(accelerometerReader_);
 
-
+    setRangeSource(accelerometerAdaptor_);
 }
 
 AccelerometerChain::~AccelerometerChain()

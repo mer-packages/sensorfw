@@ -71,14 +71,12 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    // Set sensor description
-    description_ = "compass north in degrees";
+    setDescription("compass north in degrees");
 
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
 
-    // List possible data ranges
-    dataRangeList_.append(DataRange(0, 359, 1));
+    introduceAvailableDataRange(DataRange(0, 359, 1));
 
     // Interval limited to 5hz - 1000hz (theoretical). Keeps calibration
     // sane.
