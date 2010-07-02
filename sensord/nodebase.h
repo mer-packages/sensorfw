@@ -84,17 +84,6 @@ public Q_SLOTS:
      */
     void requestDataRange(int sessionId, DataRange range);
 
-    /**
-     * Sets the current datarange. Overwrite for nodes which have more
-     * than one possible range and are responsible for actions to change
-     * it. For nodes which merely get several options from previous nodes
-     * this won't get invoked.
-     * @param range The range to set
-     * @return \c true on succesfull set, \c false otherwise. The base
-     *         class implementation always returns false.
-     */
-    virtual bool setDataRange(const DataRange range) { Q_UNUSED(range); return false; }
-
 Q_SIGNALS:
     void propertyChanged(const QString& name);
 
@@ -140,6 +129,17 @@ protected:
      * @param node The node to request range metadata from.
      */
     void setRangeSource(NodeBase* node);
+
+    /**
+     * Sets the current datarange. Overwrite for nodes which have more
+     * than one possible range and are responsible for actions to change
+     * it. For nodes which merely get several options from previous nodes
+     * this won't get invoked.
+     * @param range The range to set
+     * @return \c true on succesfull set, \c false otherwise. The base
+     *         class implementation always returns false.
+     */
+    virtual bool setDataRange(const DataRange range) { Q_UNUSED(range); return false; }
 
 private:
 
