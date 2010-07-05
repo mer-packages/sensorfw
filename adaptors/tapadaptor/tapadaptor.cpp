@@ -51,6 +51,8 @@ TapAdaptor::TapAdaptor(const QString& id) :
 
     tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(1024);
     addAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
+
+    introduceAvailableDataRange(DataRange(0, 2, 1));
 }
 
 TapAdaptor::~TapAdaptor()
@@ -91,8 +93,6 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
 
         tapValues_.prepend(tapValue);
     }
-
-    introduceAvailableDataRange(DataRange(0, 2, 1));
 }
 
 void TapAdaptor::interpretSync(int src)
