@@ -43,9 +43,9 @@ struct ak8974_data {
 
 /* Device name: /dev/ak8975n, where n is a running number (0 in case on single chip configuration) */
 struct ak8975_data {
-        __s32 x; /* nanoTeslas */
-        __s32 y; /* nanoTeslas */
-        __s32 z; /* nanoTeslas */
+        __s32 x; /* 0.3T */
+        __s32 y; /* 0.3T */
+        __s32 z; /* 0.3T */
         __u16 valid;
 } __attribute__((packed));
 
