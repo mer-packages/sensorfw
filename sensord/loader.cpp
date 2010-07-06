@@ -34,6 +34,7 @@
 #include <QCoreApplication>
 
 #include "logging.h"
+#include "config.h"
 
 //namespace {
 //    QHash<QString, Loader::FilterFactory> filterTypes;
@@ -105,7 +106,9 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString)
               newPluginNames_.contains(requiredPlugins.at(i)))) 
         {
             sensordLogT() << requiredPlugins.at(i) << " is not yet loaded, trying to load.";
-            loaded = loadPluginFile(requiredPlugins.at(i), &error);
+            QString resolvedName = resolveRealPluginName(requiredPlugins.at(i));
+            sensordLogT() << requiredPlugins.at(i) << "resolved as" << resolvedName << ". Loading";
+            loaded = loadPluginFile(resolvedName, &error);
         }
     }
     if (!loaded && errorString) {
@@ -120,7 +123,7 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
     bool loaded = false;
     
     if (loadedPluginNames_.contains(name)) {
-        sensordLogW() << "Plugin already loaded.";
+        sensordLogD() << "Plugin already loaded.";
         return true;
     }
 
@@ -148,4 +151,19 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
     newPluginNames_.clear();
 
     return loaded;
+}
+
+QString Loader::resolveRealPluginName(const QString& pluginName)
+{
+    QString deviceId = Config::configuration()->value("deviceId", "default").toString();
+    QString key = QString("%1/%2").arg(deviceId).arg(pluginName);
+
+    QString nameFromConfig = Config::configuration()->value(key).toString();
+
+    if (nameFromConfig == "") {
+        sensordLogT() << "Plugin setting for " << pluginName << "not found from configuration. Using key as value.";
+        return pluginName;
+    }
+
+    return nameFromConfig;
 }

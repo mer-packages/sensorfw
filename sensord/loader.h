@@ -45,6 +45,7 @@ private:
     Loader& operator=(const Loader&);
 
     bool loadPluginFile(const QString& name, QString *errorString);
+    QString resolveRealPluginName(const QString& pluginName);
 
     QStringList        loadedPluginNames_;
     QStringList        newPluginNames_;
