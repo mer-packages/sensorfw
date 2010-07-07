@@ -1,0 +1,162 @@
+###
+### INSTRUCTIONS FOR WRITING ADAPTOR PLUGINS FOR SENSOR FRAMEWORK
+###
+### 07.07.2010
+###
+
+##
+## !! WARNING !!
+##
+
+These instructions may become invalid without any real notice. The code is still actively being worked on, but hopefully it's for the better in terms of extendability. But don't act surprised if function names change and class structures get modified.
+
+With that said, here's the beef:
+
+
+###
+### 1. What are adaptors?
+###
+
+Device adaptors are responsible for feeding sensor data to the sensor framework. Normally an adaptor listens on the driver interface of the HW sensor for new values, and extracts them for further processing in sensor framework.
+
+                           _______SENSORFW________
+                          |                       |
+[HW] --> [driver] --> [adaptor] --> [...] --> [client i/f]
+                          |_______________________|
+
+Each adaptor provides one or more output buffers for transmitting data to the framework. The most common situation is a single buffer/adaptor, but if a driver interface exposes several sensors, then several output buffers might come handy.
+
+To create a new adaptor, one must implement the DeviceAdaptor class. All of the current adaptors inherit the SysfsAdaptor class, which takes care of most of this stuff as long as data is read from somewhere in filesystem. Some adaptors use the InputDevAdaptor extension of it, when their source is an input device (/dev/input/*)
+
+Using SysfsAdaptor as the base is encouraged, even if it currently is quite messy. It is still the fastest way to add a new sensor, and any future improvements will be applied directly. If you are happy with this approach, you can skip over the next section and go directly to section #3.
+
+
+##
+## 2. Implementing a device adaptor - the hard way
+##
+
+If you wish to go all the way, adaptors are expected to implement the following things:
+
+1) Provide an output buffer. Create a buffer, introduce it with
+
+void addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
+
+where "name" is the id for the buffer. The name is used by the next node in the filtering chain to locate the buffer. Currently these names are hardcoded in the layers above, so if the created adaptor is a replacement for an existing one, the same buffer name(s) should be used. Adaptors and their buffer names and types are listed below.
+
+2) Implement startAdaptor() and stopAdaptor(). These are leftovers from something that is not very valid at the moment, but might come handy in the future. These are called on construction and destruction of the adaptor (by sensormanager). One could use these for example to do some preliminary setup for sensor connection. Current adaptors don't do much.
+
+3) Implement startSensor() and stopSensor(). These are the functions used to start the sensor dataflow into the named buffer. They should take care of reference counting for themselves, so that the adapted sensor (aka. the buffer) will run as long as there is someone expecting data. The AdaptedSensorEntry class provides help in reference counting. Whenever the sensor is stopped, it should not consume any power. (quite sensor specific what is released here and what is released with stopAdaptor()).
+
+4) Implement standby() and resume(). These are called when display blanks / unblanks. The expected functionality is to stop on standby, and start again on resume (goal is to save power). The difference to start and stop is that the release of hardware should be invisible to layers above. They can adjust properties and call start/stop, but these will only take effect after the adaptor has resumed.
+
+
+##
+## 3. Implementing a device adaptor using sysfs, the (bit more) reasonable way
+##
+
+SysfsAdaptor is a generic class for adapting to sensors that provide a file (or file like) interface.
+
+1) Create a class that extends SysfsAdaptor. I'd say the easiest way is to pick one of the existing ones and just modify it. If this does not sound good for you, take a look at the previous section.
+
+2) Provide SysfsAdaptor constructor with information on adaptor id, reading mode and path to the file. In case the path is not known at construction, addPath() can be used later. Several files can be monitored.
+
+The reading mode has two options: IntervalMode and SelectMode. In IntervalMode, the file is read in a busypoll loop, with an N millisecond interval. Interval is defined by the "Interval" property. Use this if your driver does not provide interrupts
+
+In SelectMode, epoll_wait() is used to wait for an interrupt on the handle.
+
+3) Create buffer, introduce Buffer, introduce DataRange options
+
+4) Implement processSample(int pathId, int fd) function. PathId is the index number of the path where an event has been detected (0 for first added, 1 for next,...). fd is the file descriptor where the data can be read.
+
+This function should read the available data from the driver, and propagate it to the output buffer.
+
+
+##
+## 4. Device adaptors, buffers, and types
+##
+
+[accelerometeradaptor]: Provides acceleration events
+ 1) "accelerometer", type TimedXyzData
+
+[alsadaptor]: Provides ambient light level
+ 1) "als", type TimedUnsigned
+
+[kbslideradaptor]: Provides keyboard open/closed events
+ 1) "keyboardslider", type KeyboardSliderState
+
+[magnetometeradaptor]: Provides magnetic fluctuation
+ 1) "magnetometer", type MagnetometerData (TimedXyzData)
+
+[proximityadaptor]: Provides device proximity events
+ 1) "proximity", type TimedUnsigned
+
+[tapadaptor]: Provides device tap events
+ 1) "tap", type TapData
+
+[touchadaptor]: Provides touch screen events (not used in any sensor)
+ 1) "touch", type TouchData
+
+
+##
+## 5. Chains
+##
+
+[There is not much to say about Chains. It's a concept I'm trying to get rid of. They don't have that much specific functionality that they would deserve to be a different instance. But for now they are what they are.]
+
+Chains are nodes for shared processing. If two sensors wish to share a part of filtering pipeline, that pipeline is built as a chain. In short, chains read things from adaptors/other chains, process it with filters, and provide output buffers just like adaptors.
+
+You can introduce an output buffer with the following call:
+void AbstractChain::nameOutputBuffer("orientation", orientationOutput_);
+
+And yes, I totally agree. It's completely idiotic to have similar type of buffers handled via different methods. Will combine now that we have a common base.
+
+
+##
+## 6. Chains, buffers, and types
+##
+
+[accelerometerchain]: Provides coordinate corrected accelerometer data
+ 1) "accelerometer", type AccelerationData (TimedXyzData)
+
+[orientationchain]: Provides device orientation
+ 1) "topedge", type PoseData (ContextFW Screen.TopEdge)
+ 2) "face", type PoseData (ContextFW Screen.IsCovered)
+ 3) "orientation", type PoseData (sensord API orientation)
+
+[compasschain]: Provides calibrated magnetometer data and compass direction
+ 1) "truenorth", type CompassData
+ 2) "magneticnorth", type CompassData
+ 3) "calibratedmagnetometerdata", type CalibratedMagneticFieldData
+ (note: compass chain is not provided with rest of the code, but several of
+        current plugins depend on it)
+
+##
+## 7. Writing the plugin part
+##
+
+Compiling your new adaptor/chain/sensor/filter as a plugin requires one to have a class inheriting the Plugin class. The plugin must register any nodes it provides to the sensormanager (type and identifying name). In addition, the plugin can provide a list of other plugins that have to be loaded before this plugin can work nicely. Just copy the stuff from another plugin and modify the contents.
+
+For dependencies, the generic name for the plugin should be used. I.e. if your plugin needs an accelerometer, make it depend on accelerometeradaptor (or accelerometerchain), not the device specific plugin (e.g. accelerometeradaptor-n900). The correct plugin name to load is resolved via other means (a config file atm.).
+
+
+##
+## 8. Modifying the configuration file
+##
+
+There is a configuration file (conf/sensord.conf), which defines relations between requested plugin names and the ones  that really get loaded. The file contains sections for each device type. For a new device, add a new section, and provide plugin names for any plugins that have been altered.
+
+
+##
+## 9. Further information
+##
+
+As said in the beginning, it is not likely that the code would stay as it is now. In case things seem to have changed, please check the project wiki:
+
+  http://gitorious.org/sensorfw/pages/ (empty now, but I have high hopes)
+
+You can also contact the person responsible for the recent changes.
+
+
+Cheerios,
+
+  Timo Rongas <ext-timo.2.rongas@nokia.com>
