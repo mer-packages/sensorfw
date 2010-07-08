@@ -40,7 +40,7 @@ class CompassBin : public QObject, Bin
     Q_OBJECT
 
 public:
-    CompassBin(ContextProvider::Service& service);
+    CompassBin(ContextProvider::Service& service, bool pluginValid = true);
     ~CompassBin();
 
 private Q_SLOTS:

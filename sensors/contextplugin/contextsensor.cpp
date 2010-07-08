@@ -24,22 +24,35 @@
 
 #include "contextsensor.h"
 #include "serviceinfo.h"
+#include "sensord/sensormanager.h"
+#include "sensord/logging.h"
 
 #include <QDebug>
 
 ContextSensorChannel::ContextSensorChannel(const QString& id) :
     AbstractSensorChannel(id), service(QDBusConnection::systemBus()),
-    orientationBin(service), compassBin(service)
+    orientationBin(service), compassBin(NULL)
 {
-    qDebug() << "Creating ContextSensorChannel";
-    // HACK: Also, setting the interval doesn't belong here,
-    // but we couldn't find out how to do it with the control channel
-    //setInterval(1000);
+    // Attempt to load compasschain
+    if (SensorManager::instance().loadPlugin("compasschain"))
+    {
+        compassBin = new CompassBin(service);
+    } else {
+        sensordLogD() << "Loading of 'compasschain' failed, no Location.Heading available";
+
+        // Creating as dummy to provide the service with value 'unknown'
+        // rather than miss the service.
+        compassBin = new CompassBin(service, false);
+    }
 
     isValid_ = true;
 }
 
 ContextSensorChannel::~ContextSensorChannel()
 {
+    if (compassBin)
+    {
+        delete compassBin;
+    }
 }
 

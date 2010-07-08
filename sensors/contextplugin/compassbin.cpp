@@ -32,27 +32,28 @@
 // not written here.
 #define SESSION_ID 2
 
-CompassBin::CompassBin(ContextProvider::Service& s):
+CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     headingProperty(s, "Location.Heading"),
     compassChain(0),
     compassReader(10),
     headingFilter(&headingProperty)
 {
-    //qDebug() << "Creating the compass bin";
+    if (pluginValid)
+    {
+        compassChain = SensorManager::instance().requestChain("compasschain");
+        Q_ASSERT(compassChain);
 
-    compassChain = SensorManager::instance().requestChain("compasschain");
-    Q_ASSERT(compassChain);
+        add(&compassReader, "compass");
+        add(&headingFilter, "headingfilter");
 
-    add(&compassReader, "compass");
-    add(&headingFilter, "headingfilter");
+        // Create a branching filter chain
+        join("compass", "source", "headingfilter", "sink");
 
-    // Create a branching filter chain
-    join("compass", "source", "headingfilter", "sink");
-
-    RingBufferBase* rb;
-    rb = compassChain->findBuffer("truenorth");
-    Q_ASSERT(rb);
-    rb->join(&compassReader);
+        RingBufferBase* rb;
+        rb = compassChain->findBuffer("truenorth");
+        Q_ASSERT(rb);
+        rb->join(&compassReader);
+    }
 
     // Listening for context property subscriptions
     connect(&headingProperty, SIGNAL(firstSubscriberAppeared(QString)), this, SLOT(startRun()));
@@ -65,29 +66,24 @@ CompassBin::~CompassBin()
 
 void CompassBin::startRun()
 {
-    //qDebug() << "Staring the run on the compassbin";
     start();
     if (compassChain) {
         compassChain->start();
         compassChain->setProperty("compassEnabled", true);
+
+        // Set interval for compass, as sane operation requires 10HZ!
+        SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 100);
+        SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 100);
     }
-       
-    // TODO: Sanitize this!
-    // Set interval for compass, as sane operation requires 10HZ!
-    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 100);
-    SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 100);
 }
 
 void CompassBin::stopRun()
 {
-    //qDebug() << "Stopping the run on the compassbin";
-
-    // TODO: Sanitize this!
-    // Release interval requests...
-    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
-    SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 0);
-
     if (compassChain) {
+        // Release interval requests...
+        SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
+        SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 0);
+
         compassChain->stop();
         compassChain->setProperty("compassEnabled", false);
     }

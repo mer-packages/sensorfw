@@ -47,7 +47,7 @@ protected:
 private:
     ContextProvider::Service service;
     OrientationBin orientationBin;
-    CompassBin compassBin;
+    CompassBin* compassBin;
 };
 
 #endif

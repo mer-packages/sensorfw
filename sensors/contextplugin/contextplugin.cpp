@@ -36,7 +36,7 @@ void ContextPlugin::Register(class Loader&)
 }
 
 QStringList ContextPlugin::Dependencies() {
-    return QString("accelerometeradaptor:coordinatealignfilter:compasschain:orientationchain").split(":", QString::SkipEmptyParts);
+    return QString("accelerometeradaptor:coordinatealignfilter:orientationchain").split(":", QString::SkipEmptyParts);
 }
 
 Q_EXPORT_PLUGIN2(contextsensor, ContextPlugin)
