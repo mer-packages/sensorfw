@@ -1,6 +1,8 @@
 sensord (0.6.19) unstable; urgency=low
 
   * Sections for adaptor name resolving to configuration file
+  * ContextSensor to behave sanely in absence of CompassChain
+  * MetaData (range, description) fetched from the previous node in chain.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 06 Jul 2010 12:52:55 +0300
 
