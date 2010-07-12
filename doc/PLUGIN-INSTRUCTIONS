@@ -43,18 +43,22 @@ void addAdaptedSensor(const QString& name, const QString& description, RingBuffe
 
 where "name" is the id for the buffer. The name is used by the next node in the filtering chain to locate the buffer. Currently these names are hardcoded in the layers above, so if the created adaptor is a replacement for an existing one, the same buffer name(s) should be used. Adaptors and their buffer names and types are listed below.
 
-2) Implement startAdaptor() and stopAdaptor(). These are leftovers from something that is not very valid at the moment, but might come handy in the future. These are called on construction and destruction of the adaptor (by sensormanager). One could use these for example to do some preliminary setup for sensor connection. Current adaptors don't do much. Calling startAdaptor() should not make the sensor consume power (unless really
+2) Set adaptor description with setDescription() and list possible dataRanges for the adaptor with introduceAvailableDataRange(). DataRange options are defined as (min value, max value, accuracy).
+
+If the adaptor supports more than one data range, introduce all ranges and implement setDataRange() to allow the client to switch between ranges. The NodeBase class will take care of queuing the range requests (first come, first served).
+
+3) Implement startAdaptor() and stopAdaptor(). These are leftovers from something that is not very valid at the moment, but might come handy in the future. These are called on construction and destruction of the adaptor (by sensormanager). One could use these for example to do some preliminary setup for sensor connection. Current adaptors don't do much. Calling startAdaptor() should not make the sensor consume power (unless really
 necessary, think BT connection)
 
-3) Implement startSensor() and stopSensor(). These are the functions used to start the sensor dataflow into the named buffer. They should take care of reference counting for themselves, so that the adapted sensor (aka. the buffer) will run as long as there is someone expecting data. The AdaptedSensorEntry class provides help in reference counting. Whenever the sensor is stopped, it should not consume any power. (quite sensor specific what is released here and what is released with stopAdaptor()).
+4) Implement startSensor() and stopSensor(). These are the functions used to start the sensor dataflow into the named buffer. They should take care of reference counting for themselves, so that the adapted sensor (aka. the buffer) will run as long as there is someone expecting data. The AdaptedSensorEntry class provides help in reference counting. Whenever the sensor is stopped, it should not consume any power. (quite sensor specific what is released here and what is released with stopAdaptor()).
 
-4) Implement standby() and resume(). These are called when display blanks / unblanks. The expected functionality is to stop on standby, and start again on resume (goal is to save power). The difference to start and stop is that the release of hardware should be invisible to layers above. They can adjust properties and call start/stop, but these will only take effect after the adaptor has resumed.
+5) Implement standby() and resume(). These are called when display blanks / unblanks. The expected functionality is to stop on standby, and start again on resume (goal is to save power). The difference to start and stop is that the release of hardware should be invisible to layers above. They can adjust properties and call start/stop, but these will only take effect after the adaptor has resumed.
 
-5) In case the rate of the sensor can be adjusted, re-implement getPollingInterval() and setPollingInterval(). [need to revise the code here, may have too many hardcodings to original setup to make this work in a reasonable way]
+6) In case the rate of the sensor can be adjusted, re-implement getPollingInterval() and setPollingInterval(). [need to revise the code here, may have too many hardcodings to original setup to make this work in a reasonable way]
 
 
 ##
-## 3. Implementing a device adaptor using sysfs, the (bit more) reasonable way
+## 3. Implementing a device adaptor using sysfsAdaptor, the (bit more) reasonable way
 ##
 
 SysfsAdaptor is a generic class for adapting to sensors that provide a file (or file like) interface.
@@ -67,7 +71,7 @@ The reading mode has two options: IntervalMode and SelectMode. In IntervalMode, 
 
 In SelectMode, epoll_wait() is used to wait for an interrupt on the handle.
 
-3) Create buffer, introduce Buffer, introduce DataRange options
+3) Create buffer, introduce Buffer, set description, introduce DataRange options. See any other adaptor for reference and previous section for details.
 
 4) Implement processSample(int pathId, int fd) function. PathId is the index number of the path where an event has been detected (0 for first added, 1 for next,...). fd is the file descriptor where the data can be read.
 
