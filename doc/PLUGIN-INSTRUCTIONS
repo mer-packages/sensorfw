@@ -153,6 +153,8 @@ For dependencies, the generic name for the plugin should be used. I.e. if your p
 
 There is a configuration file (conf/sensord.conf), which defines relations between requested plugin names and the ones  that really get loaded. The file contains sections for each device type. For a new device, add a new section, and provide plugin names for any plugins that have been altered.
 
+Currently the automatic detection of the underlying device is not functional, thus the configuration file also has deviceId field for selecting the correct section. This hopefully gets automated later.
+
 
 ##
 ## 9. Further information
