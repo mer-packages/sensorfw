@@ -78,7 +78,7 @@ public Q_SLOTS: // METHODS
     int getIntervalCount();
     DataRange getAvailableInterval(int index);
 
-    void setStandbyOverride(int sessionId, bool value);
+    bool setStandbyOverride(int sessionId, bool value);
 
     int getDataRangeCount();
     DataRange getAvailableDataRange(int index);

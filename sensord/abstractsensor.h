@@ -141,11 +141,17 @@ public Q_SLOTS:
     /**
      * @brief Set standby mode override flag.
      *
-     * @todo Provide desc.
+     * The flag controls whether sensor should stay on even when display
+     * goes blank. This is not recommended due to power consumption issues.
+     *
+     * If a sensor does not support this (i.e. needs active calibration
+     * from another service which will sleep), the call will return false.
+     *
      * @param sessionId Session ID for the requester
      * @param value On for override, off for normal behavior.
+     * @return \c on succesfull set, \c false on error.
      */
-    virtual void setStandbyOverride(int sessionId, bool value);
+    virtual bool setStandbyOverride(int sessionId, bool value);
 
     /**
      * Returns list of possible intervals for the sensor. If \c min and

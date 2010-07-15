@@ -146,7 +146,7 @@ QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int 
     return callWithArgumentList(QDBus::Block, QLatin1String("setInterval"), argumentList);
 }
 
-QDBusReply<void> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
+QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
 {
     clearError();
     

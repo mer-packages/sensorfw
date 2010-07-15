@@ -95,10 +95,11 @@ public:
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride);
     inline bool standbyOverride() const 
     { return standbyOverride_; }
-    inline void setStandbyOverride(bool override)
+    inline bool setStandbyOverride(bool override)
     {
+        // TODO: Don't use local value, fetch the real one.
         standbyOverride_ = override;
-        setStandbyOverride(sessionId_, override);
+        return setStandbyOverride(sessionId_, override);
     }
 
     /*
@@ -139,7 +140,7 @@ public Q_SLOTS:
 
 protected Q_SLOTS:
     QDBusReply<void> setInterval(int sessionId, int value);
-    QDBusReply<void> setStandbyOverride(int sessionId, bool value);
+    QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
 
 private Q_SLOTS: // METHODS
     QDBusReply<void> start(int sessionId);

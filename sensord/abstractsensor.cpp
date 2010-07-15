@@ -145,11 +145,12 @@ void AbstractSensorChannel::setInterval(int sessionId, int value)
     signalPropertyChanged("interval");
 }
 
-void AbstractSensorChannel::setStandbyOverride(int sessionId, bool value)
+bool AbstractSensorChannel::setStandbyOverride(int sessionId, bool value)
 {
     foreach (QString adaptor, adaptorList_) {
         SensorManager::instance().propertyHandler().setRequest("standbyOverride", adaptor, sessionId, value);
     }
+    return true;
 }
 
 QList<DataRange> AbstractSensorChannel::getAvailableIntervals()
