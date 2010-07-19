@@ -78,6 +78,8 @@ OrientationChain::OrientationChain(const QString& id) :
     rb->join(accelerometerReader_);
 
     introduceAvailableDataRange(DataRange(0, 6, 1));
+
+    addStandbyOverrideSource(accelerometerChain_);
 }
 
 OrientationChain::~OrientationChain()

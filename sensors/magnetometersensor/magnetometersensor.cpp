@@ -81,6 +81,8 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     //dataRangeList_.append(DataRange(-2048, 2048, 1));
 
     intervalList_.append(DataRange(0, 100000, 0));
+
+    addStandbyOverrideSource(compassChain_);
 }
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()

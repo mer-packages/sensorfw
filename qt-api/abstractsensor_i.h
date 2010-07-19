@@ -84,7 +84,7 @@ public:
     inline int interval() const
     { return qvariant_cast< int >(internalPropGet("interval")); }
     inline void setInterval(int value)
-    { 
+    {
         interval_ = value;
         /// Only set when running
         if (running_) {
@@ -93,12 +93,12 @@ public:
     }
 
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride);
-    inline bool standbyOverride() const 
-    { return standbyOverride_; }
+    inline bool standbyOverride() const
+    {
+        return qvariant_cast< bool >(internalPropGet("standbyOverride"));;
+    }
     inline bool setStandbyOverride(bool override)
     {
-        // TODO: Don't use local value, fetch the real one.
-        standbyOverride_ = override;
         return setStandbyOverride(sessionId_, override);
     }
 
@@ -161,7 +161,6 @@ protected :
     int sessionId_;
     bool running_;
     int interval_;
-    bool standbyOverride_;
 
     SocketReader* socketReader_;
 

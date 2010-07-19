@@ -72,6 +72,8 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
 
     setRangeSource(proximityAdaptor_);
     intervalList_.append(DataRange(0, 0,0));
+
+    addStandbyOverrideSource(proximityAdaptor_);
 }
 
 ProximitySensorChannel::~ProximitySensorChannel()

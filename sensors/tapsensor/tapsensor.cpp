@@ -74,6 +74,9 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     // Enlist used adaptors
     // TODO: Should tap control anything? Probably not.
     adaptorList_ << "tapadaptor";
+
+    // Tap needs to work with display off
+    addStandbyOverrideSource(tapAdaptor_);
 }
 
 TapSensorChannel::~TapSensorChannel()

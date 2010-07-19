@@ -29,7 +29,7 @@
 
 AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &path, const char* interfaceName, int sessionId) :
         QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
-        sessionId_(sessionId), running_(false), interval_(0), standbyOverride_(false), socketReader_(NULL)
+        sessionId_(sessionId), running_(false), interval_(0), socketReader_(NULL)
 {
 #ifdef USE_SOCKET
     socketReader_ = new SocketReader(this);

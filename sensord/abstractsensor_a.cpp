@@ -92,10 +92,15 @@ void AbstractSensorChannelAdaptor::setInterval(int sessionId, int value)
     QMetaObject::invokeMethod(parent(), "setInterval", Q_ARG(int, sessionId), Q_ARG(int, value));
 }
 
+bool AbstractSensorChannelAdaptor::standbyOverride() const
+{
+    return qvariant_cast< bool >(parent()->property("standbyOverride"));
+}
+
 bool AbstractSensorChannelAdaptor::setStandbyOverride(int sessionId, bool value)
 {
     bool success;
-    QMetaObject::invokeMethod(parent(), "setStandbyOverride", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId), Q_ARG(bool, value));
+    QMetaObject::invokeMethod(parent(), "setStandbyOverrideRequest", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId), Q_ARG(bool, value));
     return success;
 }
 

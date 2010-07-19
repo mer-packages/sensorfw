@@ -57,6 +57,9 @@ public: // PROPERTIES
     Q_PROPERTY(int interval READ interval)
     int interval() const;
 
+    Q_PROPERTY(bool standbyOverride READ standbyOverride);
+    bool standbyOverride() const;
+
     // TODO: put state back
     /*
     Q_PROPERTY(SensorState state READ state)

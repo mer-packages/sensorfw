@@ -93,6 +93,7 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
 
     setRangeSource(alsAdaptor_);
     intervalList_.append(DataRange(0, 0, 0));
+    addStandbyOverrideSource(alsAdaptor_);
 
     isValid_ = true;
 }

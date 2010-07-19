@@ -151,7 +151,7 @@ public Q_SLOTS:
      * @param value On for override, off for normal behavior.
      * @return \c on succesfull set, \c false on error.
      */
-    virtual bool setStandbyOverride(int sessionId, bool value);
+    //~ virtual bool setStandbyOverride(int sessionId, bool value);
 
     /**
      * Returns list of possible intervals for the sensor. If \c min and

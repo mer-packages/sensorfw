@@ -81,6 +81,8 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     // Interval limited to 5hz - 1000hz (theoretical). Keeps calibration
     // sane.
     intervalList_.append(DataRange(1, 200, 0));
+
+    addStandbyOverrideSource(compassChain_);
 }
 
 CompassSensorChannel::~CompassSensorChannel()

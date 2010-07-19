@@ -91,7 +91,7 @@ class DeviceAdaptor : public NodeBase
     Q_PROPERTY(QString id READ id);
     Q_PROPERTY(unsigned interval READ interval WRITE setInterval);
     Q_PROPERTY(bool isValid READ isValid);
-    Q_PROPERTY(unsigned standbyOverride WRITE setStandbyOverride);
+    //~ Q_PROPERTY(unsigned standbyOverride WRITE setStandbyOverride);
 
 public:
     DeviceAdaptor(const QString id) : id_(id), isValid_(true), interval_(0), standbyOverride_(false) {}
@@ -105,9 +105,16 @@ public:
 
     virtual bool isValid() {return isValid_;}
 
-    void setStandbyOverride(unsigned override) {
-        standbyOverride_ = (override>0) ? true : false;
+    //~ void setStandbyOverride(unsigned override) {
+        //~ standbyOverride_ = (override>0) ? true : false;
+        //~ sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
+    //~ }
+
+    virtual bool setStandbyOverride(const bool override)
+    {
+        standbyOverride_ = override;
         sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
+        return standbyOverride_;
     }
 
     const QString& id() const { return id_; }

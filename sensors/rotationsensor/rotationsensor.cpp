@@ -99,6 +99,9 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     // TODO: Figure out correct datarange
     introduceAvailableDataRange(DataRange(-179, 180, 1));
     intervalList_.append(DataRange(1, 200,0));
+
+    addStandbyOverrideSource(accelerometerChain_);
+    addStandbyOverrideSource(compassChain_);
 }
 
 RotationSensorChannel::~RotationSensorChannel()

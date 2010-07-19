@@ -64,6 +64,16 @@ protected:
     ALSAdaptor(const QString& id);
     ~ALSAdaptor();
 
+    /**
+     * Reimplemented to prevent standbyOverride for this adaptor.
+     *
+     * Not provided for this adaptor due to requirement that an external
+     * entity controls the driver interface for thresholds.
+     *
+     * @param override Attempted override value.
+     * @return Always false.
+     */
+    virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
 private:
 
     /**

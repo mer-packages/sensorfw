@@ -80,6 +80,8 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
     // List possible intervals
     intervalList_.append(DataRange(0, 0, 0));
     intervalList_.append(DataRange(0, 2000, 0));
+
+    addStandbyOverrideSource(accelerometerChain_);
 }
 
 AccelerometerSensorChannel::~AccelerometerSensorChannel()

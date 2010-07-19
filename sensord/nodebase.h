@@ -41,6 +41,7 @@ class NodeBase : public QObject
 {
     Q_OBJECT;
     Q_PROPERTY(QString description READ description);
+    Q_PROPERTY(bool standbyOverride READ standbyOverride);
 
 protected:
     NodeBase(QObject* parent=0) : QObject(parent), m_dataRangeSource(NULL) {}
@@ -83,6 +84,9 @@ public Q_SLOTS:
      * @param range The requested data range
      */
     void requestDataRange(int sessionId, DataRange range);
+
+    bool standbyOverride() const;
+    bool setStandbyOverrideRequest(const int sessionId, const bool override);
 
 Q_SIGNALS:
     void propertyChanged(const QString& name);
@@ -141,6 +145,9 @@ protected:
      */
     virtual bool setDataRange(const DataRange range) { Q_UNUSED(range); return false; }
 
+    virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
+    void addStandbyOverrideSource(NodeBase* node);
+
 private:
 
     /**
@@ -155,6 +162,9 @@ private:
     QList<DataRange>        m_dataRangeList;
     QList<DataRangeRequest> m_dataRangeQueue;
     NodeBase*               m_dataRangeSource;
+
+    QList<NodeBase*>        m_standbySourceList;
+    QList<int>              m_standbyRequestList;
 };
 
 #endif

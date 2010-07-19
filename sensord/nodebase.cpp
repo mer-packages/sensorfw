@@ -197,3 +197,62 @@ bool NodeBase::hasLocalRange() const
     }
     return false;
 }
+
+void NodeBase::addStandbyOverrideSource(NodeBase* node)
+{
+    m_standbySourceList.append(node);
+}
+
+bool NodeBase::standbyOverride() const
+{
+    if (m_standbySourceList.size() == 0) {
+        return false;
+    }
+
+    bool returnValue = true;
+    foreach (NodeBase* node, m_standbySourceList)
+    {
+        returnValue = returnValue && node->standbyOverride();
+    }
+    return returnValue;
+}
+
+bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool override)
+{
+    // Only store true requests, id is enough, no need for value
+    if (override == false)
+    {
+        m_standbyRequestList.removeAll(sessionId);
+    } else {
+        if (!m_standbyRequestList.contains(sessionId))
+        {
+            m_standbyRequestList.append(sessionId);
+        }
+    }
+
+    bool newValue = m_standbyRequestList.size() > 0;
+    bool returnValue = true;
+
+    // Implemented locally?
+    if (m_standbySourceList.size() == 0)
+    {
+        return setStandbyOverride(newValue);
+    }
+
+    // Pass request to sources
+    foreach (NodeBase* node, m_standbySourceList)
+    {
+        returnValue = returnValue && node->setStandbyOverrideRequest(sessionId, newValue);
+    }
+
+    // Revert changes if any source failed.
+    if (newValue == true && returnValue == false)
+    {
+        foreach (NodeBase* node, m_standbySourceList)
+        {
+            node->setStandbyOverrideRequest(sessionId, false);
+        }
+    }
+
+    return returnValue;
+}
