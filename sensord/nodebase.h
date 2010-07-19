@@ -86,7 +86,34 @@ public Q_SLOTS:
      */
     void requestDataRange(int sessionId, DataRange range);
 
+    /**
+     * Tells whether the node is in standbyOverride mode. If \c true, the
+     * dataflow from the sensor will continue even if the device display
+     * goes blank. Any client making the request for a sensor will make
+     * all clients of the sensor experience the same behavior.
+     *
+     * <br/><br/><b>!! NOTE !! </b>: Due to the fact that any other
+     * client may request this property for another sensor, whose processing
+     * chain is partly shared with the sensor this client is using, it is
+     * possible to receive samples only from some sources (i.e. this sensor
+     * has the property off, the one one has it on --> we get samples
+     * from the shared parts). This may lead to some unexpected behavior.
+     *
+     * Return value is based on whether all source nodes are or local
+     * implementation is true.
+     * @return \c true if standyOverride is on, \c false otherwise.
+     */
     bool standbyOverride() const;
+
+    /**
+     * Sets a request for standbyOverride property.
+     *
+     * @param sessionId ID of the session making the request. Used for
+     *                  maintenance. Always supply valid ID.
+     * @param override Whether to request (\c true) or reset (\c false).
+     * @return \c true if local implementation or all sources return true.
+     *         \c false otherwise.
+     */
     bool setStandbyOverrideRequest(const int sessionId, const bool override);
 
 Q_SIGNALS:
@@ -146,7 +173,28 @@ protected:
      */
     virtual bool setDataRange(const DataRange range) { Q_UNUSED(range); return false; }
 
+    /**
+     * Sets the standbyOverride value for the node. This is the base
+     * implementation, which should be reimplemented for any node that
+     * wishes to provide real functionality.
+     *
+     * @param override \c true to set standbyOverride on, \c false to
+     *        remove the request.
+     * @return Whether request was successfull. For this implementation,
+     *         always \c false.
+     */
     virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
+
+    /**
+     * Adds a new node to the list of nodes that standbyOverride calls
+     * are forwarded to. Each node in the list gets the requests sent
+     * to this node.
+     *
+     * Should be called by nodes that need information on standbyOverride
+     * from nodes in the previous layer (i.e. everything but adaptors).
+     *
+     * @param node Node to append to the list.
+     */
     void addStandbyOverrideSource(NodeBase* node);
 
 private:
