@@ -91,7 +91,7 @@ bool SocketHandler::write(int id, const void* source, int size)
 bool SocketHandler::removeSession(int sessionId)
 {
     if (!(m_idMap.keys().contains(sessionId))) {
-        sensordLogW() << "[SocketHandler]: Trying to remove nonexistent session.";
+        sensordLogD() << "[SocketHandler]: Trying to remove nonexistent session.";
     }
     
     QLocalSocket* socket = m_idMap.value(sessionId);
