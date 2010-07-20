@@ -53,6 +53,7 @@ bool SocketReader::initiateConnection(int sessionId)
     if (socket_->write((const char*)&sessionId, sizeof(sessionId)) != sizeof(sessionId)) {
         qDebug() << "[SOCKETREADER]: SessionId write failed:" << socket_->errorString();
     }
+    socket_->flush();
 
     return true;
 }
