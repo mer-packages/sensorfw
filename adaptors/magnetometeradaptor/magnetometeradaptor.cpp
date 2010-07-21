@@ -39,15 +39,7 @@ struct ak8974_data {
         __s32 y; /* 0.3T */
         __s32 z; /* 0.3T */
         __u16 valid;
-} __attribute__((packed));
-
-/* Device name: /dev/ak8975n, where n is a running number (0 in case on single chip configuration) */
-struct ak8975_data {
-        __s32 x; /* 0.3T */
-        __s32 y; /* 0.3T */
-        __s32 z; /* 0.3T */
-        __u16 valid;
-} __attribute__((packed));
+}; //__attribute__((packed)); <-- documentation states that this is a nogo for c++
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
@@ -96,14 +88,16 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
     unsigned int bytesRead = read(fd, &mag_data, sizeof(mag_data));
 
     if (bytesRead < sizeof(mag_data)) {
-        sensordLogW() << "read():" << strerror(errno);
-        return;
+        sensordLogW() << "read" << bytesRead  << "bytes out of expected" << sizeof(mag_data) << "bytes. Previous error:" << strerror(errno);
+        //return;
     }
 
     if (!mag_data.valid) {
         // Can't trust this, printed for curiosity
         sensordLogD() << "Invalid sample received from magnetometer";
     }
+
+    sensordLogT() << "Magnetometer Reading:" << mag_data.x << mag_data.y << mag_data.z;
 
     TimedXyzData* sample = magnetometerBuffer_->nextSlot();
 
