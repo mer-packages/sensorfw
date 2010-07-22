@@ -67,9 +67,10 @@ SampleAdaptor::~SampleAdaptor()
 
 void SampleAdaptor::processSample(int pathId, int fd)
 {
-    // PathID (index of the path, depends on adding order). If only a
-    // a single file is monitored, can be ignored. If several files are
-    // monitored, can be used to detect which one should be read.
+    // PathID (provided with addPath(), or 0 if not given for a path set
+    // with constructor. If only a single file is monitored, can be
+    // ignored. If several files are monitored, can be used to detect
+    // which one should be read.
     Q_UNUSED(pathId);
 
     // Do whatever is needed to get values from the provided file

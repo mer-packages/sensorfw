@@ -61,7 +61,7 @@ necessary, think BT connection)
 ## 3. Implementing a device adaptor using sysfsAdaptor, the (bit more) reasonable way
 ##
 
-SysfsAdaptor is a generic class for adapting to sensors that provide a file (or file like) interface.
+SysfsAdaptor is a generic class for adapting to sensors that provide a file (or file like) interface. You can see an example implementation (doing nothing) in examples/adaptorplugin. It could be used as a starting point.
 
 1) Create a class that extends SysfsAdaptor. I'd say the easiest way is to pick one of the existing ones and just modify it. If this does not sound good for you, take a look at the previous section.
 
@@ -73,7 +73,7 @@ In SelectMode, epoll_wait() is used to wait for an interrupt on the handle.
 
 3) Create buffer, introduce Buffer, set description, introduce DataRange options. See any other adaptor for reference and previous section for details.
 
-4) Implement processSample(int pathId, int fd) function. PathId is the index number of the path where an event has been detected (0 for first added, 1 for next,...). fd is the file descriptor where the data can be read.
+4) Implement processSample(int pathId, int fd) function. PathId is the id number of the path provided with the addPath() call (or 0 if omitted from a path provided via constructor). fd is the file descriptor where the data can be read.
 
 This function should read the available data from the driver, and propagate it to the output buffer.
 
