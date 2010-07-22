@@ -30,6 +30,7 @@ internal {
           filters/coordinatealignfilter \
           filters/declinationfilter \
           filters/rotationfilter \
+          filters/magnetometerscalefilter \
           chains \
           tests
 }
