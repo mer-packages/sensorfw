@@ -1,0 +1,18 @@
+##
+## EXAMPLES
+##
+## Thu Jul 22 08:28:11 EEST 2010
+##
+## Timo Rongas <ext-timo.2.rongas@nokia.com>
+##
+
+This folder contains examples for extending sensord.
+
+Current examples:
+
+adaptorplugin: Instructions for writing a new adaptor plugin based on
+               SysfsAdaptor.
+
+Examples on how to use the sensor framework from client applications
+might be here someday as well. For now, the fastest way to get started
+is to have a look in the tests folder, specifically tests/client.
