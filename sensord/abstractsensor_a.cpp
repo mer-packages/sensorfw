@@ -126,9 +126,9 @@ DataRange AbstractSensorChannelAdaptor::getAvailableDataRange(int index)
 
 DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
 {
-    DataRange range;
-    QMetaObject::invokeMethod(parent(), "getCurrentDataRange", Q_RETURN_ARG(DataRange, range));
-    return range;
+    DataRangeRequest rangeRequest;
+    QMetaObject::invokeMethod(parent(), "getCurrentDataRange", Q_RETURN_ARG(DataRangeRequest, rangeRequest));
+    return rangeRequest.range_;
 }
 
 void AbstractSensorChannelAdaptor::requestDataRange(int sessionId, DataRange range)

@@ -70,9 +70,10 @@ public Q_SLOTS:
 
     /**
      * Get the currently active DataRange for this node.
-     * @return DataRange currently in use.
+     * @return DataRangeRequest currently in use. If no requests are set
+     *         id will be set to -1.
      */
-    DataRange getCurrentDataRange() const;
+    DataRangeRequest getCurrentDataRange() const;
 
     /**
      * Places a request for the given data range into queue. The range
@@ -170,8 +171,12 @@ protected:
      * @param range The range to set
      * @return \c true on succesfull set, \c false otherwise. The base
      *         class implementation always returns false.
+     *
+     * @todo There's a serious design flaw here. If a node is to reimplement
+     *       this, and forward requests to selected sources, the function
+     *       is not aware of the client id whose request is handled.
      */
-    virtual bool setDataRange(const DataRange range) { Q_UNUSED(range); return false; }
+    virtual bool setDataRange(const DataRange range, const int sessionId) { Q_UNUSED(range); Q_UNUSED(sessionId); return false; }
 
     /**
      * Sets the standbyOverride value for the node. This is the base

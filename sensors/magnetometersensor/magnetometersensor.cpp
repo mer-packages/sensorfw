@@ -29,11 +29,13 @@
 #include "sensord/sensormanager.h"
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
+#include "sensord/config.h"
 
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<CalibratedMagneticFieldData>(10),
-        prevMeasurement_()
+        prevMeasurement_(),
+        prevRangeRequestId_(-1)
 {
     isValid_ = true;
 
@@ -47,6 +49,17 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(1024);
 
+    scaleFilter_ = NULL;
+    scaleCoefficient_ = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();
+
+    if (scaleCoefficient_ != 1)
+    {
+        if (sm.loadPlugin("magnetometerscalefilter"))
+        {
+            scaleFilter_ = sm.instantiateFilter("magnetometerscalefilter");
+        }
+    }
+
     outputBuffer_ = new RingBuffer<CalibratedMagneticFieldData>(1024);
 
     // Create buffers for filter chain
@@ -55,7 +68,15 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     filterBin_->add(magnetometerReader_, "magnetometer");
     filterBin_->add(outputBuffer_, "buffer");
 
-    filterBin_->join("magnetometer", "source", "buffer", "sink");
+    if (scaleFilter_)
+    {
+        filterBin_->add(scaleFilter_, "filter");
+        filterBin_->join("magnetometer", "source", "filter", "sink");
+        filterBin_->join("filter", "source", "buffer", "sink");
+    } else
+    {
+        filterBin_->join("magnetometer", "source", "buffer", "sink");
+    }
 
     // Join datasources to the chain
     RingBufferBase* rb;
@@ -68,20 +89,26 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    setDescription("magnetic flux density in 0.3T");
+    setDescription("magnetic flux density in mT");
 
     // Enlist used adaptors
     adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
 
-    // List possible data ranges
-    setRangeSource(compassChain_);
-
-    // Real values for AK8974 - need to propagate from adaptor to
-    // distinguish which should be used.
-    //dataRangeList_.append(DataRange(-2048, 2048, 1));
+    // AK897X requires scaling, which affects available ranges
+    if (scaleFilter_)
+    {
+        // Get available ranges and introduce modified ones
+        QList<DataRange> rangeList = compassChain_->getAvailableDataRanges();
+        foreach(DataRange range, rangeList)
+        {
+            introduceAvailableDataRange(DataRange(scaleCoefficient_*range.min, scaleCoefficient_*range.max, scaleCoefficient_*range.resolution));
+        }
+    } else {
+        // Use the ranges directly from source
+        setRangeSource(compassChain_);
+    }
 
     intervalList_.append(DataRange(0, 100000, 0));
-
     addStandbyOverrideSource(compassChain_);
 }
 
@@ -94,7 +121,9 @@ MagnetometerSensorChannel::~MagnetometerSensorChannel()
     Q_ASSERT(rb);
     rb->unjoin(magnetometerReader_);
     sm.releaseChain("compasschain");
- 
+
+    if (scaleFilter_) delete scaleFilter_;
+
     delete magnetometerReader_;
     delete outputBuffer_;
     delete marshallingBin_;
@@ -146,4 +175,22 @@ void MagnetometerSensorChannel::reset_(int dummy)
 
     QObject *cc = dynamic_cast<QObject*>(compassChain_);
     compassChain_->setProperty("resetCalibration",0);
+}
+
+bool MagnetometerSensorChannel::setDataRange(const DataRange range, const int sessionId)
+{
+    if (sessionId < 0)
+    {
+        compassChain_->removeDataRangeRequest(prevRangeRequestId_);
+        prevRangeRequestId_ = -1;
+    } else {
+        DataRange request;
+        request.min = range.min*scaleCoefficient_;
+        request.max = range.max*scaleCoefficient_;
+        request.resolution = range.resolution*scaleCoefficient_;
+
+        compassChain_->requestDataRange(sessionId, request);
+        prevRangeRequestId_ = sessionId;
+    }
+    return true;
 }

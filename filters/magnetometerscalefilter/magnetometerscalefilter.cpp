@@ -24,6 +24,7 @@
  */
 
 #include "magnetometerscalefilter.h"
+#include "sensord/config.h"
 
 MagnetometerScaleFilter::MagnetometerScaleFilter() :
         Filter<CalibratedMagneticFieldData, MagnetometerScaleFilter, CalibratedMagneticFieldData>(this, &MagnetometerScaleFilter::filter)
@@ -32,7 +33,7 @@ MagnetometerScaleFilter::MagnetometerScaleFilter() :
 
 void MagnetometerScaleFilter::filter(unsigned, const CalibratedMagneticFieldData* data)
 {
-    int factor = 300;
+    int factor = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();;
     CalibratedMagneticFieldData transformed;
 
     transformed.timestamp_ = data->timestamp_;

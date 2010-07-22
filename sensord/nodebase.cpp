@@ -73,21 +73,24 @@ QList<DataRange> NodeBase::getAvailableDataRanges() const
     return QList<DataRange>();
 }
 
-DataRange NodeBase::getCurrentDataRange() const
+DataRangeRequest NodeBase::getCurrentDataRange() const
 {
     if (hasLocalRange())
     {
         if (m_dataRangeQueue.empty()) {
-            return m_dataRangeList.at(0);
+            DataRangeRequest rangeRequest;
+            rangeRequest.id_ = -1;
+            rangeRequest.range_ = m_dataRangeList.at(0);
+            return rangeRequest;
         }
 
-        return m_dataRangeQueue.at(0).range_;
+        return m_dataRangeQueue.at(0);
     } else if (m_dataRangeSource != NULL)
     {
         return m_dataRangeSource->getCurrentDataRange();
     }
     // TODO: Set error
-    return DataRange();
+    return DataRangeRequest();
 }
 
 void NodeBase::requestDataRange(int sessionId, DataRange range)
@@ -131,7 +134,8 @@ void NodeBase::requestDataRange(int sessionId, DataRange range)
 
         if (rangeChanged)
         {
-            if (!setDataRange(getCurrentDataRange()))
+            DataRangeRequest currentRequest = getCurrentDataRange();
+            if (!setDataRange(currentRequest.range_, currentRequest.id_))
             {
                 sensordLogW() << "Failed to set DataRange.";
             }
@@ -172,9 +176,10 @@ void NodeBase::removeDataRangeRequest(int sessionId)
             }
         }
 
-        if (rangeChanged) {
-
-            if (!setDataRange(getCurrentDataRange()))
+        if (rangeChanged)
+        {
+            DataRangeRequest currentRequest = getCurrentDataRange();
+            if (!setDataRange(currentRequest.range_, currentRequest.id_))
             {
                 sensordLogW() << "Failed to set DataRange.";
             }
@@ -193,7 +198,7 @@ void NodeBase::setRangeSource(NodeBase* node)
 
 bool NodeBase::hasLocalRange() const
 {
-    if (m_dataRangeList.size() > 0)
+    if (m_dataRangeSource == NULL)
     {
         return true;
     }

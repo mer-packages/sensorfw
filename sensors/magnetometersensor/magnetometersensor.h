@@ -82,14 +82,20 @@ signals:
 protected:
     MagnetometerSensorChannel(const QString& id);
     ~MagnetometerSensorChannel();
-    
+
+    virtual bool setDataRange(const DataRange range, const int sessionId);
+
+
 private:
     Bin*                                       filterBin_;
     Bin*                                       marshallingBin_;
     AbstractChain*                             compassChain_;
+    FilterBase*                                scaleFilter_;
     BufferReader<CalibratedMagneticFieldData>* magnetometerReader_;
     RingBuffer<CalibratedMagneticFieldData>*   outputBuffer_;
     CalibratedMagneticFieldData                prevMeasurement_;
+    int                                        prevRangeRequestId_;
+    int                                        scaleCoefficient_;
 
     void emitToDbus(const CalibratedMagneticFieldData& value);
     void reset_(int dummy);
