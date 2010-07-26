@@ -26,15 +26,18 @@
 
 #include "accelerometerchain.h"
 #include <QVariant>
+#include <QStringList>
 #include "sensord/sensormanager.h"
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
+#include "sensord/config.h"
+#include "sensord/logging.h"
 
 #include "filters/coordinatealignfilter/coordinatealignfilter.h"
 
-double AccelerometerChain::aconv_[3][3] = { {-1.0, 0.0, 0.0}, 
-                                            { 0.0,-1.0, 0.0},
-                                            { 0.0, 0.0,-1.0} };
+double AccelerometerChain::aconv_[3][3] = { { 1.0, 0.0, 0.0 },
+                                            { 0.0, 1.0, 0.0 },
+                                            { 0.0, 0.0, 1.0 } };
 
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
@@ -50,6 +53,18 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     }
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1024);
+
+    // Get the transformation matrix from config file
+    QString aconvString = Config::configuration()->value("acc_trans_matrix", "").toString();
+    if (aconvString.size() > 0)
+    {
+        if (!setMatrixFromString(aconvString))
+        {
+            sensordLogW() << "Failed to parse 'acc_trans_matrix' configuration key. Coordinate alignment may be invalid";
+        }
+    } else {
+        sensordLogT() << "Key 'acc_trans_matrix' not found from configuration.";
+    }
 
     accCoordinateAlignFilter_ = sm.instantiateFilter("coordinatealignfilter");
     Q_ASSERT(accCoordinateAlignFilter_);
@@ -115,5 +130,21 @@ bool AccelerometerChain::stop()
         accelerometerAdaptor_->stopSensor("accelerometer");
         filterBin_->stop();
     }
+    return true;
+}
+
+bool AccelerometerChain::setMatrixFromString(const QString str)
+{
+    QStringList strList = str.split(',');
+    if (strList.size() != 9) {
+        sensordLogW() << "Invalid cell count from matrix. Expected 9, got" << strList.size();
+        return false;
+    }
+
+    for (int i = 0; i < 9; i++)
+    {
+        aconv_[i/3][i%3] = strList.at(i).toInt();
+    }
+
     return true;
 }

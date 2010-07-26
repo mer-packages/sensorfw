@@ -68,6 +68,9 @@ protected:
     ~AccelerometerChain();
 
 private:
+
+    bool setMatrixFromString(const QString str);
+
     static double                    aconv_[3][3];
     Bin*                             filterBin_;
 
