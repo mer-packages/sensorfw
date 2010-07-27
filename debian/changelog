@@ -5,6 +5,8 @@ sensord (0.6.19) unstable; urgency=low
   * MetaData (range, description) fetched from the previous node in chain.
   * standyOverride -requests propagated via the filterchain.
   * Fixes: NB#175217 -  Sensord adaptors must be able to reject displayBlankOverride -requests
+  * Magnetometer output scaled by coefficient from configuration file
+  * Accelerometer coordinate tranformation matrix in configuration file
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 06 Jul 2010 12:52:55 +0300
 
