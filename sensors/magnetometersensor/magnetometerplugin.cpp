@@ -25,15 +25,15 @@
 
 #include "magnetometerplugin.h"
 #include "magnetometersensor.h"
+#include "magnetometerscalefilter.h"
 #include "sensormanager.h"
 #include "sensord/logging.h"
-#include <QtDebug>
 
 void MagnetometerPlugin::Register(class Loader&)
 {
-    sensordLogD() << "registering magnetometersensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<MagnetometerSensorChannel>("magnetometersensor");
+    sm.registerFilter<MagnetometerScaleFilter>("magnetometerscalefilter");
 }
 
 QStringList MagnetometerPlugin::Dependencies() {

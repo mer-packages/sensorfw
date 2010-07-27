@@ -54,9 +54,10 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     if (scaleCoefficient_ != 1)
     {
-        if (sm.loadPlugin("magnetometerscalefilter"))
+        scaleFilter_ = sm.instantiateFilter("magnetometerscalefilter");
+        if (scaleFilter_ == NULL)
         {
-            scaleFilter_ = sm.instantiateFilter("magnetometerscalefilter");
+            sensordLogW() << "Failed to initialise scaling filter for magnetometer.";
         }
     }
 
