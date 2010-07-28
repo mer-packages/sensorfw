@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Lihan Guo <ext-lihan.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,6 +29,7 @@
 #include <sensord/logging.h>
 #include <QSettings>
 #include <QVariant>
+#include <QFile>
 
 static Config *static_configuration = 0;
 
@@ -40,6 +42,11 @@ Config::~Config() {
 
 Config *Config::loadConfig(const QString &configFileName) {
     Config *config = 0;
+    QFile file(configFileName);
+    if (file.open(QIODevice::ReadOnly))
+      file.close();
+    else
+        return config;
     if (static_configuration) {
         config = static_configuration;
     } else {

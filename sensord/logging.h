@@ -59,10 +59,16 @@ private:
     bool printLog;
     static void signalHandler(int param);
     static void signalFlush(int param);
-
     const char* moduleName;
     SensordLogLevel currentLevel;
     QString data;
+
+public:
+
+    void setOutputLevel(SensordLogLevel level);
+    SensordLogLevel getOutputLevel();
+
+
 };
 
 #define sensordLogT() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
