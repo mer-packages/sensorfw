@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Lihan Guo <ext-lihan.guo@nokia.com>
 
    This file is part of Sensord.
 

@@ -49,7 +49,8 @@ SOURCES += main.cpp \
     config.cpp \
     propertyhandler.cpp \
     calibrationhandler.cpp \
-    nodebase.cpp
+    nodebase.cpp \
+    parser.cpp
 
 HEADERS += sensormanager.h \
     sensormanager_a.h \
@@ -80,7 +81,8 @@ HEADERS += sensormanager.h \
     config.h \
     propertyhandler.h \
     calibrationhandler.h \
-    nodebase.h
+    nodebase.h \
+    parser.h
 
 !mce_disable {
     SOURCES += mcewatcher.cpp
