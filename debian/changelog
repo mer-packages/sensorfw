@@ -1,3 +1,9 @@
+sensord (0.6.20) unstable; urgency=low
+
+  *
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 28 Jul 2010 14:57:31 +0300
+
 sensord (0.6.19) unstable; urgency=low
 
   * Sections for adaptor name resolving to configuration file
