@@ -9,5 +9,6 @@ internal {
               magnetometeradaptor \
               touchadaptor \
               kbslideradaptor \
-              proximityadaptor
+              proximityadaptor \
+              mrstaccelerometer
 }
