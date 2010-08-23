@@ -48,36 +48,52 @@ case "$1" in
   done
 
   mv /etc/sensord.conf $DIVERTPATH/ || { echo Failed to move sensord.conf ; exit 1; }
-  cat >/etc/sensord.conf <<HEREDOCUMENTLIMITER
-device_sys_path = /dev/input/event%1
+  echo "device_sys_path = /dev/input/event%1
 device_poll_file_path = /sys/class/input/input%1/poll
 
 # Proximity adaptor
 proximity_dev_path = /dev/bh1770glc_ps
 
-# Tap adaptor
-tap_event_path = /dev/input/event4
+# ALS adaptor
+#als_dev_path = $DIVERTPATH/als
 
-HEREDOCUMENTLIMITER
+dev_accelerometer = $DIVERTPATH/accelerometer
+dev_poll_accelerometer = $DIVERTPATH/accelerometer_poll_rate
 
-  echo "als_dev_path = $DIVERTPATH/als" >>/etc/sensord.conf
-  echo "dev_accelerometer = $DIVERTPATH/accelerometer" >>/etc/sensord.conf
-  echo "dev_poll_accelerometer = $DIVERTPATH/accelerometer_poll_rate" >> /etc/sensord.conf
-  echo "dev_magnetometer = $DIVERTPATH/magnetometer" >>/etc/sensord.conf
-  echo "dev_poll_magnetometer = $DIVERTPATH/magnetometer_poll_rate" >> /etc/sensord.conf
+dev_magnetometer = $DIVERTPATH/magnetometer
+dev_poll_magnetometer = $DIVERTPATH/magnetometer_poll_rate
+
+acc_trans_matrix = \"-1,0,0,0,-1,0,0,0,-1\"
+
+magnetometer_scale_coefficient = 300
+
+deviceId = default
+
+[default]
+accelerometeradaptor = accelerometeradaptor
+
+[n900]
+accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
 
   initctl stop sensord
   killall sensord
   #initctl start sensord
   /usr/sbin/sensord &
-  sleep 0.1
-  for i in 1 2 3; do
-    echo "" >$DIVERTPATH/accelerometer & { sleep 0.1; eval 'kill $!' &> /dev/null; }
-    echo "" >$DIVERTPATH/magnetometer & { sleep 0.1; eval 'kill $!' &> /dev/null; }
+  sleep 0.5
+  for i in 1 2; do
+    echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
+    echo "" >$DIVERTPATH/magnetometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
   done
 
-  echo -n "Sensord started... "
-  qdbus --system | grep -i sensor
+  sleep 0.5
+  result=`qdbus --system | grep -i sensor`
+  if [ x"$result" == x ]; then
+    echo "Sensord did not start: failed to register the D-Bus interface"
+    exit 1
+  else
+    echo "$result"
+    echo "Sensord started..."
+  fi
   ;;
 
   "stop")
@@ -98,6 +114,9 @@ HEREDOCUMENTLIMITER
     rm $DIVERTPATH/$i
   done
   rm $DIVERTPATH/als
+  for i in $POLLDIVERTS; do
+    rm ${DIVERTPATH}/${i}_poll_rate
+  done
   initctl start sensord
   exit $status
   ;;
