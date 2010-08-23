@@ -23,7 +23,7 @@ import re, string, sys, os, time, signal, unittest
 
 appName = 'sensord-deadclient'
 timeToSleep = 10
-signalForKilling = signal.SIGSEGV
+signalForKilling = signal.SIGKILL
 logFile = '/var/log/syslog'
 
 def timeoutHandler(signum, frame):
