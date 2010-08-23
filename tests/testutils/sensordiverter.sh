@@ -24,8 +24,8 @@
 ### configuration
 
 DIVERTPATH=/tmp/fakedsensors
-FIFODIVERTS="accelerometer magnetometer"
-POLLDIVERTS="accelerometer magnetometer"
+FIFODIVERTS="accelerometer"
+POLLDIVERTS="accelerometer"
 
 ### main code
 
@@ -57,11 +57,12 @@ proximity_dev_path = /dev/bh1770glc_ps
 # ALS adaptor
 #als_dev_path = $DIVERTPATH/als
 
+# Magnetometer drivers
+mag_ak8974_dev_path = /dev/ak89740
+mag_ak8975_dev_path = /dev/ak89750
+
 dev_accelerometer = $DIVERTPATH/accelerometer
 dev_poll_accelerometer = $DIVERTPATH/accelerometer_poll_rate
-
-dev_magnetometer = $DIVERTPATH/magnetometer
-dev_poll_magnetometer = $DIVERTPATH/magnetometer_poll_rate
 
 acc_trans_matrix = \"-1,0,0,0,-1,0,0,0,-1\"
 
