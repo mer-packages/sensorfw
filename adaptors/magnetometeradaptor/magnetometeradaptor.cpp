@@ -35,9 +35,9 @@
 
 /* Device name: /dev/ak8974n, where n is a running number (0 in case on single chip configuration) */
 struct ak8974_data {
-        __s32 x; /* 0.3T */
-        __s32 y; /* 0.3T */
-        __s32 z; /* 0.3T */
+        __s16 x; /* 0.3uT */
+        __s16 y; /* 0.3uT */
+        __s16 z; /* 0.3uT */
         __u16 valid;
 }; //__attribute__((packed)); <-- documentation states that this is a nogo for c++
 
