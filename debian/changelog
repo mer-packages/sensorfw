@@ -2,6 +2,7 @@ sensord (0.6.20) unstable; urgency=low
 
   * Implements: SWP#MaSSW-1892
   * Fixed deadclient test
+  * Fixes: NB#179034 -  small improvements that are nice to have for sensord
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 28 Jul 2010 14:57:31 +0300
 
