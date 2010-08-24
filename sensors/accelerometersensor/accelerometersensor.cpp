@@ -68,7 +68,7 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    setDescription("x, y, and z axes accelerations in m/s^2");
+    setDescription("x, y, and z axes accelerations in mG");
 
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor";
