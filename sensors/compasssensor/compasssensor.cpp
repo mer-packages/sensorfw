@@ -47,9 +47,9 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
         isValid_ = false;
     }
 
-    inputReader_ = new BufferReader<CompassData>(10);
+    inputReader_ = new BufferReader<CompassData>(128);
 
-    outputBuffer_ = new RingBuffer<CompassData>(1024);
+    outputBuffer_ = new RingBuffer<CompassData>(128);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;

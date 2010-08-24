@@ -45,9 +45,9 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
         isValid_ = true;
     }
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(1024);
+    accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
-    outputBuffer_ = new RingBuffer<AccelerationData>(1024);
+    outputBuffer_ = new RingBuffer<AccelerationData>(128);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;

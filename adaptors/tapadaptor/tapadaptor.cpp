@@ -49,7 +49,7 @@ TapAdaptor::TapAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(1024);
+    tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(128);
     addAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
 
     introduceAvailableDataRange(DataRange(0, 2, 1));

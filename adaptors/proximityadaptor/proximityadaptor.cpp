@@ -44,7 +44,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("proximity_dev_path").toString()),
     m_threshold(35)
 {
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     m_threshold = readThreshold();

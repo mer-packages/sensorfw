@@ -48,7 +48,7 @@ TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOU
     if (!getInputDevices("touchscreen")) {
         sensordLogW() << "Input device not found.";
     }
-    outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(1024);
+    outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(128);
     addAdaptedSensor("touch", "Touch screen input", outputBuffer_);
 }
 

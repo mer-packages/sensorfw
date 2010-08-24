@@ -46,7 +46,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
         isValid_ = true;
     }
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(1024);
+    accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
     compassChain_ = sm.requestChain("compasschain");
     if (compassChain_ && compassChain_->isValid()) {
@@ -54,13 +54,13 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     } else {
         sensordLogW() << "Unable to use compass for z-axis rotation.";
     }
-    compassReader_ = new BufferReader<CompassData>(1024);
+    compassReader_ = new BufferReader<CompassData>(128);
 
 
     rotationFilter_ = sm.instantiateFilter("rotationfilter");
     Q_ASSERT(rotationFilter_);
 
-    outputBuffer_ = new RingBuffer<TimedXyzData>(1024);
+    outputBuffer_ = new RingBuffer<TimedXyzData>(128);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;

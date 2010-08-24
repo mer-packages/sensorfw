@@ -40,7 +40,7 @@ struct bh1770glc_als {
 ALSAdaptor::ALSAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("als_dev_path").toString())
 {
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(32);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 
     introduceAvailableDataRange(DataRange(0, 65535, 1));

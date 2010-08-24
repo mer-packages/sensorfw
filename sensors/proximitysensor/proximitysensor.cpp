@@ -40,9 +40,9 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
     proximityAdaptor_ = sm.requestDeviceAdaptor("proximityadaptor");
     Q_ASSERT( proximityAdaptor_ );
 
-    proximityReader_ = new BufferReader<TimedUnsigned>(10);
+    proximityReader_ = new BufferReader<TimedUnsigned>(16);
 
-    outputBuffer_ = new RingBuffer<TimedUnsigned>(1024);
+    outputBuffer_ = new RingBuffer<TimedUnsigned>(16);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;

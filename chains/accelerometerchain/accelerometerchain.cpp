@@ -52,7 +52,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
         isValid_ = true;
     }
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(1024);
+    accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
     // Get the transformation matrix from config file
     QString aconvString = Config::configuration()->value("acc_trans_matrix", "").toString();
@@ -71,7 +71,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     qRegisterMetaType<TMatrix>("TMatrix");
     ((CoordinateAlignFilter*)accCoordinateAlignFilter_)->setProperty("transMatrix", QVariant::fromValue(TMatrix(aconv_)));
 
-    outputBuffer_ = new RingBuffer<AccelerationData>(1024);
+    outputBuffer_ = new RingBuffer<AccelerationData>(128);
     nameOutputBuffer("accelerometer", outputBuffer_);
 
     // Create buffers for filter chain

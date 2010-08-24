@@ -49,9 +49,9 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
     alsAdaptor_ = sm.requestDeviceAdaptor("alsadaptor");
     Q_ASSERT( alsAdaptor_ );
 
-    alsReader_ = new BufferReader<TimedUnsigned>(10);
+    alsReader_ = new BufferReader<TimedUnsigned>(32);
 
-    outputBuffer_ = new RingBuffer<TimedUnsigned>(1024);
+    outputBuffer_ = new RingBuffer<TimedUnsigned>(32);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
