@@ -90,7 +90,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    setDescription("magnetic flux density in mT");
+    setDescription("magnetic flux density in nT");
 
     // Enlist used adaptors
     adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";

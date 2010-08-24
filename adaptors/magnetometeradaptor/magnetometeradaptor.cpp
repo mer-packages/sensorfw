@@ -56,7 +56,13 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
         addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     }
 
-    introduceAvailableDataRange(DataRange(-4096, 4096, 1));
+    // Pick correct datarange based on chip...
+    if (driverHandle.contains("8975"))
+    {
+        introduceAvailableDataRange(DataRange(-4096, 4096, 1));
+    } else {
+        introduceAvailableDataRange(DataRange(-2048, 2048, 1));
+    }
 }
 
 MagnetometerAdaptor::~MagnetometerAdaptor()
