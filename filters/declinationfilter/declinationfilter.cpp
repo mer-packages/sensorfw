@@ -27,7 +27,7 @@
 #include "declinationfilter.h"
 #include "logging.h"
 
-#define DECLINATION_KEY "/system/osso/location/magneticvariation"
+#define DECLINATION_KEY "/system/osso/location/settings/magneticvariation"
 
 DeclinationFilter::DeclinationFilter() : 
         Filter<CompassData, DeclinationFilter, CompassData>(this, &DeclinationFilter::correct),

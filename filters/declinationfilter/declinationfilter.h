@@ -40,7 +40,7 @@ class DeclinationFilter : public QObject, public Filter<CompassData, Declination
     Q_OBJECT;
     /**
      * Holds the declination correction amount applied in the calculation.
-     * The value is read from GConf key \c /system/osso/location/magneticvariation.
+     * The value is read from GConf key \c /system/osso/location/settings/magneticvariation.
      */
     Q_PROPERTY(int declinationCorrection READ declinationCorrection_);
 

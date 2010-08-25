@@ -28,7 +28,7 @@
 
 void ExternalTest::testDeclinationCorrectionKey()
 {
-    QString gconfkey("/system/osso/location/magneticvariation");
+    QString gconfkey("/system/osso/location/settings/magneticvariation");
 
     g_type_init();
 
