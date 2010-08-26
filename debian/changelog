@@ -1,3 +1,9 @@
+sensord (0.6.21) unstable; urgency=low
+
+  *
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Thu, 26 Aug 2010 08:53:44 +0300
+
 sensord (0.6.20) unstable; urgency=low
 
   * Implements: SWP#MaSSW-1892
