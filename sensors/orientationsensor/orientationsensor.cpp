@@ -79,7 +79,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     setRangeSource(orientationChain_);
 
     intervalList_.append(DataRange(0, 0, 0));
-    intervalList_.append(DataRange(1, 2000, 0));
+    intervalList_.append(DataRange(10, 2000, 0));
 
     addStandbyOverrideSource(orientationChain_);
 }
