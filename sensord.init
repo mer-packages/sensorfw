@@ -22,7 +22,7 @@ RETVAL=0
 
 start() {
     echo -n "Starting sensord: "
-    daemon --check $servicename $sbindir/$processname &> /dev/null &
+    exec $sbindir/$processname &> /dev/null &
     RETVAL=$?
     [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$servicename
     success
