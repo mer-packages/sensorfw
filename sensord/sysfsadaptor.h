@@ -33,6 +33,7 @@
 #include <QStringList>
 #include <QThread>
 #include <sensord/filterproperty.h>
+#include <QMutex>
 
 class SysfsAdaptor;
 
@@ -160,6 +161,7 @@ protected:
     }
 
     QList<int> sysfsDescriptors_; /**< List of open file descriptors. */
+    QMutex mutex_;
 
 private:
     /**
