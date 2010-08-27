@@ -61,8 +61,9 @@ void DeclinationFilter::loadSettings()
     }
 
     value = gconf_client_get_int(client, DECLINATION_KEY, &error);
-    if ( error ) {
+    if ( error != NULL) {
         sensordLogW() << "Failed to read value for " << DECLINATION_KEY << "from GConf.";
+        g_error_free(error);
         return;
     }
 
