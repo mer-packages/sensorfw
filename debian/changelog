@@ -1,3 +1,9 @@
+sensord (0.6.22) unstable; urgency=low
+
+  *
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 30 Aug 2010 09:47:38 +0300
+
 sensord (0.6.21) unstable; urgency=low
 
   * Potentially solved bug #180060. Can't reproduce locally.
