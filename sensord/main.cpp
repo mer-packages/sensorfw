@@ -178,7 +178,7 @@ void printUsage()
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /etc/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";
-    qDebug() << "                                  /etc/sensord.conf is used.\n";
+    qDebug() << "                                  framework.\n";
     qDebug() << " --no-magnetometer-bg-calibration Do not start calibration of magnetometer in";
     qDebug() << "                                  the background.\n";
     qDebug() << " -h, --help                       Show usage info and exit."; 
