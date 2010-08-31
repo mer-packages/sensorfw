@@ -5,6 +5,7 @@
 ## Contact: Jean-Luc Lamadon <jean-luc.lamadon@nokia.com>
 ##          Matias Muhonen <ext-matias.muhonen@nokia.com>
 ##          Tapio Rantala <ext-tapio.rantala@nokia.com>
+##          Lihan Guo <lihan.guo@digia.com> 
 ##
 ## This file is part of Sensord.
 ##
@@ -42,41 +43,43 @@ class Orientation(unittest.TestCase):
     def setUp(self):
         self.fpath = "/tmp/fakedsensors/accelerometer"
         self.datafaker = "/usr/bin/datafaker"
+        self.context_client_edge = CLTool("context-listen", "Screen.TopEdge")
+	self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
 
-    #def tearDown(self):
+
+    def tearDown(self):
+        self.context_client_edge.atexit()
+        self.context_client_cover.atexit()
 
     def testOrientation(self):
-        context_client = CLTool("context-listen", "Screen.TopEdge")
 
         # Top side up
         os.system("echo 60 960 18 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.TopEdge = QString:"top"'))
+        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"top"'))
 
         # Right side up
         os.system("echo 936 162 180 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.TopEdge = QString:"right"'))
+        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"right"'))
 
         # Bottom up
         os.system("echo 72 -990 -162 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.TopEdge = QString:"bottom"'))
+        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"bottom"'))
 
         # Left side up
         os.system("echo -954 -90 -36 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.TopEdge = QString:"left"'))
-
-        context_client = CLTool("context-listen", "Screen.IsCovered")
+        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"left"'))
 
         # On the table
         os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.IsCovered = bool:false'))
+        self.assert_(self.context_client_cover.expect('Screen.IsCovered = bool:false'))
 
         # On the table upside down
         os.system("echo 270 216 -972 | " + self.datafaker + " " + self.fpath)
-        self.assert_(context_client.expect('Screen.IsCovered = bool:true'))
+        self.assert_(self.context_client_cover.expect('Screen.IsCovered = bool:true'))
 
 
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(30)
+    signal.alarm(10)
     unittest.main()

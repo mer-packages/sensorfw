@@ -5,6 +5,7 @@
 ## Contact: Jean-Luc Lamadon <jean-luc.lamadon@nokia.com>
 ##          Matias Muhonen <ext-matias.muhonen@nokia.com>
 ##          Tapio Rantala <ext-tapio.rantala@nokia.com>
+##          Lihan Guo <lihan.guo@digia.com>
 ##
 ## This file is part of Sensord.
 ##
@@ -22,6 +23,7 @@
 ##
 ##
 
+
 import sys
 import unittest
 import os
@@ -30,6 +32,7 @@ import time
 import signal
 from ContextKit.cltool import CLTool
 
+
 def timeoutHandler(signum, frame):
     raise Exception('Tests have been running for too long')
 
@@ -37,42 +40,41 @@ class Orientation(unittest.TestCase):
 
     def setUp(self):
         self.fpath = "/tmp/fakedsensors/als"
+   	self.context_client_dark = CLTool('context-listen', 'Environment.IsDark')
+        self.context_client_bright = CLTool('context-listen', 'Environment.IsBright')
 
-    #def tearDown(self):
+    def tearDown(self):
+        self.context_client_dark.atexit()
+        self.context_client_bright.atexit()
 
     def testIsDark(self):
-        context_client = CLTool('context-listen', 'Environment.IsDark')
-
-        # Normal
+ 	 # Normal
         os.system("echo -en '\x94' >" + self.fpath) # 148
-        self.assert_(context_client.expect('Environment.IsDark = bool:false'))
+        self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:false'))
 
         # Dark
         os.system("echo -en '\x09' >" + self.fpath) # 9
-        self.assert_(context_client.expect('Environment.IsDark = bool:true'))
+        self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:true'))
 
         # Bright
         os.system("echo -en '\x33\x01' >" + self.fpath) # 307
-        self.assert_(context_client.expect('Environment.IsDark = bool:false'))
+        self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:false'))
 
     def testIsBright(self):
-        context_client = CLTool('context-listen', 'Environment.IsBright')
-
         # Normal
         os.system("echo -en '\x94' >" + self.fpath) # 148
-        self.assert_(context_client.expect('Environment.IsBright = bool:false'))
+        self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:false'))
 
         # Bright
         os.system("echo -en '\x33\x01' >" + self.fpath) # 307
-        self.assert_(context_client.expect('Environment.IsBright = bool:true'))
+        self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:true'))
 
         # Dark
         os.system("echo -en '\x09' >" + self.fpath) # 9
-        self.assert_(context_client.expect('Environment.IsBright = bool:false'))
-
+        self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:false'))
 
 if __name__ == '__main__':
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(30)
+    signal.alarm(5)
     unittest.main()
