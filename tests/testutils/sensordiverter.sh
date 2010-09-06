@@ -40,8 +40,11 @@ case "$1" in
   for i in $FIFODIVERTS; do
     mkfifo $DIVERTPATH/$i || { echo Failed to create fifo $DIVERTPATH/$i ; exit 1; }
   done
+
+  mkfifo $DIVERTPATH/$als || { echo Failed to create fifo $DIVERTPATH/$als ; exit 1; }
+
   # 140, "normal" light level
-  echo -en '\x8c' >$DIVERTPATH/als || { echo Failed to create file $DIVERTPATH/als ; exit 1; }
+  #echo -en '\x8c' >$DIVERTPATH/als || { echo Failed to create file $DIVERTPATH/als ; exit 1; }
 
   for i in $POLLDIVERTS; do
     echo 0 > ${DIVERTPATH}/${i}_poll_rate || { echo Failed to create file ${DIVERTPATH}/${i}_poll_rate ; exit 1; }
@@ -55,7 +58,7 @@ device_poll_file_path = /sys/class/input/input%1/poll
 proximity_dev_path = /dev/bh1770glc_ps
 
 # ALS adaptor
-#als_dev_path = $DIVERTPATH/als
+als_dev_path = $DIVERTPATH/als
 
 # Magnetometer drivers
 mag_ak8974_dev_path = /dev/ak89740

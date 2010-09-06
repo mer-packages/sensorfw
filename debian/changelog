@@ -1,5 +1,13 @@
 sensord (0.6.22) unstable; urgency=low
 
+  [Lihan Guo]
+  * Edit  tests/testutils/sensordiverter.sh, change als to FIFO
+  * Fixes: NB#186831 - sensord-contextfw-tests fail because sensor faking no longer works  
+
+ -- Lihan Guo <lihan.guo@digia.com>  Mon, 06 Sep 2010 15:55:38 +0300
+
+sensord (0.6.22) unstable; urgency=low
+
   [Timo Rongas]
   * Removed libfilters.so (context in datatypes/ now)
   * Fixed a bug with missing libcompasschain.so in RotationSensor
