@@ -51,11 +51,10 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     compassChain_ = sm.requestChain("compasschain");
     if (compassChain_ && compassChain_->isValid()) {
         hasZ_ = true;
+        compassReader_ = new BufferReader<CompassData>(128);
     } else {
         sensordLogW() << "Unable to use compass for z-axis rotation.";
     }
-    compassReader_ = new BufferReader<CompassData>(128);
-
 
     rotationFilter_ = sm.instantiateFilter("rotationfilter");
     Q_ASSERT(rotationFilter_);
@@ -66,12 +65,16 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     filterBin_ = new Bin;
 
     filterBin_->add(accelerometerReader_, "accelerometer");
-    filterBin_->add(compassReader_, "compass");
     filterBin_->add(rotationFilter_, "rotationfilter");
     filterBin_->add(outputBuffer_, "buffer");
 
+    if (hasZ_)
+    {
+        filterBin_->add(compassReader_, "compass");
+        filterBin_->join("compass", "source", "rotationfilter", "compasssink");
+    }
+
     filterBin_->join("accelerometer", "source", "rotationfilter", "accelerometersink");
-    filterBin_->join("compass", "source", "rotationfilter", "compasssink");
     filterBin_->join("rotationfilter", "source", "buffer", "sink");
     
     // Join datasources to the chain
@@ -80,9 +83,14 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     Q_ASSERT(rb);
     rb->join(accelerometerReader_);
 
-    rb = compassChain_->findBuffer("truenorth");
-    Q_ASSERT(rb);
-    rb->join(compassReader_);
+    if (hasZ_)
+    {
+        rb = compassChain_->findBuffer("truenorth");
+        Q_ASSERT(rb);
+        rb->join(compassReader_);
+        addStandbyOverrideSource(compassChain_);
+        adaptorList_ << "magnetometeradaptor";
+    }
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -93,7 +101,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     setDescription("x, y, and z axes rotation in degrees");
 
     // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
+    adaptorList_ << "accelerometeradaptor" << "kbslideradaptor";
 
     // List possible data ranges
     // TODO: Figure out correct datarange
@@ -101,7 +109,6 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     intervalList_.append(DataRange(10, 200,0));
 
     addStandbyOverrideSource(accelerometerChain_);
-    addStandbyOverrideSource(compassChain_);
 }
 
 RotationSensorChannel::~RotationSensorChannel()
@@ -113,14 +120,17 @@ RotationSensorChannel::~RotationSensorChannel()
     Q_ASSERT(rb);
     rb->unjoin(accelerometerReader_);
     sm.releaseChain("accelerometerchain");
- 
-    rb = compassChain_->findBuffer("truenorth");
-    Q_ASSERT(rb);
-    rb->unjoin(compassReader_);
-    sm.releaseChain("compasschain");
+
+    if (hasZ_)
+    {
+        rb = compassChain_->findBuffer("truenorth");
+        Q_ASSERT(rb);
+        rb->unjoin(compassReader_);
+        sm.releaseChain("compasschain");
+        delete compassReader_;
+    }
 
     delete accelerometerReader_;
-    delete compassReader_;
     delete rotationFilter_;
     delete outputBuffer_;
     delete marshallingBin_;
@@ -135,8 +145,11 @@ bool RotationSensorChannel::start()
         marshallingBin_->start();
         filterBin_->start();
         accelerometerChain_->start();
-        compassChain_->setProperty("compassEnabled", true);
-        compassChain_->start();
+        if (hasZ_)
+        {
+            compassChain_->setProperty("compassEnabled", true);
+            compassChain_->start();
+        }
     }
     return true;
 }
@@ -147,9 +160,12 @@ bool RotationSensorChannel::stop()
 
     if (AbstractSensorChannel::stop()) {
         accelerometerChain_->stop();
-        compassChain_->stop();
         filterBin_->stop();
-        compassChain_->setProperty("compassEnabled", false);
+        if (hasZ_)
+        {
+            compassChain_->stop();
+            compassChain_->setProperty("compassEnabled", false);
+        }
         marshallingBin_->stop();
     }
     return true;

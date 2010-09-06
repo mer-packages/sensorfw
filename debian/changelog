@@ -1,6 +1,8 @@
 sensord (0.6.22) unstable; urgency=low
 
-  *
+  [Timo Rongas]
+  * Removed libfilters.so (context in datatypes/ now)
+  * Fixed a bug with missing libcompasschain.so in RotationSensor
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 30 Aug 2010 09:47:38 +0300
 
