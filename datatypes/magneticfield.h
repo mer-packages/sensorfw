@@ -31,7 +31,7 @@
 #include <QtDebug>
 #include <QDBusArgument>
 
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 /**
 */

@@ -30,7 +30,7 @@
 
 #include "tapadaptor.h"
 #include "config.h"
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 
 #include <errno.h>
 

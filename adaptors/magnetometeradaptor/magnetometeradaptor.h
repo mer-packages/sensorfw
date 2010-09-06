@@ -29,7 +29,7 @@
 
 #include "sensord/sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/genericdata.h"
+#include "datatypes/genericdata.h"
 #include <QTime>
 #include <QString>
 

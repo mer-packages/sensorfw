@@ -32,7 +32,7 @@
 #include "abstractsensor.h"
 #include "alssensor_a.h"
 #include "sensord/dbusemitter.h"
-#include "filters/timedunsigned.h"
+#include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
 
 class Bin;

@@ -5,7 +5,7 @@
 #include "config.h"
 #include "mrstaccelerometeradaptor.h"
 #include "logging.h"
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 
 MRSTAccelAdaptor::MRSTAccelAdaptor (const QString& id) :
     SysfsAdaptor (id, SysfsAdaptor::IntervalMode)

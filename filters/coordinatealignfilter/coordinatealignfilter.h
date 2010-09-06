@@ -26,7 +26,7 @@
 #ifndef COORDINATEALIGNFILTER_H
 #define COORDINATEALIGNFILTER_H
 
-#include "orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include "sensord/filter.h"
 #include "sensord/filterproperty.h"
 

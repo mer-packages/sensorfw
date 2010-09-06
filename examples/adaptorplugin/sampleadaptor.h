@@ -33,7 +33,7 @@
 
 // Include any datatypes this adaptor produces. For example, let's use
 // TimedUnsigned (unsigned int + timestamp)
-#include "filters/timedunsigned.h"
+#include "datatypes/timedunsigned.h"
 
 /**
  * Adaptor description...

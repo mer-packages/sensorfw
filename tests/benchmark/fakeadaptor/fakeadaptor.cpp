@@ -27,7 +27,7 @@
 #include <QFile>
 #include "fakeadaptor.h"
 #include <errno.h>
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 
 FakeAdaptor::FakeAdaptor(const QString& id) : DeviceAdaptor(id), interval_(1)
 {

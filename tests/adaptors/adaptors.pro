@@ -26,7 +26,7 @@ HEADERS += adaptortest.h \
     ../../sensord/parameterparser.h \
     ../../sensord/sysfsadaptor.h \
     ../../sensord/inputdevadaptor.h \
-    ../../filters/utils.h \
+    ../../datatypes/utils.h \
     ../../sensord/sockethandler.h \
     ../../sensord/propertyhandler.h \
     ../../sensord/nodebase.h \
@@ -58,7 +58,7 @@ SOURCES += adaptortest.cpp \
     ../../sensord/parameterparser.cpp \
     ../../sensord/sysfsadaptor.cpp \
     ../../sensord/inputdevadaptor.cpp \
-    ../../filters/utils.cpp \
+    ../../datatypes/utils.cpp \
     ../../sensord/sockethandler.cpp \
     ../../sensord/propertyhandler.cpp \
     ../../sensord/nodebase.cpp \

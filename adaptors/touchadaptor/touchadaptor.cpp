@@ -26,7 +26,7 @@
 
 #include <QtDebug>
 #include "touchadaptor.h"
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>

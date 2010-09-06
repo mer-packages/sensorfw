@@ -32,7 +32,7 @@
 #include "magnetometersensor_a.h"
 #include "sensord/dbusemitter.h"
 #include "sensord/deviceadaptor.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 
 class Bin;
 template <class TYPE> class BufferReader;

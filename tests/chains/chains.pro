@@ -61,11 +61,10 @@ SOURCES += chainstest.cpp \
 
 INCLUDEPATH += ../.. \
     ../../include \
-    ../../filters \
     ../../chains \
     ../../sensord \
     ../../chains \    
     ../../adaptors \
     ../../datatypes
 
-QMAKE_LIBDIR_FLAGS += -L../../builddir/filters -L../../filters/ -lfilters
+QMAKE_LIBDIR_FLAGS += -L../../builddir/datatypes -L../../datatypes/ -lsensordatatypes

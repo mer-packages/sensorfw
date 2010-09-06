@@ -30,7 +30,7 @@
 #include "config.h"
 #include "alsadaptor.h"
 #include <errno.h>
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include <linux/types.h>
 
 struct bh1770glc_als {

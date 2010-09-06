@@ -31,7 +31,7 @@
 #include "proximitysensor_a.h"
 #include "sensord/dbusemitter.h"
 #include "sensord/deviceadaptor.h"
-#include "filters/timedunsigned.h"
+#include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
 
 class Bin;

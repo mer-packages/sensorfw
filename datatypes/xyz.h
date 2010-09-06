@@ -30,7 +30,7 @@
 #include <QtDebug>
 #include <QDBusArgument>
 
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 /**
  * @brief XYZ is a wrapper class for #TimedXYZData.

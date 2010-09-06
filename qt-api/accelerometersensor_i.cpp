@@ -25,7 +25,7 @@
 
 #include "sensormanagerinterface.h"
 #include "accelerometersensor_i.h"
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId)
     : AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName(), sessionId)

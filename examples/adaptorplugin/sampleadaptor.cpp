@@ -27,7 +27,7 @@
 
 #include "logging.h"       // Logging entries
 #include "config.h"        // Configuration file access
-#include "filters/utils.h" // Provides timestamp utility
+#include "datatypes/utils.h" // Provides timestamp utility
 
 // Constructor should initialise SysfsAdaptor parent.
 // id should be passed directly. See #SysfsAdaptor for details on

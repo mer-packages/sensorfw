@@ -29,7 +29,7 @@
 #include <QtDBus/QtDBus>
 
 #include "abstractsensor_i.h"
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 #include <datatypes/compass.h>
 
 /**

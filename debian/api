@@ -31,4 +31,3 @@ headers:
 libs:
  /usr/lib/libsensorclient.so.1.0.0
  /usr/lib/libsensordatatypes.so.1.0.0
- /usr/lib/libfilters.so.1.0.0

@@ -30,7 +30,7 @@
 #include <QtDebug>
 #include <QDBusArgument>
 
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 // TODO: derive from AbstractSensorData
 class Orientation : public QObject //AbstractSensorData

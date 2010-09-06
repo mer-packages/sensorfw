@@ -61,12 +61,12 @@ SOURCES += dataflowtests.cpp \
 
 INCLUDEPATH += ../.. \
     ../../include \
-    ../../filters \
     ../../chains \
     ../../sensord \
     ../../datatypes \
-    ../../chains \    
+    ../../chains \
+    ../../filters \
     ../../adaptors \
     ../../adaptors/sysfsadaptor 
 
-QMAKE_LIBDIR_FLAGS += -L../../builddir/filters -L../../filters/ -lfilters
+QMAKE_LIBDIR_FLAGS += -L../../builddir/datatypes -L../../datatypes/ -lsensordatatypes

@@ -25,7 +25,7 @@
 
 #include "sensormanagerinterface.h"
 #include "compasssensor_i.h"
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path, int sessionId)
     : AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName(), sessionId)

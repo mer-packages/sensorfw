@@ -29,7 +29,7 @@
 #include <QtDebug>
 #include <QDBusArgument>
 
-#include <filters/tapdata.h>
+#include <datatypes/tapdata.h>
 
 /**
  * @brief Container class for #TapData.

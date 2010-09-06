@@ -1,11 +1,9 @@
 /**
    @file genericdata.h
-   @brief Basic datatypes for filters
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
 
    This file is part of Sensord.
@@ -24,35 +22,5 @@
    </p>
  */
 
-#ifndef GENERICDATA_H
-#define GENERICDATA_H
-
-#include <QMetaType>
-
-/**
- * A base class for measurements that contain timestamp.
- */
-class TimedData {
-public:
-    TimedData(quint64 timestamp) : timestamp_(timestamp) {}
-
-    quint64 timestamp_; /**< Timestamp value */
-};
-
-/**
- * Class for vector type measurement data (timestamp, x, y, z). Can easily be 
- * extended.
- */
-class TimedXyzData : public TimedData
-{
-public:
-    TimedXyzData() : TimedData(0), x_(0), y_(0), z_(0) {}
-    TimedXyzData(quint64 timestamp, int x, int y, int z) : TimedData(timestamp), x_(x), y_(y), z_(z) {}
-
-    int x_; /**< X value */
-    int y_; /**< Y value */
-    int z_; /**< Z value */
-};
-Q_DECLARE_METATYPE ( TimedXyzData )
-
-#endif // GENERICDATA_H
+#warning "Deprecated location for genericdata.h. Please include as datatypes/genericdata.h"
+#include "../datatypes/genericdata.h"

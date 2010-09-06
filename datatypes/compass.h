@@ -29,7 +29,7 @@
 #include <QtDebug>
 #include <QDBusArgument>
 
-#include <filters/orientationdata.h>
+#include <datatypes/orientationdata.h>
 
 /**
  * @brief Compass is a wrapper class for #CompassData.

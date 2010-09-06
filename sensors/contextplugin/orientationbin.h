@@ -30,7 +30,7 @@
 #include "sensord/bufferreader.h"
 #include "sensord/abstractchain.h"
 #include "accelerometeradaptor.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include "posedata.h"
 
 #include "normalizerfilter.h"

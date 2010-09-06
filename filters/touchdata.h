@@ -1,6 +1,5 @@
 /**
    @file touchdata.h
-   @brief Datatype for touch events
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -23,40 +22,5 @@
    </p>
  */
 
-#ifndef TOUCHDATA_H
-#define TOUCHDATA_H
-
-#include "genericdata.h"
-
-/**
- * @brief Datatype for device touchscreen events.
- */
-class TouchData : public TimedXyzData {
-public:
-
-    /**
-     * Enumeration to handle synaptic multitouch driver accuracy. On certain 
-     * occasions the measured coordinates might be reversed on x/y axis.
-     */
-    enum FingerState {
-        FingerStateNotPresent = 0, /**< Finger not present */
-        FingerStateAccurate,       /**< Coordinates are accurate */
-        FingerStateInaccurate      /**< Coordinates are either accurate or mirrored. */
-    };
-
-    int tp_;         /**< Touch event source (which finger), 1,2,... */
-    FingerState st_; /**< Touch event finger state */
-
-    /** 
-     * Constructor. Initialises all values as zero.
-     */
-    TouchData() : TimedXyzData(), tp_(0), st_(FingerStateNotPresent) {}
-    
-    /**
-     * Constructor. Provide initial values for all members.
-     */
-    TouchData(TimedXyzData timedXyzData, int tp, FingerState st) : 
-        TimedXyzData(timedXyzData), tp_(tp), st_(st) {}
-};
-
-#endif // TOUCHDATA_H
+#warning "Deprecated location for touchdata.h. Please include as datatypes/touchdata.h"
+#include "../datatypes/touchdata.h"

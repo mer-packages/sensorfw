@@ -26,7 +26,7 @@
 #define HEADINGFILTER_H
 
 #include "sensord/filter.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 
 #include <ContextProvider>
 

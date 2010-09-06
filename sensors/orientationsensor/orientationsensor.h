@@ -30,8 +30,8 @@
 #include "abstractchain.h"
 #include "orientationsensor_a.h"
 #include "sensord/dbusemitter.h"
-#include "filters/orientationdata.h"
-#include "filters/posedata.h"
+#include "datatypes/orientationdata.h"
+#include "datatypes/posedata.h"
 #include "datatypes/unsigned.h"
 
 class Bin;

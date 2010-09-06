@@ -66,7 +66,6 @@ SOURCES += filtertests.cpp \
     
 INCLUDEPATH += ../.. \
     ../../include \
-    ../../filters/ \
     ../../filters/orientationinterpreter \
     ../../filters/coordinatealignfilter \
     ../../filters/declinationfilter \
@@ -74,5 +73,5 @@ INCLUDEPATH += ../.. \
     ../../sensord \
     ../../datatypes
     
-QMAKE_LIBDIR_FLAGS += -L../../filters -lfilters \
+QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes \
 

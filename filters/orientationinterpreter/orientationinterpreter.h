@@ -28,8 +28,8 @@
 
 #include <QObject>
 #include <sensord/filter.h>
-#include <filters/orientationdata.h>
-#include <filters/posedata.h>
+#include <datatypes/orientationdata.h>
+#include <datatypes/posedata.h>
 #include "sensord/filterproperty.h"
 
 /**

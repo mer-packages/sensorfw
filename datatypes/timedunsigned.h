@@ -1,10 +1,11 @@
 /**
    @file timedunsigned.h
+   @brief Datatype for unsigned values
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Joep van Gassel <joep.van.gassel@nokia.com>
 
    This file is part of Sensord.
 
@@ -22,5 +23,22 @@
    </p>
  */
 
-#warning "Deprecated location for timedunsigned.h. Please include as datatypes/timedunsigned.h"
-#include "../datatypes/timedunsigned.h"
+#ifndef TIMED_UNSIGNED_H
+#define TIMED_UNSIGNED_H
+
+#include <datatypes/genericdata.h>
+
+/**
+ * @brief Datatype for unsigned integer value with timestamp.
+ */
+class TimedUnsigned : public TimedData {
+public:
+    TimedUnsigned() : TimedData(0), value_(0) {}
+    TimedUnsigned(quint64 timestamp, unsigned value) : TimedData(timestamp), value_(value) {}
+
+    unsigned value_;
+};
+Q_DECLARE_METATYPE ( TimedUnsigned )
+
+
+#endif // TIMED_UNSIGNED_H

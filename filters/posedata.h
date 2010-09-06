@@ -1,6 +1,5 @@
 /**
    @file posedata.h
-   @brief Datatype for device 'pose' (orientation)
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -23,76 +22,5 @@
    </p>
  */
 
-#ifndef POSEDATA_H
-#define POSEDATA_H
-
-#include <filters/genericdata.h>
-
-/**
- * Container for device pose interpretation.
- * @todo Rename from PoseData to OrientationData when other uses of OrientationData
- *       have been cleared. Not critical, not really visible to end-user.
- */
-class PoseData : public TimedData {
-public:
-    /**
-     * Possible device postures.
-     * @note The interpretation algorithm for orientation currently relies on the
-     *       integer values of the enumeration. Thus changing the names for the
-     *       orientation states is completely ok (for sensord, client apps may
-     *       disagree). Possible new values must be appended to the list and the
-     *       order of values must not be changed!
-     *
-     * Device side naming:
-     * @verbatim
-
-                          Top
-
-
-                      ----------
-                     /  NOKIA  /|
-                    /-------- / |
-                   //       //  /
-                  //       //  /
-          Left   //  Face //  /    Right
-                //       //  /
-               //       //  /
-              /---------/  /
-             /    O    /  /
-            /         /  /
-            ----------  /
-            |_________!/
-
-
-              Bottom
-
-       @endverbatim
-     */
-    enum Orientation
-    {
-        Undefined = 0, /**< Orientation is unknown. */
-        LeftUp,        /**< Device left side is up */
-        RightUp,       /**< Device right side is up */
-        BottomUp,      /**< Device bottom is up */
-        BottomDown,    /**< Device bottom is down */
-        FaceDown,      /**< Device face is down */
-        FaceUp         /**< Device face is up */
-    };
-
-    PoseData::Orientation orientation_; /**< Device Orientation */
-
-    /**
-     * Constructor.
-     */
-    PoseData() : TimedData(0), orientation_(Undefined) {}
-
-    /**
-     * Constructor.
-     * @param orientation Initial value for orientation.
-     */
-    PoseData(Orientation orientation) : TimedData(0), orientation_(orientation) {}
-};
-
-Q_DECLARE_METATYPE(PoseData)
-
-#endif // POSEDATA_H
+#warning "Deprecated location for posedata.h. Please include as datatypes/posedata.h"
+#include "../datatypes/posedata.h"

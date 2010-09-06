@@ -54,35 +54,39 @@ SensordLogger::SensordLogger (const char *module, const char* func,
 
     setString(&data);
 
-    //add level
-    switch (level) {
-        case SensordLogTest:
-            *this << QString("*TEST*").toLocal8Bit().data();
-            break;
-        case SensordLogDebug:
-            *this << QString("*DEBUG*").toLocal8Bit().data();
-            break;
-        case SensordLogWarning:
-            *this << QString("*WARNING*").toLocal8Bit().data();
-            break;
-        case SensordLogCritical:
-            *this << QString("*CRITICAL*").toLocal8Bit().data();
-            break;
-        case SensordLogN:
-        default:
-            break;
-    }
+    if (printLog)
+    {
+        //add level
+        switch (level) {
+            case SensordLogTest:
+                *this << QString("*TEST*").toLocal8Bit().data();
+                break;
+            case SensordLogDebug:
+                *this << QString("*DEBUG*").toLocal8Bit().data();
+                break;
+            case SensordLogWarning:
+                *this << QString("*WARNING*").toLocal8Bit().data();
+                break;
+            case SensordLogCritical:
+                *this << QString("*CRITICAL*").toLocal8Bit().data();
+                break;
+            case SensordLogN:
+            default:
+                break;
+        }
 
-    //add time stamp
-    *this << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
+        //add time stamp
+        *this << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
 
 #ifndef SENSORD_USE_SYSLOG
-    //add module name
-    *this << QString("[" + QString(module) + "]").toLocal8Bit().data();
+        //add module name
+        *this << QString("[" + QString(module) + "]").toLocal8Bit().data();
 #endif
 
-    //File, line and function
-    *this << QString("[" + QString(file) + ":" + QString::number(line) + ":" + QString(func) + "]").toLocal8Bit().data();
+        //File, line and function
+        *this << QString("[" + QString(file) + ":" + QString::number(line) + ":" + QString(func) + "]").toLocal8Bit().data();
+
+    }
 
 }
 

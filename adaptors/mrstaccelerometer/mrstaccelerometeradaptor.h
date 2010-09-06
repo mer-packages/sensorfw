@@ -6,7 +6,7 @@
 #include <linux/input.h>
 #include <sensord/filterproperty.h>
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include <QTime>
 
 class MRSTAccelAdaptor : public SysfsAdaptor {

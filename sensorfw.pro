@@ -7,7 +7,8 @@ SUBDIRS = datatypes \
           sensord \
           qt-api
 
-sensord.depends = datatypes adaptors filters sensors chains
+#sensord.depends = datatypes adaptors filters sensors chains
+sensord.depends = datatypes adaptors sensors chains
 
 include( doc/doc.pri )
 include( common-install.pri )
@@ -26,12 +27,7 @@ SENSORDCONFIGFILES.files = config/sensord.conf
 SENSORDCONFIGFILES.path = /etc
 
 internal {
-    SUBDIRS += filters/orientationinterpreter \
-          filters/coordinatealignfilter \
-          filters/declinationfilter \
-          filters/rotationfilter \
-          chains \
-          tests
+    SUBDIRS += chains tests
 }
 
 publicheaders.files += include/*.h

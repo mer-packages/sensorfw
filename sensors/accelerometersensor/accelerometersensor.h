@@ -31,7 +31,7 @@
 #include "abstractchain.h"
 #include "accelerometersensor_a.h"
 #include "sensord/dbusemitter.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 
 class Bin;
 template <class TYPE> class BufferReader;

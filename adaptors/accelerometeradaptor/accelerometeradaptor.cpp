@@ -32,7 +32,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 
 #define DEVICE_MATCH_STRING "accelerometer"
 

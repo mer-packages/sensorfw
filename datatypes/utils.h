@@ -1,10 +1,12 @@
 /**
-   @file timedunsigned.h
+   @file utils.h
+   @brief Utils
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Serhii Tsyba <ext-serhii.2.tsyba@nokia.com>
 
    This file is part of Sensord.
 
@@ -22,5 +24,13 @@
    </p>
  */
 
-#warning "Deprecated location for timedunsigned.h. Please include as datatypes/timedunsigned.h"
-#include "../datatypes/timedunsigned.h"
+#ifndef UTILS_H
+#define UTILS_H
+
+class Utils
+{
+public:
+    static quint64 getTimeStamp();
+};
+
+#endif // UTILS_H

@@ -23,8 +23,7 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 LIBS += -Wl,-rpath,/usr/lib/sensord
 LIBS += -Wl,-E
 
-QMAKE_LIBDIR_FLAGS += -L../filters -lfilters \
-                      -L../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes
 
 SOURCES += main.cpp \
     sensormanager.cpp \

@@ -15,15 +15,29 @@ HEADERS += xyz.h \
     unsigned.h \
     magneticfield.h \
     compass.h \
-    datarange.h
+    datarange.h \
+    utils.h \
+    timedunsigned.h \
+    genericdata.h \
+    orientationdata.h
+
 
 SOURCES += xyz.cpp \
     orientation.cpp \
     unsigned.cpp \
-    compass.cpp
+    compass.cpp \
+    utils.cpp
+
+
+LIBS += -lrt
+
 
 internal {
-    HEADERS += tap.h
+    HEADERS += tap.h \
+               posedata.h \
+               tapdata.h \
+               touchdata.h
+
     SOURCES += tap.cpp
 }
 

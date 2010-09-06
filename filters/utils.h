@@ -1,12 +1,10 @@
 /**
    @file utils.h
-   @brief Utils
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Serhii Tsyba <ext-serhii.2.tsyba@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,13 +22,5 @@
    </p>
  */
 
-#ifndef UTILS_H
-#define UTILS_H
-
-class Utils
-{
-public:
-    static quint64 getTimeStamp();
-};
-
-#endif // UTILS_H
+#warning "Deprecated location for utils.h. Please include as datatypes/utils.h"
+#include "../datatypes/utils.h"

@@ -12,7 +12,6 @@ include( ../../common-config.pri )
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
-                        .. \
                         ../../sensord \
                         ../../datatypes
 

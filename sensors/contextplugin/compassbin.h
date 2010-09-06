@@ -27,7 +27,7 @@
 
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 
 #include "headingfilter.h"
 

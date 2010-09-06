@@ -29,7 +29,7 @@
 
 #include "inputdevadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include <QTime>
 
 /**

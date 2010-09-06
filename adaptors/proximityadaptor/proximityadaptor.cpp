@@ -26,7 +26,7 @@
 */
 #include "proximityadaptor.h"
 #include <errno.h>
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include "sensord/logging.h"
 #include "sensord/config.h"
 #include <linux/types.h>

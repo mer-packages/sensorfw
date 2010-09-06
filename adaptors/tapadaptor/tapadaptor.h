@@ -29,7 +29,7 @@
 
 #include "inputdevadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/tapdata.h"
+#include "datatypes/tapdata.h"
 
 /**
  * @brief Adaptor class for detecting device tap events.
