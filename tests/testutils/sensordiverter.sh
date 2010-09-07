@@ -24,7 +24,7 @@
 ### configuration
 
 DIVERTPATH=/tmp/fakedsensors
-FIFODIVERTS="accelerometer"
+FIFODIVERTS="accelerometer als"
 POLLDIVERTS="accelerometer"
 
 ### main code
@@ -40,11 +40,6 @@ case "$1" in
   for i in $FIFODIVERTS; do
     mkfifo $DIVERTPATH/$i || { echo Failed to create fifo $DIVERTPATH/$i ; exit 1; }
   done
-
-  mkfifo $DIVERTPATH/$als || { echo Failed to create fifo $DIVERTPATH/$als ; exit 1; }
-
-  # 140, "normal" light level
-  #echo -en '\x8c' >$DIVERTPATH/als || { echo Failed to create file $DIVERTPATH/als ; exit 1; }
 
   for i in $POLLDIVERTS; do
     echo 0 > ${DIVERTPATH}/${i}_poll_rate || { echo Failed to create file ${DIVERTPATH}/${i}_poll_rate ; exit 1; }
@@ -86,7 +81,6 @@ accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
   sleep 0.5
   for i in 1 2; do
     echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
-    echo "" >$DIVERTPATH/magnetometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
   done
 
   sleep 0.5
@@ -117,7 +111,7 @@ accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
   for i in $FIFODIVERTS; do
     rm $DIVERTPATH/$i
   done
-  rm $DIVERTPATH/als
+
   for i in $POLLDIVERTS; do
     rm ${DIVERTPATH}/${i}_poll_rate
   done
