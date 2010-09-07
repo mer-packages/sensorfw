@@ -86,19 +86,22 @@ void PowerManagementTest::testIntervalStartStop()
     accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
     QVERIFY2((accOne != NULL && accOne->isValid()), accOne->errorString().toLatin1());
 
-    QVERIFY(readPollInterval(accPollFile) == 0);
+    // Screen orientation keeps acc open, the 'default' may change.
+    // Thus dynamic values.
+    int originalInterval = readPollInterval(accPollFile);
+    int testInterval = originalInterval > 1 ? originalInterval / 2 : 100;
 
-    accOne->setInterval(100);
+    accOne->setInterval(testInterval);
 
-    QVERIFY(readPollInterval(accPollFile) == 0);
+    QVERIFY(readPollInterval(accPollFile) == originalInterval);
 
     accOne->start();
 
-    QVERIFY(readPollInterval(accPollFile) == 100);
+    QVERIFY(readPollInterval(accPollFile) == testInterval);
 
     accOne->stop();
 
-    QVERIFY(readPollInterval(accPollFile) == 0);
+    QVERIFY(readPollInterval(accPollFile) == originalInterval);
 
     delete accOne;
 }
@@ -117,34 +120,43 @@ void PowerManagementTest::testIntervalRace()
     accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
     QVERIFY2((accTwo != NULL && accTwo->isValid()), accTwo->errorString().toLatin1());
 
-    QVERIFY(readPollInterval(accPollFile) == 0);
+    // Screen orientation keeps acc open, the 'default' may change.
+    // Thus dynamic values.
+    int originalInterval = readPollInterval(accPollFile);
+    qDebug() << "original interval:" << originalInterval;
+    QVERIFY2((originalInterval == 0 || originalInterval > 3), "Can't run the test with current poll value.");
 
-    accOne->setInterval(100);
+    int testIntervalOne = originalInterval > 2 ? originalInterval / 2 : 100; // Faster than original
+    int testIntervalTwo = testIntervalOne / 2; // Faster than previous
+
+    accOne->setInterval(testIntervalOne);
     accOne->start();
 
-    QVERIFY(readPollInterval(accPollFile) == 100);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalOne);
 
-    accTwo->setInterval(50);
+    accTwo->setInterval(testIntervalTwo);
     accTwo->start();
 
-    QVERIFY(readPollInterval(accPollFile) == 50);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalTwo);
 
     accTwo->stop();
 
-    QVERIFY(readPollInterval(accPollFile) == 100);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalOne);
 
-    accTwo->setInterval(150);
+    // testIntervalTwo*3 is 3/4 of original, thus slower than
+    // testIntervalOne, but faster than original.
+    accTwo->setInterval(testIntervalTwo*3);
     accTwo->start();
 
-    QVERIFY(readPollInterval(accPollFile) == 100);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalOne);
 
     accOne->stop();
 
-    QVERIFY(readPollInterval(accPollFile) == 150);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalTwo*3);
 
     accTwo->stop();
 
-    QVERIFY(readPollInterval(accPollFile) == 0);
+    QVERIFY(readPollInterval(accPollFile) == originalInterval);
 
     delete accOne;
     delete accTwo;
