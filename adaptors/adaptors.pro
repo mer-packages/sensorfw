@@ -11,5 +11,6 @@ internal {
               touchadaptor \
               kbslideradaptor \
               proximityadaptor \
+              proximityadaptor-evdev \
               mrstaccelerometer
 }
