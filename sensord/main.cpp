@@ -49,7 +49,8 @@
 #include "datatypes/tap.h"
 #endif
 
-#define CONFIG_FILE_PATH     "/etc/sensord.conf"
+#define CONFIG_FILE_PATH     "/etc/sensorfw/sensord.conf"
+#define CONFIG_DIR_PATH      "/etc/sensorfw/sensord.conf.d/"
 
 void printUsage();
 
@@ -94,18 +95,18 @@ int main(int argc, char *argv[])
 
     if (parser.configFileInput())
     {
-        QString configFile = parser.configFilePath();
-        QFile file(configFile);
-        if (Config::loadConfig(configFile))
+        QString defConfigFile = parser.configFilePath();
+        QFile file(defConfigFile);
+        if (Config::loadConfig(defConfigFile, CONFIG_DIR_PATH))
             sensordLogT() << "Config file is loading successfully.";
         else
         {
-            sensordLogW() << "Config file error! Load default config file.";
-            Config::loadConfig(CONFIG_FILE_PATH);
+            sensordLogW() << "Config file error! Load using default path.";
+            Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
         }
     }
     else
-        Config::loadConfig(CONFIG_FILE_PATH);
+        Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
 
     if (Config::configuration() == NULL)
     {

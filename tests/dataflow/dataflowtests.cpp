@@ -46,7 +46,7 @@ class TestSensorManager2;
 
 void DataFlowTest::initTestCase()
 {
-    Config::loadConfig("/etc/sensord.conf");
+    Config::loadConfig("/etc/sensord.conf", "/etc/sensord.conf.d");
 
     // Initialise sensormanager
     SensorManager& sm = SensorManager::instance();

@@ -30,6 +30,7 @@
 #include <QString>
 #include <QVariant>
 #include <QSettings>
+#include <QList>
 
 /**
  * @brief Holds sensord's configuration. Configuration is read and parsed with
@@ -44,14 +45,17 @@ public:
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
     static Config *configuration();
-    static Config *loadConfig(const QString &configFileName);
+    static Config *loadConfig(const QString &defConfigPath, const QString &configDPath);
     static void close();
 
 private:
     Config(const Config &c);
     Config& operator=(const Config &c);
 
-    QSettings *m_settings;
+    bool loadConfigFile(const QString &configFileName);
+    void clearConfig();
+
+    QList<QSettings*> settings;
 };
 
 #endif // SENSORD_CONFIG_H
