@@ -42,6 +42,12 @@
 #include <sys/stat.h>
 
 #define SOCKET_NAME "/tmp/sensord.sock"
+
+typedef struct {
+    int id;
+    int size;
+    void* buffer;
+} PipeData;
 #endif
 
 SensorManager* SensorManager::instance_ = NULL;
@@ -539,15 +545,20 @@ FilterBase* SensorManager::instantiateFilter(const QString& id)
 bool SensorManager::write(int id, const void* source, int size)
 {
     void* buffer = malloc(size);
-    int pipeData[3];
+    PipeData pipeData;
 
-    pipeData[0] = id;
-    pipeData[1] = size;
-    pipeData[2] = (int)buffer;
+    if(!buffer) {
+        sensordLogC() << "Malloc failed!";
+        return false;
+    }
+
+    pipeData.id = id;
+    pipeData.size = size;
+    pipeData.buffer = buffer;
 
     memcpy(buffer, source, size);
 
-    if (::write(pipefds_[1], pipeData, sizeof(pipeData)) < (int)sizeof(pipeData)) {
+    if (::write(pipefds_[1], &pipeData, sizeof(pipeData)) < (int)sizeof(pipeData)) {
         sensordLogW() << "Failed to write all data to pipe.";
         return false;
     }
@@ -560,18 +571,14 @@ bool SensorManager::write(int id, const void* source, int size)
 
 void SensorManager::writeout(int)
 {
-    int id;
-    int size;
-    void* buffer;
-    read(pipefds_[0], &id, sizeof(int));
-    read(pipefds_[0], &size, sizeof(int));
-    read(pipefds_[0], &buffer, sizeof(int));
+    PipeData pipeData;
+    read(pipefds_[0], &pipeData, sizeof(pipeData));
 
-    if (!socketHandler_->write(id, buffer, size)) {
+    if (!socketHandler_->write(pipeData.id, pipeData.buffer, pipeData.size)) {
         sensordLogW() << "Failed to write data to socket.";
     }
 
-    free(buffer);
+    free(pipeData.buffer);
 }
 
 void SensorManager::lostClient(int sessionId)
