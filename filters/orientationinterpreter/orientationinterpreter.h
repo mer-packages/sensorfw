@@ -7,6 +7,7 @@
 
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -27,6 +28,7 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
+#include <QTimer>
 #include <sensord/filter.h>
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
@@ -46,6 +48,20 @@ class OrientationInterpreter : public QObject, public PropertyTracker, public Fi
     Q_PROPERTY(PoseData orientation READ orientation);
     Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
 
+
+private Q_SLOTS:
+
+    /** 
+     * @brief Verify face changes.
+     * 
+     * When the face change between FaceDown and FaceUp is found,
+     * verify it after 0.5 second.
+     * It's verified with delay only for the face-buffer
+     */
+
+
+    void verifyFaceChange();
+    
 private:
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
     Source<PoseData> topEdgeSource;
@@ -65,9 +81,15 @@ private:
 
     PoseData topEdge;
     PoseData face;
+    PoseData previousFace;
+    bool updatePreviousFace;
+
     AccelerationData data;
 
     PoseData o_;
+    QTimer *timer;
+    
+
 
 public:
     /**
@@ -85,3 +107,4 @@ public:
 };
 
 #endif // ORIENTATIONINTERPRETER_H
+

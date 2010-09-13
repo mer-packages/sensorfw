@@ -7,6 +7,8 @@
 
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
+   
 
    This file is part of Sensord.
 
@@ -27,6 +29,7 @@
 #include "orientationinterpreter.h"
 #include <sensord/logging.h>
 #include <math.h>
+#include <QDebug>
 
 #define DEFAULT_THRESHOLD 250
 #define RADIANS_TO_DEGREES 180.0/M_PI
@@ -48,7 +51,25 @@ OrientationInterpreter::OrientationInterpreter() :
     addSource(&orientationSource, "orientation");
 
     threshold_(DEFAULT_THRESHOLD);
+   
+    timer = new QTimer(this);
+    timer->setSingleShot(true);
+    connect(timer, SIGNAL(timeout()), this, SLOT(verifyFaceChange())); 
+    updatePreviousFace = true; 
+
 }
+
+void OrientationInterpreter::verifyFaceChange()
+{  
+    
+    if (face.orientation_ == previousFace.orientation_)
+    {
+        sensordLogT() << "New face value:" << face.orientation_;          
+        faceSource.propagate(1, &face);
+        updatePreviousFace = true;
+    } 
+}
+
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* pdata)
 {
@@ -162,19 +183,26 @@ void OrientationInterpreter::processFace()
 {
     PoseData newFace;
 
+
     if  (abs(data.z_) >= 300)
     {
-        newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);
-    }
+        newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);   
 
-    if (face.orientation_ != newFace.orientation_)
-    {
-        face.orientation_ = newFace.orientation_;
-        sensordLogT() << "New face value:" << face.orientation_;
-        face.timestamp_ = data.timestamp_;
-        faceSource.propagate(1, &face);
-    }
+        if (face.orientation_ != newFace.orientation_)
+        { 
+            if (updatePreviousFace)
+            {    
+                face.timestamp_ = data.timestamp_;
+                previousFace.orientation_ = newFace.orientation_;
+                updatePreviousFace = false;
+            }
+            face.orientation_ = newFace.orientation_;  
+            timer->start(500);
+        }   
+    }   
 }
+
+
 
 void OrientationInterpreter::processOrientation()
 {
