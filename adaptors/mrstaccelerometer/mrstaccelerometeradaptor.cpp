@@ -61,22 +61,6 @@ void MRSTAccelAdaptor::processSample (int pathId, int fd) {
         return;
     }
 
-    static float step = 2.0 / 116.0;
-    float fx, fy, fz;
-
-    /* calibration */
-    x -= 1;
-    y += 1;
-
-    fx = x * step;
-    fy = y * step;
-    fz = z * step;
-
-    /* Translate to mg */
-    x = fx * 1000;
-    y = fy * 1000;
-    z = fz * 1000;
-
     OrientationData* d = buffer->nextSlot ();
     d->timestamp_ = Utils::getTimeStamp();
     d->x_ = x;
