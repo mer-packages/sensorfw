@@ -10,9 +10,6 @@ CONFIG += console \
           link_pkgconfig
 CONFIG -= app_bundle
 
-PKGCONFIG += contextprovider-1.0
-
-
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
                         ../filters \
@@ -93,7 +90,10 @@ internal:DEFINES += USE_INTERNAL
 
 use_syslog:DEFINES += SENSORD_USE_SYSLOG
 
-contextprovider:DEFINES += PROVIDE_CONTEXT_INFO
+contextprovider {
+    DEFINES += PROVIDE_CONTEXT_INFO
+    PKGCONFIG += contextprovider-1.0
+}
 
 TARGET_H.path += /usr/include/sensord
 TARGET_H.files = $$HEADERS
