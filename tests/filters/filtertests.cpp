@@ -7,6 +7,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -45,6 +46,7 @@
 
 #define WAIT_ROUND_DELAY 100
 #define MAX_WAIT_ROUNDS 5
+#define MAX_FACE_WAIT_ROUNDS 30
 
 /**
  * DummyAdaptor is a Pusher that can be used to push data into a filter for testing.
@@ -331,66 +333,102 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
 
 void FilterApiTest::testFaceInterpretationFilter()
 {
+
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
         TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0,  981)
+        TimedXyzData(0,   0,   0,  981),
+        TimedXyzData(0,   0,   0, -981),
+        TimedXyzData(0,   0,   0, -981),
+        TimedXyzData(0,   0,   0,  981),
+        TimedXyzData(0,   0,   0,  981),
+        TimedXyzData(0,   0,   0, -981),
+        TimedXyzData(0,   0,   0, -981),
+        TimedXyzData(0,   0,   0, -981)
     };
 
-    // Expected output data
-    PoseData expectedResult[] = {
+    // Expected output data for starting from FaceDown
+    PoseData expectedResultDown[] = {   
         PoseData(PoseData::FaceUp),
-        PoseData(PoseData::FaceDown)
+        PoseData(PoseData::FaceDown),
+        PoseData(PoseData::FaceUp)
     };
 
-    QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
-             "Test function error: Input and output count does not match.");
+
+    // Expected output data for starting from FaceUp
+    PoseData expectedResultUp[] = {
+       
+        PoseData(PoseData::FaceDown),
+        PoseData(PoseData::FaceUp)
+    };
 
     int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
-
-    // Build data pipeline
-    Bin filterBin;
-    DummyAdaptor<TimedXyzData> dummyAdaptor;
-
+    int numInputsDown = (sizeof(expectedResultDown)/sizeof(PoseData));
+    int numInputsUp = (sizeof(expectedResultUp)/sizeof(PoseData));
+    
     FilterBase* faceInterpreterFilter = OrientationInterpreter::factoryMethod();
+    
+    for (int i = 0; i < 2; i++)
+    {
+        Bin filterBin;
+        DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-    RingBuffer<PoseData> outputBuffer(10);
+        if (i == 0){
+            ((OrientationInterpreter*)faceInterpreterFilter)->orientation().orientation_ == PoseData::FaceDown;
+        } else {
+            ((OrientationInterpreter*)faceInterpreterFilter)->orientation().orientation_ == PoseData::FaceUp;
+        }
 
-    filterBin.add(&dummyAdaptor, "adapter");
-    filterBin.add(faceInterpreterFilter, "filter");
-    filterBin.add(&outputBuffer, "buffer");
-    filterBin.join("adapter", "source", "filter", "accsink");
-    filterBin.join("filter", "face", "buffer", "sink");
+        RingBuffer<PoseData> outputBuffer(10);
 
-    DummyDbusEmitter<PoseData> dbusEmitter;
-    Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
-    outputBuffer.join(&dbusEmitter);
+        filterBin.add(&dummyAdaptor, "adapter");
+        filterBin.add(faceInterpreterFilter, "filter");
+        filterBin.add(&outputBuffer, "buffer");
+        filterBin.join("adapter", "source", "filter", "accsink");
+        filterBin.join("filter", "face", "buffer", "sink");
 
-    // Setup data
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
 
-    marshallingBin.start();
-    filterBin.start();
+        DummyDbusEmitter<PoseData> dbusEmitter;
+        Bin marshallingBin;
+        marshallingBin.add(&dbusEmitter, "testdbusemitter");
+        outputBuffer.join(&dbusEmitter);
 
-    // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
-        dummyAdaptor.pushNewData();
+        // Setup data
+        dummyAdaptor.setTestData(numInputs, inputData, false);
+ 
+        if (i==0){
+            dbusEmitter.setExpectedData(numInputsDown, expectedResultDown, false);   
+        } else {
+            dbusEmitter.setExpectedData(numInputsUp, expectedResultUp, false);  
+        }
+
+        marshallingBin.start();
+        filterBin.start();
+
+        for (int j=1; j < numInputs; j++){
+            dummyAdaptor.pushNewData();
+            QTest::qWait(300);
+        }   
+
+        int waitRounds = 0;
+
+        if (dummyAdaptor.getDataCount() != (dbusEmitter.numSamplesReceived() + 6) && waitRounds++ < MAX_FACE_WAIT_ROUNDS) {
+            QTest::qWait(WAIT_ROUND_DELAY);
+        }
+
+        filterBin.stop();
+        marshallingBin.stop();
+
+        if (i==0){  
+            QCOMPARE (dummyAdaptor.getDataCount(), (dbusEmitter.numSamplesReceived() + 6));
+        } else {         
+            QCOMPARE (dummyAdaptor.getDataCount(), (dbusEmitter.numSamplesReceived() + 7));
+        }
     }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
-    }
-
-    filterBin.stop();
-    marshallingBin.stop();
-
-    QCOMPARE (dummyAdaptor.getDataCount(), dbusEmitter.numSamplesReceived());
 
     delete faceInterpreterFilter;
 }
+
 
 void FilterApiTest::testOrientationInterpretationFilter()
 {

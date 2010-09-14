@@ -1,4 +1,8 @@
 sensord (0.6.23) unstable; urgency=low
+
+  [Lihan Guo]
+  * Fixed filtertests.cpp failure caused by NB#186211 fix
+	
   [Lihan Guo]
   * Fixes: NB#186211 - During an ongoing alarm notification, when a device placed flat is lifted up rapidly it snoozes the alarm
 
