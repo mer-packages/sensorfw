@@ -114,7 +114,7 @@ SensordLogger::~SensordLogger()
                 break;
         }
     
-        syslog(logPriority, data.toLocal8Bit().data());
+        syslog(logPriority, "%s", data.toLocal8Bit().data());
         closelog();
 #else
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
@@ -183,7 +183,7 @@ void SensordLogger::signalFlush(int param)
 
 #ifdef SENSORD_USE_SYSLOG
         openlog(NULL, LOG_PERROR, LOG_DAEMON);
-        syslog(LOG_DEBUG, line.toLocal8Bit().data());
+        syslog(LOG_DEBUG, "%s", line.toLocal8Bit().data());
         closelog();
 #else
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
