@@ -76,8 +76,8 @@ accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
 
   initctl stop sensord
   killall sensord
-  #initctl start sensord
-  /usr/sbin/sensord < /dev/null > /dev/null 2&>1 &
+  initctl start sensord
+  #/usr/sbin/sensord < /dev/null &
   sleep 0.5
   for i in 1 2; do
     echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
