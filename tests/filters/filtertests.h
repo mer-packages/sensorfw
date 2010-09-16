@@ -25,7 +25,7 @@
 
 #ifndef FILTERAPITEST_H
 #define FILTERAPITEST_H
-
+#define CONFIG_FILE_PATH "/etc/sensord.conf"
 #include <QTest>
 
 class FilterApiTest : public QObject
@@ -33,7 +33,7 @@ class FilterApiTest : public QObject
      Q_OBJECT
 
 private slots:
-    void initTestCase() {}
+    void initTestCase();
     void init() {}
 
     void testCoordinateAlignFilter();

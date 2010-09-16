@@ -43,6 +43,7 @@
 #include "rotationfilter.h"
 #include "filtertests.h"
 #include "timedunsigned.h"
+#include "sensord/config.h"
 
 #define WAIT_ROUND_DELAY 100
 #define MAX_WAIT_ROUNDS 5
@@ -175,6 +176,15 @@ protected:
     bool loop_;
     int index_;
 };
+
+
+
+void FilterApiTest::initTestCase() {
+
+    Config::loadConfig(CONFIG_FILE_PATH);   
+
+}
+
 
 /**
  * This should be simple enough to be valid if one transformation matrix works.

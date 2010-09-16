@@ -29,6 +29,7 @@
 #include "orientationinterpreter.h"
 #include <sensord/logging.h>
 #include <math.h>
+#include "config.h"
 #include <QDebug>
 
 #define DEFAULT_THRESHOLD 250
@@ -36,8 +37,11 @@
 #define ANGLE_LIMIT 45
 #define SAME_AXIS_LIMIT 5
 
-#define OVERFLOW_LOW 800
-#define OVERFLOW_HIGH 1250
+#define OVERFLOW_MIN 800
+#define OVERFLOW_MAX 1250
+
+#define THRESHOLD_LANDSCAPE  25
+#define THRESHOLD_PORTRAIT  20
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
@@ -52,6 +56,13 @@ OrientationInterpreter::OrientationInterpreter() :
 
     threshold_(DEFAULT_THRESHOLD);
    
+    minlimit = Config::configuration()->value("orientation_overflow_min",QVariant(OVERFLOW_MIN)).toInt();
+    maxlimit = Config::configuration()->value("orientation_overflow_max",QVariant(OVERFLOW_MAX)).toInt();
+    
+    angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait",QVariant(THRESHOLD_PORTRAIT)).toInt();
+    angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape",QVariant(THRESHOLD_LANDSCAPE)).toInt();
+   
+      
     timer = new QTimer(this);
     timer->setSingleShot(true);
     connect(timer, SIGNAL(timeout()), this, SLOT(verifyFaceChange())); 
@@ -78,7 +89,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     // Check overflow
     if (overFlowCheck())
     {
-        sensordLogT() << "Acc value discarded";
+        sensordLogT() << "Acc value discarded due to over/underflow";
         return;
     }
     // calculate face
@@ -94,7 +105,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 bool OrientationInterpreter::overFlowCheck()
 {
     int gVector = ((data.x_*data.x_ + data.y_*data.y_ + data.z_*data.z_)/1000);
-    return !((gVector >= OVERFLOW_LOW) && (gVector <=OVERFLOW_HIGH));
+    return !((gVector >= minlimit) && (gVector <=maxlimit));
 }
 
 void OrientationInterpreter::processTopEdge()
@@ -106,13 +117,14 @@ void OrientationInterpreter::processTopEdge()
 
     // Portrait check
     rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
-    if (abs(rotation) > ANGLE_LIMIT) {
+
+    if (abs(rotation) > angleThresholdPortrait) {
         newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
 
         // Some threshold to switching between portrait modes
         if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
             //if (topEdge.orientation_ != newTopEdge.orientation_ && rotation < SAME_AXIS_LIMIT) {
-            if (abs(rotation) < SAME_AXIS_LIMIT) {
+            if (abs(rotation) < SAME_AXIS_LIMIT){
                 newTopEdge.orientation_ = topEdge.orientation_;
             }
         }
@@ -120,7 +132,7 @@ void OrientationInterpreter::processTopEdge()
     } else {
         // Landscape check
         rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
-        if (abs(rotation) > ANGLE_LIMIT) {
+        if (abs(rotation) > angleThresholdLandscape) {
             newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
 
             // Some threshold to switching between landscape modes
@@ -140,43 +152,6 @@ void OrientationInterpreter::processTopEdge()
         topEdge.timestamp_ = data.timestamp_;
         topEdgeSource.propagate(1, &topEdge);
     }
-
-    //~ int t = threshold_();
-    //~ PoseData newTopEdge;
-//~
-    //~ if (abs(data.x_) >= 200 || abs(data.y_) >=200) {
-        //~ if (topEdge.orientation_ == PoseData::Undefined) {
-            //~ /*Change topedge away from unknown when x or y
-             //~ * goes above t.*/
-            //~ if ( abs(data.y_) > t &&
-                    //~ (abs(data.y_) > abs(data.x_)) )
-                //~ newTopEdge.orientation_ = (data.y_>0 ? PoseData::BottomUp : PoseData::BottomDown);
-            //~ else if ( abs(data.x_) > t &&
-                    //~ (abs(data.x_) > abs (data.y_)) )
-                //~ newTopEdge.orientation_ = (data.x_>0?PoseData::LeftUp : PoseData::RightUp);
-        //~ } else if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
-            //~ if (abs(data.y_) > abs(data.x_) + t) {
-                //~ newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
-            //~ } else {
-                //~ newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
-            //~ }
-        //~ } else if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
-            //~ if (abs(data.x_) > abs(data.y_) + t) {
-                //~ newTopEdge.orientation_ = (data.x_ > 0?PoseData::LeftUp:PoseData::RightUp);
-            //~ } else {
-                //~ newTopEdge.orientation_ = (data.y_ > 0?PoseData::BottomUp:PoseData::BottomDown);
-            //~ }
-        //~ }
-    //~ } else {
-        //~ newTopEdge.orientation_ = PoseData::Undefined;
-    //~ }
-//~
-    //~ if (topEdge.orientation_ != newTopEdge.orientation_) {
-        //~ topEdge.orientation_ = newTopEdge.orientation_;
-        //~ sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
-        //~ topEdge.timestamp_ = data.timestamp_;
-        //~ topEdgeSource.propagate(1, &topEdge);
-    //~ }
 }
 
 void OrientationInterpreter::processFace()

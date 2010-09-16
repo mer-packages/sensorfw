@@ -86,11 +86,14 @@ private:
 
     AccelerationData data;
 
+    int minlimit;
+    int maxlimit;
+    int angleThresholdPortrait;
+    int angleThresholdLandscape;
+
     PoseData o_;
     QTimer *timer;
     
-
-
 public:
     /**
      * Factory method for CompassFilter.

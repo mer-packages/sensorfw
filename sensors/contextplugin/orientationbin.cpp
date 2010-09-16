@@ -25,6 +25,7 @@
 
 #include "orientationbin.h"
 #include "sensord/sensormanager.h"
+#include "sensord/config.h"
 
 #include <QDebug>
 
@@ -33,6 +34,7 @@
 #define STABILITY_THRESHOLD 7
 #define UNSTABILITY_THRESHOLD 300
 #define STABILITY_HYSTERESIS 0.1
+#define POLL_INTERVAL 250
 
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
@@ -124,7 +126,9 @@ void OrientationBin::startRun()
     orientationChain->start();
 
     // Request 4hz updates (until good HW wakeup setup has been figured out
-    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 250);
+    int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toInt();
+    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, pollInterval);
+
 }
 
 void OrientationBin::stopRun()
