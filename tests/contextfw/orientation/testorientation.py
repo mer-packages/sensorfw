@@ -69,13 +69,6 @@ class Orientation(unittest.TestCase):
         os.system("echo -954 -90 -36 | " + self.datafaker + " " + self.fpath)
         self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"left"'))
 
-
-        if self.context_client_cover == bool:false:
-          print "Faceup"  
-        else:
-          print "Facedown"
-
-
         # On the table
         os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
         time.sleep(0.5)
