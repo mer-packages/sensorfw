@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,56 +27,61 @@
 #ifndef LOGGING_H
 #define LOGGING_H
 
-#include <QTextStream>
+#include <sstream>
 #include <QString>
-#include <QDebug>
-#include <QBuffer>
-#include <QIODevice>
+#include <QStringList>
 
 enum SensordLogLevel {
     SensordLogTest = 1,
     SensordLogDebug,
     SensordLogWarning,
     SensordLogCritical,
-
     SensordLogN
 };
 
-class SensordLogger : public QTextStream
+class SensordLogger
 {
 public:
-    SensordLogger(const char *module, const char *func, const char *file, int line, SensordLogLevel level);
+    SensordLogger(const char *func, const char *file, int line, SensordLogLevel level);
     ~SensordLogger();
 
-    template <typename T> SensordLogger &operator<< (const T& item) 
+    SensordLogger& operator<<(const QStringList& item)
     {
-        QString out;
-        QDebug(&out) << item;
-        QTextStream::operator<<(out);
+        return this->operator<<(item.join(", "));
+    }
+
+    SensordLogger& operator<<(const QString& item)
+    {
+        oss << item.data();
         return *this;
     }
+
+    template <typename T>
+    SensordLogger& operator<<(const T& item)
+    {
+        oss << item;
+        return *this;
+    }
+
 private:
-    static SensordLogLevel outputLevel;
-    bool printLog;
-    static void signalHandler(int param);
-    static void signalFlush(int param);
-    const char* moduleName;
+    std::ostringstream oss;
     SensordLogLevel currentLevel;
-    QString data;
+
+    static SensordLogLevel outputLevel;
+    static bool initialized;
 
 public:
 
-    void setOutputLevel(SensordLogLevel level);
-    SensordLogLevel getOutputLevel();
-
-
+    static void setOutputLevel(SensordLogLevel level);
+    static SensordLogLevel getOutputLevel();
+    static void init();
+    static void close();
 };
 
-#define sensordLogT() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
-#define sensordLogD() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogDebug))
-#define sensordLogW() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogWarning))
-#define sensordLogC() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogCritical))
-
-#define sensordLog() (SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
+#define sensordLogT() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
+#define sensordLogD() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogDebug))
+#define sensordLogW() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogWarning))
+#define sensordLogC() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogCritical))
+#define sensordLog() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
 
 #endif //LOGGING_H
