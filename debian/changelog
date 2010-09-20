@@ -1,3 +1,18 @@
+sensord (0.6.25) unstable; urgency=low
+
+  [Antti Virtanen]
+  * Various cleanup and refactoring
+    - Added some missing includes and removed unnecessary ones.
+    - Changed destructors of classes used in inheritance to virtual.
+    - Some optimizations.
+    - Fixed const correctness of some functions.
+    - Replaced direct usage of qDebug() with logging macros.
+    - Improved error-handling in Loader.
+    - SensordLogger now correctly prints QStrings.
+    - Config/Logging singletons are now unloaded before exitting from main().
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 21 Sep 2010 10:32:41 +0300
+
 sensord (0.6.24) unstable; urgency=low
 
   [Antti Virtanen]

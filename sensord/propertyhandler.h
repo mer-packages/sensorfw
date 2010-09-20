@@ -23,8 +23,8 @@
    </p>
  */
 
-#ifndef PROPERTYHANDLER_H 
-#define PROPERTYHANDLER_H 
+#ifndef PROPERTYHANDLER_H
+#define PROPERTYHANDLER_H
 
 #include <QObject>
 #include <QString>
@@ -40,11 +40,11 @@ class PropertyHandler : public QObject {
 public:
     void setRequest(QString property, QString adaptor, int sessionId, int value);
     void clearRequests(int sessionId);
-    
+
     /**
      * Returns the smallest non zero value. (misnamed!)
      */
-    int getHighestValue(QString property, QString adaptor);
+    int getHighestValue(QString property, QString adaptor) const;
 
 Q_SIGNALS:
     void propertyRequestReceived(QString, QString);

@@ -84,10 +84,9 @@ int main(int argc, char *argv[])
     {sensordLog() << "Starting sensord...";}
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
-    QStringList arguments = app.arguments();
-    Parser *parser = new Parser(arguments);
+    Parser parser(app.arguments());
 
-    if (parser->printHelp())
+    if (parser.printHelp())
     {
         printUsage();
         app.exit(EXIT_SUCCESS);
@@ -95,10 +94,9 @@ int main(int argc, char *argv[])
 
     }
 
-
-    if (parser->configFileInput())
+    if (parser.configFileInput())
     {
-        QString configFile = parser->configFilePath();
+        QString configFile = parser.configFilePath();
         QFile file(configFile);
         if (Config::loadConfig(configFile))
             sensordLogT() << "Config file is loading successfully.";
@@ -107,8 +105,15 @@ int main(int argc, char *argv[])
             sensordLogW() << "Config file error! Load default config file.";
             Config::loadConfig(CONFIG_FILE_PATH);
         }
-    } else
+    }
+    else
         Config::loadConfig(CONFIG_FILE_PATH);
+
+    if (Config::configuration() == NULL)
+    {
+        sensordLogC() << "Failed to load configuration. Aborting.";
+        exit(EXIT_FAILURE);
+    }
 
     signal(SIGUSR1, signalHandler);
     signal(SIGUSR2, signalFlush);
@@ -138,7 +143,7 @@ int main(int argc, char *argv[])
 
 #ifdef PROVIDE_CONTEXT_INFO
 
-    if (parser->contextInfo())
+    if (parser.contextInfo())
     {
         sensordLogD() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
         // FIXME: A HACK: make sure the AlsSensorChannel & ContextSensorChannel are created
@@ -149,7 +154,7 @@ int main(int argc, char *argv[])
 #endif
 
 
-    if (parser->createDaemon())
+    if (parser.createDaemon())
     {
         int pid;
         pid = fork();
@@ -168,7 +173,7 @@ int main(int argc, char *argv[])
     }
 
 
-    if (parser->magnetometerCalibration())
+    if (parser.magnetometerCalibration())
     {
         CalibrationHandler* calibrationHandler_ = new CalibrationHandler(NULL);
         calibrationHandler_->initiateSession();
@@ -176,9 +181,9 @@ int main(int argc, char *argv[])
     }
 
 
-    if (parser->changeLogLevel())
+    if (parser.changeLogLevel())
     {
-        SensordLogger::setOutputLevel(parser->getLogLevel());
+        SensordLogger::setOutputLevel(parser.getLogLevel());
     }
 
 
@@ -188,10 +193,10 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    delete parser;
-    return app.exec();
-
+    int ret = app.exec();
+    Config::close();
     SensordLogger::close();
+    return ret;
 }
 
 void printUsage()

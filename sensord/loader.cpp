@@ -51,14 +51,13 @@ Loader& Loader::instance()
     return the_loader;
 }
 
-bool Loader::loadPluginFile(const QString& name, QString *errorString)
+bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const
 {
     bool    loaded = true;
-    QString error;
     QDir    dir; // TODO
 
     sensordLogT() << "Loading plugin:" << name;
-    
+
     // TODO: perhaps use QCoreApplication::addLibraryPath();
     // TODO: put the path definition to some reasonable place
     QCoreApplication::addLibraryPath("/usr/lib/sensord/");
@@ -70,32 +69,32 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString)
         *errorString = ql.errorString();
         sensordLogC() << "plugin loading error: " << *errorString;
         return false;
-    } 
+    }
 
     QtPluginInstanceFunction instance;
     instance = (QtPluginInstanceFunction)ql.resolve("qt_plugin_instance");
     if (!instance) {
-        error = "qt_plugin_instance not found";
-        sensordLogC() << "plugin loading error: " << error;
-        return false;
-    }
-    
-    QObject* object = instance();
-    if (!object) {
-        error = "not able to instanciate";
-        sensordLogC() << "plugin loading error: " << error;
-        return false;
-    }
-    
-    PluginBase* plugin = qobject_cast<PluginBase*>(object);
-    if (!plugin) {
-        error = "not a Plugin type";
-        sensordLogC() << "plugin loading error: " << error;
+        *errorString = "qt_plugin_instance not found";
+        sensordLogC() << "plugin loading error: " << *errorString;
         return false;
     }
 
-    newPluginNames_.append(name);
-    newPlugins_.append(plugin);
+    QObject* object = instance();
+    if (!object) {
+        *errorString = "not able to instanciate";
+        sensordLogC() << "plugin loading error: " << *errorString;
+        return false;
+    }
+
+    PluginBase* plugin = qobject_cast<PluginBase*>(object);
+    if (!plugin) {
+        *errorString = "not a Plugin type";
+        sensordLogC() << "plugin loading error: " << *errorString;
+        return false;
+    }
+
+    newPluginNames.append(name);
+    newPlugins.append(plugin);
 
     // Get dependencies
     QStringList requiredPlugins(plugin->Dependencies());
@@ -103,16 +102,13 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString)
 
     for (int i = 0; i < requiredPlugins.size() && loaded; i++) {
         if (!(loadedPluginNames_.contains(requiredPlugins.at(i)) ||
-              newPluginNames_.contains(requiredPlugins.at(i)))) 
+              newPluginNames.contains(requiredPlugins.at(i))))
         {
             sensordLogT() << requiredPlugins.at(i) << " is not yet loaded, trying to load.";
             QString resolvedName = resolveRealPluginName(requiredPlugins.at(i));
             sensordLogT() << requiredPlugins.at(i) << "resolved as" << resolvedName << ". Loading";
-            loaded = loadPluginFile(resolvedName, &error);
+            loaded = loadPluginFile(resolvedName, errorString, newPluginNames, newPlugins);
         }
-    }
-    if (!loaded && errorString) {
-        *errorString = error;
     }
     return loaded;
 }
@@ -121,39 +117,37 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
 {
     QString error;
     bool loaded = false;
-    
+    QStringList        newPluginNames;
+    QList<PluginBase*> newPlugins;
+
     if (loadedPluginNames_.contains(name)) {
         sensordLogD() << "Plugin already loaded.";
         return true;
     }
 
-    if (loadPluginFile(name, &error)) {
-        
+    if (loadPluginFile(name, &error, newPluginNames, newPlugins)) {
+
         // Register newly loaded plugins
-        for (int i = newPlugins_.size()-1; i>= 0; i--) {
-            (newPlugins_.at(i))->Register(*this);
+        foreach (PluginBase* base, newPlugins) {
+            base->Register(*this);
         }
-
         // Init newly loaded plugins
-        for (int i = newPlugins_.size()-1; i>= 0; i--) {
-            (newPlugins_.at(i))->Init(*this);
+        foreach (PluginBase* base, newPlugins) {
+            base->Init(*this);
         }
-
-        loadedPluginNames_.append(newPluginNames_);
+        loadedPluginNames_.append(newPluginNames);
         loaded = true;
 
     } else {
-        *errorString = error;
+        if(errorString)
+            *errorString = error;
         loaded = false;
     }
-
-    newPlugins_.clear();
-    newPluginNames_.clear();
 
     return loaded;
 }
 
-QString Loader::resolveRealPluginName(const QString& pluginName)
+QString Loader::resolveRealPluginName(const QString& pluginName) const
 {
     QString deviceId = Config::configuration()->value("deviceId", "default").toString();
     QString key = QString("%1/%2").arg(deviceId).arg(pluginName);

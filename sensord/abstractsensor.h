@@ -65,6 +65,8 @@ class AbstractSensorChannel : public NodeBase {
     //     better to provide truth or own request?)
 
 public:
+    virtual ~AbstractSensorChannel() {};
+
     bool isValid() const { return isValid_; }
 
     SensorError errorCode() const { return errorCode_; }

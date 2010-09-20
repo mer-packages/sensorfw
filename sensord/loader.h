@@ -31,8 +31,6 @@
 #include <QStringList>
 #include "plugin.h"
 
-class FilterBase;
-
 class Loader {
 public:
     static Loader& instance();
@@ -44,12 +42,10 @@ private:
     Loader(const Loader&);
     Loader& operator=(const Loader&);
 
-    bool loadPluginFile(const QString& name, QString *errorString);
-    QString resolveRealPluginName(const QString& pluginName);
+    bool loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const;
+    QString resolveRealPluginName(const QString& pluginName) const;
 
     QStringList        loadedPluginNames_;
-    QStringList        newPluginNames_;
-    QList<PluginBase*> newPlugins_;
 };
 
 #endif

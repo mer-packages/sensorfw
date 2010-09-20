@@ -43,7 +43,7 @@ public:
         addSource(&source_, "source");
     }
 
-    ~BufferReader()
+    virtual ~BufferReader()
     {
         delete[] chunk_;
     }

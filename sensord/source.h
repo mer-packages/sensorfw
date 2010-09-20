@@ -30,7 +30,7 @@
 
 #include "sink.h"
 #include <QSet>
-#include <QDebug>
+
 class SinkBase;
 
 class SourceBase

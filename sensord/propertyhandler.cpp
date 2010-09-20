@@ -23,7 +23,6 @@
    </p>
  */
 
-#include <QDebug>
 #include <QStringList>
 #include "propertyhandler.h"
 #include "logging.h"
@@ -40,7 +39,7 @@ void PropertyHandler::setRequest(QString property, QString adaptor, int sessionI
         m_propertyMap.insert(key, valueMap);
     }
     sensordLogD() << "Setting request for " << property << "for" << adaptor << "from" << sessionId << "to" << value;
-    
+
     // Notify SensorManager that a new request was received.
     emit propertyRequestReceived(property, adaptor);
 }
@@ -53,14 +52,14 @@ void PropertyHandler::clearRequests(int sessionId)
         if (m_propertyMap[key].contains(sessionId)) {
             m_propertyMap[key].remove(sessionId);
             QStringList str(key.split("::"));
-            
+
             // Notify SensorManager that a request has disappeared.
             emit propertyRequestReceived(str.at(0), str.at(1));
         }
     }
 }
 
-int PropertyHandler::getHighestValue(QString property, QString adaptor)
+int PropertyHandler::getHighestValue(QString property, QString adaptor) const
 {
     int highestValue = -1;
     QMap<int, int> valueMap = m_propertyMap.value(QString("%1::%2").arg(property).arg(adaptor));

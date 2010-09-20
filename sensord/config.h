@@ -45,6 +45,7 @@ public:
 
     static Config *configuration();
     static Config *loadConfig(const QString &configFileName);
+    static void close();
 
 private:
     Config(const Config &c);

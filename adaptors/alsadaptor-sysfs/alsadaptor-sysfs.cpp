@@ -31,6 +31,7 @@
 #include "config.h"
 #include "alsadaptor-sysfs.h"
 #include <errno.h>
+#include <stdlib.h>
 #include "filters/utils.h"
 #include <linux/types.h>
 

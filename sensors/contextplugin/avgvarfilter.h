@@ -28,6 +28,7 @@
 #include "sensord/filter.h"
 
 #include <QPair>
+#include <QVector>
 
 class AvgVarFilter : public QObject, public Filter<double, AvgVarFilter, QPair<double, double> >
 {

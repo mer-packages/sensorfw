@@ -6,7 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Lihan Guo <ext-lihan.guo@nokia.com>
-  
+
    This file is part of Sensord.
 
    Sensord is free software; you can redistribute it and/or modify
@@ -24,36 +24,27 @@
  */
 
 
-#include "parser.h" 
+#include "parser.h"
 
-
-Parser::Parser(QStringList &arguments)
+Parser::Parser(QStringList arguments) :
+    printHelp_(false),
+    contextInfo_(true),
+    changeLogLevel_(false),
+    configFile_(false),
+    daemon_(false),
+    magnetometerCalibration_(true),
+    configFilePath_(""),
+    logLevel_("")
 {
-    
-    contextInfo_ = true;
-    magnetometerCalibration_ = true;
-
-    printHelp_ = false;
-    changeLogLevel_ = false;
-    configFile_ = false;
-    daemon_ = false;
-
-    configFilePath_ = "";
-    logLevel_ = "";
-       
-    parsingCommandLine(arguments); 
-
+    parsingCommandLine(arguments);
 }
-
 
 Parser::~Parser()
 {
-} 
+}
 
-
-void Parser::parsingCommandLine(QStringList &arguments)
+void Parser::parsingCommandLine(QStringList arguments)
 {
-   
     foreach (QString opt, arguments)
     {
         QStringList data;
@@ -71,12 +62,12 @@ void Parser::parsingCommandLine(QStringList &arguments)
             configFile_ = true;
             configFilePath_ = data.at(1);
         }
-      
+
         if (opt.contains("--no-context-info"))
             contextInfo_ = false;
 
 
-        if (opt.contains("--no-magnetometer-bg-calibration")) 
+        if (opt.contains("--no-magnetometer-bg-calibration"))
             magnetometerCalibration_ = false;
 
 
@@ -84,63 +75,56 @@ void Parser::parsingCommandLine(QStringList &arguments)
             daemon_ = true;
 
         if (opt.contains("-h")||opt.contains("--help"))
-            printHelp_ = true; 
-	 
+            printHelp_ = true;
+
     }
 }
 
-
-bool Parser::printHelp()
+bool Parser::printHelp() const
 {
     return printHelp_;
 }
 
-
-bool Parser::changeLogLevel()
+bool Parser::changeLogLevel() const
 {
     return changeLogLevel_;
 }
 
-
-SensordLogLevel Parser:: getLogLevel()
+SensordLogLevel Parser::getLogLevel() const
 {
-
-    if (logLevel_.operator==("test")) 
+    if (logLevel_ == "test")
         return SensordLogTest;
-    if (logLevel_.operator==("debug"))
+    else if (logLevel_ == "debug")
         return SensordLogDebug;
-    if (logLevel_.operator==("warning")) 
+    else if (logLevel_ == "warning")
         return SensordLogWarning;
-    if (logLevel_.operator==("critical")) 
+    else if (logLevel_ == "critical")
         return SensordLogCritical;
+    else
+        return SensordLogWarning;
 }
 
-
-bool Parser:: configFileInput()
+bool Parser::configFileInput() const
 {
     return configFile_;
 }
 
-
-QString Parser:: configFilePath()  
+const QString& Parser::configFilePath() const
 {
-    return configFilePath_;  
+    return configFilePath_;
 }
 
-    
-bool Parser::contextInfo()
+bool Parser::contextInfo() const
 {
     return contextInfo_;
 }
 
-
-bool Parser::magnetometerCalibration()
+bool Parser::magnetometerCalibration() const
 {
-    return magnetometerCalibration_; 
+    return magnetometerCalibration_;
 }
 
-
-bool Parser::createDaemon()
+bool Parser::createDaemon() const
 {
     return daemon_;
 }

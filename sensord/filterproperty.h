@@ -30,11 +30,10 @@
 #include <QObject>
 #include <QAtomicPointer>
 #include <QMetaType>
-#include <QDebug>
 
 /**
  * @brief Base class for FilterProperty.
- * 
+ *
  * Currently no functionality.
  */
 class FilterPropertyBase {};
@@ -42,17 +41,17 @@ class FilterPropertyBase {};
 /**
  * @brief Tracker class for FilterProperty.
  *
- * Provides functionality for tracking changes in FilterProperties. \c trackWrite() 
- * function is run when a property value this tracker has been attached to has been 
+ * Provides functionality for tracking changes in FilterProperties. \c trackWrite()
+ * function is run when a property value this tracker has been attached to has been
  * set.
  */
 class PropertyTracker
 {
 public:
     virtual ~PropertyTracker() {}
-    
+
     /**
-     * Run when a property value has been set in a FilterProperty this tracker 
+     * Run when a property value has been set in a FilterProperty this tracker
      * is monitoring.
      * @param Pointer to the calling FilterPropertyBase.
      */
@@ -65,7 +64,7 @@ class FilterProperty;
 
 /**
  * @brief Property class for use in filters and adaptors.
- * 
+ *
  * Provides thread safe way of using QProperties in filters and adaptors.
  * See e.g. OrientationInterpreter for sample use.
  */
@@ -158,4 +157,3 @@ private:
 };
 
 #endif
-

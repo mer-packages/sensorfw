@@ -44,7 +44,7 @@ Config *Config::loadConfig(const QString &configFileName) {
     Config *config = 0;
     QFile file(configFileName);
     if (file.open(QIODevice::ReadOnly))
-      file.close();
+        file.close();
     else
         return config;
     if (static_configuration) {
@@ -68,4 +68,9 @@ Config *Config::configuration() {
         sensordLogW() << "Configuration has not been loaded";
     }
     return static_configuration;
+}
+
+void Config::close() {
+    delete static_configuration;
+    static_configuration = 0;
 }

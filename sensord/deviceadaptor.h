@@ -31,7 +31,6 @@
 
 #include <QString>
 #include <QHash>
-#include <QDebug>
 #include "logging.h"
 #include "nodebase.h"
 
@@ -66,10 +65,10 @@ public:
 
     RingBufferBase* buffer() { return buffer_; }
 
-    int referenceCount() { return count_; }
+    int referenceCount() const { return count_; }
     int addReference() { count_ += 1; return count_; }
     int removeReference() { count_ -= 1; return count_; }
-    
+
 protected:
     QString         name_; // note that name is also stored as key of the QHash entry
     QString         description_;
@@ -103,7 +102,7 @@ public:
         setPollingInterval(interval);
     }
 
-    virtual bool isValid() {return isValid_;}
+    virtual bool isValid() const {return isValid_;}
 
     //~ void setStandbyOverride(unsigned override) {
         //~ standbyOverride_ = (override>0) ? true : false;
@@ -137,7 +136,7 @@ protected:
     void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
     void addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
 
-    virtual int getPollingInterval() { return 0; }
+    virtual int getPollingInterval() const { return 0; }
     virtual bool setPollingInterval(int f) { Q_UNUSED(f); return false; }
 
     QString                             id_;

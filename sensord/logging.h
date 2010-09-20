@@ -52,7 +52,7 @@ public:
 
     SensordLogger& operator<<(const QString& item)
     {
-        oss << item.data();
+        oss << item.toStdString();
         return *this;
     }
 

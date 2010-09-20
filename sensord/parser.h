@@ -6,7 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Lihan Guo <ext-lihan.guo@nokia.com>
-  
+
    This file is part of Sensord.
 
    Sensord is free software; you can redistribute it and/or modify
@@ -26,13 +26,8 @@
 #ifndef PARSER_H
 #define PARSER_H
 
-
-#include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QMap>
-#include <QDebug>
-
 #include "logging.h"
 
 class Parser
@@ -40,22 +35,22 @@ class Parser
 
 public:
 
-    Parser(QStringList &arguments);
-    ~Parser();   
+    Parser(QStringList arguments);
+    ~Parser();
 
-    void parsingCommandLine(QStringList &arguments);
-    bool printHelp();
-    bool changeLogLevel();
-    SensordLogLevel getLogLevel();
+    bool printHelp() const;
+    bool changeLogLevel() const;
+    SensordLogLevel getLogLevel() const;
 
-    bool configFileInput();
-    QString configFilePath();  
-    
-    bool contextInfo();
-    bool magnetometerCalibration();
-    bool createDaemon();
-   
+    bool configFileInput() const;
+    const QString& configFilePath() const;
+
+    bool contextInfo() const;
+    bool magnetometerCalibration() const;
+    bool createDaemon() const;
+
 private:
+    void parsingCommandLine(QStringList arguments);
 
     bool printHelp_;
     bool contextInfo_;
@@ -63,11 +58,9 @@ private:
     bool configFile_;
     bool daemon_;
     bool magnetometerCalibration_;
-   
+
     QString configFilePath_;
     QString logLevel_;
-
-
 };
 
 #endif // PARSER_H

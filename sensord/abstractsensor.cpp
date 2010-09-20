@@ -29,8 +29,9 @@
 #include <QStringList>
 #include <QVariant>
 
-#include "sensord/sensormanager.h"
+#include "sensormanager.h"
 #include "idutils.h"
+#include "logging.h"
 
 #include "abstractsensor.h"
 
@@ -74,8 +75,6 @@ int AbstractSensorChannel::interval() const
 
     return SensorManager::instance().propertyHandler().getHighestValue("interval", adaptorList_.at(0));
 }
-
-
 
 bool AbstractSensorChannel::start(int sessionId) {
 #ifdef USE_SOCKET
@@ -125,11 +124,10 @@ void AbstractSensorChannel::setInterval(int sessionId, int value)
 {
     // Verify that requested value is in list of allowed values.
     bool validRequest = false;
-    for (int i = 0; i < intervalList_.size(); i++) {
-        if (intervalList_.at(i).min <= value &&
-            intervalList_.at(i).max >= value) {
-                validRequest = true;
-            }
+    foreach (DataRange range, intervalList_) {
+        if (range.min <= value && range.max >= value) {
+            validRequest = true;
+        }
     }
 
     if (!validRequest) {
@@ -163,7 +161,7 @@ bool AbstractSensorChannel::writeToClients(const void* source, int size)
 {
     foreach(int sessionId, activeSessions_) {
         if (!(SensorManager::instance().write(sessionId, source, size))) {
-            qDebug() << "[AbstractSensor]: Failed to write to session" << sessionId << activeSessions_;
+            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
             return false;
         }
     }

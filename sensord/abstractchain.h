@@ -26,7 +26,6 @@
 #ifndef ABSTRACT_CHAIN_H
 #define ABSTRACT_CHAIN_H
 
-#include <QDebug>
 #include <QMap>
 
 #include "ringbuffer.h"
@@ -47,7 +46,7 @@ class AbstractChain : public AbstractSensorChannel
 {
     Q_OBJECT;
 public:
-    ~AbstractChain() {
+    virtual ~AbstractChain() {
         // Who owns the output buffers?
     }
 
@@ -57,12 +56,11 @@ public:
      * @return Pointer to the buffer with the given name. If named buffer
      *         is not found, \c NULL is returned.
      */
-    RingBufferBase* findBuffer(const QString& name) {
-        if (!outputBufferMap_.contains(name)) {
-            qDebug() << "no such outputbuffer";
+    RingBufferBase* findBuffer(const QString& name) const {
+        QMap<QString, RingBufferBase*>::const_iterator it = outputBufferMap_.find(name);
+        if (it == outputBufferMap_.end())
             return NULL;
-        }
-        return outputBufferMap_.value(name);
+        return it.value();
     }
 
 protected:
