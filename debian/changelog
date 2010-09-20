@@ -4,7 +4,7 @@ sensord (0.6.24) unstable; urgency=low
   * SensordLogger rewritten: new implementation should be lot of faster and random core dumps should disapper. Logging macros work as before. Fixes: NB#191465.
   * Moved signal handler implementations to main.cpp and signal() is called only for main thread. Added new function SensorManager::printStatus() which implements debug printing for signal handler.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 17 Sep 2010 18:02:12 +0300
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 20 Sep 2010 10:32:41 +0300
 
 sensord (0.6.23) unstable; urgency=low
 
