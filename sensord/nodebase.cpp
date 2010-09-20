@@ -240,23 +240,21 @@ bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool overrid
         }
     }
 
-    bool newValue = m_standbyRequestList.size() > 0;
-    bool returnValue = true;
-
-    // Implemented locally?
+    // Re-evaluate state for nodes that implement handling locally.
     if (m_standbySourceList.size() == 0)
     {
-        return setStandbyOverride(newValue);
+        return setStandbyOverride(m_standbyRequestList.size() > 0);
     }
 
     // Pass request to sources
+    bool returnValue = true;
     foreach (NodeBase* node, m_standbySourceList)
     {
-        returnValue = returnValue && node->setStandbyOverrideRequest(sessionId, newValue);
+        returnValue = node->setStandbyOverrideRequest(sessionId, override) && returnValue;
     }
 
-    // Revert changes if any source failed.
-    if (newValue == true && returnValue == false)
+    // Revert changes if any source failed while trying to set true.
+    if (override == true && returnValue == false)
     {
         foreach (NodeBase* node, m_standbySourceList)
         {
