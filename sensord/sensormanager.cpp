@@ -94,7 +94,7 @@ SensorManager::SensorManager()
     mceWatcher_ = new MceWatcher(this);
     connect(mceWatcher_, SIGNAL(displayStateChanged(const bool)),
             this, SLOT(displayStateChanged(const bool)));
-#endif SENSORFW_MCE_WATCHER
+#endif //SENSORFW_MCE_WATCHER
 }
 
 SensorManager::~SensorManager()
@@ -115,16 +115,16 @@ SensorManager::~SensorManager()
     if (socketHandler_) {
         delete socketHandler_;
     }
-    
+
     if (pipeNotifier_) delete pipeNotifier_;
-    
+
     if (pipefds_[0]) close(pipefds_[0]);
     if (pipefds_[1]) close(pipefds_[1]);
 #endif
 
 #ifdef SENSORFW_MCE_WATCHER
     delete mceWatcher_;
-#endif SENSORFW_MCE_WATCHER
+#endif //SENSORFW_MCE_WATCHER
 }
 
 void SensorManager::setError(SensorManagerError errorCode, const QString& errorString)
@@ -298,7 +298,7 @@ int SensorManager::requestListenSensor(const QString& id)
     {
         sensorInstanceMap_[cleanId].listenSessions_.append(sessionId);
     }
-    else 
+    else
     {
         AbstractSensorChannel* sensor = addSensor(id, sessionId, false);
         if ( sensor == NULL )
@@ -527,7 +527,7 @@ FilterBase* SensorManager::instantiateFilter(const QString& id)
     FilterBase* filter = NULL;
 
     if (filterFactoryMap_.contains(id)) {
-        filter = filterFactoryMap_[id]();        
+        filter = filterFactoryMap_[id]();
     } else {
         sensordLogW() << "Filter " << id << "not found.";
     }
@@ -546,14 +546,14 @@ bool SensorManager::write(int id, const void* source, int size)
     pipeData[2] = (int)buffer;
 
     memcpy(buffer, source, size);
-    
+
     if (::write(pipefds_[1], pipeData, sizeof(pipeData)) < (int)sizeof(pipeData)) {
         sensordLogW() << "Failed to write all data to pipe.";
         return false;
     }
-    
+
     return true;
-    // This used to be the old method, but must switch threads. 
+    // This used to be the old method, but must switch threads.
     // Thus using the writeout function through pipe.
     //return socketHandler_->write(id, source, size);
 }
@@ -622,6 +622,31 @@ void SensorManager::displayStateChanged(const bool displayState)
                 adaptor.adaptor_->standby();
             }
         }
+    }
+}
+
+void SensorManager::printStatus(QStringList& output) const
+{
+    output.append("  Adaptors:\n");
+    foreach (QString key, deviceAdaptorInstanceMap_.keys()) {
+        const DeviceAdaptorInstanceEntry& entry = deviceAdaptorInstanceMap_[key];
+        output.append(QString("    %1 [%2 listener(s)]\n").arg(entry.type_).arg(entry.cnt_));
+    }
+
+    output.append("  Chains:\n");
+    foreach (QString key, chainInstanceMap_.keys()) {
+        const ChainInstanceEntry& entry = chainInstanceMap_[key];
+        output.append(QString("    %1 [%2 listener(s)]. %3\n").arg(entry.type_).arg(entry.cnt_).arg(entry.chain_->running()?"Running":"Stopped"));
+    }
+
+    output.append("  Logical sensors:\n");
+    foreach (QString key, sensorInstanceMap_.keys()) {
+        const SensorInstanceEntry& entry = sensorInstanceMap_[key];
+        bool control = true;
+        if (entry.controllingSession_ <= 0) {
+            control = false;
+        }
+        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control? "Control +":"No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running()?"Running":"Stopped"));
     }
 }
 

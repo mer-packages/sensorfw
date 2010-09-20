@@ -43,7 +43,7 @@
 #ifdef USE_SOCKET
 class QSocketNotifier;
 class SocketHandler;
-#endif 
+#endif
 
 class MceWatcher;
 
@@ -90,13 +90,15 @@ class SensorManager : public QObject
     Q_PROPERTY(QString errorString READ errorString)
 
 public:
+    void printStatus(QStringList& output) const;
+
     SensorManagerError errorCode() const { return errorCode_; }
     int errorCodeInt() const { return static_cast<int>(errorCode_); }
     QString errorString() const { return errorString_; }
 
     static SensorManager& instance();
     bool registerService();
-    
+
     template<class SENSOR_TYPE>
     void registerSensor(const QString& sensorName)
     {
@@ -112,7 +114,7 @@ public:
         {
             sensorFactoryMap_[typeName] = SENSOR_TYPE::factoryMethod;
         }
-        
+
         if (sensorFactoryMap_[typeName] != SENSOR_TYPE::factoryMethod) {
             sensordLogW() << "Sensor type doesn't match!";
             return;
@@ -134,7 +136,7 @@ public:
         {
             chainFactoryMap_[typeName] = CHAIN_TYPE::factoryMethod;
         }
-        
+
         if (chainFactoryMap_[typeName] != CHAIN_TYPE::factoryMethod) {
             sensordLogW() << "Chain type doesn't match!";
             return;
@@ -161,13 +163,13 @@ public:
         {
             deviceAdaptorFactoryMap_[typeName] = DEVICE_ADAPTOR_TYPE::factoryMethod;
         }
-        
+
         if (deviceAdaptorFactoryMap_[typeName] != DEVICE_ADAPTOR_TYPE::factoryMethod) {
             sensordLogW() << "Device adaptor type doesn't match!";
             return;
         }
     }
-    
+
     DeviceAdaptor* requestDeviceAdaptor(const QString& id);
     void releaseDeviceAdaptor(const QString& id);
 
@@ -185,11 +187,11 @@ public:
     /**
      * Provides an instance of the requested filter.
      * @param id "name" of the filter to return.
-     * @return Pointer to instance of the requested filter. The instance must be 
+     * @return Pointer to instance of the requested filter. The instance must be
      *         deleted when not needed anymore. Filter instances are never shared
      *         between filter chains.
      */
-    FilterBase* instantiateFilter(const QString& id);    
+    FilterBase* instantiateFilter(const QString& id);
 
     /**
      * Returns a reference to the PropertyHandler.
@@ -202,7 +204,7 @@ public:
 
 #ifdef USE_SOCKET
     bool write(int id, const void* source, int size);
-    
+
 private Q_SLOTS:
     void lostClient(int sessionId);
 
@@ -269,9 +271,6 @@ private:
 
     SensorManagerError                             errorCode_;
     QString                                        errorString_;
-
-    // Declare SensordLogger as friend to allow flushing current state
-    friend class SensordLogger;
 };
 
 #endif // SENSORMANAGER_H

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,77 +27,58 @@
 #include "logging.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <fcntl.h>
-#include <QDateTime>
-#include <QFile>
 #include <iostream>
-#include <signal.h>
-#include <sensormanager.h>
 
 #ifdef SENSORD_USE_SYSLOG
 #include <syslog.h>
+#else
+#include <QDateTime>
 #endif
 
 SensordLogLevel SensordLogger::outputLevel = SensordLogWarning;
+bool SensordLogger::initialized = false;
 
-SensordLogger::SensordLogger (const char *module, const char* func, 
-                              const char *file, int line, SensordLogLevel level)
-    : QTextStream(), moduleName(module), currentLevel(level)
+SensordLogger::SensordLogger (const char* func, const char *file, int line, SensordLogLevel level) :
+    currentLevel(level)
 {
-#ifdef SENSORD_USE_SYSLOG
-    openlog(NULL, LOG_PERROR, LOG_DAEMON);
-#endif
-    printLog = ((level >= SensordLogTest) && (level < SensordLogN)) && (level >= outputLevel);
+    init();
 
-    signal(SIGUSR1, signalHandler);
-    signal(SIGUSR2, signalFlush);
-
-    setString(&data);
-
-    if (printLog)
-    {
-        //add level
-        switch (level) {
-            case SensordLogTest:
-                *this << QString("*TEST*").toLocal8Bit().data();
-                break;
-            case SensordLogDebug:
-                *this << QString("*DEBUG*").toLocal8Bit().data();
-                break;
-            case SensordLogWarning:
-                *this << QString("*WARNING*").toLocal8Bit().data();
-                break;
-            case SensordLogCritical:
-                *this << QString("*CRITICAL*").toLocal8Bit().data();
-                break;
-            case SensordLogN:
-            default:
-                break;
-        }
-
-        //add time stamp
-        *this << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
-
-#ifndef SENSORD_USE_SYSLOG
-        //add module name
-        *this << QString("[" + QString(module) + "]").toLocal8Bit().data();
-#endif
-
-        //File, line and function
-        *this << QString("[" + QString(file) + ":" + QString::number(line) + ":" + QString(func) + "]").toLocal8Bit().data();
-
+    switch (level) {
+        case SensordLogTest:
+            oss << "*TEST* ";
+            break;
+        case SensordLogDebug:
+            oss << "*DEBUG* ";
+            break;
+        case SensordLogWarning:
+            oss << "*WARNING* ";
+            break;
+        case SensordLogCritical:
+            oss << "*CRITICAL* ";
+            break;
+        case SensordLogN:
+        default:
+            break;
     }
-
+    oss << "[" << file << ":" << line << ":" << func << "]: ";
 }
 
 SensordLogger::~SensordLogger()
 {
-    if (printLog) {
+#ifndef SENSORD_USE_SYSLOG
+    std::ostringstream prefix;
+    prefix << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
+    prefix << " [sensord] ";
+    prefix << oss.str();
+    oss.str(prefix.str());
+#endif
 
+    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= outputLevel))
+    {
 #ifdef SENSORD_USE_SYSLOG
         int logPriority;
-    
+
         switch (currentLevel) {
             case SensordLogN:
             default:
@@ -113,81 +95,44 @@ SensordLogger::~SensordLogger()
                 logPriority = LOG_CRIT;
                 break;
         }
-    
-        syslog(logPriority, "%s", data.toLocal8Bit().data());
-        closelog();
+
+        syslog(logPriority, "%s", oss.str().c_str());
 #else
-        fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
-        QTextStream::operator<<('\n');
-        QTextStream(stderr) << data;
+        std::cerr << oss.str() << '\n';
 #endif
     }
-
-    setDevice(NULL);
 }
 
 void SensordLogger::setOutputLevel(SensordLogLevel level)
 {
-  outputLevel = level;
+    outputLevel = level;
 }
-
 
 SensordLogLevel SensordLogger::getOutputLevel()
 {
-  return outputLevel;
+    return outputLevel;
 }
 
-void SensordLogger::signalHandler(int param) 
+void SensordLogger::init()
 {
-    Q_UNUSED(param);
-    outputLevel = static_cast<SensordLogLevel> ((static_cast<int>(outputLevel) + 1) % SensordLogN);
-
-    std::cerr << "Signal Handled \n";
-    std::cerr << "New debugging level: " << outputLevel << "\n";
-    //std::cerr << "Debugging output " << (printDebug?"enabled":"disabled") << "\n";
-}
-
-void SensordLogger::signalFlush(int param)
-{
-    Q_UNUSED(param);
-
-    QStringList output;
-
-    output.append("Flushing sensord state\n");
-    output.append(QString("  Logging level: %1\n").arg(outputLevel));
-
-    SensorManager& sm = SensorManager::instance();
-    output.append("  Adaptors:\n");
-    foreach (QString key, sm.deviceAdaptorInstanceMap_.keys()) {
-        DeviceAdaptorInstanceEntry& entry = sm.deviceAdaptorInstanceMap_[key];
-        output.append(QString("    %1 [%2 listener(s)]\n").arg(entry.type_).arg(entry.cnt_));
-    }
-
-    output.append("  Chains:\n");
-    foreach (QString key, sm.chainInstanceMap_.keys()) {
-        ChainInstanceEntry& entry = sm.chainInstanceMap_[key];
-        output.append(QString("    %1 [%2 listener(s)]. %3\n").arg(entry.type_).arg(entry.cnt_).arg(entry.chain_->running()?"Running":"Stopped"));
-    }
-
-    output.append("  Logical sensors:\n");
-    foreach (QString key, sm.sensorInstanceMap_.keys()) {
-        SensorInstanceEntry& entry = sm.sensorInstanceMap_[key];
-        bool control = true;
-        if (entry.controllingSession_ <= 0) {
-            control = false;
-        }
-        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control? "Control +":"No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running()?"Running":"Stopped"));
-    }
-
-    foreach (QString line, output) {
-
+    if(!initialized)
+    {
 #ifdef SENSORD_USE_SYSLOG
-        openlog(NULL, LOG_PERROR, LOG_DAEMON);
-        syslog(LOG_DEBUG, "%s", line.toLocal8Bit().data());
-        closelog();
+        openlog("sensord", LOG_PID, LOG_DAEMON);
 #else
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
-        QTextStream(stderr) << line;
 #endif
+        initialized = true;
+    }
+}
+
+void SensordLogger::close()
+{
+    if(initialized)
+    {
+#ifdef SENSORD_USE_SYSLOG
+        closelog();
+#endif
+        initialized = false;
     }
 }

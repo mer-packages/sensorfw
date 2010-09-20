@@ -1,5 +1,9 @@
 sensord (0.6.24) unstable; urgency=low
 
+  [Antti Virtanen]
+  * SensordLogger rewritten: new implementation should be lot of faster and random core dumps should disapper. Logging macros work as before. Fixes: NB#191465.
+  * Moved signal handler implementations to main.cpp and signal() is called only for main thread. Added new function SensorManager::printStatus() which implements debug printing for signal handler.
+
   [Timo Rongas]
   * Fixes NB#192707 - Sensord polls constantly on otherwise idle device
 

@@ -29,6 +29,8 @@
 
 #include <QtCore/QCoreApplication>
 #include <QDBusConnection>
+#include <signal.h>
+#include <iostream>
 
 #include "config.h"
 #include "sensormanager.h"
@@ -51,17 +53,43 @@
 
 void printUsage();
 
+void signalHandler(int param)
+{
+    Q_UNUSED(param);
+
+    SensordLogger::setOutputLevel(static_cast<SensordLogLevel> ((static_cast<int>(SensordLogger::getOutputLevel()) + 1) % SensordLogN));
+
+    std::cerr << "New debugging level: " << SensordLogger::getOutputLevel() << "\n";
+}
+
+void signalFlush(int param)
+{
+    Q_UNUSED(param);
+
+    QStringList output;
+
+    output.append("Flushing sensord state\n");
+    output.append(QString("  Logging level: %1\n").arg(SensordLogger::getOutputLevel()));
+    SensorManager::instance().printStatus(output);
+
+    foreach (QString line, output) {
+        sensordLogD() << line.toLocal8Bit().data();
+    }
+}
+
 int main(int argc, char *argv[])
 {
+    SensordLogger::init();
+
     {sensordLog() << "Starting sensord...";}
-    QCoreApplication app(argc, argv);   
+    QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     QStringList arguments = app.arguments();
     Parser *parser = new Parser(arguments);
 
     if (parser->printHelp())
     {
-        printUsage();        
+        printUsage();
         app.exit(EXIT_SUCCESS);
         return 0;
 
@@ -69,20 +97,22 @@ int main(int argc, char *argv[])
 
 
     if (parser->configFileInput())
-    {  
+    {
         QString configFile = parser->configFilePath();
         QFile file(configFile);
-        if (Config::loadConfig(configFile))  
+        if (Config::loadConfig(configFile))
             sensordLogT() << "Config file is loading successfully.";
         else
-        {    
+        {
             sensordLogW() << "Config file error! Load default config file.";
             Config::loadConfig(CONFIG_FILE_PATH);
         }
     } else
         Config::loadConfig(CONFIG_FILE_PATH);
 
- 
+    signal(SIGUSR1, signalHandler);
+    signal(SIGUSR2, signalFlush);
+
     // TODO: move these to plugins...
     qDBusRegisterMetaType<XYZ>();
     qDBusRegisterMetaType<Compass>();
@@ -105,9 +135,9 @@ int main(int argc, char *argv[])
     //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
     //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
 #endif
- 
-#ifdef PROVIDE_CONTEXT_INFO    
- 
+
+#ifdef PROVIDE_CONTEXT_INFO
+
     if (parser->contextInfo())
     {
         sensordLogD() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
@@ -115,22 +145,22 @@ int main(int argc, char *argv[])
         sm.requestControlSensor("alssensor");
         sm.requestControlSensor("contextsensor");
     }
-    
+
 #endif
 
 
     if (parser->createDaemon())
     {
-        int pid; 
+        int pid;
         pid = fork();
-        
+
         if(pid < 0)
         {
             sensordLogC() << "Failed to create a daemon.";
             exit(EXIT_FAILURE);
         } else {
             if (pid > 0)
-            {    
+            {
                 sensordLogW() << "Create a daemon";
                 exit(EXIT_SUCCESS);
             }
@@ -148,10 +178,7 @@ int main(int argc, char *argv[])
 
     if (parser->changeLogLevel())
     {
-        SensordLogLevel level = parser->getLogLevel();    
-        SensordLogger* logger = new SensordLogger("Sensord", __PRETTY_FUNCTION__, __FILE__, __LINE__, level);
-        logger -> setOutputLevel(level);
-        delete logger;
+        SensordLogger::setOutputLevel(parser->getLogLevel());
     }
 
 
@@ -163,23 +190,24 @@ int main(int argc, char *argv[])
 
     delete parser;
     return app.exec();
-}
 
+    SensordLogger::close();
+}
 
 void printUsage()
 {
     qDebug() << "Usage: sensord [OPTIONS]";
     qDebug() << " -d, --daemon                     Detach from terminal and run as daemon.\n";
-    qDebug() << " -l=N, --log-level=N              Use logging level N. Messages are logged for";    
-    qDebug() << "                                  the given and higher priority levels. Level";    
-    qDebug() << "                                  can also be notched up by sending SIGUSR1 to";    
-    qDebug() << "                                  the process. Valid values for N are: 'test',";    
-    qDebug() << "                                  'debug', 'warning', 'critical'.\n";    
+    qDebug() << " -l=N, --log-level=N              Use logging level N. Messages are logged for";
+    qDebug() << "                                  the given and higher priority levels. Level";
+    qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
+    qDebug() << "                                  the process. Valid values for N are: 'test',";
+    qDebug() << "                                  'debug', 'warning', 'critical'.\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /etc/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";
     qDebug() << "                                  framework.\n";
     qDebug() << " --no-magnetometer-bg-calibration Do not start calibration of magnetometer in";
     qDebug() << "                                  the background.\n";
-    qDebug() << " -h, --help                       Show usage info and exit."; 
+    qDebug() << " -h, --help                       Show usage info and exit.";
 }
