@@ -1,6 +1,6 @@
 TEMPLATE = subdirs
 CONFIG += ordered
-SUBDIRS = datatypes \
+SUBDIRS = datatypes \ 
           adaptors \
           filters \
           sensors \
@@ -16,6 +16,7 @@ include( common-config.pri )
 
 PKGCONFIGFILES.files = sensord.pc
 PKGCONFIGFILES.path = /usr/lib/pkgconfig
+PKGCONFIGFILES.commands = sed -i \"s/Version:.*$$/Version: `head -n1 debian/changelog | cut -f 2 -d\' \' | tr -d \'()\'`/\" sensord.pc
 
 QTCONFIGFILES.files = sensord.prf
 QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
