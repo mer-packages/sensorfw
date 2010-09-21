@@ -29,47 +29,36 @@
 #include <stdio.h>
 #include <fcntl.h>
 #include <iostream>
-
-#ifdef SENSORD_USE_SYSLOG
+#include <QMutexLocker>
 #include <syslog.h>
-#endif
 #include <QDateTime>
 
 SensordLogLevel SensordLogger::outputLevel = SensordLogWarning;
 bool SensordLogger::initialized = false;
-int SensordLogger::m_target=STDERR_FILENO;
-QMutex SensordLogger::m_mutex;
-QMutexLocker SensordLogger::m_locker(&m_mutex);
-QFile* SensordLogger::m_file;
+int SensordLogger::logTarget = 0;
+QMutex SensordLogger::mutex;
+std::ofstream* SensordLogger::logFile = 0;
 
 SensordLogger::SensordLogger (const char* func, const char *file, int line, SensordLogLevel level) :
         currentLevel(level)
 {
-    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= getOutputLevel()))
+    if (!initialized || !isLoggable(level))
         return;
-
-    init();
-    oss << logLevelToText(level).toLocal8Bit().data();
+    oss << logLevelToText(level);
     oss << "[" << file << ":" << line << ":" << func << "]: ";
 }
 
 SensordLogger::~SensordLogger()
 {
-
-    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= getOutputLevel()))
+    if (!initialized || !isLoggable(currentLevel))
         return;
 
-#ifdef SENSORD_USE_SYSLOG
-    syslog(logPriority(currentLevel), "%s", oss.str().c_str());
-#endif
-
-    std::ostringstream prefix;
-    prefix << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
-    prefix << " [sensord] ";
-    prefix << oss.str();
-    prefix << '\n';
-    oss.str(prefix.str());
     printToTarget(oss.str().c_str());
+}
+
+bool SensordLogger::isLoggable(int level)
+{
+    return ((level >= SensordLogTest) && (level < SensordLogN) && (level >= getOutputLevel()));
 }
 
 void SensordLogger::setOutputLevel(SensordLogLevel level)
@@ -82,83 +71,90 @@ SensordLogLevel SensordLogger::getOutputLevel()
     return outputLevel;
 }
 
-void SensordLogger::init()
-{
-    if(!initialized)
-    {
-#ifdef SENSORD_USE_SYSLOG
-        openlog("sensord", LOG_PID, LOG_DAEMON);
-#endif
-        initTarget();
-        initialized = true;
-    }
-}
-
 void SensordLogger::close()
 {
-    if(initialized)
+    if (initialized)
     {
-#ifdef SENSORD_USE_SYSLOG
         closelog();
-#endif
+        delete logFile;
+        logFile = 0;
         initialized = false;
     }
 }
 
+void SensordLogger::printToTarget(const char* data) const {
 
-void SensordLogger::printToTarget(QString data){
+    if (logTarget == 0)
+        return;
+    QMutexLocker locker(&mutex);
+    std::ostringstream fdLogData;
 
-    m_locker.relock();
-
-    if ((m_target & STDERR_FILENO) > 0){
-        QTextStream(stderr) << data;
+    if (logTarget & STDERR_FILENO ||
+        logTarget & STDOUT_FILENO ||
+        logTarget & 4) {
+        fdLogData << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
+        fdLogData << " [sensord] ";
+        fdLogData << data;
+        fdLogData << '\n';
+    }
+    if (logTarget & STDERR_FILENO) {
+        std::cerr << fdLogData.str().c_str();
     }
 
-    if ((m_target & STDOUT_FILENO) > 0){
-        QTextStream(stdout) << data;
+    if (logTarget & STDOUT_FILENO) {
+        std::cout << fdLogData.str().c_str();
     }
 
-    if ((m_target & 4) > 0){
-        QTextStream(m_file)<<data;
+    if (logTarget & 4) {
+        if(logFile)
+            *logFile << fdLogData.str().c_str();
     }
-    m_locker.unlock();
+
+    if (logTarget & 8) {
+        syslog(logPriority(currentLevel), "%s", data);
+    }
 }
 
-
-void SensordLogger::initTarget(){
-    if ((m_target & STDERR_FILENO) > 0){
+void SensordLogger::init(int target, QString logFilePath) {
+    if (initialized)
+        return;
+    logTarget = target;
+    if (target & STDERR_FILENO){
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
     }
 
-    if ((m_target & STDOUT_FILENO) > 0){
+    if (target & STDOUT_FILENO){
         fcntl(STDOUT_FILENO, F_SETFL, O_WRONLY);
     }
 
-    if ((m_target & 4) > 0){
-        if (m_file==0) m_file = new QFile(QString("/var/log/sensord.log"));
-        if (!m_file->isOpen())  m_file->open(QIODevice::WriteOnly | QIODevice::Text);
+    if (target & 4){
+        logFile = new std::ofstream(logFilePath.toStdString().c_str(), std::ios::out | std::ios::app);
+        if(!logFile->is_open())
+            delete logFile;
     }
-}
 
+    if (target & 8){
+        openlog("sensord", LOG_PID, LOG_DAEMON);
+    }
+    initialized = true;
+}
 
 int SensordLogger::logPriority(int currentLevel){
-#ifdef SENSORD_USE_SYSLOG
     switch (currentLevel) {
-    case SensordLogN:
-    default:
-    case SensordLogTest:
-        return LOG_DEBUG;
-    case SensordLogDebug:
-        return LOG_INFO;
-    case SensordLogWarning:
-        return LOG_WARNING;
-    case SensordLogCritical:
-        return LOG_CRIT;
+        case SensordLogN:
+        default:
+        case SensordLogTest:
+            return LOG_DEBUG;
+        case SensordLogDebug:
+            return LOG_INFO;
+        case SensordLogWarning:
+            return LOG_WARNING;
+        case SensordLogCritical:
+            return LOG_CRIT;
     }
-#endif
 }
 
-QString SensordLogger::logLevelToText(int level){
+const char* SensordLogger::logLevelToText(int level){
     switch (level) {
     case SensordLogTest:
         return "*TEST* ";

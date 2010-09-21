@@ -34,7 +34,9 @@ Parser::Parser(QStringList arguments) :
     daemon_(false),
     magnetometerCalibration_(true),
     configFilePath_(""),
-    logLevel_("")
+    logLevel_(SensordLogWarning),
+    logTarget_(8),
+    logFilePath_("/var/log/sensord.log")
 {
     parsingCommandLine(arguments);
 }
@@ -53,13 +55,29 @@ void Parser::parsingCommandLine(QStringList arguments)
         {
             data = opt.split("=");
             changeLogLevel_ = true;
-            logLevel_ = data.at(1);
+            QString logLevel = data.at(1);
+            if (logLevel == "test")
+                logLevel_ = SensordLogTest;
+            else if (logLevel == "debug")
+                logLevel_ = SensordLogDebug;
+            else if (logLevel == "warning")
+                logLevel_ = SensordLogWarning;
+            else if (logLevel == "critical")
+                logLevel_ = SensordLogCritical;
+            else
+                logLevel_ = SensordLogWarning;
         }
 
         if (opt.contains("--log-target"))
         {
             data = opt.split("=");
             logTarget_= data.at(1).toInt();
+        }
+
+        if (opt.contains("--log-file-path"))
+        {
+            data = opt.split("=");
+            logFilePath_ = data.at(1);
         }
 
         if (opt.contains("-c=")||opt.contains("--config-file"))
@@ -98,16 +116,7 @@ bool Parser::changeLogLevel() const
 
 SensordLogLevel Parser::getLogLevel() const
 {
-    if (logLevel_ == "test")
-        return SensordLogTest;
-    else if (logLevel_ == "debug")
-        return SensordLogDebug;
-    else if (logLevel_ == "warning")
-        return SensordLogWarning;
-    else if (logLevel_ == "critical")
-        return SensordLogCritical;
-    else
-        return SensordLogWarning;
+    return logLevel_;
 }
 
 bool Parser::configFileInput() const
@@ -135,8 +144,12 @@ bool Parser::createDaemon() const
     return daemon_;
 }
 
-
 int Parser::logTarget() const
 {
     return logTarget_;
+}
+
+const QString& Parser::logFilePath() const
+{
+    return logFilePath_;
 }

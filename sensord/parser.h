@@ -32,7 +32,6 @@
 
 class Parser
 {
-
 public:
 
     Parser(QStringList arguments);
@@ -49,6 +48,7 @@ public:
     bool magnetometerCalibration() const;
     bool createDaemon() const;
     int logTarget() const;
+    const QString& logFilePath() const;
 
 private:
     void parsingCommandLine(QStringList arguments);
@@ -61,8 +61,9 @@ private:
     bool magnetometerCalibration_;
 
     QString configFilePath_;
-    QString logLevel_;
-    int logTarget_;
+    SensordLogLevel logLevel_;
+    int logTarget_; //TODO: add some enum about log targets
+    QString logFilePath_;
 };
 
 #endif // PARSER_H

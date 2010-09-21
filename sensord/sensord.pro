@@ -88,8 +88,6 @@ HEADERS += sensormanager.h \
 
 internal:DEFINES += USE_INTERNAL
 
-use_syslog:DEFINES += SENSORD_USE_SYSLOG
-
 contextprovider {
     DEFINES += PROVIDE_CONTEXT_INFO
     PKGCONFIG += contextprovider-1.0

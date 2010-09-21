@@ -19,9 +19,5 @@ CONFIG += contextprovider
 ### uncomment the following line:
 #### CONFIG+= x86build
 
-
-#use syslogd
-CONFIG += use_syslog
-
 # use sockets
 DEFINES += USE_SOCKET

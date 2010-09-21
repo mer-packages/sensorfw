@@ -1,6 +1,12 @@
 sensord (0.6.26) unstable; urgency=low
 
-  *
+  [Pia Niemelä, Antti Virtanen]
+  * Logging improved:
+    - Log target can be configured with --log-target. Target is bitmask so multiple targets can be used at the same time. By default only syslog is used.
+    - Log file path can be configured with --log-file-path.
+    - SENSORD_USE_SYSLOG deprecated.
+    - Log printing is now protected with mutex so output won't be messed up when used by multiple threads.
+    - Small optimizations.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 21 Sep 2010 09:15:08 +0300
 

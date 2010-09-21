@@ -28,12 +28,10 @@
 #define LOGGING_H
 
 #include <sstream>
+#include <fstream>
 #include <QString>
 #include <QStringList>
 #include <QMutex>
-#include <QMutexLocker>
-#include <QFile>
-#include <QTextStream>
 
 enum SensordLogLevel {
     SensordLogTest = 1,
@@ -67,27 +65,27 @@ public:
         return *this;
     }
 
-
 public:
 
     static void setOutputLevel(SensordLogLevel level);
     static SensordLogLevel getOutputLevel();
-    static void init();
-    static void initTarget();
+    static void init(int target, QString logFilePath);
     static void close();
-    static int m_target;
 
 private:
     std::ostringstream oss;
     SensordLogLevel currentLevel;
+
     static SensordLogLevel outputLevel;
     static bool initialized;
-    static void printToTarget(QString data);
-    static QFile* m_file;
-    static QMutex m_mutex;
-    static QMutexLocker m_locker;
-    int logPriority(int currentLevel);
-    QString logLevelToText(int level);
+    static std::ofstream* logFile;
+    static QMutex mutex;
+    static int logTarget;
+
+    void printToTarget(const char* data) const;
+    static int logPriority(int currentLevel);
+    static const char* logLevelToText(int level);
+    static bool isLoggable(int level);
 };
 
 #define sensordLogT() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))
