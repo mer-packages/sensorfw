@@ -85,6 +85,7 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
+    SensordLogger::m_target = parser.logTarget();
 
     if (parser.printHelp())
     {
@@ -208,6 +209,7 @@ void printUsage()
     qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
+    qDebug() << " --log-target=N                   logging target (1=stdout, 2=stderr, 4=file('/var/log/sensord.log'), and combos e.g. 3= stdout|stderr";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /etc/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";

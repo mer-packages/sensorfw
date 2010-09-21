@@ -56,6 +56,12 @@ void Parser::parsingCommandLine(QStringList arguments)
             logLevel_ = data.at(1);
         }
 
+        if (opt.contains("--log-target"))
+        {
+            data = opt.split("=");
+            logTarget_= data.at(1).toInt();
+        }
+
         if (opt.contains("-c=")||opt.contains("--config-file"))
         {
             data = opt.split("=");
@@ -127,4 +133,10 @@ bool Parser::magnetometerCalibration() const
 bool Parser::createDaemon() const
 {
     return daemon_;
+}
+
+
+int Parser::logTarget() const
+{
+    return logTarget_;
 }

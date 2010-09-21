@@ -30,6 +30,10 @@
 #include <sstream>
 #include <QString>
 #include <QStringList>
+#include <QMutex>
+#include <QMutexLocker>
+#include <QFile>
+#include <QTextStream>
 
 enum SensordLogLevel {
     SensordLogTest = 1,
@@ -63,19 +67,27 @@ public:
         return *this;
     }
 
-private:
-    std::ostringstream oss;
-    SensordLogLevel currentLevel;
-
-    static SensordLogLevel outputLevel;
-    static bool initialized;
 
 public:
 
     static void setOutputLevel(SensordLogLevel level);
     static SensordLogLevel getOutputLevel();
     static void init();
+    static void initTarget();
     static void close();
+    static int m_target;
+
+private:
+    std::ostringstream oss;
+    SensordLogLevel currentLevel;
+    static SensordLogLevel outputLevel;
+    static bool initialized;
+    static void printToTarget(QString data);
+    static QFile* m_file;
+    static QMutex m_mutex;
+    static QMutexLocker m_locker;
+    int logPriority(int currentLevel);
+    QString logLevelToText(int level);
 };
 
 #define sensordLogT() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))

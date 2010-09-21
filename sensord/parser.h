@@ -48,6 +48,7 @@ public:
     bool contextInfo() const;
     bool magnetometerCalibration() const;
     bool createDaemon() const;
+    int logTarget() const;
 
 private:
     void parsingCommandLine(QStringList arguments);
@@ -61,6 +62,7 @@ private:
 
     QString configFilePath_;
     QString logLevel_;
+    int logTarget_;
 };
 
 #endif // PARSER_H

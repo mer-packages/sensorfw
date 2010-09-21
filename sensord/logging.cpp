@@ -32,75 +32,44 @@
 
 #ifdef SENSORD_USE_SYSLOG
 #include <syslog.h>
-#else
-#include <QDateTime>
 #endif
+#include <QDateTime>
 
 SensordLogLevel SensordLogger::outputLevel = SensordLogWarning;
 bool SensordLogger::initialized = false;
+int SensordLogger::m_target=STDERR_FILENO;
+QMutex SensordLogger::m_mutex;
+QMutexLocker SensordLogger::m_locker(&m_mutex);
+QFile* SensordLogger::m_file;
 
 SensordLogger::SensordLogger (const char* func, const char *file, int line, SensordLogLevel level) :
-    currentLevel(level)
+        currentLevel(level)
 {
-    init();
+    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= getOutputLevel()))
+        return;
 
-    switch (level) {
-        case SensordLogTest:
-            oss << "*TEST* ";
-            break;
-        case SensordLogDebug:
-            oss << "*DEBUG* ";
-            break;
-        case SensordLogWarning:
-            oss << "*WARNING* ";
-            break;
-        case SensordLogCritical:
-            oss << "*CRITICAL* ";
-            break;
-        case SensordLogN:
-        default:
-            break;
-    }
+    init();
+    oss << logLevelToText(level).toLocal8Bit().data();
     oss << "[" << file << ":" << line << ":" << func << "]: ";
 }
 
 SensordLogger::~SensordLogger()
 {
-#ifndef SENSORD_USE_SYSLOG
+
+    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= getOutputLevel()))
+        return;
+
+#ifdef SENSORD_USE_SYSLOG
+    syslog(logPriority(currentLevel), "%s", oss.str().c_str());
+#endif
+
     std::ostringstream prefix;
     prefix << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
     prefix << " [sensord] ";
     prefix << oss.str();
+    prefix << '\n';
     oss.str(prefix.str());
-#endif
-
-    if ((currentLevel >= SensordLogTest) && (currentLevel < SensordLogN) && (currentLevel >= outputLevel))
-    {
-#ifdef SENSORD_USE_SYSLOG
-        int logPriority;
-
-        switch (currentLevel) {
-            case SensordLogN:
-            default:
-            case SensordLogTest:
-                logPriority = LOG_DEBUG;
-                break;
-            case SensordLogDebug:
-                logPriority = LOG_INFO;
-                break;
-            case SensordLogWarning:
-                logPriority = LOG_WARNING;
-                break;
-            case SensordLogCritical:
-                logPriority = LOG_CRIT;
-                break;
-        }
-
-        syslog(logPriority, "%s", oss.str().c_str());
-#else
-        std::cerr << oss.str() << '\n';
-#endif
-    }
+    printToTarget(oss.str().c_str());
 }
 
 void SensordLogger::setOutputLevel(SensordLogLevel level)
@@ -119,9 +88,8 @@ void SensordLogger::init()
     {
 #ifdef SENSORD_USE_SYSLOG
         openlog("sensord", LOG_PID, LOG_DAEMON);
-#else
-        fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
 #endif
+        initTarget();
         initialized = true;
     }
 }
@@ -134,5 +102,74 @@ void SensordLogger::close()
         closelog();
 #endif
         initialized = false;
+    }
+}
+
+
+void SensordLogger::printToTarget(QString data){
+
+    m_locker.relock();
+
+    if ((m_target & STDERR_FILENO) > 0){
+        QTextStream(stderr) << data;
+    }
+
+    if ((m_target & STDOUT_FILENO) > 0){
+        QTextStream(stdout) << data;
+    }
+
+    if ((m_target & 4) > 0){
+        QTextStream(m_file)<<data;
+    }
+    m_locker.unlock();
+}
+
+
+void SensordLogger::initTarget(){
+    if ((m_target & STDERR_FILENO) > 0){
+        fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
+    }
+
+    if ((m_target & STDOUT_FILENO) > 0){
+        fcntl(STDOUT_FILENO, F_SETFL, O_WRONLY);
+    }
+
+    if ((m_target & 4) > 0){
+        if (m_file==0) m_file = new QFile(QString("/var/log/sensord.log"));
+        if (!m_file->isOpen())  m_file->open(QIODevice::WriteOnly | QIODevice::Text);
+    }
+}
+
+
+int SensordLogger::logPriority(int currentLevel){
+#ifdef SENSORD_USE_SYSLOG
+    switch (currentLevel) {
+    case SensordLogN:
+    default:
+    case SensordLogTest:
+        return LOG_DEBUG;
+    case SensordLogDebug:
+        return LOG_INFO;
+    case SensordLogWarning:
+        return LOG_WARNING;
+    case SensordLogCritical:
+        return LOG_CRIT;
+    }
+#endif
+}
+
+QString SensordLogger::logLevelToText(int level){
+    switch (level) {
+    case SensordLogTest:
+        return "*TEST* ";
+    case SensordLogDebug:
+        return "*DEBUG* ";
+    case SensordLogWarning:
+        return "*WARNING* ";
+    case SensordLogCritical:
+        return "*CRITICAL* ";
+    case SensordLogN:
+    default:
+        return "";
     }
 }
