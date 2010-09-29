@@ -8,9 +8,11 @@ internal {
               tapadaptor \
               accelerometeradaptor \
               magnetometeradaptor \
+              magnetometeradaptor-ascii \
               touchadaptor \
               kbslideradaptor \
               proximityadaptor \
               proximityadaptor-evdev \
+              proximityadaptor-ascii \
               mrstaccelerometer
 }
