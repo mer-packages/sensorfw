@@ -29,7 +29,8 @@
 #include <rotationsensor_i.h>
 #include <magnetometersensor_i.h>
 #include <sensormanagerinterface.h>
-#include <xyz.h>
+#include <datatypes/xyz.h>
+#include <datatypes/unsigned.h>
 #include "datareceiver.h"
 
 class TestWindow
@@ -55,10 +56,10 @@ public:
 #ifdef ORIENTATION
         if (control) {
             sensorIfc = OrientationSensorChannelInterface::controlInterface("orientationsensor");
-            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const int&)), &dump, SLOT(dump(const int&)));
+            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
         } else {
             sensorIfc = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
-            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const int&)), &dump, SLOT(dump(const int&)));
+            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
         }
 #else
         if (control) {

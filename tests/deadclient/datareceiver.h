@@ -23,7 +23,8 @@
 */
 
 #include <QObject>
-#include <xyz.h>
+#include <datatypes/xyz.h>
+#include <datatypes/unsigned.h>
 
 class DataReceiver : public QObject {
     Q_OBJECT;
@@ -31,8 +32,8 @@ public:
     DataReceiver(QObject* parent = 0) : QObject(parent) {}
     
 public slots:
-    void dump(const int& orientation) {
-        qDebug() << __PRETTY_FUNCTION__ << orientation;
+    void dump(const Unsigned& orientation) {
+        qDebug() << __PRETTY_FUNCTION__ << orientation.x();
     }
     void dump(const XYZ& data) {
         qDebug() << __PRETTY_FUNCTION__ << data.x() << data.y() << data.z();
