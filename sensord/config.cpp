@@ -71,7 +71,7 @@ Config *Config::loadConfig(const QString &defConfigPath, const QString &configDP
     config->loadConfigFile(defConfigPath);
     QStringListIterator i(fileList);
     while(i.hasNext())
-        config->loadConfigFile(i.next());
+        config->loadConfigFile(dir.absoluteFilePath(i.next()));
 
     static_configuration = config;
 
