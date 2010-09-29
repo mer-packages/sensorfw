@@ -16,7 +16,7 @@ export DH_VERBOSE=1
 
 
 # custom C(XX)FLAGS
-CFLAGS = -Wall -g
+CFLAGS = -Wall -g -Wno-psabi
 
 ifneq (,$(findstring noopt,$(DEB_BUILD_OPTIONS)))
     CFLAGS += -O0

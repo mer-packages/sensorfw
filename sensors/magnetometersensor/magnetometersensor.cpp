@@ -175,6 +175,7 @@ void MagnetometerSensorChannel::reset_(int dummy)
         return;
 
     QObject *cc = dynamic_cast<QObject*>(compassChain_);
+    Q_UNUSED(cc); // Cleanup or document why this is done like this
     compassChain_->setProperty("resetCalibration",0);
 }
 

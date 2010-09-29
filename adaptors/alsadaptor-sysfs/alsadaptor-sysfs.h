@@ -30,7 +30,7 @@
 
 #include "sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
-#include "filters/timedunsigned.h"
+#include "datatypes/timedunsigned.h"
 #include <QTime>
 
 /**

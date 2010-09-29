@@ -118,6 +118,8 @@ int InputDevAdaptor::getInputDevices(QString matchString)
         sensordLogW() << "Cannot find any device for: " << matchString;
         isValid_ = false;
     }
+
+    return deviceCount_;
 }
 
 int InputDevAdaptor::getEvents(int fd)

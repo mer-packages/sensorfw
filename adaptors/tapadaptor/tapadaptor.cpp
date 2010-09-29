@@ -78,6 +78,9 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
             case BTN_Z:
                 dir = TapData::Z;
                 break;
+            default:
+                dir = TapData::X; // TODO: Add Unknown state to TapData
+                break;
         }
 
         tapValue.direction_ = dir;

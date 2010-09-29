@@ -32,7 +32,7 @@
 #include "alsadaptor-sysfs.h"
 #include <errno.h>
 #include <stdlib.h>
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include <linux/types.h>
 
 ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :

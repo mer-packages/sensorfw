@@ -31,7 +31,7 @@
 #include <linux/input.h>
 #include <string.h>
 #include <sensord/logging.h>
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include "config.h"
 
 #include "proximityadaptor-evdev.h"
