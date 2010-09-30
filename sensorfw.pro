@@ -26,8 +26,8 @@ QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
 DBUSCONFIGFILES.files = sensorfw.conf
 DBUSCONFIGFILES.path = /etc/dbus-1/system.d
 
-SENSORDCONFIGFILES.files = config/sensord.conf
-SENSORDCONFIGFILES.path = /etc
+SENSORDCONFIGFILES.files = config/90-sensord-default.conf
+SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
 
 internal {
     SUBDIRS += chains tests

@@ -30,35 +30,84 @@
 #include <QSettings>
 #include <QVariant>
 #include <QFile>
+#include <QDir>
+#include <QList>
 
 static Config *static_configuration = 0;
 
-Config::Config() : m_settings(NULL) {
+Config::Config() {
 }
 
 Config::~Config() {
-    delete m_settings;
+    clearConfig();
 }
 
-Config *Config::loadConfig(const QString &configFileName) {
-    Config *config = 0;
-    QFile file(configFileName);
-    if (file.open(QIODevice::ReadOnly))
-        file.close();
-    else
-        return config;
+void Config::clearConfig() {
+    QListIterator<QSettings*> i(settings);
+
+    while(i.hasNext())
+        delete i.next();
+}
+
+Config *Config::loadConfig(const QString &defConfigPath, const QString &configDPath) {
+    Config *config = NULL;
+
+    /* Check/create new static config */
     if (static_configuration) {
         config = static_configuration;
     } else {
         config = new Config();
-        config->m_settings = new QSettings(configFileName, QSettings::IniFormat);
-        static_configuration = config;
     }
+
+    /* Delete old configuration */
+    config->clearConfig();
+
+    /* Scan config.d dir */
+    QDir dir(configDPath, "*.conf", QDir::Name, QDir::Files);
+    QStringList fileList = dir.entryList();
+
+
+    /* Load all conf files */
+    config->loadConfigFile(defConfigPath);
+    QStringListIterator i(fileList);
+    while(i.hasNext())
+        config->loadConfigFile(dir.absoluteFilePath(i.next()));
+
+    static_configuration = config;
+
     return config;
 }
 
+bool Config::loadConfigFile(const QString &configFileName) {
+    QFile file(configFileName);
+
+    /* Test if the file is readable */
+    if (file.open(QIODevice::ReadOnly)) {
+      file.close();
+    }
+    else
+    {
+        sensordLogW() << "Unable to open \"" << configFileName <<  "\", check permissions";
+        return false;
+    }
+
+    settings.append(new QSettings(configFileName, QSettings::IniFormat));
+    sensordLogD() << "Config file \"" << configFileName << "\" successfully loaded";
+    return true;
+}
+
 QVariant Config::value(const QString &key, const QVariant &defaultValue) const {
-   return m_settings->value(key, defaultValue);
+    /* Iterate through configs so that keys in the first files
+     * have preference over the last.
+     */
+    QListIterator<QSettings*> i(settings);
+    while(i.hasNext())
+    {
+        if(i.next()->contains(key))
+            return i.peekPrevious()->value(key, defaultValue);
+    }
+
+    return defaultValue;
 }
 
 Config *Config::configuration() {

@@ -181,7 +181,7 @@ protected:
 
 void FilterApiTest::initTestCase() {
 
-    Config::loadConfig(CONFIG_FILE_PATH);   
+    Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
 
 }
 

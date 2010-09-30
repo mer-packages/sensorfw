@@ -25,7 +25,8 @@
 
 #ifndef FILTERAPITEST_H
 #define FILTERAPITEST_H
-#define CONFIG_FILE_PATH "/etc/sensord.conf"
+#define CONFIG_FILE_PATH     "/etc/sensorfw/sensord.conf"
+#define CONFIG_DIR_PATH      "/etc/sensorfw/sensord.conf.d/"
 #include <QTest>
 
 class FilterApiTest : public QObject
