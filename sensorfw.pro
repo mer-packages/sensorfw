@@ -26,6 +26,9 @@ QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
 DBUSCONFIGFILES.files = sensorfw.conf
 DBUSCONFIGFILES.path = /etc/dbus-1/system.d
 
+SENSORDCONFIGFILE.files = config/sensord.conf
+SENSORDCONFIGFILE.path = /etc/sensorfw
+
 SENSORDCONFIGFILES.files = config/90-sensord-default.conf
 SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
 
@@ -35,4 +38,4 @@ internal {
 
 publicheaders.files += include/*.h
 
-INSTALLS += PKGCONFIGFILES QTCONFIGFILES DBUSCONFIGFILES SENSORDCONFIGFILES
+INSTALLS += PKGCONFIGFILES QTCONFIGFILES DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES

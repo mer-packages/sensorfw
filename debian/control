@@ -40,7 +40,7 @@ Description: API documentation for libsensord
 Package: sensord-tests
 Section: tests
 Architecture: any
-Depends: ci-testing, mcetools, sensord (= ${binary:Version}), sensord-contextfw-tests (= ${binary:Version}), sysklogd, python, ${shlibs:Depends}
+Depends: ci-testing, mcetools, sensord (= ${binary:Version}), sysklogd, python, ${shlibs:Depends}
 XB-Maemo-CI-Packages: sensord
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: Unit test cases for sensord
@@ -49,7 +49,7 @@ Description: Unit test cases for sensord
 Package: sensord-contextfw-tests
 Section: tests
 Architecture: any
-Depends: ci-testing, sensord (= ${binary:Version}), contextkit-utils (>> 0.3.6), python-contextkit (>> 0.3.6), ${shlibs:Depends}
+Depends: ci-testing, sensord (= ${binary:Version}), sensord-tests (= ${binary:Version}), contextkit-utils (>> 0.3.6), python-contextkit (>> 0.3.6), ${shlibs:Depends}
 XB-Maemo-CI-Packages: sensord
 XB-Maemo-CI-Stage: fast, staging, acceptance, validation
 Description: Test cases for sensord acting as context provider

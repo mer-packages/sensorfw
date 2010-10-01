@@ -23,6 +23,8 @@
 
 ### configuration
 
+TESTCONFIGSOURCE=/usr/share/sensord-tests/00-automatic-testing.conf
+TESTCONFIGTARGET=/etc/sensorfw/sensord.conf.d/00-automatic-testing.conf
 DIVERTPATH=/tmp/fakedsensors
 FIFODIVERTS="accelerometer als"
 POLLDIVERTS="accelerometer"
@@ -31,7 +33,7 @@ POLLDIVERTS="accelerometer"
 
 case "$1" in
   "start")
-  if [ -f $DIVERTPATH/sensord.conf ]; then
+  if [ -f $TESTCONFIGTARGET ]; then
     echo "Sensor diversion seems to be active already, quitting..."
     exit 1
   fi
@@ -45,39 +47,13 @@ case "$1" in
     echo 0 > ${DIVERTPATH}/${i}_poll_rate || { echo Failed to create file ${DIVERTPATH}/${i}_poll_rate ; exit 1; }
   done
 
-  mv /etc/sensord.conf $DIVERTPATH/ || { echo Failed to move sensord.conf ; exit 1; }
-  echo "device_sys_path = /dev/input/event%1
-device_poll_file_path = /sys/class/input/input%1/poll
-
-# Proximity adaptor
-proximity_dev_path = /dev/bh1770glc_ps
-
-# ALS adaptor
-als_dev_path = $DIVERTPATH/als
-
-# Magnetometer drivers
-mag_ak8974_dev_path = /dev/ak89740
-mag_ak8975_dev_path = /dev/ak89750
-
-dev_accelerometer = $DIVERTPATH/accelerometer
-dev_poll_accelerometer = $DIVERTPATH/accelerometer_poll_rate
-
-acc_trans_matrix = \"-1,0,0,0,-1,0,0,0,-1\"
-
-magnetometer_scale_coefficient = 300
-
-deviceId = default
-
-[default]
-accelerometeradaptor = accelerometeradaptor
-
-[n900]
-accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
+  # Setup config for testing
+  cp $TESTCONFIGSOURCE $TESTCONFIGTARGET
 
   initctl stop sensord
   killall sensord
   initctl start sensord
-  #/usr/sbin/sensord < /dev/null &
+
   sleep 0.5
   for i in 1 2; do
     echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
@@ -95,7 +71,7 @@ accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
   ;;
 
   "stop")
-  if [ ! -f $DIVERTPATH/sensord.conf ]; then
+  if [ ! -f $TESTCONFIGTARGET ]; then
     echo "Sensor diversion seems not to be active, quitting..."
     exit 1
   fi
@@ -107,7 +83,10 @@ accelerometeradaptor = accelerometeradaptor-n900" > /etc/sensord.conf
   fi
   initctl stop sensord
   killall sensord
-  mv $DIVERTPATH/sensord.conf /etc/
+
+  # Remove extra configuration file
+  rm $TESTCONFIGTARGET
+
   for i in $FIFODIVERTS; do
     rm $DIVERTPATH/$i
   done

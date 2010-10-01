@@ -5,4 +5,5 @@
 /usr/sbin/sensord
 /usr/share/contextkit/providers/*
 /etc/dbus-1/system.d/*
-/etc/sensord.conf
+/etc/sensorfw/sensord.conf
+/etc/sensorfw/sensord.conf.d/90-sensord-default.conf
