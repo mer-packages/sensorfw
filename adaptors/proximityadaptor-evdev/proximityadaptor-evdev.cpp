@@ -99,16 +99,21 @@ void ProximityAdaptorEvdev::interpretSync(int src)
 
 void ProximityAdaptorEvdev::commitOutput()
 {
+    static ProximityState oldState = ProximityStateUnknown;
+    
+    if (currentState_ != oldState) {
+        sensordLogD() << "Proximity state change detected: " << currentState_;
 
-    sensordLogD() << "Proximity state change detected: " << currentState_;
+        TimedUnsigned *proximityData = proximityBuffer_->nextSlot();
 
-    TimedUnsigned *proximityData = proximityBuffer_->nextSlot();
+        proximityData->timestamp_ = Utils::getTimeStamp();
+        proximityData->value_ = currentState_;
+        
+        oldState = currentState_;
 
-    proximityData->timestamp_ = Utils::getTimeStamp();
-    proximityData->value_ = currentState_;
-
-    proximityBuffer_->commit();
-    proximityBuffer_->wakeUpReaders();
+        proximityBuffer_->commit();
+        proximityBuffer_->wakeUpReaders();
+    }
 }
 
 int ProximityAdaptorEvdev::getPollingInterval()
