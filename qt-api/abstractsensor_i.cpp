@@ -29,7 +29,7 @@
 
 AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &path, const char* interfaceName, int sessionId) :
         QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
-        sessionId_(sessionId), running_(false), interval_(0), socketReader_(NULL)
+        sessionId_(sessionId), running_(false), interval_(0), socketReader_(NULL), standbyOverride_(false)
 {
 #ifdef USE_SOCKET
     socketReader_ = new SocketReader(this);
@@ -98,6 +98,7 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     }
     running_ = true;
 
+
 #ifdef USE_SOCKET
     if (socketReader_) {
         connect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
@@ -107,7 +108,11 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
     QDBusReply<void> returnValue = callWithArgumentList(QDBus::Block, QLatin1String("start"), argumentList);
-
+   
+    if (standbyOverride_)
+    {
+        setStandbyOverride(sessionId, true);
+    } 
     /// Send interval request when started.
     setInterval(sessionId, interval_);
 
@@ -128,7 +133,7 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
         disconnect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
     }
 #endif
-
+    setStandbyOverride(sessionId, false);
     /// Drop interval requests when stopped
     setInterval(sessionId, 0);
 

@@ -58,6 +58,10 @@
         <step expected_result="0">/usr/bin/sensorpowermanagement-test</step>
       </case>
 
+      <case name="Sensord_Standby_Override" type="Functional" level="Component" description="Sensord standby override test" timeout="30" subfeature="Sensor Framework">
+        <step expected_result="0">/usr/bin/sensorstandbyoverride-test</step>
+      </case>
+ 
       <environments>
         <scratchbox>false</scratchbox>
         <hardware>true</hardware>
@@ -67,6 +71,7 @@
         <step expected_result="0">/usr/bin/sensordiverter.sh stop</step>
       </post_steps>
     </set>
+
 
     <set name="Sensord-benchmark-tests" description="Benchmark test cases for sensord" feature="Sensor Framework" requirement="SensorFw Testing and automation">
 

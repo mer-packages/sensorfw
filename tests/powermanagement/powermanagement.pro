@@ -1,2 +1,2 @@
 TEMPLATE = subdirs
-SUBDIRS = powermanagementtests driverpolltest
+SUBDIRS = powermanagementtests driverpolltest standbyoverridetests

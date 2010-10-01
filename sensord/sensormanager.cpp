@@ -9,6 +9,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -624,8 +625,11 @@ void SensorManager::displayStateChanged(const bool displayState)
     foreach (DeviceAdaptorInstanceEntry adaptor, deviceAdaptorInstanceMap_) {
         if (adaptor.adaptor_) {
             if (displayState) {
+                adaptor.adaptor_->setScreenBlanked(false);
                 adaptor.adaptor_->resume();
+
             } else {
+                adaptor.adaptor_->setScreenBlanked(true);
                 adaptor.adaptor_->standby();
             }
         }

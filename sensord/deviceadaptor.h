@@ -9,6 +9,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -93,10 +94,16 @@ class DeviceAdaptor : public NodeBase
     //~ Q_PROPERTY(unsigned standbyOverride WRITE setStandbyOverride);
 
 public:
-    DeviceAdaptor(const QString id) : id_(id), isValid_(true), interval_(0), standbyOverride_(false) {}
+ DeviceAdaptor(const QString id) : id_(id), isValid_(true), interval_(0), standbyOverride_(false), screenBlanked(false) {}
     virtual ~DeviceAdaptor();
 
     unsigned interval() const { return interval_; }
+
+    void setScreenBlanked(bool status)
+    {
+        screenBlanked = status; 
+    }
+
     void setInterval(unsigned interval) {
         interval_ = interval;
         setPollingInterval(interval);
@@ -112,6 +119,17 @@ public:
     virtual bool setStandbyOverride(const bool override)
     {
         standbyOverride_ = override;
+        
+        if (screenBlanked)
+        {  
+            if(override)
+            {
+                resume();
+            }
+            else{
+                standby();
+            }
+        }               
         sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
         return standbyOverride_;
     }
@@ -145,6 +163,9 @@ protected:
     bool isValid_;
     unsigned interval_;
     bool standbyOverride_;
+
+private:
+    bool screenBlanked;
 };
 
 typedef DeviceAdaptor* (*DeviceAdaptorFactoryMethod)(const QString& id);

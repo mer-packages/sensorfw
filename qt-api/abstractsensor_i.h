@@ -95,10 +95,11 @@ public:
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride);
     inline bool standbyOverride() const
     {
-        return qvariant_cast< bool >(internalPropGet("standbyOverride"));;
+        return standbyOverride_ || qvariant_cast< bool >(internalPropGet("standbyOverride"));;
     }
     inline bool setStandbyOverride(bool override)
     {
+        standbyOverride_ = override;
         return setStandbyOverride(sessionId_, override);
     }
 
@@ -161,6 +162,7 @@ protected :
     int sessionId_;
     bool running_;
     int interval_;
+    bool standbyOverride_;
 
     SocketReader* socketReader_;
 
