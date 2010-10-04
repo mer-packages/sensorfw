@@ -12,6 +12,12 @@ sensord (0.6.26) unstable; urgency=low
     - Log printing is now protected with mutex so output won't be messed up when used by multiple threads.
     - Small optimizations.
 
+  [Timo Rongas]
+  * Fixes: NB# Bug 196131 - Sensord should unset Screen.TopEdge when unclear
+    - When device is flat on table,
+      - Face value will be given as Orientation value for OrientationSensor
+      - Screen.TopEdge will be set unset for ContextFW
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 21 Sep 2010 09:15:08 +0300
 
 sensord (0.6.25) unstable; urgency=low

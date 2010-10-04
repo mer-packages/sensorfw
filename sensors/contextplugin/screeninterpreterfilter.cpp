@@ -55,13 +55,16 @@ void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)
 
 void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientation)
 {
-    if (orientation != PoseData::Undefined) {
-        lastOrientation = orientation;
+
+    sensordLogT() << "Screen orientation from contextprovider:" << orientation;
+
+    // Undefined can only come for TopEdge.
+    if (orientation == PoseData::Undefined) {
+        topEdgeProperty->unsetValue();
+        return;
     }
 
-    sensordLogT() << "Screen orientation:" << lastOrientation;
-
-    switch (lastOrientation) {
+    switch (orientation) {
         case PoseData::FaceUp:
             isCovered = false;
             break;

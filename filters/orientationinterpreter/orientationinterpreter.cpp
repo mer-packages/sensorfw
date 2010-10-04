@@ -46,7 +46,7 @@
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),
-        topEdge(PoseData::BottomDown),
+        topEdge(PoseData::Undefined),
         o_(PoseData::Undefined)
 {
     addSink(&accDataSink, "accsink");
@@ -113,7 +113,8 @@ void OrientationInterpreter::processTopEdge()
     // Provide something on the first run (topEdge + Face)
 
     int rotation;
-    PoseData newTopEdge = topEdge;
+    bool orientationTriggered = false;
+    PoseData newTopEdge = PoseData::Undefined;
 
     // Portrait check
     rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
@@ -147,6 +148,7 @@ void OrientationInterpreter::processTopEdge()
 
     // Propagate if changed
     if (topEdge.orientation_ != newTopEdge.orientation_) {
+
         topEdge.orientation_ = newTopEdge.orientation_;
         sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;
@@ -183,10 +185,11 @@ void OrientationInterpreter::processOrientation()
 {
     PoseData newPose;
 
-    if ( (abs(data.x_) < 300 || abs(data.y_) < 300) && abs(data.z_) > 650 ) {
-        newPose.orientation_ = face.orientation_;
-    } else {
+    if (topEdge.orientation_ != PoseData::Undefined)
+    {
         newPose.orientation_ = topEdge.orientation_;
+    } else {
+        newPose.orientation_ = face.orientation_;
     }
 
     if (newPose.orientation_ != o_.orientation_) {
