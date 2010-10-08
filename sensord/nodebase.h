@@ -29,7 +29,6 @@
 #include <QObject>
 #include <QString>
 #include <QList>
-#include <QMutex>
 #include "datarange.h"
 
 /**
@@ -219,8 +218,6 @@ private:
 
     QList<NodeBase*>        m_standbySourceList;
     QList<int>              m_standbyRequestList;
-
-    mutable QMutex          m_mutex;
 };
 
 #endif

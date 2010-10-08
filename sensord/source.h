@@ -71,9 +71,7 @@ private:
     }
 
     void unjoinTypeChecked(SinkBase* sink) {
-        if (sinks_.contains(dynamic_cast<SinkTyped<TYPE>*>(sink))) {
-            sinks_.remove(dynamic_cast<SinkTyped<TYPE>*>(sink));
-        }
+        sinks_.remove(dynamic_cast<SinkTyped<TYPE>*>(sink));
     }
 
     QSet<SinkTyped<TYPE>*> sinks_;

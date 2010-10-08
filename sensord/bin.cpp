@@ -43,71 +43,69 @@ void PrivateThread::run()
 }
 
 
-class Bin::Command
+class ThreadBin::Command
 {
 public:
     virtual ~Command() {}
 
-    virtual void execute(Bin& t) = 0;
+    virtual void execute(ThreadBin& t) = 0;
     // TODO
 };
 
 
-class StopCommand : public Bin::Command
+class StopCommand : public ThreadBin::Command
 {
 public:
-    void execute(Bin& t)
+    void execute(ThreadBin& t)
     {
         t.running_ = false;
     }
 };
 
-
-class Bin::CommandReader : public RingBufferReader<Command*>
+class ThreadBin::CommandReader : public RingBufferReader<Command*>
 {
 public:
-    CommandReader(Bin& t) :
+    CommandReader(ThreadBin& t) :
         thread_(t)
     {}
 
     void pushNewData()
     {
-        Bin::Command* command;
+        ThreadBin::Command* command;
         while (read(1, &command)) {
             command->execute(thread_);
         }
     }
 
 private:
-    Bin& thread_;
+    ThreadBin& thread_;
 };
 
-
-Bin::Bin() :
+ThreadBin::ThreadBin() :
     thread_(*this),
     commands_(new RingBuffer<Command*>(256)),
     commandReader_(new CommandReader(*this)),
-    signalNewEvent_(this, &Bin::signalNewEvent),
     running_(false)
 {
     commandReader_->setReadyCallback(&signalNewEvent_);
     commands_->join(commandReader_);
 }
 
-Bin::~Bin()
+ThreadBin::~ThreadBin()
 {
     stop();
     delete commands_;
     delete commandReader_;
 }
 
-void Bin::start()
+
+void ThreadBin::start()
 {
     running_ = true;
     thread_.start();
 }
 
-void Bin::stop()
+void ThreadBin::stop()
 {
     if (thread_.isRunning()) {
         // TODO: lure the thread to stop
@@ -119,6 +117,75 @@ void Bin::stop()
         commandSink->collect(1, &c);
         thread_.wait(); // TODO: set the timeout
     }
+}
+
+void ThreadBin::run()
+{
+    while (running_) {
+        waitForNewEvents();
+        handleEvents();
+    }
+}
+
+// TODO: use eventfd(2) instead of mutex and condvar
+void ThreadBin::eventSignaled()
+{
+    if (!isNewEvent_.fetchAndStoreRelaxed(true)) {
+        mutex_.lock();
+        newEvent_.wakeAll();
+        mutex_.unlock();
+    }
+}
+
+void ThreadBin::waitForNewEvents()
+{
+    if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
+        mutex_.lock();
+        if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
+            newEvent_.wait(&mutex_);
+            isNewEvent_ = false;
+        }
+        mutex_.unlock();
+    }
+}
+
+void ThreadBin::handleEvents()
+{
+    // execute new commands
+    commandReader_->pushNewData();
+
+    Bin::eventSignaled();
+}
+
+Bin::Bin() :
+    signalNewEvent_(this, &Bin::signalNewEvent)
+{
+}
+
+Bin::~Bin()
+{
+}
+
+void Bin::signalNewEvent()
+{
+    eventSignaled();
+}
+
+void Bin::eventSignaled()
+{
+    // filter new data
+    Pusher* pusher;
+    foreach (pusher, pushers_) {
+        pusher->pushNewData();
+    }
+}
+
+void Bin::start()
+{
+}
+
+void Bin::stop()
+{
 }
 
 void Bin::add(Pusher* pusher, const QString& name)
@@ -214,7 +281,7 @@ bool Bin::unjoin(const QString& producerName,
 }
 
 SourceBase* Bin::source(const QString& producerName,
-                           const QString& sourceName)
+                        const QString& sourceName)
 {
     SourceBase* source = 0;
 
@@ -264,47 +331,4 @@ Consumer* Bin::consumer(const QString& name)
     }
 
     return c;
-}
-
-
-void Bin::run()
-{
-    while (running_) {
-        waitForNewEvents();
-        handleEvents();
-    }
-}
-
-// TODO: use eventfd(2) instead of mutex and condvar
-void Bin::signalNewEvent()
-{
-    if (!isNewEvent_.fetchAndStoreRelaxed(true)) {
-        mutex_.lock();
-        newEvent_.wakeAll();
-        mutex_.unlock();
-    }
-}
-
-void Bin::waitForNewEvents()
-{
-    if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
-        mutex_.lock();
-        if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
-            newEvent_.wait(&mutex_);
-            isNewEvent_ = false;
-        }
-        mutex_.unlock();
-    }
-}
-
-void Bin::handleEvents()
-{
-    // execute new commands
-    commandReader_->pushNewData();
-
-    // filter new data
-    Pusher* pusher;
-    foreach (pusher, pushers_) {
-        pusher->pushNewData();
-    }
 }

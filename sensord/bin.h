@@ -43,20 +43,20 @@ class Producer;
 class Consumer;
 class FilterBase;
 
-class Bin;
+class ThreadBin;
 
 // hide QThread so that its methods are not directly accessible via Bin
 class PrivateThread : public QThread
 {
 public:
-    PrivateThread(Bin& t) :
+    PrivateThread(ThreadBin& t) :
         thread_(t)
     {}
 
 private:
     void run();
 
-    Bin& thread_;
+    ThreadBin& thread_;
 };
 
 template <class TYPE>
@@ -64,18 +64,14 @@ class RingBuffer;
 
 class Bin
 {
-friend class PrivateThread;
-
-public slots:
-    void start();
-    void stop();
-    void control(const QString& command);
-
 public:
     class Command;
 
     Bin();
-    ~Bin();
+    virtual ~Bin();
+
+    virtual void start();
+    virtual void stop();
 
     // TODO: remove these
     void add(Pusher*     pusher,   const QString& name);
@@ -99,6 +95,31 @@ protected:
     Producer*   producer(const QString& name);
     Consumer*   consumer(const QString& name);
 
+    virtual void eventSignaled();
+    void signalNewEvent();
+
+    Callback<Bin>               signalNewEvent_;
+
+private:
+    QHash<QString, Pusher*>     pushers_;
+    QHash<QString, Consumer*>   consumers_;
+    QHash<QString, FilterBase*> filters_;
+};
+
+class ThreadBin : public Bin
+{
+friend class PrivateThread;
+public:
+
+    ThreadBin();
+    virtual ~ThreadBin();
+
+    virtual void start();
+    virtual void stop();
+
+protected:
+    virtual void eventSignaled();
+
 private:
     class CommandReader;
 
@@ -108,17 +129,13 @@ private:
     PrivateThread               thread_;
     RingBuffer<Command*>*       commands_;
     CommandReader*              commandReader_;
-    QHash<QString, Pusher*>     pushers_;
-    QHash<QString, Consumer*>   consumers_;
-    QHash<QString, FilterBase*> filters_;
-    Callback<Bin>               signalNewEvent_;
+
     QAtomicInt                  isNewEvent_;
     QMutex                      mutex_;
     QWaitCondition              newEvent_;
     bool                        running_;
 
     void run();
-    void signalNewEvent();
     void waitForNewEvents();
     void handleEvents();
 };

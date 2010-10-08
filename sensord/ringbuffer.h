@@ -103,16 +103,16 @@ public:
         addSink(&sink_, "sink");
     }
 
-    ~RingBuffer()
+    virtual ~RingBuffer()
     {
         delete [] buffer_;
     }
 
     int typeId() { return 0; } // TODO
 
-    unsigned read(unsigned                n,
-                  TYPE*                   values,
-                  RingBufferReader<TYPE>& reader) const
+    virtual unsigned read(unsigned                n,
+                          TYPE*                   values,
+                          RingBufferReader<TYPE>& reader) const
     {
         unsigned itemsRead = 0;
         while (itemsRead < n && reader.readCount_ != (unsigned)writeCount_) {
@@ -146,11 +146,21 @@ protected:
         }
     }
 
-private:
-    void joinTypeChecked(RingBufferReaderBase* reader)
+    virtual void write(unsigned n, const TYPE* values)
     {
-        QMutexLocker locker(&mutex);
+        // buffer incoming data
+        // TODO: optimize by using memcpy(), assuming TYPE is POD
+        while (n) {
+            *nextSlot() = *values++;
+            commit();
+            --n;
+        }
 
+        wakeUpReaders();
+    }
+
+    virtual void joinTypeChecked(RingBufferReaderBase* reader)
+    {
         sensordLogT() << "joining reader to ringbuffer.";
 
         RingBufferReader<TYPE>* r =
@@ -166,10 +176,8 @@ private:
         readers_.insert(r);
     }
 
-    void unjoinTypeChecked(RingBufferReaderBase* reader)
+    virtual void unjoinTypeChecked(RingBufferReaderBase* reader)
     {
-        QMutexLocker locker(&mutex);
-
         RingBufferReader<TYPE>* r =
             dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {
@@ -179,27 +187,58 @@ private:
 
         readers_.remove(r);
     }
-    
-    void write(unsigned n, const TYPE* values)
-    {
-        QMutexLocker locker(&mutex);
 
-        // buffer incoming data
-        // TODO: optimize by using memcpy(), assuming TYPE is POD
-        while (n) {
-            *nextSlot() = *values++;
-            commit();
-            --n;
-        }
-
-        wakeUpReaders();
-    }
+private:
 
     Sink<RingBuffer, TYPE>        sink_;
     const unsigned                bufferSize_;
     TYPE*                         buffer_;
     QAtomicInt                    writeCount_;
     QSet<RingBufferReader<TYPE>*> readers_;
+};
+
+template <class TYPE>
+class SynchronizedRingBuffer : public RingBuffer<TYPE>
+{
+public:
+    SynchronizedRingBuffer(unsigned size) :
+        RingBuffer<TYPE>(size)
+    {
+    }
+
+    virtual ~SynchronizedRingBuffer()
+    {
+    }
+
+protected:
+    virtual unsigned read(unsigned                n,
+                          TYPE*                   values,
+                          RingBufferReader<TYPE>& reader) const
+    {
+        QMutexLocker locker(&mutex);
+        return RingBuffer<TYPE>::read(n, values, reader);
+    }
+
+    virtual void write(unsigned n, const TYPE* values)
+    {
+        QMutexLocker locker(&mutex);
+        RingBuffer<TYPE>::write(n, values);
+    }
+
+    virtual void joinTypeChecked(RingBufferReaderBase* reader)
+    {
+        QMutexLocker locker(&mutex);
+        RingBuffer<TYPE>::joinTypeChecked(reader);
+    }
+
+    virtual void unjoinTypeChecked(RingBufferReaderBase* reader)
+    {
+        QMutexLocker locker(&mutex);
+        RingBuffer<TYPE>::unjoinTypeChecked(reader);
+    }
+
+private:
+
     mutable QMutex mutex;
 };
 

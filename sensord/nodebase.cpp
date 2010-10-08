@@ -23,8 +23,6 @@
    </p>
  */
 
-#include <QMutexLocker>
-
 #include "nodebase.h"
 #include "logging.h"
 
@@ -226,9 +224,6 @@ bool NodeBase::standbyOverride() const
 
 bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool override)
 {
-    // TODO: validate the need for this
-    QMutexLocker locker(&m_mutex);
-
     // Only store true requests, id is enough, no need for value
     if (override == false)
     {
