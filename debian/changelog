@@ -18,10 +18,11 @@ sensord (0.6.26) unstable; urgency=low
       - Face value will be given as Orientation value for OrientationSensor
       - Screen.TopEdge will be set unset for ContextFW
   * Fixes: NB#196917 - Drive application shifts between portrait and landscape due to movement of accelerometer during driving
+    - Averaging buffer is used to avoid rotation on shaky situations
 
   [Antti Virtanen]
   * Removed unnecessary mutex from NodeBase
-  * Bin doesn't use separate thread anymore. Implemented ThreadBin which still supports threaded usage. [Fixes NB#196900]
+  * Bin doesn't use separate thread anymore. Implemented ThreadBin which still supports threaded usage. [Fixes: NB#196900]
   * RingBuffer is not synchronized anymore. Implemented SynchronizedRingBuffer which is supposed to be used with ThreadBin.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 21 Sep 2010 09:15:08 +0300
