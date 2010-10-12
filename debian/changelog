@@ -17,6 +17,7 @@ sensord (0.6.26) unstable; urgency=low
     - When device is flat on table,
       - Face value will be given as Orientation value for OrientationSensor
       - Screen.TopEdge will be set unset for ContextFW
+  * Fixes: NB#196917 - Drive application shifts between portrait and landscape due to movement of accelerometer during driving
 
   [Antti Virtanen]
   * Removed unnecessary mutex from NodeBase

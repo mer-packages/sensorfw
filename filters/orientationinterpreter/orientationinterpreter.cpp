@@ -8,7 +8,7 @@
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
-   
+
 
    This file is part of Sensord.
 
@@ -43,6 +43,9 @@
 #define THRESHOLD_LANDSCAPE  25
 #define THRESHOLD_PORTRAIT  20
 
+#define DISCARD_TIME 750000
+#define AVG_BUFFER_MAX_SIZE 10
+
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),
@@ -55,32 +58,15 @@ OrientationInterpreter::OrientationInterpreter() :
     addSource(&orientationSource, "orientation");
 
     threshold_(DEFAULT_THRESHOLD);
-   
+
     minlimit = Config::configuration()->value("orientation_overflow_min",QVariant(OVERFLOW_MIN)).toInt();
     maxlimit = Config::configuration()->value("orientation_overflow_max",QVariant(OVERFLOW_MAX)).toInt();
-    
+
     angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait",QVariant(THRESHOLD_PORTRAIT)).toInt();
     angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape",QVariant(THRESHOLD_LANDSCAPE)).toInt();
-   
-      
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(verifyFaceChange())); 
-    updatePreviousFace = true; 
 
+    discardTime = Config::configuration()->value("orientation_discard_time", QVariant(DISCARD_TIME)).toUInt();
 }
-
-void OrientationInterpreter::verifyFaceChange()
-{  
-    
-    if (face.orientation_ == previousFace.orientation_)
-    {
-        sensordLogT() << "New face value:" << face.orientation_;          
-        faceSource.propagate(1, &face);
-        updatePreviousFace = true;
-    } 
-}
-
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* pdata)
 {
@@ -92,6 +78,39 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
         sensordLogT() << "Acc value discarded due to over/underflow";
         return;
     }
+
+    // Append new value to buffer
+    dataBuffer.append(data);
+
+    // Limit buffer size to N samples
+    // Avoids bloating when timestamps don't make sense
+    if (dataBuffer.count() > AVG_BUFFER_MAX_SIZE)
+    {
+        dataBuffer.erase(dataBuffer.begin(), dataBuffer.end()-10);
+    }
+
+    // Clear old values from buffer.
+    while (dataBuffer.count() > 1 && (data.timestamp_ - dataBuffer.first().timestamp_ > discardTime))
+    {
+        dataBuffer.removeFirst();
+    }
+
+    long x = 0;
+    long y = 0;
+    long z = 0;
+    foreach (AccelerationData sample, dataBuffer)
+    {
+        // Dummy average calculations, optimise if a neater method
+        // is figured out.
+        x += sample.x_;
+        y += sample.y_;
+        z += sample.z_;
+    }
+
+    data.x_ = x / dataBuffer.count();
+    data.y_ = y / dataBuffer.count();
+    data.z_ = z / dataBuffer.count();
+
     // calculate face
     processFace();
 
@@ -110,10 +129,7 @@ bool OrientationInterpreter::overFlowCheck()
 
 void OrientationInterpreter::processTopEdge()
 {
-    // Provide something on the first run (topEdge + Face)
-
     int rotation;
-    bool orientationTriggered = false;
     PoseData newTopEdge = PoseData::Undefined;
 
     // Portrait check
@@ -124,7 +140,6 @@ void OrientationInterpreter::processTopEdge()
 
         // Some threshold to switching between portrait modes
         if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
-            //if (topEdge.orientation_ != newTopEdge.orientation_ && rotation < SAME_AXIS_LIMIT) {
             if (abs(rotation) < SAME_AXIS_LIMIT){
                 newTopEdge.orientation_ = topEdge.orientation_;
             }
@@ -138,7 +153,6 @@ void OrientationInterpreter::processTopEdge()
 
             // Some threshold to switching between landscape modes
             if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
-                //if (topEdge.orientation_ != newTopEdge.orientation_ && rotation < SAME_AXIS_LIMIT) {
                 if (abs(rotation) < SAME_AXIS_LIMIT) {
                     newTopEdge.orientation_ = topEdge.orientation_;
                 }
@@ -163,23 +177,16 @@ void OrientationInterpreter::processFace()
 
     if  (abs(data.z_) >= 300)
     {
-        newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);   
+        newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);
 
         if (face.orientation_ != newFace.orientation_)
-        { 
-            if (updatePreviousFace)
-            {    
-                face.timestamp_ = data.timestamp_;
-                previousFace.orientation_ = newFace.orientation_;
-                updatePreviousFace = false;
-            }
-            face.orientation_ = newFace.orientation_;  
-            timer->start(500);
-        }   
-    }   
+        {
+            face.orientation_ = newFace.orientation_;
+            face.timestamp_ = data.timestamp_;
+            faceSource.propagate(1, &face);
+        }
+    }
 }
-
-
 
 void OrientationInterpreter::processOrientation()
 {
