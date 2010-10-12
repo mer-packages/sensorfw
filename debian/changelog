@@ -1,3 +1,10 @@
+sensord (0.6.27) unstable; urgency=low
+
+  [Antti Virtanen]
+  * Debug output from USR2 is now printed with warning-level and output contains PID of active control and listen sessions if available. [Fixes: NB#197201].
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 12 Oct 2010 16:18:11 +0300
+
 sensord (0.6.26) unstable; urgency=low
 
   [Lihan Guo]
@@ -24,7 +31,6 @@ sensord (0.6.26) unstable; urgency=low
   * Removed unnecessary mutex from NodeBase
   * Bin doesn't use separate thread anymore. Implemented ThreadBin which still supports threaded usage. [Fixes: NB#196900]
   * RingBuffer is not synchronized anymore. Implemented SynchronizedRingBuffer which is supposed to be used with ThreadBin.
-  * Debug output from USR2 is now printed with warning-level and output contains PID of active control and listen sessions if available. [Fixes: NB#197201].
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 21 Sep 2010 09:15:08 +0300
 
