@@ -3,7 +3,7 @@ sensord (0.6.26) unstable; urgency=low
   [Lihan Guo]
   * Added: Standby override test case	
   * Fixes: NB#193175 - Screen blank override is re-evaluated only at screen blank event
-		
+
   [Pia Niemelä, Antti Virtanen]
   * Logging improved:
     - Log target can be configured with --log-target. Target is bitmask so multiple targets can be used at the same time. By default only syslog is used.
@@ -13,10 +13,15 @@ sensord (0.6.26) unstable; urgency=low
     - Small optimizations.
 
   [Timo Rongas]
-  * Fixes: NB# Bug 196131 - Sensord should unset Screen.TopEdge when unclear
+  * Fixes: NB#196131 - Sensord should unset Screen.TopEdge when unclear
     - When device is flat on table,
       - Face value will be given as Orientation value for OrientationSensor
       - Screen.TopEdge will be set unset for ContextFW
+
+  [Antti Virtanen]
+  * Removed unnecessary mutex from NodeBase
+  * Bin doesn't use separate thread anymore. Implemented ThreadBin which still supports threaded usage. [Fixes NB#196900]
+  * RingBuffer is not synchronized anymore. Implemented SynchronizedRingBuffer which is supposed to be used with ThreadBin.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 21 Sep 2010 09:15:08 +0300
 
