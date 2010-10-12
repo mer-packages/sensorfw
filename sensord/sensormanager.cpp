@@ -41,6 +41,8 @@
 #include <errno.h>
 #include "sockethandler.h"
 #include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/socket.h>
 
 #define SOCKET_NAME "/tmp/sensord.sock"
 
@@ -657,9 +659,55 @@ void SensorManager::printStatus(QStringList& output) const
         if (entry.controllingSession_ <= 0) {
             control = false;
         }
-        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control? "Control +":"No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running()?"Running":"Stopped"));
+#ifdef USE_SOCKET
+        QString str;
+        str.append(QString("    %1 [").arg(entry.type_));
+        if(control)
+            str.append(QString("Control (PID: %1) + ").arg(socketToPid(entry.controllingSession_)));
+        else
+            str.append("No control, ");
+        if(entry.listenSessions_.size())
+            str.append(QString("%1 listen session(s), PID(s): %2]").arg(entry.listenSessions_.size()).arg(socketToPid(entry.listenSessions_)));
+        else
+            str.append("No listen sessions]");
+        str.append(QString(". %1\n").arg(entry.sensor_->running() ? "Running" : "Stopped"));
+        output.append(str);
+#else
+        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control ? "Control +" : "No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running() ? "Running" : "Stopped"));
+#endif
     }
 }
+
+#ifdef USE_SOCKET
+QString SensorManager::socketToPid(int id) const
+{
+    struct ucred cr;
+    socklen_t len = sizeof(cr);
+    int fd = socketHandler_->getSocketFd(id);
+    if (fd)
+    {
+        if (getsockopt(fd, SOL_SOCKET, SO_PEERCRED, &cr, &len) == 0)
+            return QString("%1").arg(cr.pid);
+        else
+            return strerror(errno);
+    }
+    return "n/a";
+}
+
+QString SensorManager::socketToPid(QList<int> ids) const
+{
+    QString str;
+    bool first = true;
+    foreach (int id, ids)
+    {
+        if(!first)
+            str.append(", ");
+        first = false;
+        str.append(socketToPid(id));
+    }
+    return str;
+}
+#endif
 
 #ifdef SM_PRINT
 void SensorManager::print() const
@@ -667,15 +715,15 @@ void SensorManager::print() const
     sensordLogD() << "Registry Dump:";
     foreach(QString id, sensorInstanceMap_.keys())
     {
-        sensordLogD() << "Registry entry id=" << id;
+        sensordLogD() << "Registry entry id  =" << id;
 
-        sensordLogD() << "controllingSession_=" << sensorInstanceMap_[id].controllingSession_;
-        sensordLogD() << "listenSessions_    =" << sensorInstanceMap_[id].listenSessions_;
+        sensordLogD() << "controllingSession =" << sensorInstanceMap_[id].controllingSession_;
+        sensordLogD() << "listenSessions     =" << sensorInstanceMap_[id].listenSessions_;
         sensordLogD() << "sensor             =" << sensorInstanceMap_[id].sensor_;
         sensordLogD() << "type               =" << sensorInstanceMap_[id].type_ << endl;
     }
 
-    sensordLogD() << "sensorInstanceMap_(" << sensorInstanceMap_.size() << "):" << sensorInstanceMap_.keys();
+    sensordLogD() << "sensorInstanceMap(" << sensorInstanceMap_.size() << "):" << sensorInstanceMap_.keys();
     sensordLogD() << "sensorFactoryMap(" << sensorFactoryMap_.size() << "):" << sensorFactoryMap_.keys();
 }
 #endif

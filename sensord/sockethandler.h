@@ -49,6 +49,7 @@ public:
     bool write(int id, const void* source, int size);
 
     bool removeSession(int sessionId);
+    int getSocketFd(int sessionId) const;
 
 Q_SIGNALS:
     void lostSession(int sessionId);

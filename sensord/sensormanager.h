@@ -262,6 +262,10 @@ private:
     SocketHandler*                                 socketHandler_;
     int                                            pipefds_[2];
     QSocketNotifier*                               pipeNotifier_;
+
+    QString socketToPid(int id) const;
+    QString socketToPid(QList<int> ids) const;
+
 #endif
 
     static int                                     sessionIdCount_;

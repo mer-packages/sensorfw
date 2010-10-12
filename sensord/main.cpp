@@ -74,7 +74,7 @@ void signalFlush(int param)
     SensorManager::instance().printStatus(output);
 
     foreach (QString line, output) {
-        sensordLogD() << line.toLocal8Bit().data();
+        sensordLogW() << line.toLocal8Bit().data();
     }
 }
 

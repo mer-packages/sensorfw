@@ -93,7 +93,7 @@ bool SocketHandler::removeSession(int sessionId)
     if (!(m_idMap.keys().contains(sessionId))) {
         sensordLogD() << "[SocketHandler]: Trying to remove nonexistent session.";
     }
-    
+
     QLocalSocket* socket = m_idMap.value(sessionId);
 
     if (socket) {
@@ -121,7 +121,7 @@ void SocketHandler::newConnection()
     sensordLogT() << "[SocketHandler]: New connection received.";
 
     while (m_server->hasPendingConnections()) {
-        
+
         QLocalSocket* socket = m_server->nextPendingConnection();
         connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
         connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
@@ -173,4 +173,11 @@ void SocketHandler::killSocket()
     } else {
         sensordLogW() << "[SocketHandler]: Ugly hack just went bad.. attempting to delete nonexisting pointer.";
     }
+}
+
+int SocketHandler::getSocketFd(int sessionId) const
+{
+    if(m_idMap[sessionId])
+        return m_idMap[sessionId]->socketDescriptor();
+    return 0;
 }
