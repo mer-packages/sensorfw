@@ -44,7 +44,7 @@ class Orientation(unittest.TestCase):
         self.fpath = "/tmp/fakedsensors/accelerometer"
         self.datafaker = "/usr/bin/datafaker"
         self.context_client_edge = CLTool("context-listen", "Screen.TopEdge")
-	self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
+        self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
 
 
     def tearDown(self):
@@ -56,27 +56,30 @@ class Orientation(unittest.TestCase):
         # Top side up
         os.system("echo 60 960 18 | " + self.datafaker + " " + self.fpath)
         self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"top"'))
+        time.sleep(0.9)
 
         # Right side up
         os.system("echo 936 162 180 | " + self.datafaker + " " + self.fpath)
         self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"right"'))
+        time.sleep(0.9)
 
         # Bottom up
         os.system("echo 72 -990 -162 | " + self.datafaker + " " + self.fpath)
         self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"bottom"'))
+        time.sleep(0.9)
 
         # Left side up
         os.system("echo -954 -90 -36 | " + self.datafaker + " " + self.fpath)
         self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"left"'))
+        time.sleep(0.9)
 
         # On the table
         os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
-        time.sleep(0.5)
         self.assert_(self.context_client_cover.expect('Screen.IsCovered = bool:false'))
+        time.sleep(0.9)
 
         # On the table upside down
         os.system("echo 270 216 -972 | " + self.datafaker + " " + self.fpath)
-        time.sleep(0.5)
         self.assert_(self.context_client_cover.expect('Screen.IsCovered = bool:true'))
 
 

@@ -91,6 +91,13 @@ public:
      * @param orientation Initial value for orientation.
      */
     PoseData(Orientation orientation) : TimedData(0), orientation_(orientation) {}
+
+    /**
+     * Constructor
+     * @param timestamp Initial value for timestamp.
+     * @param orientation Initial value for orientation.
+     */
+    PoseData(quint64 timestamp, Orientation orientation) : TimedData(timestamp), orientation_(orientation) {}
 };
 
 Q_DECLARE_METATYPE(PoseData)

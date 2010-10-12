@@ -37,8 +37,8 @@
 /**
  * @brief Filter for calculating device orientation.
  *
- * Filter for calculating the device orientation. Input from the
- * #TopEdgeFilter, #FaceFilter and #AccelerometerAdaptor is used.
+ * Filter for calculating the device orientation. Input from
+ * #AccelerometerAdaptor is used.
  *
  */
 class OrientationInterpreter : public QObject, public PropertyTracker, public FilterBase
@@ -48,20 +48,6 @@ class OrientationInterpreter : public QObject, public PropertyTracker, public Fi
     Q_PROPERTY(PoseData orientation READ orientation);
     Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
 
-
-private Q_SLOTS:
-
-    /** 
-     * @brief Verify face changes.
-     * 
-     * When the face change between FaceDown and FaceUp is found,
-     * verify it after 0.5 second.
-     * It's verified with delay only for the face-buffer
-     */
-
-
-    void verifyFaceChange();
-    
 private:
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
     Source<PoseData> topEdgeSource;
@@ -85,19 +71,20 @@ private:
     bool updatePreviousFace;
 
     AccelerationData data;
+    QList<AccelerationData> dataBuffer;
 
     int minlimit;
     int maxlimit;
     int angleThresholdPortrait;
     int angleThresholdLandscape;
+    unsigned long discardTime;
 
     PoseData o_;
-    QTimer *timer;
-    
+
 public:
     /**
-     * Factory method for CompassFilter.
-     * @return New CompassFilter as FilterBase*.
+     * Factory method.
+     * @return New OrientationInterpreter as FilterBase*.
      */
     static FilterBase* factoryMethod()
     {

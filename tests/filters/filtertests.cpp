@@ -278,18 +278,18 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
 {
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
-        TimedXyzData(0,-981,   0,   0),
-        TimedXyzData(0, 981,   0,   0),
-        TimedXyzData(0,   0,-981,   0),
-        TimedXyzData(0,   0, 981,   0)
+        TimedXyzData(       0,-981,   0,   0),
+        TimedXyzData(10000000, 981,   0,   0),
+        TimedXyzData(20000000,   0,-981,   0),
+        TimedXyzData(30000000,   0, 981,   0)
     };
 
     // Expected output data
     PoseData expectedResult[] = {
-        PoseData(PoseData::RightUp),
-        PoseData(PoseData::LeftUp),
-        PoseData(PoseData::BottomDown),
-        PoseData(PoseData::BottomUp),
+        PoseData(       0, PoseData::RightUp),
+        PoseData(10000000, PoseData::LeftUp),
+        PoseData(20000000, PoseData::BottomDown),
+        PoseData(30000000, PoseData::BottomUp),
     };
 
     QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
@@ -346,95 +346,64 @@ void FilterApiTest::testFaceInterpretationFilter()
 
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0,  981),
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0,  981),
-        TimedXyzData(0,   0,   0,  981),
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0, -981)
+        TimedXyzData(      0,   0,   0,-981),
+        TimedXyzData(1000000,   0,   0, 981),
+        TimedXyzData(2000000,   0,   0,-981),
+        TimedXyzData(2100000,   0,   0, 981),
+        TimedXyzData(2200000,   0,   0,-981)
     };
 
-    // Expected output data for starting from FaceDown
-    PoseData expectedResultDown[] = {   
-        PoseData(PoseData::FaceUp),
-        PoseData(PoseData::FaceDown),
-        PoseData(PoseData::FaceUp)
-    };
-
-
-    // Expected output data for starting from FaceUp
-    PoseData expectedResultUp[] = {
-       
-        PoseData(PoseData::FaceDown),
-        PoseData(PoseData::FaceUp)
+    // Expected output data
+    PoseData expectedResult[] = {
+        PoseData(      0, PoseData::FaceUp),
+        PoseData(1000000, PoseData::FaceDown),
+        PoseData(2000000, PoseData::FaceUp),
     };
 
     int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
-    int numInputsDown = (sizeof(expectedResultDown)/sizeof(PoseData));
-    int numInputsUp = (sizeof(expectedResultUp)/sizeof(PoseData));
-    
+    int numOutputs = (sizeof(expectedResult)/sizeof(PoseData));
+
     FilterBase* faceInterpreterFilter = OrientationInterpreter::factoryMethod();
-    
-    for (int i = 0; i < 2; i++)
-    {
-        Bin filterBin;
-        DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-        if (i == 0){
-            ((OrientationInterpreter*)faceInterpreterFilter)->orientation().orientation_ == PoseData::FaceDown;
-        } else {
-            ((OrientationInterpreter*)faceInterpreterFilter)->orientation().orientation_ == PoseData::FaceUp;
-        }
+    Bin filterBin;
+    DummyAdaptor<TimedXyzData> dummyAdaptor;
 
-        RingBuffer<PoseData> outputBuffer(10);
+    RingBuffer<PoseData> outputBuffer(10);
 
-        filterBin.add(&dummyAdaptor, "adapter");
-        filterBin.add(faceInterpreterFilter, "filter");
-        filterBin.add(&outputBuffer, "buffer");
-        filterBin.join("adapter", "source", "filter", "accsink");
-        filterBin.join("filter", "face", "buffer", "sink");
+    filterBin.add(&dummyAdaptor, "adapter");
+    filterBin.add(faceInterpreterFilter, "filter");
+    filterBin.add(&outputBuffer, "buffer");
+    filterBin.join("adapter", "source", "filter", "accsink");
+    filterBin.join("filter", "face", "buffer", "sink");
 
 
-        DummyDbusEmitter<PoseData> dbusEmitter;
-        Bin marshallingBin;
-        marshallingBin.add(&dbusEmitter, "testdbusemitter");
-        outputBuffer.join(&dbusEmitter);
+    DummyDbusEmitter<PoseData> dbusEmitter;
+    Bin marshallingBin;
+    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    outputBuffer.join(&dbusEmitter);
 
-        // Setup data
-        dummyAdaptor.setTestData(numInputs, inputData, false);
- 
-        if (i==0){
-            dbusEmitter.setExpectedData(numInputsDown, expectedResultDown, false);   
-        } else {
-            dbusEmitter.setExpectedData(numInputsUp, expectedResultUp, false);  
-        }
+    // Setup data
+    dummyAdaptor.setTestData(numInputs, inputData, false);
 
-        marshallingBin.start();
-        filterBin.start();
+    dbusEmitter.setExpectedData(numOutputs, expectedResult, false);
 
-        for (int j=1; j < numInputs; j++){
-            dummyAdaptor.pushNewData();
-            QTest::qWait(300);
-        }   
+    marshallingBin.start();
+    filterBin.start();
 
-        int waitRounds = 0;
-
-        if (dummyAdaptor.getDataCount() != (dbusEmitter.numSamplesReceived() + 6) && waitRounds++ < MAX_FACE_WAIT_ROUNDS) {
-            QTest::qWait(WAIT_ROUND_DELAY);
-        }
-
-        filterBin.stop();
-        marshallingBin.stop();
-
-        if (i==0){  
-            QCOMPARE (dummyAdaptor.getDataCount(), (dbusEmitter.numSamplesReceived() + 6));
-        } else {         
-            QCOMPARE (dummyAdaptor.getDataCount(), (dbusEmitter.numSamplesReceived() + 7));
-        }
+    for (int j=1; j < numInputs; j++){
+        dummyAdaptor.pushNewData();
     }
+
+    int waitRounds = 0;
+
+    if (dummyAdaptor.getDataCount() != (dbusEmitter.numSamplesReceived() + 6) && waitRounds++ < MAX_FACE_WAIT_ROUNDS) {
+        QTest::qWait(WAIT_ROUND_DELAY);
+    }
+
+    filterBin.stop();
+    marshallingBin.stop();
+
+    QVERIFY2(numOutputs == dbusEmitter.numSamplesReceived(), "Too many/few outputs from filter.");
 
     delete faceInterpreterFilter;
 }
@@ -444,22 +413,22 @@ void FilterApiTest::testOrientationInterpretationFilter()
 {
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
-        TimedXyzData(0,-981,   0,   0),
-        TimedXyzData(0, 981,   0,   0),
-        TimedXyzData(0,   0,-981,   0),
-        TimedXyzData(0,   0, 981,   0),
-        TimedXyzData(0,   0,   0, -981),
-        TimedXyzData(0,   0,   0,  981)
+        TimedXyzData(      0,-981,   0,   0),
+        TimedXyzData(1000000, 981,   0,   0),
+        TimedXyzData(2000000,   0,-981,   0),
+        TimedXyzData(3000000,   0, 981,   0),
+        TimedXyzData(4000000,   0,   0, -981),
+        TimedXyzData(5000000,   0,   0,  981)
     };
 
     // Expected output data
     PoseData expectedResult[] = {
-        PoseData(PoseData::RightUp),
-        PoseData(PoseData::LeftUp),
-        PoseData(PoseData::BottomDown),
-        PoseData(PoseData::BottomUp),
-        PoseData(PoseData::FaceUp),
-        PoseData(PoseData::FaceDown)
+        PoseData(      0, PoseData::RightUp),
+        PoseData(1000000, PoseData::LeftUp),
+        PoseData(2000000, PoseData::BottomDown),
+        PoseData(3000000, PoseData::BottomUp),
+        PoseData(4000000, PoseData::FaceUp),
+        PoseData(5000000, PoseData::FaceDown)
     };
 
     QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
