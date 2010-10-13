@@ -8,37 +8,35 @@ include( ../common-config.pri )
 SOURCES += sensormanagerinterface.cpp \
     sensormanager_i.cpp \
     abstractsensor_i.cpp \
-    socketreader.cpp
+    socketreader.cpp \
+    compasssensor_i.cpp \
+    orientationsensor_i.cpp \
+    accelerometersensor_i.cpp \
+    alssensor_i.cpp \
+    tapsensor_i.cpp \
+    proximitysensor_i.cpp \
+    rotationsensor_i.cpp \
+    magnetometersensor_i.cpp
+
 HEADERS += sensormanagerinterface.h \
     sensormanager_i.h \
     abstractsensor_i.h \
-    socketreader.h
+    socketreader.h \
+    compasssensor_i.h \
+    orientationsensor_i.h \
+    accelerometersensor_i.h \
+    alssensor_i.h \
+    tapsensor_i.h \
+    proximitysensor_i.h \
+    rotationsensor_i.h \
+    magnetometersensor_i.h
+
 SENSORFW_INCLUDEPATHS = .. \
     ../include \
     ../filters \
     ../datatypes
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
-
-internal {
-    SOURCES += compasssensor_i.cpp \
-        orientationsensor_i.cpp \
-        accelerometersensor_i.cpp \
-        alssensor_i.cpp \
-        tapsensor_i.cpp \
-        proximitysensor_i.cpp \
-        rotationsensor_i.cpp \
-        magnetometersensor_i.cpp
-
-    HEADERS += compasssensor_i.h \
-        orientationsensor_i.h \
-        accelerometersensor_i.h \
-        alssensor_i.h \
-        tapsensor_i.h \
-        proximitysensor_i.h \
-        rotationsensor_i.h \
-        magnetometersensor_i.h
-}
 
 include(../common-install.pri)
 publicheaders.files = $$HEADERS

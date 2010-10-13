@@ -86,8 +86,6 @@ HEADERS += sensormanager.h \
     DEFINES += SENSORFW_MCE_WATCHER
 }
 
-internal:DEFINES += USE_INTERNAL
-
 contextprovider {
     DEFINES += PROVIDE_CONTEXT_INFO
     PKGCONFIG += contextprovider-1.0

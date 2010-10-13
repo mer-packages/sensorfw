@@ -5,9 +5,10 @@ SUBDIRS = datatypes \
           filters \
           sensors \
           sensord \
-          qt-api
+          qt-api \
+          chains \
+          tests
 
-#sensord.depends = datatypes adaptors filters sensors chains
 sensord.depends = datatypes adaptors sensors chains
 
 include( doc/doc.pri )
@@ -31,10 +32,6 @@ SENSORDCONFIGFILE.path = /etc/sensorfw
 
 SENSORDCONFIGFILES.files = config/90-sensord-default.conf
 SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
-
-internal {
-    SUBDIRS += chains tests
-}
 
 publicheaders.files += include/*.h
 

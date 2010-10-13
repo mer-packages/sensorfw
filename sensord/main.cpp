@@ -44,10 +44,7 @@
 #include "calibrationhandler.h"
 #include "datatypes/datarange.h"
 #include "parser.h"
-
-#ifdef USE_INTERNAL
 #include "datatypes/tap.h"
-#endif
 
 #define CONFIG_FILE_PATH     "/etc/sensorfw/sensord.conf"
 #define CONFIG_DIR_PATH      "/etc/sensorfw/sensord.conf.d/"
@@ -123,14 +120,11 @@ int main(int argc, char *argv[])
     qDBusRegisterMetaType<Unsigned>();
     qDBusRegisterMetaType<Orientation>();
     qDBusRegisterMetaType<MagneticField>();
-#ifdef USE_INTERNAL
     qDBusRegisterMetaType<Tap>();
-#endif
     qDBusRegisterMetaType<DataRange>();
 
    // TODO: this results in error messages in case only Ariane is used
 
-#ifdef USE_INTERNAL
     // Leave loading for client app. ALS loaded for context fw.
     //sensordLogD() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
     //sensordLogD() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
@@ -138,7 +132,6 @@ int main(int argc, char *argv[])
     //sensordLogD() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
     //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
     //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
-#endif
 
 #ifdef PROVIDE_CONTEXT_INFO
 

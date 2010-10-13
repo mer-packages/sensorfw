@@ -19,27 +19,21 @@ HEADERS += xyz.h \
     utils.h \
     timedunsigned.h \
     genericdata.h \
-    orientationdata.h
+    orientationdata.h \
+    tap.h \
+    posedata.h \
+    tapdata.h \
+    touchdata.h
 
 
 SOURCES += xyz.cpp \
     orientation.cpp \
     unsigned.cpp \
     compass.cpp \
-    utils.cpp
-
+    utils.cpp \
+    tap.cpp
 
 LIBS += -lrt
-
-
-internal {
-    HEADERS += tap.h \
-               posedata.h \
-               tapdata.h \
-               touchdata.h
-
-    SOURCES += tap.cpp
-}
 
 include(../common-install.pri)
 publicheaders.path  = $${publicheaders.path}/datatypes

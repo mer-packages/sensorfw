@@ -8,7 +8,6 @@ QT += dbus
 CONFIG += debug
 
 # Maemo specific options
-CONFIG += internal
 CONFIG += contextprovider
 
 # DEPRECATED: CompassChain is now provided by separate package
