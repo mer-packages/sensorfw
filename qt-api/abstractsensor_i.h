@@ -161,14 +161,15 @@ protected :
 
     int sessionId_;
     bool running_;
-    int interval_;
     bool standbyOverride_;
+    int interval_;
 
     SocketReader* socketReader_;
 
 private:
     SensorError errorCode_;
     QString errorString_;
+
 };
 
 namespace local {
