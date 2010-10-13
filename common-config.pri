@@ -18,6 +18,3 @@ CONFIG += contextprovider
 ### default is armel. If internal sensors are included in manual build for x86,
 ### uncomment the following line:
 #### CONFIG+= x86build
-
-# use sockets
-DEFINES += USE_SOCKET

@@ -39,14 +39,9 @@
 #include "propertyhandler.h"
 #include "logging.h"
 
-
-#ifdef USE_SOCKET
 class QSocketNotifier;
 class SocketHandler;
-#endif
-
 class MceWatcher;
-
 
 class SensorInstanceEntry {
 public:
@@ -202,7 +197,6 @@ public:
     void print() const; // for debugging purposes only
 #endif
 
-#ifdef USE_SOCKET
     bool write(int id, const void* source, int size);
 
 private Q_SLOTS:
@@ -214,9 +208,7 @@ private Q_SLOTS:
      * Used to make switch-over from sensor thread to sensormanager thread.
      */
     void writeout(int);
-#endif
 
-private Q_SLOTS:
     void displayStateChanged(const bool displayState);
     void propertyRequest(QString property, QString adaptor);
 
@@ -258,15 +250,12 @@ protected:
 private:
     static SensorManager*                          instance_;
 
-#ifdef USE_SOCKET
     SocketHandler*                                 socketHandler_;
     int                                            pipefds_[2];
     QSocketNotifier*                               pipeNotifier_;
 
     QString socketToPid(int id) const;
     QString socketToPid(QList<int> ids) const;
-
-#endif
 
     static int                                     sessionIdCount_;
 

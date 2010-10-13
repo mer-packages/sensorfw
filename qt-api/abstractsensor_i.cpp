@@ -31,14 +31,12 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &pa
         QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
         sessionId_(sessionId), running_(false), interval_(0), socketReader_(NULL), standbyOverride_(false)
 {
-#ifdef USE_SOCKET
     socketReader_ = new SocketReader(this);
 
     if (!socketReader_->initiateConnection(sessionId_)) {
         setError(SClientSocketError, "Socket connection failed.");
         // TODO: Invalidate!
     }
-#endif
 
     qDBusRegisterMetaType<DataRange>();
 
@@ -52,7 +50,6 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
         release();
     }
     
-#ifdef USE_SOCKET
     if (socketReader_) {
 
         if (!socketReader_->dropConnection()) {
@@ -60,7 +57,6 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
         }
         delete socketReader_;
     }
-#endif
 }
 
 bool AbstractSensorChannelInterface::release()
@@ -98,12 +94,9 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     }
     running_ = true;
 
-
-#ifdef USE_SOCKET
     if (socketReader_) {
         connect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
     }
-#endif
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
@@ -128,11 +121,9 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
     }
     running_ = false ;
 
-#ifdef USE_SOCKET
     if (socketReader_) {
         disconnect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
     }
-#endif
     setStandbyOverride(sessionId, false);
     /// Drop interval requests when stopped
     setInterval(sessionId, 0);

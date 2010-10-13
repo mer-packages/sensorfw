@@ -144,11 +144,7 @@ void ALSSensorChannel::emitToDbus(const TimedUnsigned& value)
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;
 
-#ifdef USE_SOCKET
         writeToClients((const void*)(&value), sizeof(value));
-#else
-        emit ALSChanged(value);
-#endif
     }
 
 #ifdef PROVIDE_CONTEXT_INFO

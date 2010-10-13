@@ -128,9 +128,5 @@ bool AccelerometerSensorChannel::stop()
 void AccelerometerSensorChannel::emitToDbus(const AccelerationData& value)
 {
     previousSample_ = value;
-#ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(AccelerationData));
-#else
-    emit dataAvailable(value);
-#endif
 }

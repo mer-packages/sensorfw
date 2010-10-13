@@ -122,11 +122,6 @@ void ProximitySensorChannel::emitToDbus(const TimedUnsigned& value)
     
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;
-
-#ifdef USE_SOCKET
         writeToClients((const void *)&value, sizeof(TimedUnsigned));
-#else
-        emit dataAvailable(value);
-#endif
     }
 }

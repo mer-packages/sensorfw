@@ -121,9 +121,5 @@ bool TapSensorChannel::stop()
 
 void TapSensorChannel::emitToDbus(const TapData& tapData)
 {
-#ifdef USE_SOCKET
     writeToClients((const void *)&tapData, sizeof(TapData));
-#else
-    emit dataAvailable(tapData);
-#endif
 }

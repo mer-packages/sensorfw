@@ -173,11 +173,7 @@ void CompassSensorChannel::emitToDbus(const CompassData& value)
     compassData.level_ = value.level_;
     compassData.degrees_ = value.degrees_;
 
-#ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(CompassData));
-#else
-    emit dataAvailable(value);
-#endif
 }
 
 int CompassSensorChannel::interval() const

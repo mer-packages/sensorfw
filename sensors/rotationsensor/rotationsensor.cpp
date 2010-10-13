@@ -174,11 +174,7 @@ bool RotationSensorChannel::stop()
 void RotationSensorChannel::emitToDbus(const TimedXyzData& value)
 {
     prevRotation_ = value; // TODO: Does this need locking?
-#ifdef USE_SOCKET
     writeToClients((const void*)(&value), sizeof(TimedXyzData));
-#else
-    emit dataAvailable(value);
-#endif
 }
 
 int RotationSensorChannel::interval() const

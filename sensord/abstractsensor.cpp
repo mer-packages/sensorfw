@@ -77,11 +77,9 @@ int AbstractSensorChannel::interval() const
 }
 
 bool AbstractSensorChannel::start(int sessionId) {
-#ifdef USE_SOCKET
     if (!(activeSessions_.contains(sessionId))) {
         activeSessions_.append(sessionId);
     }
-#endif
     return start();
 }
 
@@ -100,10 +98,7 @@ bool AbstractSensorChannel::start()
 }
 
 bool AbstractSensorChannel::stop(int sessionId) {
-#ifdef USE_SOCKET
     activeSessions_.removeAll(sessionId);
-#endif
-
     return stop();
 }
 
@@ -156,7 +151,6 @@ QList<DataRange> AbstractSensorChannel::getAvailableIntervals()
     return intervalList_;
 }
 
-#ifdef USE_SOCKET
 bool AbstractSensorChannel::writeToClients(const void* source, int size)
 {
     foreach(int sessionId, activeSessions_) {
@@ -167,4 +161,3 @@ bool AbstractSensorChannel::writeToClients(const void* source, int size)
     }
     return true;
 }
-#endif

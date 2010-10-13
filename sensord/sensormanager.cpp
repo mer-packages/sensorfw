@@ -36,7 +36,6 @@
 #include "mcewatcher.h"
 #include "calibrationhandler.h"
 
-#ifdef USE_SOCKET
 #include <QSocketNotifier>
 #include <errno.h>
 #include "sockethandler.h"
@@ -51,7 +50,6 @@ typedef struct {
     int size;
     void* buffer;
 } PipeData;
-#endif
 
 SensorManager* SensorManager::instance_ = NULL;
 int SensorManager::sessionIdCount_ = 0;
@@ -77,7 +75,6 @@ SensorManager::SensorManager()
 {
     new SensorManagerAdaptor(this);
 
-#ifdef USE_SOCKET
     socketHandler_ = new SocketHandler(this);
     connect(socketHandler_, SIGNAL(lostSession(int)), this, SLOT(lostClient(int)));
 
@@ -94,7 +91,6 @@ SensorManager::SensorManager()
     if (chmod(SOCKET_NAME, S_IRWXU|S_IRWXG|S_IRWXO) != 0) {
         sensordLogW() << "Error setting socket permissions! " << SOCKET_NAME;
     }
-#endif
 
     connect(&propertyHandler_, SIGNAL(propertyRequestReceived(QString, QString)),
             this, SLOT(propertyRequest(QString, QString)));
@@ -120,7 +116,6 @@ SensorManager::~SensorManager()
          Q_ASSERT( deviceAdaptorInstanceMap_[key].adaptor_ == 0 );
     }
 
-#ifdef USE_SOCKET
     if (socketHandler_) {
         delete socketHandler_;
     }
@@ -129,7 +124,6 @@ SensorManager::~SensorManager()
 
     if (pipefds_[0]) close(pipefds_[0]);
     if (pipefds_[1]) close(pipefds_[1]);
-#endif
 
 #ifdef SENSORFW_MCE_WATCHER
     delete mceWatcher_;
@@ -383,10 +377,9 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
         }
     }
 
-#ifdef USE_SOCKET
     // TODO: Release the socket, bind to single place
     socketHandler_->removeSession(sessionId);
-#endif
+
     return returnValue;
 }
 
@@ -544,7 +537,6 @@ FilterBase* SensorManager::instantiateFilter(const QString& id)
     return filter;
 }
 
-#ifdef USE_SOCKET
 bool SensorManager::write(int id, const void* source, int size)
 {
     void* buffer = malloc(size);
@@ -600,7 +592,6 @@ void SensorManager::lostClient(int sessionId)
         }
     }
 }
-#endif
 
 // TODO: Make the signal contain the new value (as long as int is always enough)
 void SensorManager::propertyRequest(QString property, QString adaptor)
@@ -659,7 +650,6 @@ void SensorManager::printStatus(QStringList& output) const
         if (entry.controllingSession_ <= 0) {
             control = false;
         }
-#ifdef USE_SOCKET
         QString str;
         str.append(QString("    %1 [").arg(entry.type_));
         if(control)
@@ -672,13 +662,9 @@ void SensorManager::printStatus(QStringList& output) const
             str.append("No listen sessions]");
         str.append(QString(". %1\n").arg(entry.sensor_->running() ? "Running" : "Stopped"));
         output.append(str);
-#else
-        output.append(QString("    %1 [%2 %3 listen session(s)]. %4\n").arg(entry.type_).arg(control ? "Control +" : "No control,").arg(entry.listenSessions_.size()).arg(entry.sensor_->running() ? "Running" : "Stopped"));
-#endif
     }
 }
 
-#ifdef USE_SOCKET
 QString SensorManager::socketToPid(int id) const
 {
     struct ucred cr;
@@ -707,7 +693,6 @@ QString SensorManager::socketToPid(QList<int> ids) const
     }
     return str;
 }
-#endif
 
 #ifdef SM_PRINT
 void SensorManager::print() const

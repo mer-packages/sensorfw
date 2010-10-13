@@ -130,10 +130,6 @@ void OrientationSensorChannel::emitToDbus(const PoseData& value)
     if ((value.orientation_ != prevOrientation.orientation_) &&
         (value.orientation_ != PoseData::Undefined) )  {
         prevOrientation.orientation_ = value.orientation_;
-#ifdef USE_SOCKET
         writeToClients((const void *)&value, sizeof(value));
-#else
-        emit orientationChanged(TimedUnsigned(value.timestamp_, value.orientation_));
-#endif
     }
 }

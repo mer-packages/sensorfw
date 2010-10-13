@@ -175,9 +175,8 @@ protected:
     void setError(SensorError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SNoError; errorString_.clear(); }
 
-#ifdef USE_SOCKET
     bool writeToClients(const void* source, int size);
-#endif
+
     void signalPropertyChanged(const QString& name)
     {
         emit propertyChanged(name);
