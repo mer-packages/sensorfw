@@ -3,6 +3,9 @@ sensord (0.6.27) unstable; urgency=low
   [Antti Virtanen]
   * Debug output from USR2 is now printed with warning-level and output contains PID of active control and listen sessions if available. [Fixes: NB#197201].
 
+  [Timo Rongas]
+  * Reordered members to maintain binary compatibility.
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 12 Oct 2010 16:18:11 +0300
 
 sensord (0.6.26) unstable; urgency=low
