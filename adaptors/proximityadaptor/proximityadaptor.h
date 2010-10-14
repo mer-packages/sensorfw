@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -42,6 +43,13 @@ class ProximityAdaptor : public SysfsAdaptor
 {
     Q_OBJECT;
 public:
+
+    enum DeviceType
+    {
+        RM680 = 0,
+        RM696
+    };   
+
     /**
      * Factory method for gaining a new instance of ProximityAdaptor class.
      * @param id Identifier for the adaptor.
@@ -81,6 +89,7 @@ private:
     int readThreshold();
 
     int m_threshold;
+    ProximityAdaptor::DeviceType device;
 };
 
 #endif

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -47,6 +48,13 @@ class ALSAdaptor : public SysfsAdaptor
 {
     Q_OBJECT;
 public:
+
+    enum DeviceType
+    {
+        RM680 = 0,
+        RM696
+    };   
+
     /**
      * Factory method for gaining a new instance of ALSAdaptor class.
      * @param id Identifier for the adaptor.
@@ -86,6 +94,8 @@ private:
     void processSample(int pathId, int fd);
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
+    ALSAdaptor::DeviceType device;
+
 };
 
 #endif
