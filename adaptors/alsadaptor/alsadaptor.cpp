@@ -59,21 +59,37 @@ struct bh1770glc_als {
 } __attribute__((packed));
 
 
-ALSAdaptor::ALSAdaptor(const QString& id): 
+ALSAdaptor::ALSAdaptor(const QString& id):
     SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
-     
-    if (QFile::exists(RM680_ALS))
+    device = DeviceUnknown;
+
+    QString rm680_als = Config::configuration()->value("als_dev_path_rm680").toString();
+    QString rm696_als = Config::configuration()->value("als_dev_path_rm696").toString();
+
+    if (QFile::exists(rm680_als))
     {
         device = RM680;
-        addPath(Config::configuration()->value("als_dev_path_rm680").toString());
+        addPath(rm680_als);
+    } else if (QFile::exists(RM680_ALS))
+    {
+        device = RM680;
+        addPath(RM680_ALS);
+    }
 
+
+    if (QFile::exists(rm696_als))
+    {
+        device = RM696;
+        addPath(rm696_als);
     } else if (QFile::exists(RM696_ALS))
     {
         device = RM696;
-        addPath(Config::configuration()->value("als_dev_path_rm696").toString());
+        addPath(RM696_ALS);
+    }
 
-    } else {
+    if (device == DeviceUnknown)
+    {
         sensordLogW() << "Other HW except RM680 and RM696";
     }
 
@@ -97,7 +113,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
     {
         struct bh1770glc_als als_data;
         als_data.lux = 0;
-    
+
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
@@ -105,18 +121,18 @@ void ALSAdaptor::processSample(int pathId, int fd)
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
-    
+
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
         lux->timestamp_ = Utils::getTimeStamp();
-    } 
-    
+    }
+
     if (device == RM696)
     {
         struct apds990x_data als_data;
-    
+
         als_data.lux = 0;
-    
+
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
@@ -124,7 +140,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
-    
+
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
         lux->timestamp_ = Utils::getTimeStamp();

@@ -51,9 +51,10 @@ public:
 
     enum DeviceType
     {
-        RM680 = 0,
+        DeviceUnknown = 0,
+        RM680,
         RM696
-    };   
+    };
 
     /**
      * Factory method for gaining a new instance of ALSAdaptor class.

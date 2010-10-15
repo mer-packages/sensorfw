@@ -59,19 +59,34 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode),
     m_threshold(35)
 {
+    device = DeviceUnknown;
 
-     if (QFile::exists(RM680_PS))
+    QString rm680_ps = Config::configuration()->value("proximity_dev_path_rm680").toString();
+    QString rm696_ps = Config::configuration()->value("proximity_dev_path_rm696").toString();
+
+    if (QFile::exists(rm680_ps))
     {
         device = RM680;
-        addPath(Config::configuration()->value("proximity_dev_path_rm680").toString());
+        addPath(rm680_ps);
+    } else if (QFile::exists(RM680_PS))
+    {
+        device = RM680;
+        addPath(RM680_PS);
+    }
 
+    if (QFile::exists(rm696_ps))
+    {
+        device = RM696;
+        addPath(rm696_ps);
     } else if (QFile::exists(RM696_PS))
     {
         device = RM696;
-        addPath(Config::configuration()->value("proximity_dev_path_rm696").toString());
+        addPath(RM696_PS);
+    }
 
-    } else {
-         sensordLogW() << "Other Device except RM680 and RM696";
+    if (device == DeviceUnknown)
+    {
+        sensordLogW() << "Other HW except RM680 and RM696";
     }
 
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
@@ -97,7 +112,7 @@ ProximityAdaptor::~ProximityAdaptor()
 void ProximityAdaptor::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
-    
+
     static char buffer[100];
     int ret = 0;
 
@@ -112,7 +127,7 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         } else {
             sensordLogW() << "read():" << strerror(errno);
             return;
-        } 
+        }
 
         if ( ps_data.led1 > m_threshold ) {
             ret = 1;
@@ -129,12 +144,12 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         } else {
             sensordLogW() << "read():" << strerror(errno);
             return;
-        } 
+        }
 
         if ( ps_data.ps > m_threshold ) {
             ret = 1;
         }
-    } else 
+    } else
     {
         sensordLogW() << "Other HW except RM680 and RM696";
     }
@@ -150,6 +165,7 @@ void ProximityAdaptor::processSample(int pathId, int fd)
     proximityBuffer_->wakeUpReaders();
 }
 
+
 int ProximityAdaptor::readThreshold()
 {
     int value = 0;
@@ -159,15 +175,15 @@ int ProximityAdaptor::readThreshold()
     if (Config::configuration()->value(configKey, "").toString().size() > 0) {
         thresholdFile.setFileName(Config::configuration()->value(configKey, "").toString());
     } else {
-        if (device == RM680)   
-        {  
+        if (device == RM680)
+        {
             thresholdFile.setFileName(THRESHOLD_FILE_PATH_RM680);
-        }else if (device == RM696) 
+        }else if (device == RM696)
         {
             thresholdFile.setFileName(THRESHOLD_FILE_PATH_RM696);
         }else
         {
-        }         
+        }
     }
 
     if (!(thresholdFile.exists() && thresholdFile.open(QIODevice::ReadOnly))) {
