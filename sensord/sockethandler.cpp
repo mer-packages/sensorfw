@@ -30,6 +30,93 @@
 #include "logging.h"
 #include "sockethandler.h"
 #include <unistd.h>
+#include <limits.h>
+
+SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent),
+                                                                  socket(socket),
+                                                                  interval(-1),
+                                                                  buffer(0),
+                                                                  size(0)
+{
+    lastWrite.tv_sec = 0;
+    lastWrite.tv_usec = 0;
+    connect(&timer, SIGNAL(timeout()), this, SLOT(delayedWrite()));
+}
+
+SessionData::~SessionData()
+{
+    timer.stop();
+    delete[] buffer;
+    delete socket;
+}
+
+long SessionData::sinceLastWrite() const
+{
+    if(lastWrite.tv_sec == 0)
+        return LONG_MAX;
+    struct timeval now;
+    gettimeofday(&now, 0);
+    return (now.tv_sec - lastWrite.tv_sec) * 1000 + ((now.tv_usec - lastWrite.tv_usec) / 1000);
+}
+
+bool SessionData::write(const void* source, int size)
+{
+    if(interval == -1)
+    {
+        sensordLogT() << "[SocketHandler]: pass-through. interval not set";
+        gettimeofday(&lastWrite, 0);
+        return (socket->write((const char*)source, size) < 0 ? false : true);
+    }
+    long since = sinceLastWrite();
+    if(since >= interval)
+    {
+        sensordLogT() << "[SocketHandler]: pass-through. since > interval";
+        gettimeofday(&lastWrite, 0);
+        return (socket->write((const char*)source, size) < 0 ? false : true);
+    }
+    else
+    {
+        if(!buffer)
+            buffer = new char[size];
+        else if(size != this->size)
+        {
+            if(buffer)
+                delete[] buffer;
+            buffer = new char[size];
+        }
+        this->size = size;
+        memcpy(buffer, source, size);
+        if(timer.timerId() != -1)
+        {
+            sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
+            timer.start(interval - since);
+        }
+        else
+        {
+            sensordLogT() << "[SocketHandler]: timer already running";
+        }
+    }
+    return true;
+}
+
+void SessionData::delayedWrite()
+{
+    timer.stop();
+    gettimeofday(&lastWrite, 0);
+    socket->write(buffer, size);
+}
+
+QLocalSocket* SessionData::stealSocket()
+{
+    QLocalSocket* tmpsocket = socket;
+    socket = 0;
+    return tmpsocket;
+}
+
+void SessionData::setInterval(int interval)
+{
+    this->interval = interval;
+}
 
 SocketHandler::SocketHandler(QObject* parent) : QObject(parent), m_server(NULL)
 {
@@ -57,7 +144,7 @@ bool SocketHandler::listen(QString serverName)
         if ( unlink(serverName.toLocal8Bit().constData()) == 0) {
             sensordLogD() << "[SocketHandler]: Unlinked stale socket" << serverName;
         } else {
-            qDebug() << m_server->errorString();
+            sensordLogD() << m_server->errorString();
         }
         unlinkDone = true;
     }
@@ -67,25 +154,14 @@ bool SocketHandler::listen(QString serverName)
 bool SocketHandler::write(int id, const void* source, int size)
 {
     // TODO: Calculate failed writes (some are expected if sockets initialize too slow)
-    if (!(m_idMap.contains(id))) {
+    QMap<int, SessionData*>::iterator it = m_idMap.find(id);
+    if (it == m_idMap.end())
+    {
         sensordLogD() << "[SocketHandler]: Trying to write to nonexistent session (normal, no panic).";
         return false;
     }
-
-    QLocalSocket* socket = m_idMap.value(id);
-
-    if (socket == NULL) {
-        sensordLogW() << "[SocketHandler]: writing to null socket, socket conn was too slow probably.";
-        return false;
-    }
-
-    int bytesWritten = socket->write((const char*)source, size);
-
-    if ( bytesWritten < 0) {
-        return false;
-    }
-
-    return true;
+    sensordLogT() << "[SocketHandler]: Writing to session " << id;
+    return (*it)->write(source, size);
 }
 
 bool SocketHandler::removeSession(int sessionId)
@@ -94,7 +170,7 @@ bool SocketHandler::removeSession(int sessionId)
         sensordLogD() << "[SocketHandler]: Trying to remove nonexistent session.";
     }
 
-    QLocalSocket* socket = m_idMap.value(sessionId);
+    QLocalSocket* socket = (*m_idMap.find(sessionId))->stealSocket();
 
     if (socket) {
         disconnect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
@@ -111,7 +187,7 @@ bool SocketHandler::removeSession(int sessionId)
         QTimer::singleShot(2000, this, SLOT(killSocket()));
     }
 
-    m_idMap.remove(sessionId);
+    delete m_idMap.take(sessionId);
 
     return true;
 }
@@ -144,7 +220,8 @@ void SocketHandler::socketReadable()
     disconnect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
 
     if (sessionId >= 0) {
-        m_idMap.insert(sessionId, (QLocalSocket*)sender());
+        if(!m_idMap.contains(sessionId))
+            m_idMap.insert(sessionId, new SessionData((QLocalSocket*)sender(), this));
     } else {
         // TODO: Handle in a clean way, don't die.
         sensordLogC() << "[SocketHandler]: Failed to read valid session ID from client.";
@@ -156,8 +233,14 @@ void SocketHandler::socketDisconnected()
 {
     QLocalSocket* socket = (QLocalSocket*)sender();
 
-    int sessionId = m_idMap.key(socket);
-    if (socket == 0) {
+    int sessionId = -1;
+    for(QMap<int, SessionData*>::const_iterator it = m_idMap.begin(); it != m_idMap.end(); ++it)
+    {
+        if(it.value()->getSocket() == socket)
+            sessionId = it.key();
+    }
+
+    if (sessionId == -1) {
         sensordLogW() << "[SocketHandler]: Noticed lost session, but can't find it.";
         return;
     }
@@ -177,7 +260,15 @@ void SocketHandler::killSocket()
 
 int SocketHandler::getSocketFd(int sessionId) const
 {
-    if(m_idMap[sessionId])
-        return m_idMap[sessionId]->socketDescriptor();
+    QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        return (*it)->getSocket()->socketDescriptor();
     return 0;
+}
+
+void SocketHandler::setInterval(int sessionId, int value)
+{
+    QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        (*it)->setInterval(value);
 }
