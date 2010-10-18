@@ -75,7 +75,8 @@ bool CalibrationHandler::initiateSession()
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
         m_sensor->start();
-        sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, BG_RATE);
+        //~ sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, BG_RATE);
+        m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
     }
 
     /// Connect data
@@ -91,8 +92,8 @@ bool CalibrationHandler::initiateSession()
 
 void CalibrationHandler::sampleReceived(const MagneticField& sample)
 {
-    /// Resume background calibration if magnetometer becomes active
-    /// due to some external reason (i.e. we receive values while inactive)
+    // Resume background calibration if magnetometer becomes active
+    // due to some external reason (i.e. we receive values while inactive)
     if (m_active == false)
     {
         resumeCalibration();
@@ -102,21 +103,22 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
     {
         m_level = sample.level();
 
-        SensorManager& sm = SensorManager::instance();
 
         if (sample.level() < 3)
         {
-            /// Raise frequency if calibration is not at level 3
-            sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, CALIBRATION_RATE);
+            // Raise frequency if calibration is not at level 3
+            m_sensor->setIntervalRequest(m_sessionId, CALIBRATION_RATE);
 
-            /// Set timer to stop calibration if it does not happen.
-            /// We only end up here if level has changed --> reset timer each time.
+
+            // Set timer to stop calibration if it does not happen.
+            // We only end up here if level has changed --> reset timer each time.
             m_timer->start(CALIB_TIMEOUT);
 
         } else
         {
-            /// Drop frequency when valid calibration has been reached.
-            sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, BG_RATE);
+            // Drop frequency when valid calibration has been reached.
+            m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
+
             m_timer->stop();
         }
     }
@@ -131,11 +133,11 @@ void CalibrationHandler::stopCalibration()
 
     sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
     // TODO: Release the sensor?
-    SensorManager& sm = SensorManager::instance();
-    sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, STOPPED_RATE);
+    m_sensor->setIntervalRequest(m_sessionId, STOPPED_RATE);
+
     m_timer->stop();
 
-    /// Sleep for a moment to let the queue get empty (kludgy...)
+    // Sleep for a moment to let the queue get empty (kludgy...)
     QTimer::singleShot(1000, this, SLOT(setActiveToFalse()));
     //~ m_active = false;
 }
@@ -153,12 +155,12 @@ void CalibrationHandler::resumeCalibration()
     }
 
     sensordLogD() << "Resuming magnetometer background calibration.";
-    SensorManager& sm = SensorManager::instance();
-    sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, BG_RATE);
+    m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
+
     m_active = true;
 
-    /// Set internal level to -1 to ascertain that the next received sample
-    /// defines the resumed rate.
+    // Set internal level to -1 to ascertain that the next received sample
+    // defines the resumed rate.
     m_level = -1;
 
 }

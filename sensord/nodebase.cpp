@@ -25,6 +25,7 @@
 
 #include "nodebase.h"
 #include "logging.h"
+#include "ringbuffer.h"
 
 bool NodeBase::isMetadataValid() const
 {
@@ -196,11 +197,75 @@ void NodeBase::setRangeSource(NodeBase* node)
 
 bool NodeBase::hasLocalRange() const
 {
-    if (m_dataRangeSource == NULL)
+    return (m_dataRangeSource == NULL);
+}
+
+QList<DataRange> NodeBase::getAvailableIntervals() const
+{
+    if (!hasLocalInterval())
     {
-        return true;
+        return m_intervalSource->getAvailableIntervals();
     }
-    return false;
+
+    return m_intervalList;
+}
+
+void NodeBase::introduceAvailableInterval(const DataRange& interval)
+{
+    if (!m_intervalList.contains(interval))
+    {
+        m_intervalList.append(interval);
+    }
+}
+
+unsigned int NodeBase::getInterval() const
+{
+    if (!hasLocalInterval())
+    {
+        return m_intervalSource->getInterval();
+    }
+
+    return interval();
+}
+
+bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
+{
+    // Has single defined source, pass the request that way
+    if (!hasLocalInterval())
+    {
+        return m_intervalSource->setIntervalRequest(sessionId, value);
+    }
+
+    // Validate interval request
+    if (!isValidIntervalRequest(value))
+    {
+        sensordLogD() << "Invalid interval requested.";
+        return false;
+    }
+
+    // Store the request for the session
+    m_intervalMap[sessionId] = value;
+
+    // Store the current interval
+    unsigned int previousInterval = interval();
+
+    // Re-evaluate
+    int winningSessionId;
+    unsigned int winningRequest = evaluateIntervalRequests(winningSessionId);
+
+    if (winningSessionId >= 0) {
+        setInterval(winningRequest, winningSessionId);
+    }
+
+    // Signal listeners about change
+    // TODO: Signals should be connected correctly for custom int. handling
+    //       make a wrapper for registering custom targets.
+    if (previousInterval != interval())
+    {
+        emit propertyChanged("interval");
+    }
+
+    return true;
 }
 
 void NodeBase::addStandbyOverrideSource(NodeBase* node)
@@ -258,4 +323,163 @@ bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool overrid
     }
 
     return returnValue;
+}
+
+bool NodeBase::hasLocalInterval() const
+{
+    return (m_intervalSource == NULL);
+}
+
+void NodeBase::setIntervalSource(NodeBase* node)
+{
+    m_intervalSource = node;
+    connect(m_intervalSource, SIGNAL(propertyChanged(const QString&)), this, SIGNAL(propertyChanged(const QString&)));
+}
+
+unsigned int NodeBase::evaluateIntervalRequests(int& sessionId) const
+{
+    unsigned int highestValue = 0;
+    int winningSessionId = -1;
+
+    if (m_intervalMap.size() == 0)
+    {
+        sessionId = winningSessionId;
+        return defaultInterval();
+    }
+
+    // Get the winning request
+    // TODO: Do something sane here.
+    highestValue = m_intervalMap.values().at(0);
+    winningSessionId = m_intervalMap.key(highestValue);
+
+    foreach (unsigned int value, m_intervalMap.values())
+    {
+        if (value < highestValue) {
+            highestValue = value;
+            winningSessionId = m_intervalMap.key(value);
+        }
+    }
+
+    sessionId = winningSessionId;
+    return highestValue;
+}
+
+unsigned int NodeBase::defaultInterval() const
+{
+    return m_defaultInterval;
+}
+
+bool NodeBase::setDefaultInterval(const unsigned int value)
+{
+    if (!isValidIntervalRequest(value))
+    {
+        sensordLogW() << "Attempting to define invalid default data rate.";
+        return false;
+    }
+    m_defaultInterval = value;
+    m_hasDefault = true;
+    return true;
+}
+
+bool NodeBase::requestDefaultInterval(const int sessionId)
+{
+    foreach (NodeBase *source, m_sourceList)
+    {
+        source->requestDefaultInterval(sessionId);
+    }
+
+    if (m_hasDefault)
+    {
+        return setIntervalRequest(sessionId, defaultInterval());
+    }
+    return true;
+}
+
+void NodeBase::removeIntervalRequest(const int sessionId)
+{
+    unsigned int previousInterval = interval();
+
+    foreach (NodeBase *source, m_sourceList)
+    {
+        source->removeIntervalRequest(sessionId);
+    }
+
+    if (hasLocalInterval())
+    {
+        // Remove from local list
+        if (m_intervalMap.keys().contains(sessionId))
+        {
+            m_intervalMap.remove(sessionId);
+        }
+
+        // Re-evaluate local setting
+        int winningSessionId;
+        unsigned int winningRequest = evaluateIntervalRequests(winningSessionId);
+        if (winningSessionId >= 0) {
+            setInterval(winningRequest, winningSessionId);
+        }
+
+        // Signal listeners if changed.
+        if (previousInterval != interval())
+        {
+            emit propertyChanged("interval");
+        }
+    }
+}
+
+bool NodeBase::connectToSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+{
+    RingBufferBase* rb;
+    rb = source->findBuffer(bufferName);
+    if (rb == NULL)
+    {
+        // This is critical as long as connections are statically defined.
+        sensordLogC() << "Buffer '" << bufferName << "' not found while building connections";
+        return false;
+    }
+
+    bool success = rb->join(reader);
+
+    if (success)
+    {
+        // Store a reference to the source
+        m_sourceList.append(source);
+    }
+
+    return success;
+}
+
+bool NodeBase::disconnectFromSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+{
+    RingBufferBase* rb;
+    rb = source->findBuffer(bufferName);
+    if (rb == NULL)
+    {
+        sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections";
+        return false;
+    }
+
+    bool success = rb->unjoin(reader);
+
+    if (success)
+    {
+        // Remove the source reference from storage
+        if (!m_sourceList.removeOne(source))
+        {
+            sensordLogW() << "Buffer '" << bufferName << "' not disconnected properly.";
+        }
+    }
+
+    return success;
+}
+
+bool NodeBase::isValidIntervalRequest(const unsigned int value) const
+{
+    for (int i = 0; i < m_intervalList.size(); i++) {
+        if (m_intervalList.at(i).min <= value && m_intervalList.at(i).max >= value)
+        {
+            return true;
+        }
+    }
+    return false;
 }

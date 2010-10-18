@@ -59,11 +59,6 @@ class AbstractSensorChannel : public NodeBase {
     /** Whether sensor is running or not */
     Q_PROPERTY(bool running READ running);
 
-    /** Interval between samples */
-    Q_PROPERTY(int interval READ interval)
-    //XXX: add prop for getting standby (same as with interval, is it
-    //     better to provide truth or own request?)
-
 public:
     virtual ~AbstractSensorChannel() {};
 
@@ -79,17 +74,6 @@ public:
     //SensorState state() const { qDebug() << __PRETTY_FUNCTION__; return state_; }
 
     bool running() { return (bool)(cnt_ > 0); }
-
-    /**
-     * Get the currently active interval value for sensor.
-     *
-     * If sensor has exactly one adaptor (or one + kbslider), the rate
-     * of that adaptor will be returned. Otherwise, the sensor is expected
-     * to reimplement this function and return approriate value.
-     *
-     * @returns Currently used interval value.
-     */
-    virtual int interval() const;
 
 public Q_SLOTS:
     /**
@@ -126,44 +110,6 @@ public Q_SLOTS:
      */
     virtual bool stop();
     bool stop(int sessionId);
-
-    /**
-     * @brief Set interval request.
-     *
-     * Interval requests are pushed to SensorManager for each adaptor this
-     * sensor wants to affect (enlisted in constructor). Reimplement in child
-     * if adaptors need separate interval values to keep in sync. (Note that
-     * this does not force any adaptors to work with given speed, any other
-     * client can request higher speed).
-     * @param sessionId Session ID for the requester
-     * @param value The requested interval value
-     */
-    virtual void setInterval(int sessionId, int value);
-
-    /**
-     * @brief Set standby mode override flag.
-     *
-     * The flag controls whether sensor should stay on even when display
-     * goes blank. This is not recommended due to power consumption issues.
-     *
-     * If a sensor does not support this (i.e. needs active calibration
-     * from another service which will sleep), the call will return false.
-     *
-     * @param sessionId Session ID for the requester
-     * @param value On for override, off for normal behavior.
-     * @return \c on succesfull set, \c false on error.
-     */
-    //~ virtual bool setStandbyOverride(int sessionId, bool value);
-
-    /**
-     * Returns list of possible intervals for the sensor. If \c min and
-     * \c max value are the same, the value is discrete. If they are
-     * different, any value between \c min and \c max can be requested.
-     * \c Resolution can be ignored.
-     *
-     * @return List of possible intervals for this sensor.
-     */
-    QList<DataRange> getAvailableIntervals();
 
 Q_SIGNALS:
     //void stateChanged(SensorState state);

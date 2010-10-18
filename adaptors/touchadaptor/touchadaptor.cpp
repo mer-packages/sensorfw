@@ -50,6 +50,11 @@ TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOU
     }
     outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(128);
     addAdaptedSensor("touch", "Touch screen input", outputBuffer_);
+
+    setDescription("Touch screen events");
+    introduceAvailableDataRange(DataRange(0, 0, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 TouchAdaptor::~TouchAdaptor()
@@ -85,12 +90,12 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     }
 
     if (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(evtype_bitmask)), evtype_bitmask) < 0) {
-        qWarning() << __PRETTY_FUNCTION__ << deviceName << "EVIOGBIT EV_ABS error.";
+        sensordLogW() << __PRETTY_FUNCTION__ << deviceName << "EVIOGBIT EV_ABS error.";
         return false;
     }
 
     if (!test_bit(ABS_X, evtype_bitmask) || !test_bit(ABS_Y, evtype_bitmask)) {
-        qDebug() << __PRETTY_FUNCTION__ << deviceName << "Testbit ABS_X or ABS_Y failed.";
+        sensordLogW() << __PRETTY_FUNCTION__ << deviceName << "Testbit ABS_X or ABS_Y failed.";
         return false;
     }
 

@@ -57,7 +57,7 @@ bool SocketHandler::listen(QString serverName)
         if ( unlink(serverName.toLocal8Bit().constData()) == 0) {
             sensordLogD() << "[SocketHandler]: Unlinked stale socket" << serverName;
         } else {
-            qDebug() << m_server->errorString();
+            sensordLogW() << m_server->errorString();
         }
         unlinkDone = true;
     }

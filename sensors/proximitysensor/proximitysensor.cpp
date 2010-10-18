@@ -53,10 +53,11 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
     filterBin_->join("proximity", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = proximityAdaptor_->findBuffer("proximity");
-    Q_ASSERT(rb);
-    rb->join(proximityReader_);
+    //~ RingBufferBase* rb;
+    //~ rb = proximityAdaptor_->findBuffer("proximity");
+    //~ Q_ASSERT(rb);
+    //~ rb->join(proximityReader_);
+    connectToSource(proximityAdaptor_, "proximity", proximityReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -65,25 +66,25 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
 
     isValid_ = true;
 
-    setDescription("whether an object is close to device screen");
-
     // Enlist used adaptors
     adaptorList_ << "proximityadaptor";
 
+    setDescription("whether an object is close to device screen");
     setRangeSource(proximityAdaptor_);
-    intervalList_.append(DataRange(0, 0,0));
-
     addStandbyOverrideSource(proximityAdaptor_);
+    setIntervalSource(proximityAdaptor_);
 }
 
 ProximitySensorChannel::~ProximitySensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = proximityAdaptor_->findBuffer("proximity");
-    Q_ASSERT(rb);
-    rb->unjoin(proximityReader_);
+    //~ RingBufferBase* rb;
+    //~ rb = proximityAdaptor_->findBuffer("proximity");
+    //~ Q_ASSERT(rb);
+    //~ rb->unjoin(proximityReader_);
+    disconnectFromSource(proximityAdaptor_, "proximity", proximityReader_);
+
     sm.releaseDeviceAdaptor("proximityadaptor");
 
     delete proximityReader_;

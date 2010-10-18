@@ -40,12 +40,11 @@
 
 #define MAX_EVENT_DEV           16
 
-InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount, int pollingInterval) :
+InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     SysfsAdaptor(id),
     deviceCount_(0),
     maxDeviceCount_(maxDeviceCount),
     deviceNumber_(-1),
-    pollingInterval_(pollingInterval),
     originalPollingInterval_(0)
 {
     deviceSysPathString_ = Config::configuration()->value("device_sys_path").toString();
@@ -62,26 +61,12 @@ bool InputDevAdaptor::startSensor(const QString& sensorId)
         return false;
     }
 
-    // TODO: Skip these for devices that don't have poll interval handling.
-    originalPollingInterval_ = getPollingInterval();
-    if (originalPollingInterval_ < 0) {
-        sensordLogW() << "Failed to read polling interval for " << deviceString_;
-        originalPollingInterval_ = 0;
-    }
-
-    if (!setPollingInterval(pollingInterval_)) {
-        sensordLogW() << "Failed to adjust polling interval for " << deviceString_;
-    }
     return true;
 }
 
 void InputDevAdaptor::stopSensor(const QString& sensorId)
 {
     SysfsAdaptor::stopSensor(sensorId);
-
-    if (!setPollingInterval(originalPollingInterval_)) {
-        sensordLogW() << "Failed to restore polling interval for " << deviceString_;
-    }
 }
 
 int InputDevAdaptor::getInputDevices(QString matchString)
@@ -146,7 +131,6 @@ void InputDevAdaptor::processSample(int pathId, int fd)
                 interpretEvent(pathId, &(evlist_[i]));
                 break;
         }
-
     }
 }
 
@@ -180,13 +164,13 @@ bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool s
     return check;
 }
 
-int InputDevAdaptor::getPollingInterval()
+unsigned int InputDevAdaptor::interval() const
 {
     if (deviceNumber_ < 0) {
         return -1;
     }
 
-    int result  = -1;
+    unsigned int result = 0;
 
     // TODO: Clean this up somehow..
     // Check if this device name is defined in configuration
@@ -206,16 +190,18 @@ int InputDevAdaptor::getPollingInterval()
 
     char buf[16];
     if (pollFile.readLine(buf, sizeof(buf)) > 0) {
-        result = QString(buf).toInt();
+        result = QString(buf).toUInt();
     }
 
     pollFile.close();
     return result;
 }
 
-bool InputDevAdaptor::setPollingInterval(int f)
+bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
-    sensordLogD() << "Setting poll interval for " << deviceString_ << " to " << f;
+    Q_UNUSED(sessionId);
+
+    sensordLogD() << "Setting poll interval for" << deviceString_ << " to " << value;
 
     // TODO: Clean this up somehow..
     // Check if this device name is defined in configuration
@@ -232,7 +218,7 @@ bool InputDevAdaptor::setPollingInterval(int f)
         sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
         return false;
     }
-    QString frequencyString = QString("%1\n").arg(f);
+    QString frequencyString = QString("%1\n").arg(value);
 
     if (pollFile.write(frequencyString.toAscii().constData(), frequencyString.length()) < 0) {
         sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ":" << pollFile.error();

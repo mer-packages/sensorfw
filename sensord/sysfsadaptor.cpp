@@ -42,7 +42,7 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     reader_(this),
     mode_(mode),
     epollDescriptor_(-1),
-    interval_(*this),
+    interval_(0),
     initNotDone(true),
     inStandbyMode_(false),
     running_(false),
@@ -54,8 +54,6 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
 
     pipeDescriptors_[0] = -1;
     pipeDescriptors_[1] = -1;
-
-    interval_(100);
 }
 
 bool SysfsAdaptor::addPath(const QString& path, const int id)
@@ -359,6 +357,38 @@ void SysfsAdaptor::dataAvailable(int pathId, int fd)
     processSample(pathId, fd);
 }
 
+unsigned int SysfsAdaptor::interval() const
+{
+    if (mode_ == SysfsAdaptor::SelectMode)
+    {
+        QList<DataRange> list = getAvailableIntervals();
+        if (list.size() > 1 || (list.first().min != list.first().max))
+        {
+            sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
+            return 0;
+        }
+    }
+    return interval_;
+}
+
+bool SysfsAdaptor::setInterval(const unsigned int value, const int sessionId)
+{
+    Q_UNUSED(sessionId);
+
+    if (mode_ == SysfsAdaptor::SelectMode)
+    {
+        QList<DataRange> list = getAvailableIntervals();
+        if (list.size() > 1 || (list.first().min != list.first().max))
+        {
+            sensordLogW() << "Attempting to use PollMode setInterval() function for adaptor in SelectMode. Must reimplement!";
+            return false;
+        }
+    }
+
+    interval_ = value;
+    return true;
+}
+
 SysfsAdaptorReader::SysfsAdaptorReader(SysfsAdaptor *parent) : running_(false), parent_(parent)
 {
 }
@@ -410,7 +440,7 @@ void SysfsAdaptorReader::run()
             parent_->mutex_.unlock();
 
             // Sleep for interval
-            QThread::msleep(parent_->interval_());
+            QThread::msleep(parent_->interval());
         }
     }
 }

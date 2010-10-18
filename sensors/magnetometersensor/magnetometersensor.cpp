@@ -41,7 +41,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     SensorManager& sm = SensorManager::instance();
 
-    compassChain_ = sm.requestChain("compasschain");
+    compassChain_ = sm.requestChain("magcalibrationchain");
     Q_ASSERT( compassChain_ );
     if (!compassChain_->isValid()) {
         isValid_ = false;
@@ -80,20 +80,16 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     }
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = compassChain_->findBuffer("calibratedmagnetometerdata");
-    Q_ASSERT(rb);
-    rb->join(magnetometerReader_);
+    //~ RingBufferBase* rb;
+    //~ rb = compassChain_->findBuffer("calibratedmagnetometerdata");
+    //~ Q_ASSERT(rb);
+    //~ rb->join(magnetometerReader_);
+    connectToSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
-
-    setDescription("magnetic flux density in nT");
-
-    // Enlist used adaptors
-    adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
 
     // AK897X requires scaling, which affects available ranges
     if (scaleFilter_)
@@ -109,19 +105,25 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         setRangeSource(compassChain_);
     }
 
-    intervalList_.append(DataRange(0, 100000, 0));
+    // Enlist used adaptors
+    adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
+
+    setDescription("magnetic flux density in nT");
+    setRangeSource(compassChain_);
     addStandbyOverrideSource(compassChain_);
+    setIntervalSource(compassChain_);
 }
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = compassChain_->findBuffer("calibratedmagnetometerdata");
-    Q_ASSERT(rb);
-    rb->unjoin(magnetometerReader_);
-    sm.releaseChain("compasschain");
+    //~ RingBufferBase* rb;
+    //~ rb = compassChain_->findBuffer("calibratedmagnetometerdata");
+    //~ Q_ASSERT(rb);
+    //~ rb->unjoin(magnetometerReader_);
+    disconnectFromSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
+    sm.releaseChain("magcalibrationchain");
 
     if (scaleFilter_) delete scaleFilter_;
 

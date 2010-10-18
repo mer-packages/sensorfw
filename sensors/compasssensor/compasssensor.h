@@ -70,8 +70,6 @@ public:
 
     Compass get() const { return compassData; }
 
-    virtual int interval() const;
-
 public Q_SLOTS:
     bool start();
     bool stop();

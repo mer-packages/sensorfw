@@ -28,10 +28,7 @@
 #include <datatypes/orientationdata.h>
 
 CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName(), sessionId)
-{
-    interval_ = 100; /// Compass needs 10hz rate to run...
-}
+    : AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName(), sessionId) {}
 
 const CompassSensorChannelInterface* CompassSensorChannelInterface::listenInterface(const QString& id)
 {

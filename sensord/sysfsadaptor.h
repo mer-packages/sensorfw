@@ -45,14 +45,14 @@ class SysfsAdaptor;
 class SysfsAdaptorReader : public QThread
 {
     Q_OBJECT;
-public: 
+public:
     SysfsAdaptorReader(SysfsAdaptor *parent);
     void run();
     bool running_;
-    
+
 Q_SIGNALS:
     void readyRead(const int pathId, const int fd);
-    
+
 private:
     SysfsAdaptor *parent_;
 };
@@ -65,10 +65,10 @@ private:
  *   <li><tt>SysfsAdaptor::IntervalMode</tt> - Read constantly by given frequency (ms delay between reads).</li>
  *   <li><tt>SysfsAdaptor::SelectMode</tt>   - Wait for interrupt from driver before reading.</li>
  * </ul>
- * 
+ *
  * Simultaneous monitoring of several files is supported. Currently files are indexed
- * only by their adding order. First added path is index 0, second index 1, etc. 
- * 
+ * only by their adding order. First added path is index 0, second index 1, etc.
+ *
  * @todo Add resonable error handling
  * @todo Convert activity handling to use function pointers instead in indices.
  */
@@ -104,10 +104,10 @@ public:
      * Start measuring loop. Opens file descriptors.
      */
     bool startAdaptor();
-    
+
     /**
      * Returns whether the adaptor is running or not.
-     * isRunning() returns false if all the started adaptor references 
+     * isRunning() returns false if all the started adaptor references
      * have been stopped.
      */
     bool isRunning();
@@ -135,14 +135,14 @@ public:
      * by the child class.
      * @param pathId Path ID for the file that has received new data. If path ID
      *               was not set when file path was added, 0 will be used.
-     * @param fd     Open file descriptor where the new data can be read. This 
+     * @param fd     Open file descriptor where the new data can be read. This
      *               file descriptor must not be closed!
      */
     virtual void processSample(int pathId, int fd) = 0;
 
 protected slots:
     void dataAvailable(int pathId, int fd);
-    
+
 protected:
     /**
      * Utility function for writing to files. Can be used to control sensor driver
@@ -154,11 +154,29 @@ protected:
      */
     bool writeToFile(QString path, QString content);
 
-    virtual int getPollingInterval() { return interval_(); }
-    virtual bool setPollingInterval(int f) {
-        interval_(f);
-        return true;
-    }
+    /**
+     * Returns the current interval (see setInterval()). Valid for PollMode.
+     * Reimplementation for adaptors using SelectMode is a must.
+     *
+     * @return Currently used interval for adaptor.
+     */
+    virtual unsigned int interval() const;
+
+    /**
+     * Sets the interval for the adaptor. This function is valid for
+     * adaptors using PollMode. It just sets the number of milliseconds
+     * that the adaptor will sleep between reads.
+     *
+     * For adaptors using SelectMode, reimplementation is a must as this
+     * implementatino will have no effect on the behavior.
+     *
+     * @param value Interval to sleep (ms) between reads
+     * @param sessionId Id of the session where the requested originated.
+     *        This should be passed with any requests made from this function
+     *        to allow for proper state maintenance.
+     * @return \c true on successfull set (valid value), \c false otherwise.
+     */
+    virtual bool setInterval(const unsigned int value, const int sessionId);
 
     QList<int> sysfsDescriptors_; /**< List of open file descriptors. */
     QMutex mutex_;
@@ -175,13 +193,13 @@ private:
     void closeAllFds();
 
     /**
-     * 
+     *
      */
     void stopReaderThread();
     bool startReaderThread();
 
     SysfsAdaptorReader  reader_;
-    
+
     PollMode            mode_;
     QString             path_;
     int                 epollDescriptor_;
@@ -189,7 +207,9 @@ private:
 
     QStringList         paths_;
     QList<int>          pathIds_;
-    FilterProperty<int> interval_;
+
+    unsigned int interval_;
+
     bool initNotDone;
     bool inStandbyMode_;
     bool running_;

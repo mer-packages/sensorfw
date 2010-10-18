@@ -70,9 +70,6 @@ protected:
     ProximityAdaptorEvdev(const QString& id);
     ~ProximityAdaptorEvdev();
 
-    virtual int getPollingInterval();
-    virtual bool setPollingInterval(int f);
-
 private:
 
     DeviceAdaptorRingBuffer<TimedUnsigned>*   proximityBuffer_;

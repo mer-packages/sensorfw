@@ -28,12 +28,7 @@
 #include "magnetometersensor_i.h"
 
 MagnetometerSensorChannelInterface::MagnetometerSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, MagnetometerSensorChannelInterface::staticInterfaceName(), sessionId)
-{
-     /// Some output is expected from started sensor, 
-     /// let's provide initial rate of 1hz
-    interval_ = 1000;
-}
+    : AbstractSensorChannelInterface(path, MagnetometerSensorChannelInterface::staticInterfaceName(), sessionId) {}
 
 const MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::listenInterface(const QString& id)
 {

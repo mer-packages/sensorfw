@@ -72,17 +72,18 @@ void CompassBin::startRun()
         compassChain->setProperty("compassEnabled", true);
 
         // Set interval for compass, as sane operation requires 10HZ!
-        SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 100);
-        SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 100);
+        compassChain->requestDefaultInterval(SESSION_ID);
+        //~ SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 100);
+        //~ SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 100);
     }
 }
 
 void CompassBin::stopRun()
 {
     if (compassChain) {
-        // Release interval requests...
-        SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
-        SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 0);
+        // Release interval requests... running with default, no need to release.
+        //~ SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
+        //~ SensorManager::instance().propertyHandler().setRequest("interval", "magnetometeradaptor", SESSION_ID, 0);
 
         compassChain->stop();
         compassChain->setProperty("compassEnabled", false);

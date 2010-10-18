@@ -55,6 +55,8 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     introduceAvailableDataRange(DataRange(-1, 1, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 ProximityAdaptorEvdev::~ProximityAdaptorEvdev()
@@ -114,15 +116,4 @@ void ProximityAdaptorEvdev::commitOutput()
         proximityBuffer_->commit();
         proximityBuffer_->wakeUpReaders();
     }
-}
-
-int ProximityAdaptorEvdev::getPollingInterval()
-{
-    return 0;
-}
-
-bool ProximityAdaptorEvdev::setPollingInterval(int f)
-{
-    Q_UNUSED(f);
-    return false;
 }

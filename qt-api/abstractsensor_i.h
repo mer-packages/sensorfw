@@ -37,7 +37,7 @@
 #include "socketreader.h"
 #include "datatypes/datarange.h"
 
-/*
+/**
  * Proxy class for interface local.Sensor
  */
 class AbstractSensorChannelInterface: public QDBusAbstractInterface
@@ -82,11 +82,14 @@ public:
 
     Q_PROPERTY(int interval READ interval WRITE setInterval)
     inline int interval() const
-    { return qvariant_cast< int >(internalPropGet("interval")); }
+    {
+        // TODO: If stopped, return own request.
+        return qvariant_cast< int >(internalPropGet("interval"));
+    }
     inline void setInterval(int value)
     {
         interval_ = value;
-        /// Only set when running
+        // Only set when running
         if (running_) {
             setInterval(sessionId_, value);
         }
@@ -119,9 +122,18 @@ public:
     /**
      * Get the list of available intervals for the sensor.
      *
-     * @return List of available intervals (or interval ranges)
+     * @return List of available intervals.
      */
     QList<DataRange> getAvailableIntervals();
+
+    /**
+     * Request the sensor to run at default interval. This will reset
+     * any interval requests that have been made from this client.
+     *
+     * Note that interval requests from other clients may affect the
+     * actual rate that is used.
+     */
+    void setDefaultInterval();
 
     QList<DataRange> getAvailableDataRanges();
     DataRange getCurrentDataRange();
@@ -135,7 +147,6 @@ private: // this exists as a hack because enums cannot be marshalled over D-BUS
 
     void setError(SensorError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SNoError; errorString_.clear(); }
-
 
 public Q_SLOTS:
 

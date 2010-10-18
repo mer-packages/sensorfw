@@ -61,37 +61,35 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     filterBin_->join("face", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("orientation");
-    Q_ASSERT(rb);
-    rb->join(orientationReader_);
+    //~ RingBufferBase* rb;
+    //~ rb = orientationChain_->findBuffer("orientation");
+    //~ Q_ASSERT(rb);
+    //~ rb->join(orientationReader_);
+    connectToSource(orientationChain_, "orientation", orientationReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
 
-    setDescription("orientation of the device screen as 6 pre-defined positions");
-
     // Enlist used adaptors
     adaptorList_ << "accelerometeradaptor";
 
+    setDescription("orientation of the device screen as 6 pre-defined positions");
     setRangeSource(orientationChain_);
-
-    intervalList_.append(DataRange(0, 0, 0));
-    intervalList_.append(DataRange(10, 2000, 0));
-
     addStandbyOverrideSource(orientationChain_);
+    setIntervalSource(orientationChain_);
 }
 
 OrientationSensorChannel::~OrientationSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = orientationChain_->findBuffer("orientation");
-    Q_ASSERT(rb);
-    rb->unjoin(orientationReader_);
+    //~ RingBufferBase* rb;
+    //~ rb = orientationChain_->findBuffer("orientation");
+    //~ Q_ASSERT(rb);
+    //~ rb->unjoin(orientationReader_);
+    disconnectFromSource(orientationChain_, "orientation", orientationReader_);
 
     sm.releaseChain("orientationchain");
 
