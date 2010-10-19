@@ -80,10 +80,6 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     }
 
     // Join datasources to the chain
-    //~ RingBufferBase* rb;
-    //~ rb = compassChain_->findBuffer("calibratedmagnetometerdata");
-    //~ Q_ASSERT(rb);
-    //~ rb->join(magnetometerReader_);
     connectToSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
 
     marshallingBin_ = new Bin;
@@ -105,9 +101,6 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         setRangeSource(compassChain_);
     }
 
-    // Enlist used adaptors
-    adaptorList_ << "magnetometeradaptor" << "kbslideradaptor";
-
     setDescription("magnetic flux density in nT");
     setRangeSource(compassChain_);
     addStandbyOverrideSource(compassChain_);
@@ -118,10 +111,6 @@ MagnetometerSensorChannel::~MagnetometerSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    //~ RingBufferBase* rb;
-    //~ rb = compassChain_->findBuffer("calibratedmagnetometerdata");
-    //~ Q_ASSERT(rb);
-    //~ rb->unjoin(magnetometerReader_);
     disconnectFromSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
     sm.releaseChain("magcalibrationchain");
 

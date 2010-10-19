@@ -150,7 +150,6 @@ protected:
     int                 cnt_;
 
     QList<int>          activeSessions_;
-    QStringList         adaptorList_;
 
     QList<DataRange>        intervalList_;
 };

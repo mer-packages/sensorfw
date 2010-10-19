@@ -83,16 +83,12 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     {
         connectToSource(compassChain_, "truenorth", compassReader_);
         addStandbyOverrideSource(compassChain_);
-        adaptorList_ << "magnetometeradaptor";
     }
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
-
-    // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "kbslideradaptor";
 
     setDescription("x, y, and z axes rotation in degrees");
     introduceAvailableDataRange(DataRange(-179, 180, 1));

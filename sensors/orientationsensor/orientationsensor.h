@@ -77,25 +77,6 @@ public:
         return Unsigned(o);
     }
 
-    /**
-     * Property method returning currently used threshold value.
-     * @return Current threshold value.
-     */
-    //int threshold() const
-    //{
-        //return qvariant_cast< int >(((OrientationInterpreter *)orientationInterpreterFilter_)->property("threshold"));
-    //}
-
-    /**
-     * Property method for setting the threshold value.
-     * @param threshold New threshold value.
-     */
-    //void setThreshold(int threshold)
-    //{
-        //signalPropertyChanged("threshold");
-        //((OrientationInterpreter*)orientationInterpreterFilter_)->setProperty("threshold", threshold);
-    //}
-
 public Q_SLOTS:
     bool start();
     bool stop();

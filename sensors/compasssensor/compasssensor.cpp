@@ -60,16 +60,13 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     // Join filterchain buffers
     filterBin_->join("input", "source", "output", "sink");
 
-    // Pick input depending on declination correctin value (to func)
+    // TODO: Pick input depending on declination correctin value (to func)
     connectToSource(compassChain_, "magneticnorth", inputReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
-
-    // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
 
     setDescription("compass north in degrees");
     addStandbyOverrideSource(compassChain_);
@@ -82,17 +79,11 @@ CompassSensorChannel::~CompassSensorChannel()
     SensorManager& sm = SensorManager::instance();
 
     // TODO: Put this to separate function
-    //~ RingBufferBase* rb;
     if (declinationCorrection_) {
         disconnectFromSource(compassChain_, "truenorth", inputReader_);
-        //~ rb = compassChain_->findBuffer("truenorth");
     } else {
-        //~ rb = compassChain_->findBuffer("magneticnorth");
         disconnectFromSource(compassChain_, "magneticnorth", inputReader_);
     }
-    //~ Q_ASSERT(rb);
-
-    //~ rb->unjoin(inputReader_);
     sm.releaseChain("compasschain");
 
     delete inputReader_;

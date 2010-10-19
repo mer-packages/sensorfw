@@ -52,10 +52,6 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     filterBin_->join("tap", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    //~ RingBufferBase* rb;
-    //~ rb = tapAdaptor_->findBuffer("tap");
-    //~ Q_ASSERT(rb);
-    //~ rb->join(tapReader_);
     connectToSource(tapAdaptor_, "tap", tapReader_);
 
     marshallingBin_ = new Bin;
@@ -69,10 +65,6 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     setRangeSource(tapAdaptor_);
     setIntervalSource(tapAdaptor_);
 
-    // Enlist used adaptors
-    // TODO: Should tap control anything? Probably not.
-    adaptorList_ << "tapadaptor";
-
     // Tap needs to work with display off
     addStandbyOverrideSource(tapAdaptor_);
 }
@@ -81,10 +73,6 @@ TapSensorChannel::~TapSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    //~ RingBufferBase* rb;
-    //~ rb = tapAdaptor_->findBuffer("tap");
-    //~ Q_ASSERT(rb);
-    //~ rb->unjoin(tapReader_);
     disconnectFromSource(tapAdaptor_, "tap", tapReader_);
     sm.releaseDeviceAdaptor("tapadaptor");
 
