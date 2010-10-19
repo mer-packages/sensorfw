@@ -28,6 +28,7 @@
 #include "abstractsensor_a.h"
 #include "sfwerror.h"
 #include <sensormanager.h>
+#include <sockethandler.h>
 
 bool AbstractSensorChannelAdaptor::isValid() const
 {

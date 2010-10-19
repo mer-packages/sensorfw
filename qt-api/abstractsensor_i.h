@@ -126,15 +126,6 @@ public:
      */
     QList<DataRange> getAvailableIntervals();
 
-    /**
-     * Request the sensor to run at default interval. This will reset
-     * any interval requests that have been made from this client.
-     *
-     * Note that interval requests from other clients may affect the
-     * actual rate that is used.
-     */
-    void setDefaultInterval();
-
     QList<DataRange> getAvailableDataRanges();
     DataRange getCurrentDataRange();
     void requestDataRange(DataRange range);
@@ -181,6 +172,15 @@ private:
     SensorError errorCode_;
     QString errorString_;
 
+public:
+    /**
+     * Request the sensor to run at default interval. This will reset
+     * any interval requests that have been made from this client.
+     *
+     * Note that interval requests from other clients may affect the
+     * actual rate that is used.
+     */
+    void setDefaultInterval();
 };
 
 namespace local {
