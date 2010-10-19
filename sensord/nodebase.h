@@ -301,7 +301,7 @@ protected:
      */
     bool setDefaultInterval(const unsigned int value);
 
-    QMap<int, int>          m_intervalMap; ///< Active interval requests (session, value)
+    QMap<int, unsigned int>          m_intervalMap; ///< Active interval requests (session, value)
 
     /**
      * Validate an interval request.

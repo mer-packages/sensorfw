@@ -348,15 +348,16 @@ unsigned int NodeBase::evaluateIntervalRequests(int& sessionId) const
     }
 
     // Get the winning request
-    // TODO: Do something sane here.
-    highestValue = m_intervalMap.values().at(0);
-    winningSessionId = m_intervalMap.key(highestValue);
+    QMap<int, unsigned int>::const_iterator it;
+    it = m_intervalMap.begin();
+    highestValue = it.value();
+    winningSessionId = it.key();
 
-    foreach (unsigned int value, m_intervalMap.values())
+    for (++it; it != m_intervalMap.end(); ++it)
     {
-        if (value < highestValue) {
-            highestValue = value;
-            winningSessionId = m_intervalMap.key(value);
+        if (it.value() < highestValue) {
+            highestValue = it.value();
+            winningSessionId = it.key();
         }
     }
 

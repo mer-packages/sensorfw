@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
+#include <QMap>
 
 #include "datatypes/utils.h"
 
@@ -116,15 +117,19 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
     }
 
     // Get the smallest positive request, 0 is reserved for HW wakeup
-    // TODO: Do this in a nicer way
-    highestValue = m_intervalMap.values().at(0);
-    winningSessionId = m_intervalMap.key(highestValue);
-    foreach (unsigned int value, m_intervalMap.values()) {
-        if ((value < highestValue) && value > 0) {
-            highestValue = value;
-            winningSessionId = m_intervalMap.key(value);
+    QMap<int, unsigned int>::const_iterator it;
+    it = m_intervalMap.begin();
+    highestValue = it.value();
+    winningSessionId = it.key();
+
+    for (++it; it != m_intervalMap.end(); ++it)
+    {
+        if ((it.value() < highestValue) && (it.value() > 0)) {
+            highestValue = it.value();
+            winningSessionId = it.key();
         }
     }
+
     sessionId = winningSessionId;
     return highestValue > 0 ? highestValue : defaultInterval();
 }
