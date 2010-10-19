@@ -30,6 +30,7 @@
 #include <QVariant>
 
 #include "sensormanager.h"
+#include "sockethandler.h"
 #include "idutils.h"
 #include "logging.h"
 
@@ -133,6 +134,8 @@ void AbstractSensorChannel::setInterval(int sessionId, int value)
     foreach (QString adaptor, adaptorList_) {
         SensorManager::instance().propertyHandler().setRequest("interval", adaptor, sessionId, value);
     }
+
+    SensorManager::instance().socketHandler().setInterval(sessionId, value);
 
     // TODO: Signal only when rate has actually changed
     signalPropertyChanged("interval");

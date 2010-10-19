@@ -30,9 +30,39 @@
 #include <QMap>
 #include <QTimer>
 #include <QList>
+#include <sys/time.h>
 
 class QLocalServer;
 class QLocalSocket;
+
+class SessionData : public QObject
+{
+    Q_OBJECT;
+    Q_DISABLE_COPY(SessionData);
+
+public:
+    SessionData(QLocalSocket* socket, QObject* parent = 0);
+    virtual ~SessionData();
+
+    bool write(const void* source, int size);
+
+    QLocalSocket* getSocket() const { return socket; };
+    QLocalSocket* stealSocket();
+    void setInterval(int interval);
+
+private:
+    long sinceLastWrite() const;
+
+    QLocalSocket* socket;
+    int interval;
+    char* buffer;
+    int size;
+    struct timeval lastWrite;
+    QTimer timer;
+
+private slots:
+    void delayedWrite();
+};
 
 /**
  *
@@ -51,6 +81,8 @@ public:
     bool removeSession(int sessionId);
     int getSocketFd(int sessionId) const;
 
+    void setInterval(int sessionId, int value);
+
 Q_SIGNALS:
     void lostSession(int sessionId);
 
@@ -63,7 +95,7 @@ private slots:
 private:
 
     QLocalServer*            m_server;
-    QMap<int, QLocalSocket*> m_idMap;
+    QMap<int, SessionData*>   m_idMap;
     QList<QLocalSocket*>     m_tmpSocks;
 };
 
