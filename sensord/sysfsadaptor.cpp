@@ -30,7 +30,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/epoll.h>
-#include <QtDebug>
 #include <QFile>
 #include "sensord/logging.h"
 
@@ -278,7 +277,7 @@ bool SysfsAdaptor::openFds()
 
 void SysfsAdaptor::closeAllFds()
 {
-    mutex_.lock();
+    QMutexLocker locker(&(mutex_));
 
     /* Epoll */
     if (epollDescriptor_ != -1) {
@@ -301,8 +300,6 @@ void SysfsAdaptor::closeAllFds()
         }
         sysfsDescriptors_.removeLast();
     }
-
-    mutex_.unlock();
 }
 
 void SysfsAdaptor::stopReaderThread()
@@ -409,25 +406,21 @@ void SysfsAdaptorReader::run()
                 // TODO: deal with errors
                 sensordLogD() << "epoll_wait():" << strerror(errno);
             } else {
-
-                parent_->mutex_.lock();
                 for (int i = 0; i < descriptors; ++i) {
                     int index = parent_->sysfsDescriptors_.lastIndexOf(events[i].data.fd);
                     if (index != -1) {
-                        parent_->processSample(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(i));
+                        parent_->processSample(parent_->pathIds_.at(index), events[i].data.fd);
                         //emit readyRead(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(index));
                         // TODO: Wait on flag
-                        lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET);
+                        lseek(events[i].data.fd, 0, SEEK_SET);
                     } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
                         running_ = false;
                     }
                 }
-                parent_->mutex_.unlock();
             }
         } else { //IntervalMode
 
             // Read through all fds.
-            parent_->mutex_.lock();
             for (int i = 0; i < parent_->sysfsDescriptors_.size(); i++) {
 
                 parent_->processSample(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
@@ -437,7 +430,6 @@ void SysfsAdaptorReader::run()
                 lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET);
 
             }
-            parent_->mutex_.unlock();
 
             // Sleep for interval
             QThread::msleep(parent_->interval());

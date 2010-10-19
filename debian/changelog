@@ -2,6 +2,8 @@ sensord (0.6.28) unstable; urgency=low
 
   [Antti Virtanen]
   * Implemented interval downsampling. [Fixes: NB#196513].
+  * SysfsAdaptorReader fetched incorrectly fd passed to processSample(). [Fixes: NB#180060].
+  * Removed unnecessary mutex from SysfsAdaptorReader. SysfsAdaptor always first stops the poll thread before it modifies used file descriptors.
 
   [Timo Rongas]
   * Fixes: NB#190879 - Sample interval metadata is not fetched from hardware
