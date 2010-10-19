@@ -93,4 +93,4 @@ private:
     void emitToDbus(const AccelerationData& value);
 };
 
-#endif // ACCELERATION_SENSOR_CHANNEL_H
+#endif

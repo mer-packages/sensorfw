@@ -70,7 +70,8 @@ public:
         return hasZ_;
     }
 
-    virtual int interval() const;
+    virtual unsigned int interval() const;
+    virtual bool setInterval(const unsigned int value, const int sessionId);
 
 public Q_SLOTS:
     bool start();

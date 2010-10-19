@@ -58,40 +58,25 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
     filterBin_->join("accelerometer", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->join(accelerometerReader_);
+    connectToSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
 
     outputBuffer_->join(this);
 
+    // Set MetaData
     setDescription("x, y, and z axes accelerations in mG");
-
-    // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor";
-
-    // List possible data ranges
     setRangeSource(accelerometerChain_);
-    //~ introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-
-    // List possible intervals
-    intervalList_.append(DataRange(0, 0, 0));
-    intervalList_.append(DataRange(10, 2000, 0));
-
     addStandbyOverrideSource(accelerometerChain_);
+    setIntervalSource(accelerometerChain_);
 }
 
 AccelerometerSensorChannel::~AccelerometerSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->unjoin(accelerometerReader_);
+    disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     sm.releaseChain("accelerometerchain");
  

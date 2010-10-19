@@ -86,23 +86,20 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     filterBin_->join("acccoordinatealigner", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = accelerometerAdaptor_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->join(accelerometerReader_);
+    connectToSource(accelerometerAdaptor_, "accelerometer", accelerometerReader_);
 
+
+    setDescription("Coordinate transformations");
     setRangeSource(accelerometerAdaptor_);
     addStandbyOverrideSource(accelerometerAdaptor_);
+    setIntervalSource(accelerometerAdaptor_);
 }
 
 AccelerometerChain::~AccelerometerChain()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = accelerometerAdaptor_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->unjoin(accelerometerReader_);
+    disconnectFromSource(accelerometerAdaptor_, "accelerometer", accelerometerReader_);
 
     sm.releaseDeviceAdaptor("accelerometeradaptor");
 

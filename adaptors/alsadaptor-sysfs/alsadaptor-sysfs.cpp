@@ -42,6 +42,8 @@ ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 
     introduceAvailableDataRange(DataRange(0, 65535, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 ALSAdaptorSysfs::~ALSAdaptorSysfs()

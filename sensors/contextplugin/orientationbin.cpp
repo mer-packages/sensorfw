@@ -108,13 +108,12 @@ OrientationBin::~OrientationBin()
     rb = accelerometerAdaptor->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->unjoin(&accelerometerReader);
+
     SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
 }
 
 void OrientationBin::startRun()
 {
-    //qDebug() << "Staring the run on the orientationbin";
-
     // Reset the status of the avg & var computation; reset default
     // values for properties whose values aren't reliable after a
     // restart
@@ -125,17 +124,14 @@ void OrientationBin::startRun()
     accelerometerAdaptor->startSensor("accelerometer");
     orientationChain->start();
 
-    // Request 4hz updates (until good HW wakeup setup has been figured out
-    int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toInt();
-    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, pollInterval);
-
+    unsigned int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toUInt();
+    orientationChain->setIntervalRequest(SESSION_ID, pollInterval);
 }
 
 void OrientationBin::stopRun()
 {
-    SensorManager::instance().propertyHandler().setRequest("interval", "accelerometeradaptor", SESSION_ID, 0);
+    orientationChain->requestDefaultInterval(SESSION_ID);
 
-    //qDebug() << "Stopping the run on the orientationbin";
     accelerometerAdaptor->stopSensor("accelerometer");
     orientationChain->stop();
     stop();

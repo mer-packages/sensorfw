@@ -98,7 +98,10 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         m_threshold = 35;
     }
 
+    setDescription("Proximity sensor readings (Dipro sensor)");
     introduceAvailableDataRange(DataRange(0, 1, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 

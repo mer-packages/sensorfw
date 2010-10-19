@@ -52,7 +52,10 @@ TapAdaptor::TapAdaptor(const QString& id) :
     tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(128);
     addAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
 
+    setDescription("Device tap events (lis302d)");
     introduceAvailableDataRange(DataRange(0, 2, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 TapAdaptor::~TapAdaptor()

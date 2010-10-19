@@ -36,7 +36,7 @@
 #define BLANK_SCREEN QProcess::execute("mcetool --blank-screen");
 #define UNBLANK_SCREEN QProcess::execute("mcetool --unblank-screen");
 
-int readPollInterval(QString path)
+unsigned int readPollInterval(QString path)
 {
     QFile file(path);
     int returnValue = -1;
@@ -49,7 +49,7 @@ int readPollInterval(QString path)
         returnValue = atoi(buf);
     }
 
-    return returnValue;
+    return (unsigned int)returnValue;
 }
 
 void PowerManagementTest::initTestCase()
@@ -88,8 +88,8 @@ void PowerManagementTest::testIntervalStartStop()
 
     // Screen orientation keeps acc open, the 'default' may change.
     // Thus dynamic values.
-    int originalInterval = readPollInterval(accPollFile);
-    int testInterval = originalInterval > 1 ? originalInterval / 2 : 100;
+    unsigned int originalInterval = readPollInterval(accPollFile);
+    unsigned int testInterval = originalInterval > 1 ? originalInterval / 2 : 100;
 
     accOne->setInterval(testInterval);
 
@@ -122,12 +122,12 @@ void PowerManagementTest::testIntervalRace()
 
     // Screen orientation keeps acc open, the 'default' may change.
     // Thus dynamic values.
-    int originalInterval = readPollInterval(accPollFile);
+    unsigned int originalInterval = readPollInterval(accPollFile);
     qDebug() << "original interval:" << originalInterval;
     QVERIFY2((originalInterval == 0 || originalInterval > 3), "Can't run the test with current poll value.");
 
-    int testIntervalOne = originalInterval > 2 ? originalInterval / 2 : 100; // Faster than original
-    int testIntervalTwo = testIntervalOne / 2; // Faster than previous
+    unsigned int testIntervalOne = originalInterval > 2 ? originalInterval / 2 : 100; // Faster than original
+    unsigned int testIntervalTwo = testIntervalOne / 2; // Faster than previous
 
     accOne->setInterval(testIntervalOne);
     accOne->start();

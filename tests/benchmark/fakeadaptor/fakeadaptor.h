@@ -66,7 +66,7 @@ public:
 
     void pushNewData(int& data);
 
-    int interval_;
+    unsigned int interval_;
     
 protected:
     FakeAdaptor(const QString& id);

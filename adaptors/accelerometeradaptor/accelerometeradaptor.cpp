@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
+#include <QMap>
 
 #include "datatypes/utils.h"
 
@@ -47,12 +48,15 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    setDescription("Input device accelerometer adaptor (lis302d)");
-
     accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(128);
     addAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
 
+    // Set Metadata
+    setDescription("Input device accelerometer adaptor (lis302d)");
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    introduceAvailableInterval(DataRange(1, 2000, 0));
+    setDefaultInterval(0);
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()
@@ -99,4 +103,33 @@ void AccelerometerAdaptor::commitOutput()
     
     accelerometerBuffer_->commit();
     accelerometerBuffer_->wakeUpReaders();
+}
+
+unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) const
+{
+    unsigned int highestValue = 0;
+    int winningSessionId = -1;
+
+    if (m_intervalMap.size() == 0)
+    {
+        sessionId = winningSessionId;
+        return defaultInterval();
+    }
+
+    // Get the smallest positive request, 0 is reserved for HW wakeup
+    QMap<int, unsigned int>::const_iterator it;
+    it = m_intervalMap.begin();
+    highestValue = it.value();
+    winningSessionId = it.key();
+
+    for (++it; it != m_intervalMap.end(); ++it)
+    {
+        if ((it.value() < highestValue) && (it.value() > 0)) {
+            highestValue = it.value();
+            winningSessionId = it.key();
+        }
+    }
+
+    sessionId = winningSessionId;
+    return highestValue > 0 ? highestValue : defaultInterval();
 }

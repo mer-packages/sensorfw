@@ -62,10 +62,7 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
     filterBin_->join("als", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = alsAdaptor_->findBuffer("als");
-    Q_ASSERT(rb);
-    rb->join(alsReader_);
+    connectToSource(alsAdaptor_, "als", alsReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -87,13 +84,9 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
 #endif
 
     setDescription("ambient light intensity in lux");
-
-    // Enlist used adaptors
-    adaptorList_ << "alsadaptor";
-
     setRangeSource(alsAdaptor_);
-    intervalList_.append(DataRange(0, 0, 0));
     addStandbyOverrideSource(alsAdaptor_);
+    setIntervalSource(alsAdaptor_);
 
     isValid_ = true;
 }
@@ -102,10 +95,7 @@ ALSSensorChannel::~ALSSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = alsAdaptor_->findBuffer("als");
-    Q_ASSERT(rb);
-    rb->unjoin(alsReader_);
+    disconnectFromSource(alsAdaptor_, "als", alsReader_);
 
     sm.releaseDeviceAdaptor("alsadaptor");
 

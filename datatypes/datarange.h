@@ -102,4 +102,18 @@ public:
     }
 };
 
+/**
+ * Request class for Intervals. Contains id of the requester and value.
+ */
+class IntervalRequest {
+public:
+    int      id_;
+    unsigned value_;
+
+    bool operator==(const IntervalRequest& right) const
+    {
+        return (id_ == right.id_ && value_ == right.value_);
+    }
+};
+
 #endif // DATARANGE_H

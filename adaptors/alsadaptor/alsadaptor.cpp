@@ -95,7 +95,11 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(32);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
+
+    setDescription("Ambient light");
     introduceAvailableDataRange(DataRange(0, 65535, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 

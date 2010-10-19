@@ -67,8 +67,8 @@ protected:
     KeyboardSliderAdaptor(const QString& id);
     ~KeyboardSliderAdaptor();
 
-    virtual int getPollingInterval();
-    virtual bool setPollingInterval(int f);
+    virtual unsigned int interval() const;
+    virtual bool setInterval(const unsigned int value, const int sessionId);
 
 private:
 

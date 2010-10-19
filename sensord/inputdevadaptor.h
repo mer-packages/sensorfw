@@ -47,9 +47,8 @@ public:
      * Constructor.
      * @param id The id for the adaptor.
      * @param maxDeviceCount Maximum number of devices that can be associated with this adaptor
-     * @param pollingInterval Default polling interval
      */
-    InputDevAdaptor(const QString& id, int maxDeviceCount = 1, int pollingInterval = 0);
+    InputDevAdaptor(const QString& id, int maxDeviceCount = 1);
     ~InputDevAdaptor();
 
     int getDeviceCount() { return deviceCount_; }
@@ -113,8 +112,8 @@ protected:
      */
     void processSample(int pathId, int fd);
 
-    virtual int getPollingInterval();
-    virtual bool setPollingInterval(int f);
+    virtual unsigned int interval() const;
+    virtual bool setInterval(const unsigned int value, const int sessionId);
 
 private:
 
@@ -132,8 +131,7 @@ private:
     int deviceCount_;
     int maxDeviceCount_;
     int deviceNumber_;
-    int pollingInterval_;
-    int originalPollingInterval_;
+    unsigned int originalPollingInterval_;
     input_event evlist_[64];
 };
 

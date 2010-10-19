@@ -272,3 +272,10 @@ void SocketHandler::setInterval(int sessionId, int value)
     if (it != m_idMap.end())
         (*it)->setInterval(value);
 }
+
+void SocketHandler::clearInterval(int sessionId)
+{
+    QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        m_idMap.erase(it);
+}

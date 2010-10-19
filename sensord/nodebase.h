@@ -30,6 +30,10 @@
 #include <QString>
 #include <QList>
 #include "datarange.h"
+#include "logging.h"
+
+class RingBufferReaderBase;
+class RingBufferBase;
 
 /**
  * Base class for all nodes in sensord framework filtering chain.
@@ -41,10 +45,12 @@ class NodeBase : public QObject
 {
     Q_OBJECT;
     Q_PROPERTY(QString description READ description);
+
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
+    Q_PROPERTY(unsigned int interval READ getInterval);
 
 protected:
-    NodeBase(QObject* parent=0) : QObject(parent), m_dataRangeSource(NULL) {}
+    NodeBase(QObject* parent=0) : QObject(parent), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
     virtual ~NodeBase() {}
 
 public Q_SLOTS:
@@ -116,10 +122,55 @@ public Q_SLOTS:
      */
     bool setStandbyOverrideRequest(const int sessionId, const bool override);
 
+    /**
+     * Returns list of possible intervals for the sensor. If \c min and
+     * \c max value are the same, the value is discrete. If they are
+     * different, any value between \c min and \c max can be requested.
+     * \c Resolution can be ignored.
+     *
+     * @return List of possible intervals for this sensor.
+     */
+    QList<DataRange> getAvailableIntervals() const;
+
+    /**
+     *
+     */
+    bool setIntervalRequest(const int sessionId, const unsigned int value);
+
+    /**
+     *
+     */
+    bool requestDefaultInterval(const int sessionId);
+
+    /**
+     * Returns the default interval value for this node.
+     *
+     * @return The default interval. Reports \c 0 on error, but \c 0
+     *         may just as well be a valid state, depending on the
+     *         node.
+     */
+    unsigned int defaultInterval() const;
+
+    /**
+     * Remove interval requests by session
+     */
+    void removeIntervalRequest(const int sessionId);
+
+    /**
+     * Return the interval
+     */
+    unsigned int getInterval() const;
+
+
 Q_SIGNALS:
     void propertyChanged(const QString& name);
 
 protected:
+    /**
+     * Sets up a source for this node.
+     */
+    bool connectToSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader);
+    bool disconnectFromSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader);
 
     /**
      * Validates the metadata setup for the node. To pass, exactly one
@@ -170,10 +221,6 @@ protected:
      * @param range The range to set
      * @return \c true on succesfull set, \c false otherwise. The base
      *         class implementation always returns false.
-     *
-     * @todo There's a serious design flaw here. If a node is to reimplement
-     *       this, and forward requests to selected sources, the function
-     *       is not aware of the client id whose request is handled.
      */
     virtual bool setDataRange(const DataRange range, const int sessionId) { Q_UNUSED(range); Q_UNUSED(sessionId); return false; }
 
@@ -201,6 +248,69 @@ protected:
      */
     void addStandbyOverrideSource(NodeBase* node);
 
+    /**
+     * Add a new interval to list of locally provided ones
+     */
+    void introduceAvailableInterval(const DataRange& interval);
+
+    /**
+     * Return the locally valid interval (reimplement when required)
+     */
+    virtual unsigned int interval() const { return 0; }
+
+    virtual bool setInterval(const unsigned int value, const int sessionId)
+    {
+        sensordLogW() << "setInterval() not implemented in some node using it.";
+        Q_UNUSED(value);
+        Q_UNUSED(sessionId);
+        return false;
+    }
+
+    bool hasLocalInterval() const;
+
+    /**
+     * Evalutes the requests for interval, and returns the one that should
+     * be used. In case there are no requests, the default interval (set by
+     * setDefaultInterval()) is returned.
+     *
+     * This implementation considers smallest non-negative interval request
+     * as the winner. Reimplement for nodes that need to use different
+     * approach.
+     *
+     * <b>Note that this approach has been considered 'proper' by design.
+     * Consider carefully what the consequences may be for other parts of
+     * the system if you reimplement this.</b>
+     *
+     * @param sessionId Reference to parameter for storing the winning
+     *                  sessionId. Will be set to \c -1 if no active
+     *                  requests are in place.
+     * @return The winning interval.
+     */
+    virtual unsigned int evaluateIntervalRequests(int& sessionId) const;
+
+    /**
+     * Node to fetch interval from
+     */
+    void setIntervalSource(NodeBase* node);
+
+    /**
+     * Sets the default interval value. The set value must always be a
+     * valid setting.
+     *
+     * @param value Value to use as default interval.
+     */
+    bool setDefaultInterval(const unsigned int value);
+
+    QMap<int, unsigned int>          m_intervalMap; ///< Active interval requests (session, value)
+
+    /**
+     * Validate an interval request.
+     * @param value Value to validate.
+     * @return \c True if valid, \c false otherwise.
+     */
+    bool isValidIntervalRequest(const unsigned int value) const;
+
+    virtual RingBufferBase* findBuffer(const QString& name) const { Q_UNUSED(name); return NULL; }
 private:
 
     /**
@@ -212,12 +322,21 @@ private:
     bool hasLocalRange() const;
 
     QString                 m_description;
+
     QList<DataRange>        m_dataRangeList;
     QList<DataRangeRequest> m_dataRangeQueue;
     NodeBase*               m_dataRangeSource;
 
+
     QList<NodeBase*>        m_standbySourceList;
     QList<int>              m_standbyRequestList;
+
+    QList<DataRange>        m_intervalList;
+    NodeBase*               m_intervalSource;
+    bool                    m_hasDefault;
+    unsigned int            m_defaultInterval;
+
+    QList<NodeBase*>        m_sourceList;
 };
 
 #endif

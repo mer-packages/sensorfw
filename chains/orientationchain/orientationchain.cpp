@@ -72,22 +72,17 @@ OrientationChain::OrientationChain(const QString& id) :
     filterBin_->join("orientationinterpreter", "orientation", "orientationbuffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->join(accelerometerReader_);
+    connectToSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
+    setDescription("Device orientation interpretations (in different flavors)");
     introduceAvailableDataRange(DataRange(0, 6, 1));
-
     addStandbyOverrideSource(accelerometerChain_);
+    setIntervalSource(accelerometerChain_);
 }
 
 OrientationChain::~OrientationChain()
 {
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->unjoin(accelerometerReader_);
+    disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     delete accelerometerReader_;
     delete topEdgeOutput_;
@@ -95,7 +90,6 @@ OrientationChain::~OrientationChain()
     delete filterBin_;
 }
 
-// TODO: Solve thread safety for start...
 bool OrientationChain::start()
 {
     if (AbstractSensorChannel::start()) {

@@ -29,7 +29,7 @@
 
 AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &path, const char* interfaceName, int sessionId) :
         QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
-        sessionId_(sessionId), running_(false), interval_(0), socketReader_(NULL), standbyOverride_(false)
+        sessionId_(sessionId), running_(false), interval_(-1), standbyOverride_(false), socketReader_(NULL)
 {
     socketReader_ = new SocketReader(this);
 
@@ -49,7 +49,7 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
     {
         release();
     }
-    
+
     if (socketReader_) {
 
         if (!socketReader_->dropConnection()) {
@@ -62,7 +62,6 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
 bool AbstractSensorChannelInterface::release()
 {
     // ToDo: note that after release this interace becomes invalid (this should be handled correctly)
-    //qDebug()  << __PRETTY_FUNCTION__ << "Releasing sensor" << id() << "session" << sessionId_;
     bool result = SensorManagerInterface::instance().releaseInterface(id(), sessionId_);
     return result;
 }
@@ -88,7 +87,7 @@ QDBusReply<void> AbstractSensorChannelInterface::stop()
 QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
 {
     clearError();
-    
+
     if (running_) {
         return QDBusReply<void>();
     }
@@ -106,8 +105,12 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     {
         setStandbyOverride(sessionId, true);
     } 
-    /// Send interval request when started.
-    setInterval(sessionId, interval_);
+
+    // Set interval request if valid request exists
+    if (interval_ >= 0)
+    {
+        setInterval(sessionId, interval_);
+    }
 
     return returnValue;
 }
@@ -124,9 +127,8 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
     if (socketReader_) {
         disconnect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
     }
+
     setStandbyOverride(sessionId, false);
-    /// Drop interval requests when stopped
-    setInterval(sessionId, 0);
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
@@ -136,7 +138,7 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
 QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int value)
 {
     clearError();
-    
+
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
     return callWithArgumentList(QDBus::Block, QLatin1String("setInterval"), argumentList);
@@ -145,7 +147,7 @@ QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int 
 QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
 {
     clearError();
-    
+
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
     return callWithArgumentList(QDBus::Block, QLatin1String("setStandbyOverride"), argumentList);
@@ -183,6 +185,13 @@ void AbstractSensorChannelInterface::removeDataRangeRequest()
 {
     clearError();
     call(QDBus::Block, QLatin1String("removeDataRangeRequest"), qVariantFromValue(sessionId_));
+}
+
+void AbstractSensorChannelInterface::setDefaultInterval()
+{
+    clearError();
+    interval_ = -1;
+    call(QDBus::Block, QLatin1String("requestDefaultInterval"), qVariantFromValue(sessionId_));
 }
 
 QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()

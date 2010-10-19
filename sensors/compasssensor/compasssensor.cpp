@@ -60,11 +60,8 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     // Join filterchain buffers
     filterBin_->join("input", "source", "output", "sink");
 
-    // Pick input depending on declination correctin value (to func)
-    RingBufferBase* rb;
-    rb = compassChain_->findBuffer("magneticnorth");
-    Q_ASSERT(rb);
-    rb->join(inputReader_);
+    // TODO: Pick input depending on declination correctin value (to func)
+    connectToSource(compassChain_, "magneticnorth", inputReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -72,17 +69,9 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     outputBuffer_->join(this);
 
     setDescription("compass north in degrees");
-
-    // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "magnetometeradaptor" << "kbslideradaptor";
-
-    introduceAvailableDataRange(DataRange(0, 359, 1));
-
-    // Interval limited to 5hz - 1000hz (theoretical). Keeps calibration
-    // sane.
-    intervalList_.append(DataRange(1, 200, 0));
-
     addStandbyOverrideSource(compassChain_);
+    setIntervalSource(compassChain_);
+    setRangeSource(compassChain_);
 }
 
 CompassSensorChannel::~CompassSensorChannel()
@@ -90,15 +79,11 @@ CompassSensorChannel::~CompassSensorChannel()
     SensorManager& sm = SensorManager::instance();
 
     // TODO: Put this to separate function
-    RingBufferBase* rb;
     if (declinationCorrection_) {
-        rb = compassChain_->findBuffer("truenorth");
+        disconnectFromSource(compassChain_, "truenorth", inputReader_);
     } else {
-        rb = compassChain_->findBuffer("magneticnorth");
+        disconnectFromSource(compassChain_, "magneticnorth", inputReader_);
     }
-    Q_ASSERT(rb);
-
-    rb->unjoin(inputReader_);
     sm.releaseChain("compasschain");
 
     delete inputReader_;
@@ -174,10 +159,4 @@ void CompassSensorChannel::emitToDbus(const CompassData& value)
     compassData.degrees_ = value.degrees_;
 
     writeToClients((const void*)(&value), sizeof(CompassData));
-}
-
-int CompassSensorChannel::interval() const
-{
-    /* Compass pace is defined by accelerometer output. */
-    return SensorManager::instance().propertyHandler().getHighestValue("interval", "accelerometeradaptor");
 }

@@ -52,7 +52,10 @@ KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
     kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(3);
     addAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
 
+    setDescription("Keyboard slider events (via input device)");
     introduceAvailableDataRange(DataRange(0, 2, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 KeyboardSliderAdaptor::~KeyboardSliderAdaptor()
@@ -109,13 +112,14 @@ void KeyboardSliderAdaptor::commitOutput()
     kbstateBuffer_->wakeUpReaders();
 }
 
-int KeyboardSliderAdaptor::getPollingInterval()
-{ 
-    return 0; 
+unsigned int KeyboardSliderAdaptor::interval() const
+{
+    return 0;
 }
 
-bool KeyboardSliderAdaptor::setPollingInterval(int f)
-{ 
-    Q_UNUSED(f);
-    return false;
+bool KeyboardSliderAdaptor::setInterval(const unsigned int value, const int sessionId)
+{
+    Q_UNUSED(value);
+    Q_UNUSED(sessionId);
+    return true;
 }

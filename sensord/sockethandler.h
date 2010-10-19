@@ -82,6 +82,7 @@ public:
     int getSocketFd(int sessionId) const;
 
     void setInterval(int sessionId, int value);
+    void clearInterval(int sessionId);
 
 Q_SIGNALS:
     void lostSession(int sessionId);

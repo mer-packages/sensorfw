@@ -77,19 +77,12 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     filterBin_->join("accelerometer", "source", "rotationfilter", "accelerometersink");
     filterBin_->join("rotationfilter", "source", "buffer", "sink");
     
-    // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->join(accelerometerReader_);
+    connectToSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     if (hasZ_)
     {
-        rb = compassChain_->findBuffer("truenorth");
-        Q_ASSERT(rb);
-        rb->join(compassReader_);
+        connectToSource(compassChain_, "truenorth", compassReader_);
         addStandbyOverrideSource(compassChain_);
-        adaptorList_ << "magnetometeradaptor";
     }
 
     marshallingBin_ = new Bin;
@@ -97,35 +90,32 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    // Set sensor description
     setDescription("x, y, and z axes rotation in degrees");
-
-    // Enlist used adaptors
-    adaptorList_ << "accelerometeradaptor" << "kbslideradaptor";
-
-    // List possible data ranges
-    // TODO: Figure out correct datarange
     introduceAvailableDataRange(DataRange(-179, 180, 1));
-    intervalList_.append(DataRange(10, 200,0));
-
     addStandbyOverrideSource(accelerometerChain_);
+
+    // Provide interval value from acc, but range depends on sane compass
+    if (hasZ_)
+    {
+        // No less than 5hz allowed for compass
+        introduceAvailableInterval(DataRange(1, 200, 0));
+    } else {
+        setIntervalSource(accelerometerChain_);
+    }
+
+    setDefaultInterval(100); // Tricky. Might need to make this conditional.
 }
 
 RotationSensorChannel::~RotationSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = accelerometerChain_->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->unjoin(accelerometerReader_);
+    disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
     sm.releaseChain("accelerometerchain");
 
     if (hasZ_)
     {
-        rb = compassChain_->findBuffer("truenorth");
-        Q_ASSERT(rb);
-        rb->unjoin(compassReader_);
+        disconnectFromSource(compassChain_, "truenorth", compassReader_);
         sm.releaseChain("compasschain");
         delete compassReader_;
     }
@@ -173,12 +163,24 @@ bool RotationSensorChannel::stop()
 
 void RotationSensorChannel::emitToDbus(const TimedXyzData& value)
 {
-    prevRotation_ = value; // TODO: Does this need locking?
+    prevRotation_ = value;
     writeToClients((const void*)(&value), sizeof(TimedXyzData));
 }
 
-int RotationSensorChannel::interval() const
+unsigned int RotationSensorChannel::interval() const
 {
-    /* Pace is defined by accelerometer output. */
-    return SensorManager::instance().propertyHandler().getHighestValue("interval", "accelerometeradaptor");
+    // Just provide ACC rate as a kludge for now.
+    // This is not precise, as the actual rate depends on both.
+    return accelerometerChain_->getInterval();
+}
+
+bool RotationSensorChannel::setInterval(const unsigned int value, const int sessionId)
+{
+    bool success = accelerometerChain_->setIntervalRequest(sessionId, value);
+    if (hasZ_)
+    {
+        success = compassChain_->setIntervalRequest(sessionId, value) && success;
+    }
+
+    return success;
 }

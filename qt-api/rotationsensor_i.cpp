@@ -27,10 +27,7 @@
 #include "rotationsensor_i.h"
 
 RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName(), sessionId)
-{
-    interval_ = 100; /// Compass needs 10hz rate to run...
-}
+    : AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName(), sessionId) {}
 
 const RotationSensorChannelInterface* RotationSensorChannelInterface::listenInterface(const QString& id)
 {

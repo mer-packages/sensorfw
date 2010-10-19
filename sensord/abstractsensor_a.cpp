@@ -27,6 +27,7 @@
 
 #include "abstractsensor_a.h"
 #include "sfwerror.h"
+#include <sensormanager.h>
 
 bool AbstractSensorChannelAdaptor::isValid() const
 {
@@ -56,9 +57,9 @@ QString AbstractSensorChannelAdaptor::id() const
     return qvariant_cast< QString >(parent()->property("id"));
 }
 
-int AbstractSensorChannelAdaptor::interval() const
+unsigned int AbstractSensorChannelAdaptor::interval() const
 {
-    return qvariant_cast< int >(parent()->property("interval"));
+    return qvariant_cast< unsigned int >(parent()->property("interval"));
 }
 
 /*
@@ -89,7 +90,9 @@ void AbstractSensorChannelAdaptor::stop(int sessionId)
 
 void AbstractSensorChannelAdaptor::setInterval(int sessionId, int value)
 {
-    QMetaObject::invokeMethod(parent(), "setInterval", Q_ARG(int, sessionId), Q_ARG(int, value));
+    bool success;
+    QMetaObject::invokeMethod(parent(), "setIntervalRequest", Q_RETURN_ARG(bool, success), Q_ARG(const int, sessionId), Q_ARG(const unsigned int, (unsigned int)value));
+    SensorManager::instance().socketHandler().setInterval(sessionId, value);
 }
 
 bool AbstractSensorChannelAdaptor::standbyOverride() const
@@ -159,4 +162,12 @@ DataRange AbstractSensorChannelAdaptor::getAvailableInterval(int index)
     } else {
         return DataRange();
     }
+}
+
+bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
+{
+    bool success;
+    QMetaObject::invokeMethod(parent(), "requestDefaultInterval", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId));
+    SensorManager::instance().socketHandler().clearInterval(sessionId);
+    return success;
 }

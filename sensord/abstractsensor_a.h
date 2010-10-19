@@ -54,8 +54,8 @@ public: // PROPERTIES
     Q_PROPERTY(QString id READ id)
     QString id() const;
 
-    Q_PROPERTY(int interval READ interval)
-    int interval() const;
+    Q_PROPERTY(unsigned int interval READ interval)
+    unsigned int interval() const;
 
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
     bool standbyOverride() const;
@@ -80,6 +80,7 @@ public Q_SLOTS: // METHODS
     void setInterval(int sessionId, int value);
     int getIntervalCount();
     DataRange getAvailableInterval(int index);
+    bool setDefaultInterval(int sessionId);
 
     bool setStandbyOverride(int sessionId, bool value);
 

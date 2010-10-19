@@ -52,10 +52,7 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     filterBin_->join("tap", "source", "buffer", "sink");
 
     // Join datasources to the chain
-    RingBufferBase* rb;
-    rb = tapAdaptor_->findBuffer("tap");
-    Q_ASSERT(rb);
-    rb->join(tapReader_);
+    connectToSource(tapAdaptor_, "tap", tapReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -65,15 +62,8 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     isValid_ = true;
 
     setDescription("either single or double device taps, and tap axis");
-
     setRangeSource(tapAdaptor_);
-
-    // List possible intervals
-    intervalList_.append(DataRange(0, 0, 0));
-
-    // Enlist used adaptors
-    // TODO: Should tap control anything? Probably not.
-    adaptorList_ << "tapadaptor";
+    setIntervalSource(tapAdaptor_);
 
     // Tap needs to work with display off
     addStandbyOverrideSource(tapAdaptor_);
@@ -83,10 +73,7 @@ TapSensorChannel::~TapSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    RingBufferBase* rb;
-    rb = tapAdaptor_->findBuffer("tap");
-    Q_ASSERT(rb);
-    rb->unjoin(tapReader_);
+    disconnectFromSource(tapAdaptor_, "tap", tapReader_);
     sm.releaseDeviceAdaptor("tapadaptor");
 
     delete tapReader_;
@@ -98,7 +85,7 @@ TapSensorChannel::~TapSensorChannel()
 bool TapSensorChannel::start()
 {
     sensordLogD() << "Starting TapSensorChannel";
-    
+
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();

@@ -55,32 +55,13 @@ void AbstractSensorChannel::setError(SensorError errorCode, const QString& error
     emit errorSignal(errorCode);
 }
 
-int AbstractSensorChannel::interval() const
-{
-    QString kbName = "kbslideradaptor";
-    if ((adaptorList_.size() == 1) || (adaptorList_.size() == 2 && adaptorList_.contains(kbName)))
-    {
-        int index = 0;
-        if (adaptorList_.at(index) == kbName) {
-            index++;
-        }
-
-        return SensorManager::instance().propertyHandler().getHighestValue("interval", adaptorList_.at(index));
-    }
-
-    sensordLogC() << "Running a sensor (" << name_ <<") that does not reimplement interval() function but uses more than one adaptor (or none).";
-
-    if (adaptorList_.size() == 0) {
-        return 0;
-    }
-
-    return SensorManager::instance().propertyHandler().getHighestValue("interval", adaptorList_.at(0));
-}
-
 bool AbstractSensorChannel::start(int sessionId) {
     if (!(activeSessions_.contains(sessionId))) {
         activeSessions_.append(sessionId);
     }
+
+    requestDefaultInterval(sessionId);
+
     return start();
 }
 
@@ -100,7 +81,13 @@ bool AbstractSensorChannel::start()
 
 bool AbstractSensorChannel::stop(int sessionId) {
     activeSessions_.removeAll(sessionId);
-    return stop();
+
+    if(stop())
+    {
+        removeIntervalRequest(sessionId);
+        return true;
+    }
+    return false;
 }
 
 bool AbstractSensorChannel::stop()
@@ -114,44 +101,6 @@ bool AbstractSensorChannel::stop()
     if (--cnt_ == 0) return true;
     if (cnt_ < 0) cnt_ = 0;
     return false;
-}
-
-void AbstractSensorChannel::setInterval(int sessionId, int value)
-{
-    // Verify that requested value is in list of allowed values.
-    bool validRequest = false;
-    foreach (DataRange range, intervalList_) {
-        if (range.min <= value && range.max >= value) {
-            validRequest = true;
-        }
-    }
-
-    if (!validRequest) {
-        sensordLogD() << "Requested invalid interval" << value;
-    }
-
-    // Make an interval request for all listed adaptors.
-    foreach (QString adaptor, adaptorList_) {
-        SensorManager::instance().propertyHandler().setRequest("interval", adaptor, sessionId, value);
-    }
-
-    SensorManager::instance().socketHandler().setInterval(sessionId, value);
-
-    // TODO: Signal only when rate has actually changed
-    signalPropertyChanged("interval");
-}
-
-//~ bool AbstractSensorChannel::setStandbyOverride(int sessionId, bool value)
-//~ {
-    //~ foreach (QString adaptor, adaptorList_) {
-        //~ SensorManager::instance().propertyHandler().setRequest("standbyOverride", adaptor, sessionId, value);
-    //~ }
-    //~ return true;
-//~ }
-
-QList<DataRange> AbstractSensorChannel::getAvailableIntervals()
-{
-    return intervalList_;
 }
 
 bool AbstractSensorChannel::writeToClients(const void* source, int size)

@@ -89,32 +89,19 @@ class DeviceAdaptor : public NodeBase
     Q_OBJECT;
 
     Q_PROPERTY(QString id READ id);
-    Q_PROPERTY(unsigned interval READ interval WRITE setInterval);
     Q_PROPERTY(bool isValid READ isValid);
-    //~ Q_PROPERTY(unsigned standbyOverride WRITE setStandbyOverride);
 
 public:
- DeviceAdaptor(const QString id) : id_(id), isValid_(true), interval_(0), standbyOverride_(false), screenBlanked(false) {}
-    virtual ~DeviceAdaptor();
 
-    unsigned interval() const { return interval_; }
+    DeviceAdaptor(const QString id) : id_(id), isValid_(true), standbyOverride_(false), screenBlanked(false) {}
+    virtual ~DeviceAdaptor();
 
     void setScreenBlanked(bool status)
     {
         screenBlanked = status; 
     }
 
-    void setInterval(unsigned interval) {
-        interval_ = interval;
-        setPollingInterval(interval);
-    }
-
     virtual bool isValid() const {return isValid_;}
-
-    //~ void setStandbyOverride(unsigned override) {
-        //~ standbyOverride_ = (override>0) ? true : false;
-        //~ sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
-    //~ }
 
     virtual bool setStandbyOverride(const bool override)
     {
@@ -154,14 +141,10 @@ protected:
     void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
     void addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
 
-    virtual int getPollingInterval() const { return 0; }
-    virtual bool setPollingInterval(int f) { Q_UNUSED(f); return false; }
-
     QString                             id_;
     QHash<QString, AdaptedSensorEntry*> sensors_;
 
     bool isValid_;
-    unsigned interval_;
     bool standbyOverride_;
 
 private:

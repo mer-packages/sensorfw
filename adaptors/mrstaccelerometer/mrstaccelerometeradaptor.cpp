@@ -23,6 +23,11 @@ MRSTAccelAdaptor::MRSTAccelAdaptor (const QString& id) :
     addPath (devPath, devId);
     buffer = new DeviceAdaptorRingBuffer<OrientationData>(128);
     addAdaptedSensor("accelerometer", "MRST accelerometer", buffer);
+
+    setDescription("MRST accelerometer");
+    introduceAvailableDataRange(DataRange(0, 0, 1));
+    introduceAvailableInterval(DataRange(0, 0, 0));
+    setDefaultInterval(0);
 }
 
 MRSTAccelAdaptor::~MRSTAccelAdaptor () {
