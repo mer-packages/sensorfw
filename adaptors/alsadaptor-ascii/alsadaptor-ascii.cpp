@@ -64,7 +64,7 @@ ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdap
     }
 
     sensordLogT() << "Ambient light range: " << range;
-    introduceAvailableDataRange(DataRange(0, range, 1));
+
 
     // Locate the actual handle
     devPath = Config::configuration()->value("als-ascii_sysfs_path").toString();
@@ -78,6 +78,11 @@ ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdap
     addPath(devPath);
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
+
+    setDescription("Ambient light");
+    introduceAvailableDataRange(DataRange(0, range, 1));
+    introduceAvailableInterval(DataRange(50, 2000, 0));
+    setDefaultInterval(1000);
 }
 
 ALSAdaptorAscii::~ALSAdaptorAscii()
