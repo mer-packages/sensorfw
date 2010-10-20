@@ -8,7 +8,7 @@ sensord (0.6.28) unstable; urgency=low
   [Timo Rongas]
   * Fixes: NB#190879 - Sample interval metadata is not fetched from hardware
 
- -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 19 Oct 2010 16:18:11 +0300
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Wed, 20 Oct 2010 12:58:32 +0300
 
 sensord (0.6.27) unstable; urgency=low
 
