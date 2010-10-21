@@ -5,7 +5,7 @@
 ## Contact: Jean-Luc Lamadon <jean-luc.lamadon@nokia.com>
 ##          Matias Muhonen <ext-matias.muhonen@nokia.com>
 ##          Tapio Rantala <ext-tapio.rantala@nokia.com>
-##          Lihan Guo <lihan.guo@digia.com> 
+##          Lihan Guo <lihan.guo@digia.com>
 ##
 ## This file is part of Sensord.
 ##
@@ -32,6 +32,7 @@ from string import Template
 
 import time
 import signal
+import math
 
 from ContextKit.cltool import CLTool
 
@@ -46,6 +47,74 @@ class Orientation(unittest.TestCase):
         self.context_client_edge = CLTool("context-listen", "Screen.TopEdge")
         self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
 
+        # Get angle thresholds from config
+        landscape_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep orientation_threshold_landscape | head -n1 | cut -f2 -d=", "r").read())
+        portrait_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep orientation_threshold_portrait | head -n1 | cut -f2 -d=", "r").read())
+
+        print("Using thresholds for orientation changes:\n  Landscape: " + str(landscape_angle) + "\n  Portrait: " + str(portrait_angle) + "\n")
+
+        # Create data sets
+        self.dataSet = []
+        self.expectSet = []
+
+        dataSet_top = []
+        dataSet_left = []
+
+        # TopEdge = top (U, U, T, U, T), starting from Unknown
+        for angle in [0, landscape_angle-1, landscape_angle+1, landscape_angle-1, 90]:
+            dataSet_top.append([0, int(1000*math.cos(math.radians(90-angle))), int(1000*math.cos(math.radians(angle)))])
+        self.dataSet += dataSet_top
+
+        self.expectSet.append('')
+        self.expectSet.append('')
+        self.expectSet.append('Screen.TopEdge = QString:"top"')
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('Screen.TopEdge = QString:"top"')
+
+        # TopEdge = left (U, U, L, U, L)
+        for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
+            dataSet_left.append([-int(1000*math.cos(math.radians(90-angle))), 0, int(1000*math.cos(math.radians(angle)))])
+        self.dataSet += dataSet_left
+
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('')
+        self.expectSet.append('Screen.TopEdge = QString:"left"')
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('Screen.TopEdge = QString:"left"')
+
+        # TopEdge = bottom, (U, U, B, U, B)
+        for v in dataSet_top[:]:
+            u = v[:]
+            u[1] = -u[1]
+            self.dataSet.append(u)
+
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('')
+        self.expectSet.append('Screen.TopEdge = QString:"bottom"')
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('Screen.TopEdge = QString:"bottom"')
+
+        # TopEdge = right (U, U, R, U, R)
+        for v in dataSet_left[:]:
+            u = v[:]
+            u[0] = -u[0]
+            self.dataSet.append(u)
+
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('')
+        self.expectSet.append('Screen.TopEdge = QString:"right"')
+        self.expectSet.append('Screen.TopEdge = Unknown')
+        self.expectSet.append('Screen.TopEdge = QString:"right"')
+
+        # TopEdge: left -> top -> left (should represent bottom and right well enough)
+        for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
+            self.dataSet.append([-int(1000*math.cos(math.radians(90-angle))), int(1000*math.cos(math.radians(angle))), 0])
+
+        self.expectSet.append('Screen.TopEdge = QString:"top"')
+        self.expectSet.append('')
+        self.expectSet.append('Screen.TopEdge = QString:"left"')
+        self.expectSet.append('Screen.TopEdge = QString:"top"')
+        self.expectSet.append('Screen.TopEdge = QString:"left"')
 
     def tearDown(self):
         self.context_client_edge.atexit()
@@ -53,25 +122,16 @@ class Orientation(unittest.TestCase):
 
     def testOrientation(self):
 
-        # Top side up
-        os.system("echo 60 960 18 | " + self.datafaker + " " + self.fpath)
-        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"top"'))
-        time.sleep(0.9)
+        # Set the starting position to unknown (0, 0, 1000)
+        os.system("echo 0 0 1000 | " + self.datafaker + " " + self.fpath)
 
-        # Right side up
-        os.system("echo 936 162 180 | " + self.datafaker + " " + self.fpath)
-        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"right"'))
-        time.sleep(0.9)
-
-        # Bottom up
-        os.system("echo 72 -990 -162 | " + self.datafaker + " " + self.fpath)
-        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"bottom"'))
-        time.sleep(0.9)
-
-        # Left side up
-        os.system("echo -954 -90 -36 | " + self.datafaker + " " + self.fpath)
-        self.assert_(self.context_client_edge.expect('Screen.TopEdge = QString:"left"'))
-        time.sleep(0.9)
+        index = 0
+        for v in self.dataSet[:]:
+            time.sleep(0.9)
+            if self.expectSet[index] != '':
+                os.system("echo " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + " | " + self.datafaker + " " + self.fpath)
+                self.assert_(self.context_client_edge.expect(self.expectSet[index]))
+            index += 1
 
         # On the table
         os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
@@ -86,5 +146,5 @@ class Orientation(unittest.TestCase):
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(10)
+    signal.alarm(30)
     unittest.main()

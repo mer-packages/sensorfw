@@ -40,15 +40,15 @@ bool DataFaker::open(QString path, QString name)
         qDebug() << "[DataFaker]: Name" << name << "is already used by another fd.";
         return false;
     }
-    
+
     int fd = ::open(path.toAscii().constData(), O_WRONLY);
     if (fd < 0) {
         qDebug() << "[DataFaker]: Failed to open" << path;
         return false;
     }
-    
+
     m_fdMap.insert(name, fd);
-    
+
     return true;
 }
 
@@ -91,7 +91,6 @@ bool DataFaker::write(QString name, int type, int code, int value)
 
 void DataFaker::cleanup()
 {
-    qDebug() << "[DataFaker]: Running cleanup";
     foreach (QString key, m_fdMap.keys()) {
         close(key);
     }
