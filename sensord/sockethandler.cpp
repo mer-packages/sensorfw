@@ -168,6 +168,7 @@ bool SocketHandler::removeSession(int sessionId)
 {
     if (!(m_idMap.keys().contains(sessionId))) {
         sensordLogD() << "[SocketHandler]: Trying to remove nonexistent session.";
+        return false;
     }
 
     QLocalSocket* socket = (*m_idMap.find(sessionId))->stealSocket();
