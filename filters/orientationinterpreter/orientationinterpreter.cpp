@@ -50,7 +50,10 @@ OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),
         topEdge(PoseData::Undefined),
+        face(PoseData::Undefined),
+        previousFace(PoseData::Undefined),
         o_(PoseData::Undefined)
+
 {
     addSink(&accDataSink, "accsink");
     addSource(&topEdgeSource, "topedge");
@@ -111,11 +114,11 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     data.y_ = y / dataBuffer.count();
     data.z_ = z / dataBuffer.count();
 
-    // calculate face
-    processFace();
-
     // calculate topedge
     processTopEdge();
+
+    // calculate face
+    processFace();
 
     // calculate orientation
     processOrientation();
@@ -172,6 +175,7 @@ void OrientationInterpreter::processTopEdge()
 
 void OrientationInterpreter::processFace()
 {
+
     PoseData newFace;
 
 
@@ -179,14 +183,28 @@ void OrientationInterpreter::processFace()
     {
         newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);
 
-        if (face.orientation_ != newFace.orientation_)
+        if (newFace.orientation_ == PoseData::FaceDown)
         {
-            face.orientation_ = newFace.orientation_;
+            if (topEdge.orientation_ != PoseData::Undefined)
+            {
+                face.orientation_ = PoseData::FaceUp;
+            } else {
+                face.orientation_ = PoseData::FaceDown;
+            }
+        } else {
+            face.orientation_ = PoseData::FaceUp;
+        }
+
+
+       if (face.orientation_ != previousFace.orientation_)
+        {
+            previousFace.orientation_ = face.orientation_;
             face.timestamp_ = data.timestamp_;
             faceSource.propagate(1, &face);
         }
     }
 }
+
 
 void OrientationInterpreter::processOrientation()
 {
