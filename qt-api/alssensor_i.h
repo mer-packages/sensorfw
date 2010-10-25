@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,22 +46,18 @@
 class ALSSensorChannelInterface: public AbstractSensorChannelInterface
 {
     Q_OBJECT
-
-public:
-    static inline const char *staticInterfaceName()
-    { return "local.ALSSensor"; }
-
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new ALSSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
-
+    Q_DISABLE_COPY(ALSSensorChannelInterface)
     Q_PROPERTY(Unsigned lux READ lux)
-    inline Unsigned lux() const { return qvariant_cast< Unsigned >(internalPropGet("lux")); }
 
 public:
-    ALSSensorChannelInterface(const QString &path, int sessionId);
+    static const char* staticInterfaceName;
+
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+
+    Unsigned lux() const;
+
+public:
+    ALSSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
@@ -85,7 +82,6 @@ Q_SIGNALS: // SIGNALS
      * @param value Observed ambient light intensity.
      */
     void ALSChanged(const Unsigned& value);
-
 };
 
 namespace local {

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -41,36 +42,30 @@
  */
 class AccelerometerSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(AccelerometerSensorChannelInterface)
+    Q_PROPERTY(XYZ value READ get)
 
 public:
     /**
-     * Get name of the D-Bus interface for this class.
-     * @return Name of the interface.
+     * Name of the D-Bus interface for this class.
      */
-    static inline const char *staticInterfaceName()
-    { return "local.AccelerometerSensor"; }
+    static const char* staticInterfaceName;
 
     /**
      * Get an instance of the class.
      * @return Pointer to new instance of the class.
      */
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Q_PROPERTY(XYZ value READ get);
-    inline XYZ get() const { return qvariant_cast< XYZ >(internalPropGet("value")); }
+    XYZ get() const;
 
-public:
     /**
      * Constructor.
      * @param path      path.
      * @param sessionid session id.
      */
-    AccelerometerSensorChannelInterface(const QString &path, int sessionId);
+    AccelerometerSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.

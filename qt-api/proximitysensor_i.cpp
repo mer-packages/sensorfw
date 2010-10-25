@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,8 +28,17 @@
 #include "sensormanagerinterface.h"
 #include "proximitysensor_i.h"
 
-ProximitySensorChannelInterface::ProximitySensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, ProximitySensorChannelInterface::staticInterfaceName(), sessionId)
+const char* ProximitySensorChannelInterface::staticInterfaceName = "local.ProximitySensor";
+
+QDBusAbstractInterface* ProximitySensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new ProximitySensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+
+ProximitySensorChannelInterface::ProximitySensorChannelInterface(const QString& path, int sessionId)
+    : AbstractSensorChannelInterface(path, ProximitySensorChannelInterface::staticInterfaceName, sessionId)
 {
 }
 
@@ -59,7 +69,12 @@ void ProximitySensorChannelInterface::dataReceived()
 {
     TimedUnsigned value;
 
-    while (socketReader_->read((void *)&value, sizeof(TimedUnsigned))) {
+    while (read((void*)&value, sizeof(TimedUnsigned))) {
         emit dataAvailable(value);
     }
+}
+
+Unsigned ProximitySensorChannelInterface::proximity() const
+{
+    return qvariant_cast< Unsigned >(internalPropGet("proximity"));
 }

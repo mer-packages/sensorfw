@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,8 +27,16 @@
 #include "sensormanagerinterface.h"
 #include "tapsensor_i.h"
 
-TapSensorChannelInterface::TapSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, TapSensorChannelInterface::staticInterfaceName(), sessionId)
+const char* TapSensorChannelInterface::staticInterfaceName = "local.TapSensor";
+
+QDBusAbstractInterface* TapSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new TapSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+TapSensorChannelInterface::TapSensorChannelInterface(const QString& path, int sessionId)
+    : AbstractSensorChannelInterface(path, TapSensorChannelInterface::staticInterfaceName, sessionId)
 {
 }
 
@@ -58,7 +67,7 @@ void TapSensorChannelInterface::dataReceived()
 {
     TapData value;
 
-    while (socketReader_->read((void *)&value, sizeof(TapData))) {
+    while (read((void*)&value, sizeof(TapData))) {
         emit dataAvailable(Tap(value));
     }
 }

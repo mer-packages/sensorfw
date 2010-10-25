@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -43,32 +44,25 @@
  */
 class CompassSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(CompassSensorChannelInterface)
+    Q_PROPERTY(Compass value READ get)
+    Q_PROPERTY(bool usedeclination READ useDeclination WRITE setUseDeclination)
+    Q_PROPERTY(int declinationvalue READ declinationValue)
 
 public:
-    static inline const char *staticInterfaceName()
-    { return "local.CompassSensor"; }
+    static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new CompassSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Q_PROPERTY(Compass value READ get);
-    Q_PROPERTY(bool usedeclination READ useDeclination WRITE setUseDeclination);
-    Q_PROPERTY(int declinationvalue READ declinationValue);
+    Compass get() const;
 
-    inline Compass get() const { return qvariant_cast< Compass >(internalPropGet("value")); }
+    bool useDeclination() const;
+    void setUseDeclination(bool enable);
 
-    inline bool useDeclination() const { return qvariant_cast< bool >(internalPropGet("usedeclination")); }
-    inline void setUseDeclination(bool enable) { internalPropSet("usedeclination", qVariantFromValue(enable)); }
+    int declinationValue() const;
 
-    inline int declinationValue() const { return qvariant_cast< int >(internalPropGet("declinationvalue")); }
-
-public:
-
-    CompassSensorChannelInterface(const QString &path, int sessionId);
+    CompassSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
@@ -83,10 +77,6 @@ public:
      * @return Pointer to interface, or NULL on failure.
      */
     static CompassSensorChannelInterface* controlInterface(const QString& id);
-
-
-protected:
-    CompassData prevValue_;
 
 public Q_SLOTS: // METHODS
     void dataReceived();

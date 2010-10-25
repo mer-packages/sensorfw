@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -41,7 +42,8 @@
  */
 class ProximitySensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(ProximitySensorChannelInterface)
     Q_PROPERTY(Unsigned proximity READ proximity);
 
 public:
@@ -49,28 +51,22 @@ public:
      * Get name of the D-Bus interface for this class.
      * @return Name of the interface.
      */
-    static inline const char *staticInterfaceName()
-    { return "local.ProximitySensor"; }
+    static const char* staticInterfaceName;
 
     /**
      * Get an instance of the class.
      * @return Pointer to new instance of the class.
      */
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new ProximitySensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    inline Unsigned proximity() const { return qvariant_cast< Unsigned >(internalPropGet("proximity")); }
+    Unsigned proximity() const;
 
-public:
     /**
      * Constructor.
      * @param path      path.
      * @param sessionid session id.
      */
-    ProximitySensorChannelInterface(const QString &path, int sessionId);
+    ProximitySensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,10 +26,17 @@
 
 #include "sensormanagerinterface.h"
 #include "accelerometersensor_i.h"
-#include <datatypes/orientationdata.h>
 
-AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName(), sessionId)
+const char* AccelerometerSensorChannelInterface::staticInterfaceName = "local.AccelerometerSensor";
+
+QDBusAbstractInterface* AccelerometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId) :
+    AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName, sessionId)
 {
 }
 
@@ -58,7 +66,12 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::contro
 void AccelerometerSensorChannelInterface::dataReceived()
 {
     AccelerationData value;
-    while (socketReader_->read((void *)&value, sizeof(AccelerationData))) {
+    while (read((void*)&value, sizeof(AccelerationData))) {
         emit dataAvailable(XYZ(value));
     }
+}
+
+XYZ AccelerometerSensorChannelInterface::get() const
+{
+    return qvariant_cast<XYZ>(internalPropGet("value"));
 }

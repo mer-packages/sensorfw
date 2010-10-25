@@ -27,8 +27,18 @@
 #include "sensormanagerinterface.h"
 #include "magnetometersensor_i.h"
 
-MagnetometerSensorChannelInterface::MagnetometerSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, MagnetometerSensorChannelInterface::staticInterfaceName(), sessionId) {}
+const char* MagnetometerSensorChannelInterface::staticInterfaceName = "local.MagnetometerSensor";
+
+QDBusAbstractInterface* MagnetometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new MagnetometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+MagnetometerSensorChannelInterface::MagnetometerSensorChannelInterface(const QString& path, int sessionId) :
+    AbstractSensorChannelInterface(path, MagnetometerSensorChannelInterface::staticInterfaceName, sessionId)
+{
+}
 
 const MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::listenInterface(const QString& id)
 {
@@ -56,7 +66,7 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::controlI
 void MagnetometerSensorChannelInterface::dataReceived()
 {
     CalibratedMagneticFieldData value;
-    while (socketReader_->read((void *)&value, sizeof(CalibratedMagneticFieldData))) {
+    while (read((void*)&value, sizeof(CalibratedMagneticFieldData))) {
         emit dataAvailable(MagneticField(value));
     }
 }
@@ -65,4 +75,9 @@ QDBusReply<void> MagnetometerSensorChannelInterface::reset()
 {
     QList<QVariant> argumentList;
     return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+}
+
+MagneticField MagnetometerSensorChannelInterface::magneticField() const
+{
+    return qvariant_cast< MagneticField >(internalPropGet("magneticField"));
 }

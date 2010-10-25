@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,8 +28,16 @@
 #include "alssensor_i.h"
 #include "socketreader.h"
 
-ALSSensorChannelInterface::ALSSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, ALSSensorChannelInterface::staticInterfaceName(), sessionId)
+const char* ALSSensorChannelInterface::staticInterfaceName = "local.ALSSensor";
+
+QDBusAbstractInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new ALSSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+ALSSensorChannelInterface::ALSSensorChannelInterface(const QString& path, int sessionId)
+    : AbstractSensorChannelInterface(path, ALSSensorChannelInterface::staticInterfaceName, sessionId)
 {
 }
 
@@ -58,7 +67,12 @@ ALSSensorChannelInterface* ALSSensorChannelInterface::controlInterface(const QSt
 void ALSSensorChannelInterface::dataReceived()
 {
     TimedUnsigned value;
-    while (socketReader_->read((void *)&value, sizeof(value))) {
+    while (read((void*)&value, sizeof(value))) {
         emit ALSChanged(value);
     }
+}
+
+Unsigned ALSSensorChannelInterface::lux() const
+{
+    return qvariant_cast< Unsigned >(internalPropGet("lux"));
 }

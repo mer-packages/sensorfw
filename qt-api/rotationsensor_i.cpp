@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,8 +27,18 @@
 #include "sensormanagerinterface.h"
 #include "rotationsensor_i.h"
 
-RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName(), sessionId) {}
+const char* RotationSensorChannelInterface::staticInterfaceName = "local.RotationSensor";
+
+QDBusAbstractInterface* RotationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new RotationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId) :
+    AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName, sessionId)
+{
+}
 
 const RotationSensorChannelInterface* RotationSensorChannelInterface::listenInterface(const QString& id)
 {
@@ -55,7 +66,17 @@ RotationSensorChannelInterface* RotationSensorChannelInterface::controlInterface
 void RotationSensorChannelInterface::dataReceived()
 {
     TimedXyzData value;
-    while (socketReader_->read((void *)&value, sizeof(TimedXyzData))) {
+    while (read((void*)&value, sizeof(TimedXyzData))) {
         emit dataAvailable(XYZ(value));
     }
+}
+
+XYZ RotationSensorChannelInterface::rotation() const
+{
+    return qvariant_cast< XYZ >(internalPropGet("rotation"));
+}
+
+bool RotationSensorChannelInterface::hasZ() const
+{
+    return qvariant_cast< bool >(internalPropGet("hasZ"));
 }

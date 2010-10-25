@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -41,17 +42,13 @@
  */
 class TapSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(TapSensorChannelInterface)
 
 public:
-    static inline const char *staticInterfaceName()
-    { return "local.TapSensor"; }
+    static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new TapSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
 public:
     TapSensorChannelInterface(const QString &path, int sessionId);
