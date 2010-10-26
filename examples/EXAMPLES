@@ -10,8 +10,18 @@ This folder contains examples for extending sensord.
 
 Current examples:
 
-adaptorplugin: Instructions for writing a new adaptor plugin based on
-               SysfsAdaptor.
+adaptorplugin: Adaptor plugin based on SysfsAdaptor.
+filterplugin : Simple filter.
+chainplugin  : Simple chain, one input, one output, one filter
+sensorplugin : Sample sensor providing data from chain
+
+The examples make use of each other, so that SampleSensor gets data from
+SampleChain, which filters data from SampleAdaptor with SampleFilter.
+
+The code has been commented in order to explain the structure. Not all
+comments are replicated to all plugins, so reading through the whole set
+is encouraged. Please see the documentation in doc/ for further
+description of logic.
 
 Examples on how to use the sensor framework from client applications
 might be here someday as well. For now, the fastest way to get started
