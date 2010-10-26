@@ -7,6 +7,9 @@ sensord (0.6.29) unstable; urgency=low
 
 sensord (0.6.28) unstable; urgency=low
 
+  [Lihan Guo]
+  * Fixes: NB#199971 -  proximity sensor never returns True
+
   [Antti Virtanen]
   * Implemented interval downsampling. [Fixes: NB#196513].
   * SysfsAdaptorReader fetched incorrectly fd passed to processSample(). [Fixes: NB#180060].
@@ -30,7 +33,7 @@ sensord (0.6.27) unstable; urgency=low
 sensord (0.6.26) unstable; urgency=low
 
   [Lihan Guo]
-  * Added: Standby override test case	
+  * Added: Standby override test case
   * Fixes: NB#193175 - Screen blank override is re-evaluated only at screen blank event
 
   [Pia Niemelä, Antti Virtanen]

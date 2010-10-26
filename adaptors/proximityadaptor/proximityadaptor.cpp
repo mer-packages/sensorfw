@@ -35,6 +35,7 @@
 
 #define THRESHOLD_FILE_PATH_RM680 "/sys/class/misc/bh1770glc_ps/device/ps_threshold"
 #define THRESHOLD_FILE_PATH_RM696 "/sys/class/misc/apds990x0/device/prox_threshold"
+#define PROX_ENABLE_RM696 "/sys/class/misc/apds990x0/device/prox_enable"
 
 #define RM680_PS "/dev/bh1770glc_ps"
 #define RM696_PS "/dev/apds990x0"
@@ -84,6 +85,35 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         addPath(RM696_PS);
     }
 
+    if (device == RM696)
+    {
+        char buf[3];
+        int value = -1;
+
+        QFile prox_enable(PROX_ENABLE_RM696);
+
+        if( !prox_enable.exists())
+        {
+            sensordLogW() << "prox_enable file doesn't exist";
+        }
+
+        if( prox_enable.open(QIODevice::ReadOnly) )
+        {
+            if (prox_enable.readLine(buf, sizeof(buf)) > 0)
+            {
+                value = QString(buf).toInt();
+            }
+        }
+        prox_enable.close();
+
+        if (value == 0)
+        {
+            prox_enable.open(QFile::WriteOnly|QFile::Truncate);
+            prox_enable.putChar('1');
+            prox_enable.close();
+        }
+    }
+
     if (device == DeviceUnknown)
     {
         sensordLogW() << "Other HW except RM680 and RM696";
@@ -105,9 +135,16 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 }
 
 
-
 ProximityAdaptor::~ProximityAdaptor()
 {
+    if (device == RM696)
+    {
+        QFile prox_enable(PROX_ENABLE_RM696);
+        prox_enable.open(QFile::WriteOnly|QFile::Truncate);
+        prox_enable.putChar('0');
+        prox_enable.close();
+    }
+
     delete proximityBuffer_;
 }
 
