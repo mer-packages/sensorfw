@@ -36,7 +36,7 @@
 #include "logging.h"
 #include "config.h"
 #include "alsadaptor-ascii.h"
-#include "filters/utils.h"
+#include "datatypes/utils.h"
 #include <stdlib.h>
 #include <linux/types.h>
 

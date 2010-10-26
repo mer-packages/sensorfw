@@ -246,7 +246,7 @@ int AbstractSensorChannelInterface::interval() const
     return qvariant_cast<int>(internalPropGet("interval"));
 }
 
-inline void AbstractSensorChannelInterface::setInterval(int value)
+void AbstractSensorChannelInterface::setInterval(int value)
 {
     pimpl_->interval_ = value;
     if (pimpl_->running_)

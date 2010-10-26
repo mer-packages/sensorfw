@@ -12,11 +12,4 @@ SUBDIRS  = accelerometersensor \
            rotationsensor \
            magnetometersensor
 
-ariane {
-    SUBDIRS += arianeplugin \
-               filteredplugin
-}
-
-motionband:SUBDIRS += raworientationplugin
-
 contextprovider:SUBDIRS += contextplugin

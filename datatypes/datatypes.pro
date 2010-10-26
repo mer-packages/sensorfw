@@ -1,6 +1,5 @@
 TEMPLATE = lib
 TARGET = sensordatatypes
-QT += dbus
 
 include( ../common-config.pri )
 
@@ -25,15 +24,12 @@ HEADERS += xyz.h \
     tapdata.h \
     touchdata.h
 
-
 SOURCES += xyz.cpp \
     orientation.cpp \
     unsigned.cpp \
     compass.cpp \
     utils.cpp \
     tap.cpp
-
-LIBS += -lrt
 
 include(../common-install.pri)
 publicheaders.path  = $${publicheaders.path}/datatypes
