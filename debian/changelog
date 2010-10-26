@@ -1,3 +1,10 @@
+sensord (0.6.29) unstable; urgency=low
+
+  [Timo Rongas]
+  * Added examples for writing new plugins.
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 26 Oct 2010 09:12:58 +0300
+
 sensord (0.6.28) unstable; urgency=low
 
   [Antti Virtanen]
