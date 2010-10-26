@@ -70,6 +70,7 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
         release();
     if (!pimpl_->socketReader_.dropConnection())
         setError(SClientSocketError, "Socket disconnect failed.");
+    delete pimpl_;
 }
 
 bool AbstractSensorChannelInterface::release()

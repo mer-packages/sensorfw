@@ -9,6 +9,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,11 +33,62 @@
  * Implementation of interface class LocalSensorManagerInterface
  */
 
-LocalSensorManagerInterface::LocalSensorManagerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent)
-    : QDBusAbstractInterface(service, path, staticInterfaceName(), connection, parent)
+const char* LocalSensorManagerInterface::staticInterfaceName = "local.SensorManager";
+
+LocalSensorManagerInterface::LocalSensorManagerInterface(const QString& service, const QString& path, const QDBusConnection& connection, QObject* parent) :
+    QDBusAbstractInterface(service, path, staticInterfaceName, connection, parent)
 {
 }
 
 LocalSensorManagerInterface::~LocalSensorManagerInterface()
 {
+}
+
+SensorManagerError LocalSensorManagerInterface::errorCode() const
+{
+    return static_cast<SensorManagerError>(errorCodeInt());
+}
+
+QString LocalSensorManagerInterface::errorString() const
+{
+    return qvariant_cast<QString>(internalPropGet("errorString"));
+}
+
+int LocalSensorManagerInterface::errorCodeInt() const
+{
+    return static_cast<SensorManagerError>(qvariant_cast<int>(internalPropGet("errorCodeInt")));
+}
+
+QDBusReply<bool> LocalSensorManagerInterface::loadPlugin(const QString& name)
+{
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(name);
+    return callWithArgumentList(QDBus::Block, QLatin1String("loadPlugin"), argumentList);
+}
+
+QDBusReply<int> LocalSensorManagerInterface::requestControlSensor(const QString& id)
+{
+    QList<QVariant> argumentList;
+    qint64 pid = QCoreApplication::applicationPid();
+    argumentList << qVariantFromValue(id);
+    argumentList << qVariantFromValue(pid);
+    return callWithArgumentList(QDBus::Block, QLatin1String("requestControlSensor"), argumentList);
+}
+
+QDBusReply<int> LocalSensorManagerInterface::requestListenSensor(const QString& id)
+{
+    qint64 pid = QCoreApplication::applicationPid();
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(id);
+    argumentList << qVariantFromValue(pid);
+    return callWithArgumentList(QDBus::Block, QLatin1String("requestListenSensor"), argumentList);
+}
+
+QDBusReply<bool> LocalSensorManagerInterface::releaseSensor(const QString& id, int sessionId)
+{
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(id) << qVariantFromValue(sessionId);
+    qint64 pid = QCoreApplication::applicationPid();
+    argumentList << qVariantFromValue(pid);
+    return callWithArgumentList(QDBus::Block, QLatin1String("releaseSensor"), argumentList);
 }
