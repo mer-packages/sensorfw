@@ -67,6 +67,10 @@ protected:
      */
     ~SampleAdaptor();
 
+    // If the sensor does not work (reliably) when the display is off,
+    // the setStandbyOverride() function should be reimplemented to
+    // reject requests.
+    // virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
 private:
 
     /**

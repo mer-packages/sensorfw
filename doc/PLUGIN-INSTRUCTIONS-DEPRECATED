@@ -1,3 +1,11 @@
+
+## NOTE: This file has been deprecated in favor of PLUGIN-GUIDE.
+##       There are a few pieces of information here that haven't
+##       been yet described at the other file, so keeping this here
+##       for now.
+##
+
+
 ###
 ### INSTRUCTIONS FOR WRITING ADAPTOR PLUGINS FOR SENSOR FRAMEWORK
 ###
