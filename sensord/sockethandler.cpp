@@ -262,7 +262,7 @@ void SocketHandler::killSocket()
 int SocketHandler::getSocketFd(int sessionId) const
 {
     QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
-    if (it != m_idMap.end())
+    if (it != m_idMap.end() && (*it)->getSocket())
         return (*it)->getSocket()->socketDescriptor();
     return 0;
 }
@@ -278,5 +278,5 @@ void SocketHandler::clearInterval(int sessionId)
 {
     QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
     if (it != m_idMap.end())
-        m_idMap.erase(it);
+        (*it)->setInterval(-1);
 }

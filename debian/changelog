@@ -3,6 +3,12 @@ sensord (0.6.29) unstable; urgency=low
   [Timo Rongas]
   * Added examples for writing new plugins.
 
+  [Antti Virtanen]
+  * Optimized SensorManager QMap usage by using iterators.
+  * SensorManager::printStatus() segfaulted when sensorInstanceEntry had no users.
+  * SocketHandler::clearInterval() fixed. It erased whole session entry
+    instead of just setting the interval back to default.
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 26 Oct 2010 09:12:58 +0300
 
 sensord (0.6.28) unstable; urgency=low
