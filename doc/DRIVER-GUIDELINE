@@ -12,6 +12,8 @@ requests could be made for the driver implementations:
 4) Provide easy way to configure sensor (sampling range, frequenzy, etc.),
 preferably using sysfs.
 
+Kernels input (evdev) system handles most of the above quite nicely.
+
 Cheerios,
 
   Timo Rongas <ext-timo.2.rongas@nokia.com>
