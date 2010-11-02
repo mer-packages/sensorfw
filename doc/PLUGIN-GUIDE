@@ -103,6 +103,7 @@ TBD.
 
 See examples/samplefilter/* for filter construction.
 
+
 ##
 ## WRITING A SENSOR
 ##
@@ -111,6 +112,7 @@ TDB.
 
 See examples/samplesensor/* for sensor construction.
 
+
 ##
 ## WRITING A CHAIN
 ##
@@ -118,6 +120,7 @@ See examples/samplesensor/* for sensor construction.
 TBD.
 
 See examples/samplechain/* for chain construction.
+
 
 ##
 ## METADATA
@@ -130,11 +133,11 @@ Each node (adaptor/chain/sensor, not filters) should define metadata for itself.
   * Data range(s)
   * Standby override sources (sort of metadata)
 
-# Description
+## Description
 
 Description should provide a human readable string that describes what is the output from the node.
 
-# Interval range(s)
+## Interval range(s)
 
 Interval ranges define the possible rates at which this node can provide output. They are given with min/max pairs, where any value between min and max is allowed. Resolution parameter is ignored.
 
@@ -162,11 +165,22 @@ In adaptors, display blank will result in all filehandles being released. Settin
 
 The property should be used with care and only when required in order to minimize power consumption.
 
+
 ##
 ## CONFIGURATION FILES
 ##
 
-TBD.
+Sensorfw supports multiple configuration files. There are two locations:
+
+  (1) /etc/sensorfw/sensord.conf
+  (2) /etc/sensorfw/sensord.conf.d/
+
+Any option set in (1) will override options set in any of the files in (2). Files in (2) are given priority based on alphanumeric order. Using doubledigits as the beginning of the filename for clarity is encouraged.
+
+Configuration files contain sections for different HW. These sections should connect plugin metanames (sampleadaptor) with the real plugin that should be used (sampleadaptor-inputdev). The configuratino file also contains option 'deviceId', which specifies which section should be used. This will be removed once we have automatic detection of underlying HW in place.
+
+The structure of the configuration files is likely to change in the future to contain better separation between different platforms.
+
 
 ##
 ## FURTHER INFORMATION
