@@ -1,0 +1,17 @@
+##
+## Sensor driver guideline
+##
+
+Sensord has been built to be easily adaptable to different driver interfaces
+sensor drivers may expose. However, the following generic guidelines or
+requests could be made for the driver implementations:
+
+1) Try to follow upstream conventions and standards when available.
+2) Avoid busy-polling by providing interrupts from driver handle
+3) Power down the sensor if nobody is attached to the driver handle.
+4) Provide easy way to configure sensor (sampling range, frequenzy, etc.),
+preferably using sysfs.
+
+Cheerios,
+
+  Timo Rongas <ext-timo.2.rongas@nokia.com>
