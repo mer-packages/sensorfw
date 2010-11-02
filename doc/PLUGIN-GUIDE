@@ -33,7 +33,7 @@ Device adaptors are responsible for interfacing the framework with data sources 
 ## WRITING A PLUG-IN
 ##
 
-A plug-in buy itself is responsible for very few things. It contains an adaptor/sensor/chain/filter (or several), and introduces them to SensorManager.
+A plug-in by itself is responsible for very few things. It contains an adaptor/sensor/chain/filter (or several), and introduces them to SensorManager.
 
 In addition, plug-ins may specify that they need another plug-in for functioning. E.g. orientationchain (provides device orientation calculations) requires accelerometeradaptor (provides data from accelerometer) to function.
 
