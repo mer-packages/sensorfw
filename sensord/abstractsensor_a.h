@@ -60,6 +60,12 @@ public: // PROPERTIES
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
     bool standbyOverride() const;
 
+    Q_PROPERTY(bool bufferInterval READ bufferInterval);
+    int bufferInterval() const;
+
+    Q_PROPERTY(bool bufferSize READ bufferSize);
+    unsigned int bufferSize() const;
+
     // TODO: put state back
     /*
     Q_PROPERTY(SensorState state READ state)
@@ -83,6 +89,9 @@ public Q_SLOTS: // METHODS
     bool setDefaultInterval(int sessionId);
 
     bool setStandbyOverride(int sessionId, bool value);
+
+    void setBufferInterval(int sessionId, int value);
+    void setBufferSize(int sessionId, unsigned int value);
 
     int getDataRangeCount();
     DataRange getAvailableDataRange(int index);

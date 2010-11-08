@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -36,7 +37,10 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   socket(socket),
                                                                   interval(-1),
                                                                   buffer(0),
-                                                                  size(0)
+                                                                  size(0),
+                                                                  count(0),
+                                                                  bufferSize(1),
+                                                                  bufferInterval(-1)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -59,37 +63,59 @@ long SessionData::sinceLastWrite() const
     return (now.tv_sec - lastWrite.tv_sec) * 1000 + ((now.tv_usec - lastWrite.tv_usec) / 1000);
 }
 
+bool SessionData::write(const void* source, int size, int count)
+{
+    socket->write((const char*)count, sizeof(int));
+    return (socket->write((const char*)source, size) < 0 ? false : true);
+}
+
 bool SessionData::write(const void* source, int size)
 {
-    if(interval == -1)
+    if(interval == -1 && bufferSize <= 1)
     {
         sensordLogT() << "[SocketHandler]: pass-through. interval not set";
         gettimeofday(&lastWrite, 0);
-        return (socket->write((const char*)source, size) < 0 ? false : true);
+        return write(source, size, 1);
     }
     long since = sinceLastWrite();
-    if(since >= interval)
+    if(since >= interval && bufferSize <= 1)
     {
         sensordLogT() << "[SocketHandler]: pass-through. since > interval";
         gettimeofday(&lastWrite, 0);
-        return (socket->write((const char*)source, size) < 0 ? false : true);
+        return write(source, size, 1);
     }
     else
     {
+        int allocSize = bufferSize * size;
         if(!buffer)
-            buffer = new char[size];
+            buffer = new char[allocSize];
         else if(size != this->size)
         {
             if(buffer)
                 delete[] buffer;
-            buffer = new char[size];
+            buffer = new char[allocSize];
         }
         this->size = size;
-        memcpy(buffer, source, size);
+        if(bufferSize <= 1)
+            memcpy(buffer, source, size);
+        else
+        {
+            memcpy(buffer + size * count, source, size);
+            ++count;
+            if(bufferSize == count)
+            {
+                timer.stop();
+                count = 0;
+                return write(buffer, size, bufferSize);
+            }
+        }
         if(timer.timerId() != -1)
         {
             sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
-            timer.start(interval - since);
+            if(bufferSize > 1 && bufferInterval >= 0)
+                timer.start(bufferInterval);
+            else
+                timer.start(interval - since);
         }
         else
         {
@@ -103,7 +129,8 @@ void SessionData::delayedWrite()
 {
     timer.stop();
     gettimeofday(&lastWrite, 0);
-    socket->write(buffer, size);
+    write(buffer, size, count);
+    count = 0;
 }
 
 QLocalSocket* SessionData::stealSocket()
@@ -116,6 +143,24 @@ QLocalSocket* SessionData::stealSocket()
 void SessionData::setInterval(int interval)
 {
     this->interval = interval;
+}
+
+void SessionData::setBufferInterval(int interval)
+{
+    bufferInterval = interval;
+}
+
+void SessionData::setBufferSize(int size)
+{
+    if(size != bufferSize)
+    {
+        delete[] buffer;
+        buffer = 0;
+        count = 0;
+        bufferSize = size;
+        if(bufferSize < 1)
+            bufferSize = 1;
+    }
 }
 
 SocketHandler::SocketHandler(QObject* parent) : QObject(parent), m_server(NULL)
@@ -279,4 +324,28 @@ void SocketHandler::clearInterval(int sessionId)
     QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
     if (it != m_idMap.end())
         m_idMap.erase(it);
+}
+
+void SocketHandler::setBufferSize(int sessionId, int value)
+{
+    QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        (*it)->setBufferSize(value);
+}
+
+void SocketHandler::clearBufferSize(int sessionId)
+{
+    setBufferSize(sessionId, 0);
+}
+
+void SocketHandler::setBufferInterval(int sessionId, int value)
+{
+    QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        (*it)->setBufferInterval(value);
+}
+
+void SocketHandler::clearBufferInterval(int sessionId)
+{
+    setBufferInterval(sessionId, -1);
 }

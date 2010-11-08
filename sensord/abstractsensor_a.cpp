@@ -63,6 +63,18 @@ unsigned int AbstractSensorChannelAdaptor::interval() const
     return qvariant_cast< unsigned int >(parent()->property("interval"));
 }
 
+int AbstractSensorChannelAdaptor::bufferInterval() const
+{
+    //TODO
+    return 0;
+}
+
+unsigned int AbstractSensorChannelAdaptor::bufferSize() const
+{
+    //TODO
+    return 0;
+}
+
 /*
 SensorState AbstractSensorChannelAdaptor::state() const
 {
@@ -171,4 +183,16 @@ bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
     QMetaObject::invokeMethod(parent(), "requestDefaultInterval", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId));
     SensorManager::instance().socketHandler().clearInterval(sessionId);
     return success;
+}
+
+void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, int value)
+{
+    // TODO: propagate value for the actual nodes to get driver buffering enabled
+    SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
+}
+
+void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int value)
+{
+    // TODO: propagate value for the actual nodes to get driver buffering enabled
+    SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
 }

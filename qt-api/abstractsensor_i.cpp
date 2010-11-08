@@ -36,6 +36,8 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
     QString errorString_;
     int sessionId_;
     int interval_;
+    int bufferInterval_;
+    int bufferSize_;
     SocketReader socketReader_;
     bool running_;
     bool standbyOverride_;
@@ -44,6 +46,8 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
 AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId) :
     sessionId_(sessionId),
     interval_(0),
+    bufferInterval(0),
+    bufferSize(1),
     socketReader_(parent),
     running_(false),
     standbyOverride_(false)
@@ -251,6 +255,30 @@ void AbstractSensorChannelInterface::setInterval(int value)
     pimpl_->interval_ = value;
     if (pimpl_->running_)
         setInterval(pimpl_->sessionId_, value);
+}
+
+int AbstractSensorChannelInterface::bufferInterval() const
+{
+    return qvariant_cast<int>(internalPropGet("bufferInterval"));
+}
+
+void AbstractSensorChannelInterface::setBufferInterval(int value)
+{
+    pimpl_->bufferInterval_ = value;
+    if (pimpl_->running_)
+        setBufferInterval(pimpl_->sessionId_, value);
+}
+
+int AbstractSensorChannelInterface::bufferSize() const
+{
+    return qvariant_cast<int>(internalPropGet("bufferSize"));
+}
+
+void AbstractSensorChannelInterface::setInterval(int value)
+{
+    pimpl_->bufferSize_ = value;
+    if (pimpl_->running_)
+        setBufferSize(pimpl_->sessionId_, value);
 }
 
 bool AbstractSensorChannelInterface::standbyOverride() const

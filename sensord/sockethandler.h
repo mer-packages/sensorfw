@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -49,16 +50,22 @@ public:
     QLocalSocket* getSocket() const { return socket; };
     QLocalSocket* stealSocket();
     void setInterval(int interval);
+    void setBufferSize(int size);
+    void setBufferInterval(int size);
 
 private:
     long sinceLastWrite() const;
+    bool write(const void* source, int size, int count);
 
     QLocalSocket* socket;
     int interval;
     char* buffer;
     int size;
+    int count;
     struct timeval lastWrite;
     QTimer timer;
+    int bufferSize;
+    int bufferInterval;
 
 private slots:
     void delayedWrite();
@@ -84,6 +91,12 @@ public:
     void setInterval(int sessionId, int value);
     void clearInterval(int sessionId);
 
+    void setBufferSize(int sessionId, int value);
+    void clearBufferSize(int sessionId);
+
+    void setBufferInterval(int sessionId, int value);
+    void clearBufferInterval(int sessionId);
+
 Q_SIGNALS:
     void lostSession(int sessionId);
 
@@ -96,7 +109,7 @@ private slots:
 private:
 
     QLocalServer*            m_server;
-    QMap<int, SessionData*>   m_idMap;
+    QMap<int, SessionData*>  m_idMap;
     QList<QLocalSocket*>     m_tmpSocks;
 };
 

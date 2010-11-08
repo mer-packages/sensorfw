@@ -54,6 +54,8 @@ class AbstractSensorChannelInterface: public QDBusAbstractInterface
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride)
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    Q_PROPERTY(int bufferInterval READ bufferInterval WRITE setBufferInterval)
+    Q_PROPERTY(int bufferSize READ bufferSize WRITE setBufferSize)
 
 public:
     virtual ~AbstractSensorChannelInterface();
@@ -75,6 +77,12 @@ public:
 
     bool standbyOverride() const;
     bool setStandbyOverride(bool override);
+
+    int bufferInterval() const;
+    void setBufferInterval(int value);
+
+    int bufferSize() const;
+    void setBufferSize(int value);
 
     QString type() const;
 
