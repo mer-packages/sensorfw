@@ -2,12 +2,16 @@ sensord (0.6.29) unstable; urgency=low
 
   [Timo Rongas]
   * Added examples for writing new plugins.
+  * Fixes: NB#202993 - Screen.TopEdge property must not go to unspecified state, new property required for device lying flat
 
   [Antti Virtanen]
   * Optimized SensorManager QMap usage by using iterators.
   * SensorManager::printStatus() segfaulted when sensorInstanceEntry had no users.
   * SocketHandler::clearInterval() fixed. It erased whole session entry
     instead of just setting the interval back to default.
+
+  [Lihan Guo]
+  * Fixes: NB#186211 - During an ongoing alarm notification, when a device placed flat is lifted up rapidly it snoozes the alarm
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 26 Oct 2010 09:12:58 +0300
 

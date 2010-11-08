@@ -38,7 +38,7 @@
  * @brief Filter for calculating device orientation.
  *
  * Filter for calculating the device orientation. Input from
- * #AccelerometerAdaptor is used.
+ * #AccelerometerChain is used.
  *
  */
 class OrientationInterpreter : public QObject, public PropertyTracker, public FilterBase
@@ -96,5 +96,4 @@ public:
     }
 };
 
-#endif // ORIENTATIONINTERPRETER_H
-
+#endif

@@ -6,6 +6,7 @@
 
    @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,7 +36,7 @@
 
     \class ScreenInterpreterFilter
 
-    \brief Filter for providing the Screen.TopEdge and
+    \brief Filter for providing the Screen.TopEdge, Screen.IsFlat, and
     Screen.IsCovered context properties.
 
     ScreenInterpreterFilter computes the context properties from
@@ -48,16 +49,18 @@ class ScreenInterpreterFilter : public QObject, public Filter<PoseData, ScreenIn
     Q_OBJECT
 
 public:
-    ScreenInterpreterFilter(ContextProvider::Property* topEdgeProperty, ContextProvider::Property* isCoveredProperty);
+    ScreenInterpreterFilter(ContextProvider::Property* topEdgeProperty, ContextProvider::Property* isCoveredProperty, ContextProvider::Property* isFlatProperty);
 
 private:
     ContextProvider::Property* topEdgeProperty;
     ContextProvider::Property* isCoveredProperty;
+    ContextProvider::Property* isFlatProperty;
     void interpret(unsigned, const PoseData* data);
     void provideScreenData(PoseData::Orientation orientation);
 
     const float threshold;
     bool isCovered;
+    bool isFlat;
     PoseData::Orientation lastOrientation;
     QString topEdge;
 };

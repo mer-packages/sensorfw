@@ -60,6 +60,7 @@ private Q_SLOTS:
 private:
     ContextProvider::Property topEdgeProperty;
     ContextProvider::Property isCoveredProperty;
+    ContextProvider::Property isFlatProperty;
     ContextProvider::Property isStableProperty;
     ContextProvider::Property isShakyProperty;
     ContextProvider::Group group;

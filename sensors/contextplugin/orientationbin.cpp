@@ -39,12 +39,13 @@
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
     isCoveredProperty(s, "Screen.IsCovered"),
+    isFlatProperty(s, "Screen.IsFlat"),
     isStableProperty(s, "Position.Stable"),
     isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),
     topEdgeReader(10),
     faceReader(10),
-    screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty),
+    screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty, &isFlatProperty),
     cutterFilter(4.0),
     avgVarFilter(100),
     stabilityFilter(&isStableProperty, &isShakyProperty,
@@ -92,6 +93,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     // Context group
     group.add(topEdgeProperty);
     group.add(isCoveredProperty);
+    group.add(isFlatProperty);
     group.add(isStableProperty);
     group.add(isShakyProperty);
     connect(&group, SIGNAL(firstSubscriberAppeared()), this, SLOT(startRun()));
@@ -100,6 +102,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     // Set default values (if the default isn't Unknown)
     topEdgeProperty.setValue("top");
     isCoveredProperty.setValue(false);
+    isFlatProperty.setValue(false);
 }
 
 OrientationBin::~OrientationBin()

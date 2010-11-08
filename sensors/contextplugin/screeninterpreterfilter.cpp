@@ -34,17 +34,18 @@
 
 ScreenInterpreterFilter::ScreenInterpreterFilter(
     ContextProvider::Property* topEdgeProperty,
-    ContextProvider::Property* isCoveredProperty) :
+    ContextProvider::Property* isCoveredProperty,
+    ContextProvider::Property* isFlatProperty) :
     Filter<PoseData, ScreenInterpreterFilter, PoseData>(this, &ScreenInterpreterFilter::interpret),
     topEdgeProperty(topEdgeProperty),
     isCoveredProperty(isCoveredProperty),
+    isFlatProperty(isFlatProperty),
     threshold(230),
     isCovered(false),
+    isFlat(false),
     lastOrientation(PoseData::BottomDown),
     topEdge("top")
-{
-    //qDebug() << "Creating the ScreenInterpreterFilter";
-}
+{}
 
 void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)
 {
@@ -58,10 +59,11 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
 
     sensordLogT() << "Screen orientation from contextprovider:" << orientation;
 
-    // Undefined can only come for TopEdge.
-    if (orientation == PoseData::Undefined) {
-        topEdgeProperty->unsetValue();
-        return;
+
+    // Any TopEdge value should set flat to false.
+    if (isFlat && orientation != PoseData::Undefined && orientation != PoseData::FaceDown && orientation != PoseData::FaceUp)
+    {
+        isFlat = false;
     }
 
     switch (orientation) {
@@ -83,6 +85,9 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
         case PoseData::BottomUp:
             topEdge = "bottom";
             break;
+        case PoseData::Undefined:
+            isFlat = true;
+            break;
         default:
             topEdge = "top";
             break;
@@ -90,5 +95,7 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
 
     topEdgeProperty->setValue(topEdge);
     isCoveredProperty->setValue(isCovered);
+    isFlatProperty->setValue(isFlat);
+
 
 }

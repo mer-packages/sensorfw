@@ -5,7 +5,7 @@
       <pre_steps>
         <step expected_result="0">/usr/bin/sensordiverter.sh start</step>
       </pre_steps>
-      <case name="sensordcontextfw001" type="Functional" level="Component" description="Screen.TopEdge and Screen.IsCovered" timeout="60" subfeature="Context Provider Orientation">
+      <case name="sensordcontextfw001" type="Functional" level="Component" description="Screen.TopEdge and Screen.IsCovered" timeout="80" subfeature="Context Provider Orientation">
         <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensord-contextfw-tests ; python /usr/share/sensord-contextfw-tests/testorientation.py</step>
       </case>
       <case name="sensordcontextfw002" type="Functional" level="Component" description="Environment.IsBright and Environment.IsDark" timeout="20" subfeature="Context Provider ALS">
