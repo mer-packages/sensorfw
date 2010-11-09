@@ -39,7 +39,7 @@
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
     isCoveredProperty(s, "Screen.IsCovered"),
-    isFlatProperty(s, "Screen.IsFlat"),
+    isFlatProperty(s, "Position.IsFlat"),
     isStableProperty(s, "Position.Stable"),
     isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),

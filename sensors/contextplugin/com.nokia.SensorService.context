@@ -4,7 +4,7 @@
   bus="system" service="com.nokia.SensorService">
     <key name="Screen.IsCovered"/>
     <key name="Screen.TopEdge"/>
-    <key name="Screen.IsFlat"/>
+    <key name="Position.IsFlat"/>
     <key name="Environment.IsDark"/>
     <key name="Environment.IsBright"/>
     <key name="Position.Stable"/>

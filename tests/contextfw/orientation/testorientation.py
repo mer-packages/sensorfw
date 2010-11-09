@@ -44,9 +44,8 @@ class Orientation(unittest.TestCase):
     def setUp(self):
         self.fpath = "/tmp/fakedsensors/accelerometer"
         self.datafaker = "/usr/bin/datafaker"
-        self.context_client_edge = CLTool("context-listen", "Screen.TopEdge", "Screen.IsFlat")
+        self.context_client_edge = CLTool("context-listen", "Screen.TopEdge", "Position.IsFlat")
         self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
-        #~ self.context_client_flat = CLTool("context-listen", "Screen.IsFlat")
 
         # Get angle thresholds from config
         landscape_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep orientation_threshold_landscape | head -n1 | cut -f2 -d=", "r").read())
@@ -66,22 +65,22 @@ class Orientation(unittest.TestCase):
             dataSet_top.append([0, int(1000*math.cos(math.radians(90-angle))), int(1000*math.cos(math.radians(angle)))])
         self.dataSet += dataSet_top
 
-        self.expectSet.append('Screen.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:true')
         self.expectSet.append('')
         self.expectSet.append('Screen.TopEdge = QString:"top"')
-        self.expectSet.append('Screen.IsFlat = bool:true')
-        self.expectSet.append('Screen.IsFlat = bool:false')
+        self.expectSet.append('Position.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge = left (U, U, L, U, L)
         for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
             dataSet_left.append([-int(1000*math.cos(math.radians(90-angle))), 0, int(1000*math.cos(math.radians(angle)))])
         self.dataSet += dataSet_left
 
-        self.expectSet.append('Screen.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:true')
         self.expectSet.append('')
         self.expectSet.append('Screen.TopEdge = QString:"left"')
-        self.expectSet.append('Screen.IsFlat = bool:true')
-        self.expectSet.append('Screen.IsFlat = bool:false')
+        self.expectSet.append('Position.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge = bottom, (U, U, B, U, B)
         for v in dataSet_top[:]:
@@ -89,11 +88,11 @@ class Orientation(unittest.TestCase):
             u[1] = -u[1]
             self.dataSet.append(u)
 
-        self.expectSet.append('Screen.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:true')
         self.expectSet.append('')
         self.expectSet.append('Screen.TopEdge = QString:"bottom"')
-        self.expectSet.append('Screen.IsFlat = bool:true')
-        self.expectSet.append('Screen.IsFlat = bool:false')
+        self.expectSet.append('Position.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge = right (U, U, R, U, R)
         for v in dataSet_left[:]:
@@ -101,11 +100,11 @@ class Orientation(unittest.TestCase):
             u[0] = -u[0]
             self.dataSet.append(u)
 
-        self.expectSet.append('Screen.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:true')
         self.expectSet.append('')
         self.expectSet.append('Screen.TopEdge = QString:"right"')
-        self.expectSet.append('Screen.IsFlat = bool:true')
-        self.expectSet.append('Screen.IsFlat = bool:false')
+        self.expectSet.append('Position.IsFlat = bool:true')
+        self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge: left -> top -> left (should represent bottom and right well enough)
         for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:

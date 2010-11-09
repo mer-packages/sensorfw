@@ -36,7 +36,7 @@
 
     \class ScreenInterpreterFilter
 
-    \brief Filter for providing the Screen.TopEdge, Screen.IsFlat, and
+    \brief Filter for providing the Screen.TopEdge, Position.IsFlat, and
     Screen.IsCovered context properties.
 
     ScreenInterpreterFilter computes the context properties from
