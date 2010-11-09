@@ -50,8 +50,11 @@ public:
     QLocalSocket* getSocket() const { return socket; };
     QLocalSocket* stealSocket();
     void setInterval(int interval);
-    void setBufferSize(int size);
-    void setBufferInterval(int size);
+    int getInterval() const;
+    void setBufferSize(unsigned int size);
+    unsigned int getBufferSize() const;
+    void setBufferInterval(unsigned int interval);
+    unsigned int getBufferInterval() const;
 
 private:
     long sinceLastWrite() const;
@@ -61,11 +64,11 @@ private:
     int interval;
     char* buffer;
     int size;
-    int count;
+    unsigned int count;
     struct timeval lastWrite;
     QTimer timer;
-    int bufferSize;
-    int bufferInterval;
+    unsigned int bufferSize;
+    unsigned int bufferInterval;
 
 private slots:
     void delayedWrite();
@@ -90,12 +93,15 @@ public:
 
     void setInterval(int sessionId, int value);
     void clearInterval(int sessionId);
+    int interval(int sessionId) const;
 
-    void setBufferSize(int sessionId, int value);
+    void setBufferSize(int sessionId, unsigned int value);
     void clearBufferSize(int sessionId);
+    unsigned int bufferSize(int sessionId) const;
 
-    void setBufferInterval(int sessionId, int value);
+    void setBufferInterval(int sessionId, unsigned int value);
     void clearBufferInterval(int sessionId);
+    unsigned int bufferInterval(int sessionId) const;
 
 Q_SIGNALS:
     void lostSession(int sessionId);

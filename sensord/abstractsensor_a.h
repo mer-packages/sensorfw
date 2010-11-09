@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -60,10 +61,10 @@ public: // PROPERTIES
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
     bool standbyOverride() const;
 
-    Q_PROPERTY(bool bufferInterval READ bufferInterval);
-    int bufferInterval() const;
+    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval);
+    unsigned int bufferInterval() const;
 
-    Q_PROPERTY(bool bufferSize READ bufferSize);
+    Q_PROPERTY(unsigned int bufferSize READ bufferSize);
     unsigned int bufferSize() const;
 
     // TODO: put state back
@@ -90,8 +91,9 @@ public Q_SLOTS: // METHODS
 
     bool setStandbyOverride(int sessionId, bool value);
 
-    void setBufferInterval(int sessionId, int value);
+    void setBufferInterval(int sessionId, unsigned int value);
     void setBufferSize(int sessionId, unsigned int value);
+    IntervalRangeList getAvailableBufferIntervals() const;
 
     int getDataRangeCount();
     DataRange getAvailableDataRange(int index);

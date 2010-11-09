@@ -36,8 +36,8 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
     QString errorString_;
     int sessionId_;
     int interval_;
-    int bufferInterval_;
-    int bufferSize_;
+    unsigned int bufferInterval_;
+    unsigned int bufferSize_;
     SocketReader socketReader_;
     bool running_;
     bool standbyOverride_;
@@ -46,8 +46,8 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
 AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId) :
     sessionId_(sessionId),
     interval_(0),
-    bufferInterval(0),
-    bufferSize(1),
+    bufferInterval_(0),
+    bufferSize_(1),
     socketReader_(parent),
     running_(false),
     standbyOverride_(false)
@@ -212,6 +212,12 @@ QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()
     return intervals;
 }
 
+IntervalRangeList AbstractSensorChannelInterface::getAvailableBufferIntervals()
+{
+    QDBusReply<IntervalRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferIntervals"));
+    return ret.value();
+}
+
 int AbstractSensorChannelInterface::sessionId() const
 {
     return pimpl_->sessionId_;
@@ -257,24 +263,24 @@ void AbstractSensorChannelInterface::setInterval(int value)
         setInterval(pimpl_->sessionId_, value);
 }
 
-int AbstractSensorChannelInterface::bufferInterval() const
+unsigned int AbstractSensorChannelInterface::bufferInterval() const
 {
-    return qvariant_cast<int>(internalPropGet("bufferInterval"));
+    return qvariant_cast<unsigned int>(internalPropGet("bufferInterval"));
 }
 
-void AbstractSensorChannelInterface::setBufferInterval(int value)
+void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
 {
     pimpl_->bufferInterval_ = value;
     if (pimpl_->running_)
         setBufferInterval(pimpl_->sessionId_, value);
 }
 
-int AbstractSensorChannelInterface::bufferSize() const
+unsigned int AbstractSensorChannelInterface::bufferSize() const
 {
-    return qvariant_cast<int>(internalPropGet("bufferSize"));
+    return qvariant_cast<unsigned int>(internalPropGet("bufferSize"));
 }
 
-void AbstractSensorChannelInterface::setInterval(int value)
+void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
 {
     pimpl_->bufferSize_ = value;
     if (pimpl_->running_)

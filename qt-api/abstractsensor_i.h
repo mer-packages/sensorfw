@@ -54,8 +54,8 @@ class AbstractSensorChannelInterface: public QDBusAbstractInterface
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride)
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
-    Q_PROPERTY(int bufferInterval READ bufferInterval WRITE setBufferInterval)
-    Q_PROPERTY(int bufferSize READ bufferSize WRITE setBufferSize)
+    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval WRITE setBufferInterval)
+    Q_PROPERTY(unsigned int bufferSize READ bufferSize WRITE setBufferSize)
 
 public:
     virtual ~AbstractSensorChannelInterface();
@@ -78,16 +78,18 @@ public:
     bool standbyOverride() const;
     bool setStandbyOverride(bool override);
 
-    int bufferInterval() const;
-    void setBufferInterval(int value);
+    unsigned int bufferInterval() const;
+    void setBufferInterval(unsigned int value);
 
-    int bufferSize() const;
-    void setBufferSize(int value);
+    unsigned int bufferSize() const;
+    void setBufferSize(unsigned int value);
 
     QString type() const;
 
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
+
+    IntervalRangeList getAvailableBufferIntervals();
 
     /**
      * Get the list of available intervals for the sensor.
@@ -109,6 +111,8 @@ private:
 protected Q_SLOTS:
     QDBusReply<void> setInterval(int sessionId, int value);
     QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
+    QDBusReply<void> setBufferInterval(int sessionId, unsigned int value);
+    QDBusReply<void> setBufferSize(int sessionId, unsigned int value);
 
 private Q_SLOTS: // METHODS
     QDBusReply<void> start(int sessionId);

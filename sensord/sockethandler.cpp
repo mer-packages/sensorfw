@@ -40,7 +40,7 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   size(0),
                                                                   count(0),
                                                                   bufferSize(1),
-                                                                  bufferInterval(-1)
+                                                                  bufferInterval(0)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -112,7 +112,7 @@ bool SessionData::write(const void* source, int size)
         if(timer.timerId() != -1)
         {
             sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
-            if(bufferSize > 1 && bufferInterval >= 0)
+            if(bufferSize > 1)
                 timer.start(bufferInterval);
             else
                 timer.start(interval - since);
@@ -145,12 +145,22 @@ void SessionData::setInterval(int interval)
     this->interval = interval;
 }
 
-void SessionData::setBufferInterval(int interval)
+int SessionData::getInterval() const
+{
+    return interval;
+}
+
+void SessionData::setBufferInterval(unsigned int interval)
 {
     bufferInterval = interval;
 }
 
-void SessionData::setBufferSize(int size)
+unsigned int SessionData::getBufferInterval() const
+{
+    return bufferInterval;
+}
+
+void SessionData::setBufferSize(unsigned int size)
 {
     if(size != bufferSize)
     {
@@ -161,6 +171,11 @@ void SessionData::setBufferSize(int size)
         if(bufferSize < 1)
             bufferSize = 1;
     }
+}
+
+unsigned int SessionData::getBufferSize() const
+{
+    return bufferSize;
 }
 
 SocketHandler::SocketHandler(QObject* parent) : QObject(parent), m_server(NULL)
@@ -326,7 +341,15 @@ void SocketHandler::clearInterval(int sessionId)
         m_idMap.erase(it);
 }
 
-void SocketHandler::setBufferSize(int sessionId, int value)
+int SocketHandler::interval(int sessionId) const
+{
+    QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        return (*it)->getInterval();
+    return 0;
+}
+
+void SocketHandler::setBufferSize(int sessionId, unsigned int value)
 {
     QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
     if (it != m_idMap.end())
@@ -338,7 +361,15 @@ void SocketHandler::clearBufferSize(int sessionId)
     setBufferSize(sessionId, 0);
 }
 
-void SocketHandler::setBufferInterval(int sessionId, int value)
+unsigned int SocketHandler::bufferSize(int sessionId) const
+{
+    QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        return (*it)->getBufferSize();
+    return 0;
+}
+
+void SocketHandler::setBufferInterval(int sessionId, unsigned int value)
 {
     QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
     if (it != m_idMap.end())
@@ -347,5 +378,13 @@ void SocketHandler::setBufferInterval(int sessionId, int value)
 
 void SocketHandler::clearBufferInterval(int sessionId)
 {
-    setBufferInterval(sessionId, -1);
+    setBufferInterval(sessionId, 0);
+}
+
+unsigned int SocketHandler::bufferInterval(int sessionId) const
+{
+    QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        return (*it)->getBufferInterval();
+    return 0;
 }

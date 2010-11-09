@@ -28,6 +28,13 @@
 
 #include <QObject>
 #include <QDBusArgument>
+#include <QPair>
+
+typedef QPair<unsigned int, unsigned int> IntervalRange;
+typedef QList<IntervalRange> IntervalRangeList;
+
+Q_DECLARE_METATYPE( IntervalRange )
+Q_DECLARE_METATYPE( IntervalRangeList )
 
 /**
  * Datatype for storing sensor data range information.

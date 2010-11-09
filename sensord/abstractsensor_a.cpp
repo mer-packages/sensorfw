@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -63,16 +64,14 @@ unsigned int AbstractSensorChannelAdaptor::interval() const
     return qvariant_cast< unsigned int >(parent()->property("interval"));
 }
 
-int AbstractSensorChannelAdaptor::bufferInterval() const
+unsigned int AbstractSensorChannelAdaptor::bufferInterval() const
 {
-    //TODO
-    return 0;
+    return qvariant_cast<unsigned int>(parent()->property("bufferInterval"));
 }
 
 unsigned int AbstractSensorChannelAdaptor::bufferSize() const
 {
-    //TODO
-    return 0;
+    return qvariant_cast<unsigned int>(parent()->property("bufferSize"));
 }
 
 /*
@@ -185,7 +184,7 @@ bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
     return success;
 }
 
-void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, int value)
+void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int value)
 {
     // TODO: propagate value for the actual nodes to get driver buffering enabled
     SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
@@ -195,4 +194,12 @@ void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int val
 {
     // TODO: propagate value for the actual nodes to get driver buffering enabled
     SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+}
+
+IntervalRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
+{
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+        return node->getAvailableBufferIntervals();
+    return IntervalRangeList();
 }

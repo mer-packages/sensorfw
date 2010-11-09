@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -161,6 +162,7 @@ public Q_SLOTS:
      */
     unsigned int getInterval() const;
 
+    IntervalRangeList getAvailableBufferIntervals() const;
 
 Q_SIGNALS:
     void propertyChanged(const QString& name);

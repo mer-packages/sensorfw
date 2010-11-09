@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -483,4 +484,11 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
         }
     }
     return false;
+}
+
+IntervalRangeList NodeBase::getAvailableBufferIntervals() const
+{
+    IntervalRangeList list;
+    list.push_back(IntervalRange(1, 200));
+    return list;
 }
