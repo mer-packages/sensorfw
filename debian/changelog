@@ -1,3 +1,10 @@
+sensord (0.6.30) unstable; urgency=low
+
+  [Antti Virtanen]
+  * Optimized logger streaming ops to do nothing when used loglevel wouldn't log anything.
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 09 Nov 2010 13:09:12 +0300
+
 sensord (0.6.29) unstable; urgency=low
 
   [Timo Rongas]
