@@ -159,6 +159,24 @@ QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int 
     return callWithArgumentList(QDBus::Block, QLatin1String("setInterval"), argumentList);
 }
 
+QDBusReply<void> AbstractSensorChannelInterface::setBufferInterval(int sessionId, unsigned int value)
+{
+    clearError();
+
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
+    return callWithArgumentList(QDBus::Block, QLatin1String("setBufferInterval"), argumentList);
+}
+
+QDBusReply<void> AbstractSensorChannelInterface::setBufferSize(int sessionId, unsigned int value)
+{
+    clearError();
+
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
+    return callWithArgumentList(QDBus::Block, QLatin1String("setBufferSize"), argumentList);
+}
+
 QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
 {
     clearError();
