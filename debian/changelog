@@ -1,6 +1,8 @@
 sensord (0.6.31) unstable; urgency=low
 
-  *
+  [Timo Rongas]
+  * Temporary axis direction switch in magnetometer and accelerometer
+    adaptors.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 09:59:08 +0200
 
