@@ -77,6 +77,11 @@ AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
     delete pimpl_;
 }
 
+SocketReader& AbstractSensorChannelInterface::getSocketReader() const
+{
+    return pimpl_->socketReader_;
+}
+
 bool AbstractSensorChannelInterface::release()
 {
     // ToDo: note that after release this interace becomes invalid (this should be handled correctly)

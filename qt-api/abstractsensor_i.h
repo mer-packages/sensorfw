@@ -31,6 +31,7 @@
 
 #include <QtDBus/QtDBus>
 #include <QList>
+#include <QVector>
 #include <QString>
 
 #include "sfwerror.h"
@@ -128,11 +129,22 @@ protected:
 
     bool read(void* buffer, int size);
 
+    template<typename T>
+    bool read(QVector<T>& values);
+
 private:
     struct AbstractSensorChannelInterfaceImpl;
 
     AbstractSensorChannelInterfaceImpl* pimpl_;
+
+    SocketReader& getSocketReader() const;
 };
+
+template<typename T>
+bool AbstractSensorChannelInterface::read(QVector<T>& values)
+{
+    return getSocketReader().read(values);
+}
 
 namespace local {
   typedef ::AbstractSensorChannelInterface AbstractSensor;

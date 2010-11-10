@@ -63,9 +63,9 @@ long SessionData::sinceLastWrite() const
     return (now.tv_sec - lastWrite.tv_sec) * 1000 + ((now.tv_usec - lastWrite.tv_usec) / 1000);
 }
 
-bool SessionData::write(const void* source, int size, int count)
+bool SessionData::write(const void* source, int size, unsigned int count)
 {
-    socket->write((const char*)count, sizeof(int));
+    socket->write((const char*)count, sizeof(unsigned int));
     return (socket->write((const char*)source, size) < 0 ? false : true);
 }
 

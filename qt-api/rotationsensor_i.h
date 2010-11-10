@@ -28,6 +28,7 @@
 #define ROTATIONSENSOR_I_H
 
 #include <QtDBus/QtDBus>
+#include <QVector>
 
 #include "abstractsensor_i.h"
 #include <datatypes/xyz.h>
@@ -71,6 +72,12 @@ public:
      */
     static RotationSensorChannelInterface* controlInterface(const QString& id);
 
+protected:
+    virtual void connectNotify(const char* signal);
+
+private:
+    bool frameAvailableConnected;
+
 public Q_SLOTS: // METHODS
     void dataReceived();
 
@@ -80,6 +87,14 @@ Q_SIGNALS: // SIGNALS
      * @param data Current device rotation.
      */
     void dataAvailable(const XYZ& data);
+
+    /**
+     * Sent when new measurement frame has become available.
+     * If app doesn't connect to this signal content of frames
+     * will be sent through dataAvailable signal.
+     * @param data New measurement frame.
+     */
+    void frameAvailable(const QVector<XYZ> frame);
 };
 
 namespace local {

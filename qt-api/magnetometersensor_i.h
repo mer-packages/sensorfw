@@ -29,6 +29,7 @@
 #define MAGNETOMETERSENSOR_I_H
 
 #include <QtDBus/QtDBus>
+#include <QVector>
 
 #include "abstractsensor_i.h"
 #include <datatypes/magneticfield.h>
@@ -71,6 +72,12 @@ public:
      */
     static MagnetometerSensorChannelInterface* controlInterface(const QString& id);
 
+protected:
+    virtual void connectNotify(const char* signal);
+
+private:
+    bool frameAvailableConnected;
+
 public Q_SLOTS: // METHODS
     void dataReceived();
     QDBusReply<void> reset();
@@ -81,6 +88,14 @@ Q_SIGNALS: // SIGNALS
      * @param data Current magnetic field measurement.
      */
     void dataAvailable(const MagneticField& data);
+
+    /**
+     * Sent when new measurement frame has become available.
+     * If app doesn't connect to this signal content of frames
+     * will be sent through dataAvailable signal.
+     * @param data New measurement frame.
+     */
+    void frameAvailable(const QVector<MagneticField> frame);
 };
 
 namespace local {

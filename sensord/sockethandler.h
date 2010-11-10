@@ -58,7 +58,7 @@ public:
 
 private:
     long sinceLastWrite() const;
-    bool write(const void* source, int size, int count);
+    bool write(const void* source, int size, unsigned int count);
 
     QLocalSocket* socket;
     int interval;

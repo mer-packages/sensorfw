@@ -36,7 +36,8 @@ QDBusAbstractInterface* RotationSensorChannelInterface::factoryMethod(const QStr
 }
 
 RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId) :
-    AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName, sessionId)
+    AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName, sessionId),
+    frameAvailableConnected(false)
 {
 }
 
@@ -65,9 +66,28 @@ RotationSensorChannelInterface* RotationSensorChannelInterface::controlInterface
 
 void RotationSensorChannelInterface::dataReceived()
 {
-    TimedXyzData value;
-    while (read((void*)&value, sizeof(TimedXyzData))) {
-        emit dataAvailable(XYZ(value));
+    QVector<TimedXyzData> values;
+    while (read<TimedXyzData>(values))
+    {
+        if(values.size() == 1)
+            emit dataAvailable(XYZ(values.back()));
+        else
+        {
+            if(frameAvailableConnected)
+            {
+                QVector<XYZ> realValues;
+                realValues.resize(values.size());
+                foreach(TimedXyzData data, values)
+                    realValues.push_back(XYZ(data));
+                emit frameAvailable(realValues);
+                values.clear();
+            }
+            else
+            {
+                foreach(TimedXyzData data, values)
+                    emit dataAvailable(XYZ(data));
+            }
+        }
     }
 }
 
@@ -79,4 +99,10 @@ XYZ RotationSensorChannelInterface::rotation() const
 bool RotationSensorChannelInterface::hasZ() const
 {
     return qvariant_cast< bool >(internalPropGet("hasZ"));
+}
+
+void RotationSensorChannelInterface::connectNotify(const char* signal)
+{
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(const QVector<XYZ>)))
+        frameAvailableConnected = true;
 }

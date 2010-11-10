@@ -28,6 +28,7 @@
 
 #include <QObject>
 #include <QLocalSocket>
+#include <QVector>
 
 /**
  * @brief Helper class for reading socket datachannel from sensord
@@ -83,6 +84,15 @@ public:
     bool read(void* buffer, int size);
 
     /**
+     * Attempt to read all objects which are being written to the socket.
+     *
+     * @param values   QList to which objects will be appended.
+     * @return \c true if any bytes were read, \c false otherwise.
+     */
+    template<typename T>
+    bool read(QVector<T>& values);
+
+    /**
      * Returns whether the socket is currently connected.
      * @return \c true if connected, \c false if not.
      */
@@ -94,5 +104,22 @@ private:
     QLocalSocket* socket_;
     bool tagRead_;
 };
+
+template<typename T>
+bool SocketReader::read(QVector<T>& values)
+{
+    unsigned int count;
+    if(!read((void*)&count, sizeof(unsigned int)))
+        return false;
+    values.reserve(values.size() + count);
+    for(unsigned int i = 0; i < count; ++i)
+    {
+        T value;
+        if(!read((void*)&value, sizeof(T)))
+            return false;
+        values.push_back(value);
+    }
+    return true;
+}
 
 #endif // SOCKETREADER_H

@@ -36,7 +36,8 @@ QDBusAbstractInterface* AccelerometerSensorChannelInterface::factoryMethod(const
 }
 
 AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId) :
-    AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName, sessionId)
+    AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName, sessionId),
+    frameAvailableConnected(false)
 {
 }
 
@@ -65,13 +66,38 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::contro
 
 void AccelerometerSensorChannelInterface::dataReceived()
 {
-    AccelerationData value;
-    while (read((void*)&value, sizeof(AccelerationData))) {
-        emit dataAvailable(XYZ(value));
+    QVector<AccelerationData> values;
+    while (read<AccelerationData>(values))
+    {
+        if(values.size() == 1)
+            emit dataAvailable(XYZ(values.back()));
+        else
+        {
+            if(frameAvailableConnected)
+            {
+                QVector<XYZ> realValues;
+                realValues.resize(values.size());
+                foreach(AccelerationData data, values)
+                    realValues.push_back(XYZ(data));
+                emit frameAvailable(realValues);
+                values.clear();
+            }
+            else
+            {
+                foreach(AccelerationData data, values)
+                    emit dataAvailable(XYZ(data));
+            }
+        }
     }
 }
 
 XYZ AccelerometerSensorChannelInterface::get() const
 {
     return qvariant_cast<XYZ>(internalPropGet("value"));
+}
+
+void AccelerometerSensorChannelInterface::connectNotify(const char* signal)
+{
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(const QVector<XYZ>)))
+        frameAvailableConnected = true;
 }
