@@ -40,7 +40,7 @@ class Orientation(unittest.TestCase):
 
     def setUp(self):
         self.fpath = "/tmp/fakedsensors/als"
-   	self.context_client_dark = CLTool('context-listen', 'Environment.IsDark')
+        self.context_client_dark = CLTool('context-listen', 'Environment.IsDark')
         self.context_client_bright = CLTool('context-listen', 'Environment.IsBright')
 
     def tearDown(self):
@@ -48,7 +48,7 @@ class Orientation(unittest.TestCase):
         self.context_client_bright.atexit()
 
     def testIsDark(self):
- 	 # Normal
+        # Normal
         os.system("echo -en '\x94' >" + self.fpath) # 148
         self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:false'))
 
