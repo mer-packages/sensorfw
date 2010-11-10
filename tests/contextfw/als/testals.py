@@ -76,5 +76,5 @@ class Orientation(unittest.TestCase):
 if __name__ == '__main__':
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(5)
+    signal.alarm(10)
     unittest.main()
