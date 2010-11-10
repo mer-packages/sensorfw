@@ -169,7 +169,8 @@ int main(int argc, char *argv[])
     {
         CalibrationHandler* calibrationHandler_ = new CalibrationHandler(NULL);
         calibrationHandler_->initiateSession();
-        QObject::connect(&sm, SIGNAL(displayOn()), calibrationHandler_, SLOT(resumeCalibration()));
+        QObject::connect(&sm, SIGNAL(resumeCalibration()), calibrationHandler_, SLOT(resumeCalibration()));
+        QObject::connect(&sm, SIGNAL(stopCalibration()), calibrationHandler_, SLOT(stopCalibration()));
     }
 
 

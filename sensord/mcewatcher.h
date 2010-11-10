@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -32,7 +33,7 @@
 #include <QDBusConnection>
 
 /**
- * Class for monitoring MCE signals. Currently only monitors the 
+ * Class for monitoring MCE signals. Currently only monitors the
  * display state changed.
  */
 class MceWatcher : public QObject {
@@ -49,13 +50,17 @@ signals:
      *                  \c false if 'off'.
      */
     void displayStateChanged(const bool displayOn);
+    void devicePSMStateChanged(const bool PSM);
 
-private slots: 
+private slots:
     void slotDisplayStateChanged(const QString state);
+    void slotPSMStateChanged(const bool mode);
 
 private:
     QDBusInterface* dbusIfc;
     bool m_state;
+    bool m_powerSave;
+
 };
 
 #endif // SENSORD_MCE_WATCHER_H

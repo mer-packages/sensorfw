@@ -39,6 +39,7 @@
 #include "propertyhandler.h"
 #include "logging.h"
 
+
 class QSocketNotifier;
 class SocketHandler;
 class MceWatcher;
@@ -93,6 +94,7 @@ public:
 
     static SensorManager& instance();
     bool registerService();
+    bool getPSMState();
 
     template<class SENSOR_TYPE>
     void registerSensor(const QString& sensorName)
@@ -210,6 +212,7 @@ private Q_SLOTS:
     void writeout(int);
 
     void displayStateChanged(const bool displayState);
+    void devicePSMStateChanged(const bool deviceMode);
     void propertyRequest(QString property, QString adaptor);
 
 public Q_SLOTS:
@@ -223,6 +226,8 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void errorSignal(int error);
+    void resumeCalibration();
+    void stopCalibration();
     void displayOn();
 
 protected:
@@ -265,6 +270,8 @@ private:
 
     SensorManagerError                             errorCode_;
     QString                                        errorString_;
+    bool                                           displayState_;
+    bool                                           psmState_;
 };
 
 #endif // SENSORMANAGER_H

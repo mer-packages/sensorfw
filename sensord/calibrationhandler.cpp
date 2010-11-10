@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -59,6 +60,7 @@ CalibrationHandler::~CalibrationHandler()
 
 bool CalibrationHandler::initiateSession()
 {
+
     SensorManager& sm = SensorManager::instance();
     sensordLogD() << "Loading MagnetometerSensorPlugin";
     if (!sm.loadPlugin(m_sensorName))
@@ -94,9 +96,14 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
 {
     // Resume background calibration if magnetometer becomes active
     // due to some external reason (i.e. we receive values while inactive)
-    if (m_active == false)
+
+ if (m_active == false)
     {
-        resumeCalibration();
+        SensorManager& sm = SensorManager::instance();
+        if (!sm.getPSMState())
+        {
+            resumeCalibration();
+        }
     }
 
     if ((sample.level() != m_level))
@@ -153,7 +160,6 @@ void CalibrationHandler::resumeCalibration()
     {
         return;
     }
-
     sensordLogD() << "Resuming magnetometer background calibration.";
     m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
 

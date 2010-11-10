@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -30,14 +31,24 @@
 
 MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
     dbusIfc(new QDBusInterface(MCE_SERVICE, MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
-                   QDBusConnection::systemBus(), parent)), m_state(true) 
+                   QDBusConnection::systemBus(), parent)), m_state(true), m_powerSave(false)
 {
-    dbusIfc->connection().connect(dbusIfc->service(), 
+
+    dbusIfc->connection().connect(dbusIfc->service(),
+                                  dbusIfc->path(),
+                                  dbusIfc->interface(),
+                                  MCE_PSM_MODE_SIG,
+                                  this,
+                                  SLOT(slotPSMStateChanged(const bool)));
+
+    dbusIfc->connection().connect(dbusIfc->service(),
                                   dbusIfc->path(),
                                   dbusIfc->interface(),
                                   MCE_DISPLAY_SIG,
                                   this,
                                   SLOT(slotDisplayStateChanged(const QString)));
+
+
 }
 
 void MceWatcher::slotDisplayStateChanged(const QString state)
@@ -54,3 +65,13 @@ void MceWatcher::slotDisplayStateChanged(const QString state)
     }
 }
 
+
+void MceWatcher::slotPSMStateChanged(const bool mode)
+{
+    if (m_powerSave != mode)
+    {
+        m_powerSave = mode;
+        emit devicePSMStateChanged(m_powerSave);
+    }
+
+}

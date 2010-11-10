@@ -95,10 +95,19 @@ SensorManager::SensorManager()
     connect(&propertyHandler_, SIGNAL(propertyRequestReceived(QString, QString)),
             this, SLOT(propertyRequest(QString, QString)));
 
+    displayState_ = true;
+    psmState_ = false;
+
 #ifdef SENSORFW_MCE_WATCHER
+
     mceWatcher_ = new MceWatcher(this);
     connect(mceWatcher_, SIGNAL(displayStateChanged(const bool)),
             this, SLOT(displayStateChanged(const bool)));
+
+    connect(mceWatcher_, SIGNAL(devicePSMStateChanged(const bool)),
+            this, SLOT(devicePSMStateChanged(const bool)));
+
+
 #endif //SENSORFW_MCE_WATCHER
 }
 
@@ -121,7 +130,6 @@ SensorManager::~SensorManager()
     }
 
     if (pipeNotifier_) delete pipeNotifier_;
-
     if (pipefds_[0]) close(pipefds_[0]);
     if (pipefds_[1]) close(pipefds_[1]);
 
@@ -619,9 +627,17 @@ void SensorManager::displayStateChanged(const bool displayState)
 {
     sensordLogD() << "Signal detected, display state changed to:" << displayState;
 
-    if (displayState) {
+    displayState_ = displayState;
+
+    if (displayState_) {
         /// Emit signal to make background calibration resume from sleep
+        if (!psmState_)
+        {
+            emit resumeCalibration();
+        }
         emit displayOn();
+    } else {
+        emit stopCalibration();
     }
 
     foreach (DeviceAdaptorInstanceEntry adaptor, deviceAdaptorInstanceMap_) {
@@ -637,6 +653,22 @@ void SensorManager::displayStateChanged(const bool displayState)
         }
     }
 }
+
+
+void SensorManager::devicePSMStateChanged(const bool psmState)
+{
+    psmState_ = psmState;
+    if (psmState_)
+    {
+        emit stopCalibration();
+    } else {
+        if (displayState_)
+        {
+            emit resumeCalibration();
+        }
+    }
+}
+
 
 void SensorManager::printStatus(QStringList& output) const
 {
@@ -699,6 +731,12 @@ QString SensorManager::socketToPid(QList<int> ids) const
     }
     return str;
 }
+
+bool SensorManager::getPSMState()
+{
+    return psmState_;
+}
+
 
 #ifdef SM_PRINT
 void SensorManager::print() const
