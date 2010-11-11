@@ -76,7 +76,7 @@ void RotationSensorChannelInterface::dataReceived()
             if(frameAvailableConnected)
             {
                 QVector<XYZ> realValues;
-                realValues.resize(values.size());
+                realValues.reserve(values.size());
                 foreach(TimedXyzData data, values)
                     realValues.push_back(XYZ(data));
                 emit frameAvailable(realValues);
@@ -103,6 +103,7 @@ bool RotationSensorChannelInterface::hasZ() const
 
 void RotationSensorChannelInterface::connectNotify(const char* signal)
 {
-    if(QLatin1String(signal) == SIGNAL(frameAvailable(const QVector<XYZ>)))
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
         frameAvailableConnected = true;
+    QDBusAbstractInterface::connectNotify(signal);
 }

@@ -76,7 +76,7 @@ void AccelerometerSensorChannelInterface::dataReceived()
             if(frameAvailableConnected)
             {
                 QVector<XYZ> realValues;
-                realValues.resize(values.size());
+                realValues.reserve(values.size());
                 foreach(AccelerationData data, values)
                     realValues.push_back(XYZ(data));
                 emit frameAvailable(realValues);
@@ -98,6 +98,7 @@ XYZ AccelerometerSensorChannelInterface::get() const
 
 void AccelerometerSensorChannelInterface::connectNotify(const char* signal)
 {
-    if(QLatin1String(signal) == SIGNAL(frameAvailable(const QVector<XYZ>)))
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
         frameAvailableConnected = true;
+    QDBusAbstractInterface::connectNotify(signal);
 }

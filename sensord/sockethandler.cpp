@@ -65,8 +65,9 @@ long SessionData::sinceLastWrite() const
 
 bool SessionData::write(const void* source, int size, unsigned int count)
 {
-    socket->write((const char*)&count, sizeof(unsigned int));
-    return (socket->write((const char*)source, size) < 0 ? false : true);
+    sensordLogT() << "[SocketHandler]: writing " << count << " fragments to socket with payload (bytes): " << size;
+    socket->write((const char*)&count, sizeof(count));
+    return (socket->write((const char*)source, size * count) < 0 ? false : true);
 }
 
 bool SessionData::write(const void* source, int size)
@@ -86,7 +87,7 @@ bool SessionData::write(const void* source, int size)
     }
     else
     {
-        int allocSize = bufferSize * size;
+        int allocSize = bufferSize * size;;
         if(!buffer)
             buffer = new char[allocSize];
         else if(size != this->size)
@@ -104,18 +105,24 @@ bool SessionData::write(const void* source, int size)
             ++count;
             if(bufferSize == count)
             {
-                timer.stop();
+                if(timer.isActive())
+                    timer.stop();
                 count = 0;
                 return write(buffer, size, bufferSize);
             }
         }
-        if(timer.timerId() != -1)
+        if(!timer.isActive())
         {
-            sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
             if(bufferSize > 1)
+            {
+                sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
                 timer.start(bufferInterval);
+            }
             else
+            {
+                sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
                 timer.start(interval - since);
+            }
         }
         else
         {
@@ -127,7 +134,8 @@ bool SessionData::write(const void* source, int size)
 
 void SessionData::delayedWrite()
 {
-    timer.stop();
+    if(timer.isActive())
+        timer.stop();
     gettimeofday(&lastWrite, 0);
     write(buffer, size, count);
     count = 0;
@@ -170,6 +178,7 @@ void SessionData::setBufferSize(unsigned int size)
         bufferSize = size;
         if(bufferSize < 1)
             bufferSize = 1;
+        sensordLogT() << "[SocketHandler]: new buffersize: " << bufferSize;
     }
 }
 

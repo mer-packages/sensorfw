@@ -76,14 +76,16 @@ void MagnetometerSensorChannelInterface::dataReceived()
             if(frameAvailableConnected)
             {
                 QVector<MagneticField> realValues;
-                realValues.resize(values.size());
+                realValues.reserve(values.size());
                 foreach(CalibratedMagneticFieldData data, values)
                     realValues.push_back(MagneticField(data));
+                qDebug() << "Emitting frame";
                 emit frameAvailable(realValues);
                 values.clear();
             }
             else
             {
+                qDebug() << "Emitting data";
                 foreach(CalibratedMagneticFieldData data, values)
                     emit dataAvailable(MagneticField(data));
             }
@@ -93,8 +95,9 @@ void MagnetometerSensorChannelInterface::dataReceived()
 
 void MagnetometerSensorChannelInterface::connectNotify(const char* signal)
 {
-    if(QLatin1String(signal) == SIGNAL(frameAvailable(const QVector<MagneticField>)))
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<MagneticField>)))
         frameAvailableConnected = true;
+    QDBusAbstractInterface::connectNotify(signal);
 }
 
 QDBusReply<void> MagnetometerSensorChannelInterface::reset()

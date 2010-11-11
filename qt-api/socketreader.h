@@ -111,14 +111,19 @@ bool SocketReader::read(QVector<T>& values)
     unsigned int count;
     if(!read((void*)&count, sizeof(unsigned int)))
         return false;
+    qDebug() << "Received notification about " << count << " fragments waiting in socket";
     values.reserve(values.size() + count);
     for(unsigned int i = 0; i < count; ++i)
     {
         T value;
         if(!read((void*)&value, sizeof(T)))
+        {
+            qDebug() << "Error occured while reading data index " << i << " from socket";
             return false;
+        }
         values.push_back(value);
     }
+    qDebug() << "Received " << values.size() << " fragments from socket";
     return true;
 }
 

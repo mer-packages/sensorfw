@@ -95,7 +95,7 @@ Q_SIGNALS: // SIGNALS
      * will be sent through dataAvailable signal.
      * @param data New measurement frame.
      */
-    void frameAvailable(const QVector<MagneticField> frame);
+    void frameAvailable(const QVector<MagneticField>& frame);
 };
 
 namespace local {

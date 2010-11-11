@@ -282,7 +282,7 @@ int AbstractSensorChannelInterface::interval() const
 void AbstractSensorChannelInterface::setInterval(int value)
 {
     pimpl_->interval_ = value;
-    if (pimpl_->running_)
+    if (!pimpl_->running_)
         setInterval(pimpl_->sessionId_, value);
 }
 
@@ -294,7 +294,7 @@ unsigned int AbstractSensorChannelInterface::bufferInterval() const
 void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
 {
     pimpl_->bufferInterval_ = value;
-    if (pimpl_->running_)
+    if (!pimpl_->running_)
         setBufferInterval(pimpl_->sessionId_, value);
 }
 
@@ -306,7 +306,7 @@ unsigned int AbstractSensorChannelInterface::bufferSize() const
 void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
 {
     pimpl_->bufferSize_ = value;
-    if (pimpl_->running_)
+    if (!pimpl_->running_)
         setBufferSize(pimpl_->sessionId_, value);
 }
 

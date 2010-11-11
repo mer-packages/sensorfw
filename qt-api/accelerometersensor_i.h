@@ -103,7 +103,7 @@ Q_SIGNALS: // SIGNALS
      * will be sent through dataAvailable signal.
      * @param data New measurement frame.
      */
-    void frameAvailable(const QVector<XYZ> frame);
+    void frameAvailable(const QVector<XYZ>& frame);
 };
 
 namespace local {
