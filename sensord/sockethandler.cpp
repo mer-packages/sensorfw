@@ -65,7 +65,7 @@ long SessionData::sinceLastWrite() const
 
 bool SessionData::write(const void* source, int size, unsigned int count)
 {
-    socket->write((const char*)count, sizeof(unsigned int));
+    socket->write((const char*)&count, sizeof(unsigned int));
     return (socket->write((const char*)source, size) < 0 ? false : true);
 }
 
