@@ -162,7 +162,7 @@ public Q_SLOTS:
      */
     unsigned int getInterval() const;
 
-    IntervalRangeList getAvailableBufferIntervals() const;
+    IntegerRangeList getAvailableBufferSizes() const;
 
 Q_SIGNALS:
     void propertyChanged(const QString& name);

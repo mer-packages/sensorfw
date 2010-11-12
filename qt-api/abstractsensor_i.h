@@ -81,16 +81,16 @@ public:
 
     unsigned int bufferInterval() const;
     void setBufferInterval(unsigned int value);
+    IntegerRangeList getAvailableBufferIntervals();
 
     unsigned int bufferSize() const;
     void setBufferSize(unsigned int value);
+    IntegerRangeList getAvailableBufferSizes();
 
     QString type() const;
 
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
-
-    IntervalRangeList getAvailableBufferIntervals();
 
     /**
      * Get the list of available intervals for the sensor.

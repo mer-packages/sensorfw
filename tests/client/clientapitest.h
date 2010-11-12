@@ -58,7 +58,8 @@ private slots:
     void testListenSessionInitiation();
     void testBuffering();
     void testBufferingCompatibility();
-    void testAvailableBufferingIntervals();
+    void testAvailableBufferIntervals();
+    void testAvailableBufferSizes();
 };
 
 class TestClient : public QObject

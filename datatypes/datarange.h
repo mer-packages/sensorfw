@@ -30,11 +30,11 @@
 #include <QDBusArgument>
 #include <QPair>
 
-typedef QPair<unsigned int, unsigned int> IntervalRange;
-typedef QList<IntervalRange> IntervalRangeList;
+typedef QPair<unsigned int, unsigned int> IntegerRange;
+typedef QList<IntegerRange> IntegerRangeList;
 
-Q_DECLARE_METATYPE( IntervalRange )
-Q_DECLARE_METATYPE( IntervalRangeList )
+Q_DECLARE_METATYPE( IntegerRange )
+Q_DECLARE_METATYPE( IntegerRangeList )
 
 /**
  * Datatype for storing sensor data range information.
@@ -96,7 +96,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
 }
 
 inline
-QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRange &data)
+QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
 {
     argument.beginStructure();
     argument << data.first << data.second;
@@ -105,7 +105,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRange &data)
 }
 
 inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, IntervalRange &data)
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &data)
 {
     argument.beginStructure();
     argument >> data.first >> data.second;
@@ -114,10 +114,10 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, IntervalRange &da
 }
 
 inline
-QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRangeList &data)
+QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
 {
-    argument.beginArray(qMetaTypeId<IntervalRange>());
-    foreach(IntervalRange range, data)
+    argument.beginArray(qMetaTypeId<IntegerRange>());
+    foreach(IntegerRange range, data)
     {
         argument << range;
     }
@@ -126,12 +126,12 @@ QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRangeList &data
 }
 
 inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, IntervalRangeList &data)
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList &data)
 {
     argument.beginArray();
     data.clear();
     while ( !argument.atEnd() ) {
-        IntervalRange element;
+        IntegerRange element;
         argument >> element;
         data.append( element );
     }
@@ -166,5 +166,16 @@ public:
         return (id_ == right.id_ && value_ == right.value_);
     }
 };
+
+template<typename T, typename U>
+inline bool isInRange(T ref, const U& container)
+{
+    foreach(typename U::value_type value, container)
+    {
+        if(ref >= value.first && ref <= value.second)
+            return true;
+    }
+    return false;
+}
 
 #endif // DATARANGE_H

@@ -486,9 +486,9 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
     return false;
 }
 
-IntervalRangeList NodeBase::getAvailableBufferIntervals() const
+IntegerRangeList NodeBase::getAvailableBufferSizes() const
 {
-    IntervalRangeList list;
-    list.push_back(IntervalRange(1, 200));
+    IntegerRangeList list;
+    list.push_back(IntegerRange(1, 200));
     return list;
 }

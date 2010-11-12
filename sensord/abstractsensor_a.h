@@ -93,7 +93,8 @@ public Q_SLOTS: // METHODS
 
     void setBufferInterval(int sessionId, unsigned int value);
     void setBufferSize(int sessionId, unsigned int value);
-    IntervalRangeList getAvailableBufferIntervals() const;
+    IntegerRangeList getAvailableBufferIntervals() const;
+    IntegerRangeList getAvailableBufferSizes() const;
 
     int getDataRangeCount();
     DataRange getAvailableDataRange(int index);

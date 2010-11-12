@@ -45,8 +45,8 @@ void ClientApiTest::initTestCase()
     qDBusRegisterMetaType<MagneticField>();
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<Unsigned>();
-    qDBusRegisterMetaType<IntervalRange>();
-    qDBusRegisterMetaType<IntervalRangeList>();
+    qDBusRegisterMetaType<IntegerRange>();
+    qDBusRegisterMetaType<IntegerRangeList>();
 
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
     QVERIFY( remoteSensorManager.isValid() );
@@ -505,14 +505,30 @@ void ClientApiTest::testBufferingCompatibility()
     delete magnetometer;
 }
 
-void ClientApiTest::testAvailableBufferingIntervals()
+void ClientApiTest::testAvailableBufferIntervals()
 {
     MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
     QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
-    IntervalRangeList rangeList = magnetometer->getAvailableBufferIntervals();
+    IntegerRangeList rangeList = magnetometer->getAvailableBufferIntervals();
+    QVERIFY(rangeList.size() == 1);
+    QVERIFY(rangeList.front().first == 0);
+    QVERIFY(rangeList.front().second == 60000);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+void ClientApiTest::testAvailableBufferSizes()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    IntegerRangeList rangeList = magnetometer->getAvailableBufferSizes();
     QVERIFY(rangeList.size() == 1);
     QVERIFY(rangeList.front().first == 1);
     QVERIFY(rangeList.front().second == 200);
+
+    magnetometer->stop();
+    delete magnetometer;
 }
 
 TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames) :

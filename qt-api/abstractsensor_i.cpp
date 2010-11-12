@@ -235,9 +235,15 @@ QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()
     return intervals;
 }
 
-IntervalRangeList AbstractSensorChannelInterface::getAvailableBufferIntervals()
+IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferIntervals()
 {
-    QDBusReply<IntervalRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferIntervals"));
+    QDBusReply<IntegerRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferIntervals"));
+    return ret.value();
+}
+
+IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferSizes()
+{
+    QDBusReply<IntegerRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferSizes"));
     return ret.value();
 }
 

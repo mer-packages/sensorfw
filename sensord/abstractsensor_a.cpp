@@ -193,15 +193,23 @@ void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int
 void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int value)
 {
     // TODO: propagate value for the actual nodes to get driver buffering enabled
-    SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+    if(isInRange(value, getAvailableBufferIntervals()))
+        SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
 }
 
-IntervalRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
+IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
+{
+    IntegerRangeList list;
+    list.push_back(qMakePair<unsigned int, unsigned int>(0, 60000));
+    return list;
+}
+
+IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferSizes() const
 {
     NodeBase* node = dynamic_cast<NodeBase*>(parent());
     if(node)
     {
-        return node->getAvailableBufferIntervals();
+        return node->getAvailableBufferSizes();
     }
-    return IntervalRangeList();
+    return IntegerRangeList();
 }
