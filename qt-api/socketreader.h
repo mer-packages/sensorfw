@@ -86,7 +86,7 @@ public:
     /**
      * Attempt to read all objects which are being written to the socket.
      *
-     * @param values   QList to which objects will be appended.
+     * @param values   Vector to which objects will be appended.
      * @return \c true if any bytes were read, \c false otherwise.
      */
     template<typename T>

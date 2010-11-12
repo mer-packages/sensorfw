@@ -95,6 +95,50 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
     return argument;
 }
 
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRange &data)
+{
+    argument.beginStructure();
+    argument << data.first << data.second;
+    argument.endStructure();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntervalRange &data)
+{
+    argument.beginStructure();
+    argument >> data.first >> data.second;
+    argument.endStructure();
+    return argument;
+}
+
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const IntervalRangeList &data)
+{
+    argument.beginArray(qMetaTypeId<IntervalRange>());
+    foreach(IntervalRange range, data)
+    {
+        argument << range;
+    }
+    argument.endArray();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntervalRangeList &data)
+{
+    argument.beginArray();
+    data.clear();
+    while ( !argument.atEnd() ) {
+        IntervalRange element;
+        argument >> element;
+        data.append( element );
+    }
+    argument.endArray();
+    return argument;
+}
+
 /**
  * Request class. Contains id of the requester and the range.
  */

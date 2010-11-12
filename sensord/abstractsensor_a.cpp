@@ -200,6 +200,8 @@ IntervalRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() co
 {
     NodeBase* node = dynamic_cast<NodeBase*>(parent());
     if(node)
+    {
         return node->getAvailableBufferIntervals();
+    }
     return IntervalRangeList();
 }

@@ -122,6 +122,8 @@ int main(int argc, char *argv[])
     qDBusRegisterMetaType<MagneticField>();
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<DataRange>();
+    qDBusRegisterMetaType<IntervalRange>();
+    qDBusRegisterMetaType<IntervalRangeList>();
 
    // TODO: this results in error messages in case only Ariane is used
 

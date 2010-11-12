@@ -79,13 +79,11 @@ void MagnetometerSensorChannelInterface::dataReceived()
                 realValues.reserve(values.size());
                 foreach(CalibratedMagneticFieldData data, values)
                     realValues.push_back(MagneticField(data));
-                qDebug() << "Emitting frame";
                 emit frameAvailable(realValues);
                 values.clear();
             }
             else
             {
-                qDebug() << "Emitting data";
                 foreach(CalibratedMagneticFieldData data, values)
                     emit dataAvailable(MagneticField(data));
             }

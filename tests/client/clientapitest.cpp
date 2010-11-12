@@ -45,6 +45,8 @@ void ClientApiTest::initTestCase()
     qDBusRegisterMetaType<MagneticField>();
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<Unsigned>();
+    qDBusRegisterMetaType<IntervalRange>();
+    qDBusRegisterMetaType<IntervalRangeList>();
 
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
     QVERIFY( remoteSensorManager.isValid() );
@@ -501,6 +503,16 @@ void ClientApiTest::testBufferingCompatibility()
 
     magnetometer->stop();
     delete magnetometer;
+}
+
+void ClientApiTest::testAvailableBufferingIntervals()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    IntervalRangeList rangeList = magnetometer->getAvailableBufferIntervals();
+    QVERIFY(rangeList.size() == 1);
+    QVERIFY(rangeList.front().first == 1);
+    QVERIFY(rangeList.front().second == 200);
 }
 
 TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
