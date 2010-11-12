@@ -119,24 +119,14 @@ bool AbstractSensorChannelAdaptor::setStandbyOverride(int sessionId, bool value)
     return success;
 }
 
-int AbstractSensorChannelAdaptor::getDataRangeCount()
+DataRangeList AbstractSensorChannelAdaptor::getAvailableDataRanges()
 {
-    QList<DataRange> dataRanges;
-    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
-    return dataRanges.size();
-}
-
-DataRange AbstractSensorChannelAdaptor::getAvailableDataRange(int index)
-{
-    QList<DataRange> dataRanges;
-    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
-
-    if (dataRanges.size() > index && index >= 0)
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
     {
-        return dataRanges.at(index);
-    } else {
-        return DataRange();
+        return node->getAvailableDataRanges();
     }
+    return DataRangeList();
 }
 
 DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
@@ -156,24 +146,14 @@ void AbstractSensorChannelAdaptor::removeDataRangeRequest(int sessionId)
     QMetaObject::invokeMethod(parent(), "removeDataRangeRequest", Q_ARG(int, sessionId));
 }
 
-int AbstractSensorChannelAdaptor::getIntervalCount()
+DataRangeList AbstractSensorChannelAdaptor::getAvailableIntervals()
 {
-    QList<DataRange> intervals;
-    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
-    return intervals.size();
-}
-
-DataRange AbstractSensorChannelAdaptor::getAvailableInterval(int index)
-{
-    QList<DataRange> intervals;
-    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
-
-    if (intervals.size() > index && index >= 0)
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
     {
-        return intervals.at(index);
-    } else {
-        return DataRange();
+        return node->getAvailableIntervals();
     }
+    return DataRangeList();
 }
 
 bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)

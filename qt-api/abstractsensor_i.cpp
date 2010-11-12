@@ -186,19 +186,10 @@ QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionI
     return callWithArgumentList(QDBus::Block, QLatin1String("setStandbyOverride"), argumentList);
 }
 
-QList<DataRange> AbstractSensorChannelInterface::getAvailableDataRanges()
+DataRangeList AbstractSensorChannelInterface::getAvailableDataRanges()
 {
-    clearError();
-
-    QList<DataRange> dataRanges;
-
-    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getDataRangeCount"));
-
-    for (int i = 0; i < retVal.value(); ++i) {
-        QDBusReply<DataRange> range = call(QDBus::Block, QLatin1String("getAvailableDataRange"), qVariantFromValue(i));
-        dataRanges.append(range.value());
-    }
-    return dataRanges;
+    QDBusReply<DataRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableDataRanges"));
+    return ret.value();
 }
 
 DataRange AbstractSensorChannelInterface::getCurrentDataRange()
@@ -220,19 +211,10 @@ void AbstractSensorChannelInterface::removeDataRangeRequest()
     call(QDBus::Block, QLatin1String("removeDataRangeRequest"), qVariantFromValue(pimpl_->sessionId_));
 }
 
-QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()
+DataRangeList AbstractSensorChannelInterface::getAvailableIntervals()
 {
-    clearError();
-
-    QList<DataRange> intervals;
-
-    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getIntervalCount"));
-
-    for (int i = 0; i < retVal.value(); ++i) {
-        QDBusReply<DataRange> interval = call(QDBus::Block, QLatin1String("getAvailableInterval"), qVariantFromValue(i));
-        intervals.append(interval.value());
-    }
-    return intervals;
+    QDBusReply<DataRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableIntervals"));
+    return ret.value();
 }
 
 IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferIntervals()

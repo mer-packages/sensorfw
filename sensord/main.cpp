@@ -122,6 +122,7 @@ int main(int argc, char *argv[])
     qDBusRegisterMetaType<MagneticField>();
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<DataRange>();
+    qDBusRegisterMetaType<DataRangeList>();
     qDBusRegisterMetaType<IntegerRange>();
     qDBusRegisterMetaType<IntegerRangeList>();
 

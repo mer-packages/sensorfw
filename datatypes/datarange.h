@@ -73,7 +73,10 @@ public:
 
 };
 
+typedef QList<DataRange> DataRangeList;
+
 Q_DECLARE_METATYPE( DataRange )
+Q_DECLARE_METATYPE( DataRangeList )
 
 // Marshall the DataRange data into a D-Bus argument
 inline
@@ -92,6 +95,32 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
     argument.beginStructure();
     argument >> data.min >> data.max >> data.resolution;
     argument.endStructure();
+    return argument;
+}
+
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
+{
+    argument.beginArray(qMetaTypeId<DataRange>());
+    foreach(DataRange range, data)
+    {
+        argument << range;
+    }
+    argument.endArray();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &data)
+{
+    argument.beginArray();
+    data.clear();
+    while ( !argument.atEnd() ) {
+        DataRange element;
+        argument >> element;
+        data.append( element );
+    }
+    argument.endArray();
     return argument;
 }
 

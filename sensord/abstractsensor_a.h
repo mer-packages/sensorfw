@@ -85,8 +85,7 @@ public Q_SLOTS: // METHODS
     void stop(int sessionId);
 
     void setInterval(int sessionId, int value);
-    int getIntervalCount();
-    DataRange getAvailableInterval(int index);
+    DataRangeList getAvailableIntervals();
     bool setDefaultInterval(int sessionId);
 
     bool setStandbyOverride(int sessionId, bool value);
@@ -96,8 +95,7 @@ public Q_SLOTS: // METHODS
     IntegerRangeList getAvailableBufferIntervals() const;
     IntegerRangeList getAvailableBufferSizes() const;
 
-    int getDataRangeCount();
-    DataRange getAvailableDataRange(int index);
+    DataRangeList getAvailableDataRanges();
     DataRange getCurrentDataRange();
     void requestDataRange(int sessionId, DataRange range);
     void removeDataRangeRequest(int sessionId);

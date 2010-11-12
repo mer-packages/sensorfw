@@ -97,9 +97,9 @@ public:
      *
      * @return List of available intervals (or interval ranges)
      */
-    QList<DataRange> getAvailableIntervals();
+    DataRangeList getAvailableIntervals();
 
-    QList<DataRange> getAvailableDataRanges();
+    DataRangeList getAvailableDataRanges();
     DataRange getCurrentDataRange();
     void requestDataRange(DataRange range);
     void removeDataRangeRequest();
