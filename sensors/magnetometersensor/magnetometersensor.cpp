@@ -165,7 +165,7 @@ void MagnetometerSensorChannel::reset_(int dummy)
     compassChain_->setProperty("resetCalibration",0);
 }
 
-bool MagnetometerSensorChannel::setDataRange(const DataRange range, const int sessionId)
+bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int sessionId)
 {
     if (sessionId < 0)
     {

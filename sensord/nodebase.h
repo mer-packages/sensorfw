@@ -51,7 +51,7 @@ class NodeBase : public QObject
     Q_PROPERTY(unsigned int interval READ getInterval);
 
 protected:
-    NodeBase(QObject* parent=0) : QObject(parent), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
+    NodeBase(QObject* parent = 0) : QObject(parent), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
     virtual ~NodeBase() {}
 
 public Q_SLOTS:
@@ -91,7 +91,7 @@ public Q_SLOTS:
      * @param sessionId session ID for the client making the request.
      * @param range The requested data range
      */
-    void requestDataRange(int sessionId, DataRange range);
+    void requestDataRange(int sessionId, const DataRange& range);
 
     /**
      * Tells whether the node is in standbyOverride mode. If \c true, the
@@ -121,7 +121,7 @@ public Q_SLOTS:
      * @return \c true if local implementation or all sources return true.
      *         \c false otherwise.
      */
-    bool setStandbyOverrideRequest(const int sessionId, const bool override);
+    bool setStandbyOverrideRequest(int sessionId, bool override);
 
     /**
      * Returns list of possible intervals for the sensor. If \c min and
@@ -136,12 +136,12 @@ public Q_SLOTS:
     /**
      *
      */
-    bool setIntervalRequest(const int sessionId, const unsigned int value);
+    bool setIntervalRequest(int sessionId, unsigned int value);
 
     /**
      *
      */
-    bool requestDefaultInterval(const int sessionId);
+    bool requestDefaultInterval(int sessionId);
 
     /**
      * Returns the default interval value for this node.
@@ -155,7 +155,7 @@ public Q_SLOTS:
     /**
      * Remove interval requests by session
      */
-    void removeIntervalRequest(const int sessionId);
+    void removeIntervalRequest(int sessionId);
 
     /**
      * Return the interval
@@ -171,8 +171,8 @@ protected:
     /**
      * Sets up a source for this node.
      */
-    bool connectToSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader);
-    bool disconnectFromSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader);
+    bool connectToSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader);
+    bool disconnectFromSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader);
 
     /**
      * Validates the metadata setup for the node. To pass, exactly one
@@ -224,7 +224,7 @@ protected:
      * @return \c true on succesfull set, \c false otherwise. The base
      *         class implementation always returns false.
      */
-    virtual bool setDataRange(const DataRange range, const int sessionId) { Q_UNUSED(range); Q_UNUSED(sessionId); return false; }
+    virtual bool setDataRange(const DataRange& range, int sessionId) { Q_UNUSED(range); Q_UNUSED(sessionId); return false; }
 
     /**
      * Sets the standbyOverride value for the node. This is the base
@@ -236,7 +236,7 @@ protected:
      * @return Whether request was successfull. For this implementation,
      *         always \c false.
      */
-    virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
+    virtual bool setStandbyOverride(bool override) { Q_UNUSED(override); return false; }
 
     /**
      * Adds a new node to the list of nodes that standbyOverride calls
@@ -260,7 +260,7 @@ protected:
      */
     virtual unsigned int interval() const { return 0; }
 
-    virtual bool setInterval(const unsigned int value, const int sessionId)
+    virtual bool setInterval(unsigned int value, int sessionId)
     {
         sensordLogW() << "setInterval() not implemented in some node using it.";
         Q_UNUSED(value);
@@ -301,18 +301,18 @@ protected:
      *
      * @param value Value to use as default interval.
      */
-    bool setDefaultInterval(const unsigned int value);
-
-    QMap<int, unsigned int>          m_intervalMap; ///< Active interval requests (session, value)
+    bool setDefaultInterval(unsigned int value);
 
     /**
      * Validate an interval request.
      * @param value Value to validate.
      * @return \c True if valid, \c false otherwise.
      */
-    bool isValidIntervalRequest(const unsigned int value) const;
+    bool isValidIntervalRequest(unsigned int value) const;
 
     virtual RingBufferBase* findBuffer(const QString& name) const { Q_UNUSED(name); return NULL; }
+
+    QMap<int, unsigned int> m_intervalMap; ///< Active interval requests (session, value)
 private:
 
     /**

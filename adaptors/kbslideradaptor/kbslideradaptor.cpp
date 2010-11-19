@@ -117,7 +117,7 @@ unsigned int KeyboardSliderAdaptor::interval() const
     return 0;
 }
 
-bool KeyboardSliderAdaptor::setInterval(const unsigned int value, const int sessionId)
+bool KeyboardSliderAdaptor::setInterval(unsigned int value, int sessionId)
 {
     Q_UNUSED(value);
     Q_UNUSED(sessionId);

@@ -76,7 +76,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     filterBin_->join("accelerometer", "source", "rotationfilter", "accelerometersink");
     filterBin_->join("rotationfilter", "source", "buffer", "sink");
-    
+
     connectToSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     if (hasZ_)
@@ -174,7 +174,7 @@ unsigned int RotationSensorChannel::interval() const
     return accelerometerChain_->getInterval();
 }
 
-bool RotationSensorChannel::setInterval(const unsigned int value, const int sessionId)
+bool RotationSensorChannel::setInterval(unsigned int value, int sessionId)
 {
     bool success = accelerometerChain_->setIntervalRequest(sessionId, value);
     if (hasZ_)

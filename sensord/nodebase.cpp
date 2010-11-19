@@ -93,7 +93,7 @@ DataRangeRequest NodeBase::getCurrentDataRange() const
     return DataRangeRequest();
 }
 
-void NodeBase::requestDataRange(int sessionId, DataRange range)
+void NodeBase::requestDataRange(int sessionId, const DataRange& range)
 {
     if (hasLocalRange())
     {
@@ -119,7 +119,7 @@ void NodeBase::requestDataRange(int sessionId, DataRange range)
 
         // If an earlier request exists by same id, replace.
         bool hadPreviousRequest = false;
-        for (int i = 0; i < m_dataRangeQueue.size() && hadPreviousRequest == false; i++) {
+        for (int i = 0; i < m_dataRangeQueue.size() && hadPreviousRequest == false; ++i) {
             if (m_dataRangeQueue.at(i).id_ == sessionId) {
                 m_dataRangeQueue[i].range_ = range;
                 hadPreviousRequest = true;
@@ -130,7 +130,6 @@ void NodeBase::requestDataRange(int sessionId, DataRange range)
             DataRangeRequest request = { sessionId, range };
             m_dataRangeQueue.append(request);
         }
-
 
         if (rangeChanged)
         {
@@ -152,7 +151,7 @@ void NodeBase::removeDataRangeRequest(int sessionId)
     if (hasLocalRange())
     {
         int index = -1;
-        for (int i = 0; i < m_dataRangeQueue.size() && index == -1; i++) {
+        for (int i = 0; i < m_dataRangeQueue.size() && index == -1; ++i) {
             if (m_dataRangeQueue.at(i).id_ == sessionId) {
                 index = i;
             }
@@ -190,6 +189,7 @@ void NodeBase::removeDataRangeRequest(int sessionId)
         m_dataRangeSource->removeDataRangeRequest(sessionId);
     }
 }
+
 void NodeBase::setRangeSource(NodeBase* node)
 {
     m_dataRangeSource = node;
@@ -429,10 +429,9 @@ void NodeBase::removeIntervalRequest(const int sessionId)
     }
 }
 
-bool NodeBase::connectToSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+bool NodeBase::connectToSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader)
 {
-    RingBufferBase* rb;
-    rb = source->findBuffer(bufferName);
+    RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
         // This is critical as long as connections are statically defined.
@@ -451,10 +450,9 @@ bool NodeBase::connectToSource(NodeBase *source, const QString bufferName, RingB
     return success;
 }
 
-bool NodeBase::disconnectFromSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader)
 {
-    RingBufferBase* rb;
-    rb = source->findBuffer(bufferName);
+    RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
         sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections";
