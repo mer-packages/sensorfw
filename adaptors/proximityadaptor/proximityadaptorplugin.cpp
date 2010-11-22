@@ -27,11 +27,11 @@
 #include "proximityadaptorplugin.h"
 #include "proximityadaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ProximityAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering proximityadaptor";
+    sensordLogD() << "registering proximityadaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<ProximityAdaptor>("proximityadaptor");
 }

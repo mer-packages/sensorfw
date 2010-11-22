@@ -25,7 +25,6 @@
 #include "normalizerfilter.h"
 #include "genericdata.h"
 #include <math.h>
-#include <QDebug>
 
 NormalizerFilter::NormalizerFilter() :
         Filter<TimedXyzData, NormalizerFilter, double>(this, &NormalizerFilter::interpret)

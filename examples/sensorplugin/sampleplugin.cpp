@@ -27,11 +27,11 @@
 #include "sampleplugin.h"
 #include "samplesensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void SamplePlugin::Register(class Loader&)
 {
-    qDebug() << "registering samplesensor";
+    sensordLogD() << "registering samplesensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<SampleSensorChannel>("samplesensor");
 }

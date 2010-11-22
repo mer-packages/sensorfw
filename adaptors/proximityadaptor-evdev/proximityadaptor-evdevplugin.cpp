@@ -27,11 +27,11 @@
 #include "proximityadaptor-evdevplugin.h"
 #include "proximityadaptor-evdev.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ProximityAdaptorEvdevPlugin::Register(class Loader&)
 {
-    qDebug() << "registering proximityadaptor-evdev";
+    sensordLogD() << "registering proximityadaptor-evdev";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<ProximityAdaptorEvdev>("proximityadaptor");
 }

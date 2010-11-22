@@ -26,11 +26,11 @@
 #include "touchadaptorplugin.h"
 #include "touchadaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void TouchAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering touchadaptor";
+    sensordLogD() << "registering touchadaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<TouchAdaptor>("touchadaptor");
 }

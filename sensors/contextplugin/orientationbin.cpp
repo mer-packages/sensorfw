@@ -27,7 +27,6 @@
 #include "sensord/sensormanager.h"
 #include "sensord/config.h"
 
-#include <QDebug>
 
 #define SESSION_ID 1
 

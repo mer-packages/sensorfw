@@ -26,11 +26,11 @@
 #include "coordinatealignfilterplugin.h"
 #include "coordinatealignfilter.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void CoordinateAlignFilterPlugin::Register(class Loader&)
 {
-    qDebug() << "registering coordinatealignfilter";
+    sensordLogD() << "registering coordinatealignfilter";
     SensorManager& sm = SensorManager::instance();
     sm.registerFilter<CoordinateAlignFilter>("coordinatealignfilter");
 }

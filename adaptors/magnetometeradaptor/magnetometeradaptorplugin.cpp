@@ -26,11 +26,11 @@
 #include "magnetometeradaptorplugin.h"
 #include "magnetometeradaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void MagnetometerAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering magnetometeradaptor";
+    sensordLogD() << "registering magnetometeradaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<MagnetometerAdaptor>("magnetometeradaptor");
 }

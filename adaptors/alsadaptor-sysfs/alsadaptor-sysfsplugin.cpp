@@ -27,11 +27,11 @@
 #include "alsadaptor-sysfsplugin.h"
 #include "alsadaptor-sysfs.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ALSAdaptorSysfsPlugin::Register(class Loader&)
 {
-    qDebug() << "registering alsadaptor-sysfs";
+    sensordLogD() << "registering alsadaptor-sysfs";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<ALSAdaptorSysfs>("alsadaptor");
 }

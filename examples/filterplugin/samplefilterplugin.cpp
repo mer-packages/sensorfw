@@ -26,11 +26,11 @@
 #include "samplefilterplugin.h"
 #include "samplefilter.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void SampleFilterPlugin::Register(class Loader&)
 {
-    qDebug() << "registering samplefilter";
+    sensordLogD() << "registering samplefilter";
     SensorManager& sm = SensorManager::instance();
     sm.registerFilter<SampleFilter>("samplefilter");
 }

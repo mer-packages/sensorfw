@@ -27,11 +27,11 @@
 #include "alsplugin.h"
 #include "alssensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ALSPlugin::Register(class Loader&)
 {
-    qDebug() << "registering alssensor";
+    sensordLogD() << "registering alssensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<ALSSensorChannel>("alssensor");
 }

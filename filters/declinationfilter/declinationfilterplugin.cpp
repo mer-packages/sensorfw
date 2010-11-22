@@ -26,12 +26,11 @@
 #include "declinationfilterplugin.h"
 #include "declinationfilter.h"
 #include "sensormanager.h"
-
-#include <QtDebug>
+#include "logging.h"
 
 void DeclinationFilterPlugin::Register(class Loader&)
 {
-    qDebug() << "registering declinationfilter";
+    sensordLogD() << "registering declinationfilter";
     SensorManager& sm = SensorManager::instance();
     sm.registerFilter<DeclinationFilter>("declinationfilter");
 }

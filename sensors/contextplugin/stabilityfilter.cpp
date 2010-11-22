@@ -37,7 +37,6 @@ StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstablePro
 
 void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)
 {
-    //qDebug() << data->second;
     // To take into account hysteresis and keep it simple, compute
     // stability and instability separately
     if (data->second < lowThreshold * (1 - hysteresis)) {

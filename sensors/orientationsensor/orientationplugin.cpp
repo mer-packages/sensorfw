@@ -27,11 +27,11 @@
 #include "orientationplugin.h"
 #include "orientationsensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void OrientationPlugin::Register(class Loader&)
 {
-    qDebug() << "registering orientationsensor";
+    sensordLogD() << "registering orientationsensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<OrientationSensorChannel>("orientationsensor");
 }

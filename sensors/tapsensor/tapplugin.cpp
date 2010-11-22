@@ -27,11 +27,11 @@
 #include "tapplugin.h"
 #include "tapsensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void TapPlugin::Register(class Loader&)
 {
-    qDebug() << "registering tapsensor";
+    sensordLogD() << "registering tapsensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<TapSensorChannel>("tapsensor");
 }

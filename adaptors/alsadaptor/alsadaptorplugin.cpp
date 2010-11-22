@@ -26,11 +26,11 @@
 #include "alsadaptorplugin.h"
 #include "alsadaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ALSAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering alsadaptor";
+    sensordLogD() << "registering alsadaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<ALSAdaptor>("alsadaptor");
 }

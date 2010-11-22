@@ -23,7 +23,6 @@
 */
 
 #include "cutterfilter.h"
-#include <QDebug>
 
 CutterFilter::CutterFilter(double divider) :
     Filter<double, CutterFilter, double>(this, &CutterFilter::interpret),

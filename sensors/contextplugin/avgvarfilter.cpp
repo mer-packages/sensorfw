@@ -24,14 +24,12 @@
 
 #include "avgvarfilter.h"
 #include <math.h>
-#include <QDebug>
 
 AvgVarFilter::AvgVarFilter(int size) :
     Filter<double, AvgVarFilter, QPair<double, double> >(this, &AvgVarFilter::interpret),
     size(size), samplesReceived(0), current(0), samples(size), samplesSquared(size), sampleSum(0), sampleSquareSum(0)
 
 {
-    //qDebug() << "Creating the AvgVarFilter";
 }
 
 void AvgVarFilter::interpret(unsigned, const double* data)

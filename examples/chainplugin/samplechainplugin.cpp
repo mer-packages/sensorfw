@@ -26,11 +26,11 @@
 #include "samplechainplugin.h"
 #include "samplechain.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void SampleChainPlugin::Register(class Loader&)
 {
-    qDebug() << "registering samplechain";
+    sensordLogD() << "registering samplechain";
     SensorManager& sm = SensorManager::instance();
     sm.registerChain<SampleChain>("samplechain");
 }

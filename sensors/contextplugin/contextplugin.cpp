@@ -26,11 +26,11 @@
 #include "contextplugin.h"
 #include "sensormanager.h"
 #include "contextsensor.h"
-#include <QtDebug>
+#include "logging.h"
 
 void ContextPlugin::Register(class Loader&)
 {
-    qDebug() << "registering contextsensor";
+    sensordLogD() << "registering contextsensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<ContextSensorChannel>("contextsensor");
 }

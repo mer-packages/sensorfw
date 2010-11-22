@@ -27,11 +27,11 @@
 #include "accelerometerchainplugin.h"
 #include "accelerometerchain.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void AccelerometerChainPlugin::Register(class Loader&)
 {
-    qDebug() << "registering accelerometerchain";
+    sensordLogD() << "registering accelerometerchain";
     SensorManager& sm = SensorManager::instance();
     sm.registerChain<AccelerometerChain>("accelerometerchain");
 }

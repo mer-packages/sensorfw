@@ -26,11 +26,11 @@
 #include "kbslideradaptorplugin.h"
 #include "kbslideradaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void KeyboardSliderAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering kbslideradaptor";
+    sensordLogD() << "registering kbslideradaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<KeyboardSliderAdaptor>("kbslideradaptor");
 }

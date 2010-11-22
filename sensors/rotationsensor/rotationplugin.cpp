@@ -26,11 +26,11 @@
 #include "rotationplugin.h"
 #include "rotationsensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void RotationPlugin::Register(class Loader&)
 {
-    qDebug() << "registering rotationsensor";
+    sensordLogD() << "registering rotationsensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<RotationSensorChannel>("rotationsensor");
 }

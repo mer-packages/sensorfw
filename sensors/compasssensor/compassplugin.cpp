@@ -27,11 +27,11 @@
 #include "compassplugin.h"
 #include "compasssensor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void CompassPlugin::Register(class Loader&)
 {
-    qDebug() << "registering compasssensor";
+    sensordLogD() << "registering compasssensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<CompassSensorChannel>("compasssensor");
 }

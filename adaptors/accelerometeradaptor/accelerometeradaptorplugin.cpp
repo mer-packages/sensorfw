@@ -26,11 +26,11 @@
 #include "accelerometeradaptorplugin.h"
 #include "accelerometeradaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void AccelerometerAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering accelerometeradaptor";
+    sensordLogD() << "registering accelerometeradaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<AccelerometerAdaptor>("accelerometeradaptor");
 }

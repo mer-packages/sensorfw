@@ -26,11 +26,11 @@
 #include "tapadaptorplugin.h"
 #include "tapadaptor.h"
 #include "sensormanager.h"
-#include <QtDebug>
+#include "logging.h"
 
 void TapAdaptorPlugin::Register(class Loader&)
 {
-    qDebug() << "registering tapadaptor";
+    sensordLogD() << "registering tapadaptor";
     SensorManager& sm = SensorManager::instance();
     sm.registerDeviceAdaptor<TapAdaptor>("tapadaptor");
 }
