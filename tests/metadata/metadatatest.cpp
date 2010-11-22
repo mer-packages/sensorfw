@@ -35,9 +35,13 @@
 
 #include "metadatatest.h"
 
-
 void MetaDataTest::initTestCase()
 {
+    qDBusRegisterMetaType<IntegerRange>();
+    qDBusRegisterMetaType<IntegerRangeList>();
+    qDBusRegisterMetaType<DataRange>();
+    qDBusRegisterMetaType<DataRangeList>();
+
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
     QVERIFY( remoteSensorManager.isValid() );
 
