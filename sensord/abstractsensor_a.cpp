@@ -166,22 +166,45 @@ bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
 
 void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int value)
 {
-    // TODO: propagate value for the actual nodes to get driver buffering enabled
-    SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool hwBuffering = false;
+        node->getAvailableBufferIntervals(hwBuffering);
+        if(hwBuffering)
+        {
+            node->setBufferInterval(sessionId, value);
+        }
+        else
+            SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
+    }
 }
 
 void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int value)
 {
-    // TODO: propagate value for the actual nodes to get driver buffering enabled
-    if(isInRange(value, getAvailableBufferIntervals()))
-        SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool hwBuffering = false;
+        node->getAvailableBufferSizes(hwBuffering);
+        if(hwBuffering)
+        {
+            node->setBufferSize(sessionId, value);
+        }
+        else
+            SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+    }
 }
 
 IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
 {
-    IntegerRangeList list;
-    list.push_back(qMakePair<unsigned int, unsigned int>(0, 60000));
-    return list;
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool dummy;
+        return node->getAvailableBufferIntervals(dummy);
+    }
+    return IntegerRangeList();
 }
 
 IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferSizes() const
@@ -189,7 +212,8 @@ IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferSizes() const
     NodeBase* node = dynamic_cast<NodeBase*>(parent());
     if(node)
     {
-        return node->getAvailableBufferSizes();
+        bool dummy;
+        return node->getAvailableBufferSizes(dummy);
     }
     return IntegerRangeList();
 }

@@ -162,7 +162,13 @@ public Q_SLOTS:
      */
     unsigned int getInterval() const;
 
-    IntegerRangeList getAvailableBufferSizes() const;
+    virtual IntegerRangeList getAvailableBufferSizes(bool& hwSupported) const;
+    virtual IntegerRangeList getAvailableBufferIntervals(bool& hwSupported) const;
+
+    bool setBufferSize(int sessionId, unsigned int value);
+    bool clearBufferSize(int sessionId);
+    bool setBufferInterval(int sessionId, unsigned int value);
+    bool clearBufferInterval(int sessionId);
 
 Q_SIGNALS:
     void propertyChanged(const QString& name);
@@ -312,7 +318,13 @@ protected:
 
     virtual RingBufferBase* findBuffer(const QString& name) const { Q_UNUSED(name); return NULL; }
 
+    virtual bool setBufferSize(unsigned int value) { Q_UNUSED(value); return false; };
+    virtual bool setBufferInterval(unsigned int value) { Q_UNUSED(value); return false; };
+
     QMap<int, unsigned int> m_intervalMap; ///< Active interval requests (session, value)
+    unsigned int            m_bufferSize;
+    unsigned int            m_bufferInterval;
+
 private:
 
     /**
@@ -322,13 +334,14 @@ private:
      * @return \c true if range defined locally, \c false otherwise
      */
     bool hasLocalRange() const;
+    bool updateBufferSize();
+    bool updateBufferInterval();
 
     QString                 m_description;
 
     QList<DataRange>        m_dataRangeList;
     QList<DataRangeRequest> m_dataRangeQueue;
     NodeBase*               m_dataRangeSource;
-
 
     QList<NodeBase*>        m_standbySourceList;
     QList<int>              m_standbyRequestList;
@@ -339,6 +352,10 @@ private:
     unsigned int            m_defaultInterval;
 
     QList<NodeBase*>        m_sourceList;
+
+    //Oldest session wins for these:
+    QMap<int, unsigned int> m_bufferSizeMap;
+    QMap<int, unsigned int> m_bufferIntervalMap;
 };
 
 #endif

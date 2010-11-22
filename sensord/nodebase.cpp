@@ -484,9 +484,102 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
     return false;
 }
 
-IntegerRangeList NodeBase::getAvailableBufferSizes() const
+IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
 {
+    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
+
+    foreach (NodeBase* source, m_sourceList)
+    {
+        return source->getAvailableBufferSizes(hwSupported);
+    }
     IntegerRangeList list;
     list.push_back(IntegerRange(1, 200));
+    hwSupported = false;
     return list;
+}
+
+IntegerRangeList NodeBase::getAvailableBufferIntervals(bool& hwSupported) const
+{
+    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
+
+    foreach (NodeBase* source, m_sourceList)
+    {
+        return source->getAvailableBufferIntervals(hwSupported);
+    }
+    IntegerRangeList list;
+    list.push_back(IntegerRange(0, 60000));
+    hwSupported = false;
+    return list;
+}
+
+bool NodeBase::setBufferSize(int sessionId, unsigned int value)
+{
+    bool hwbuffering = false;
+    if(!isInRange(value, getAvailableBufferSizes(hwbuffering)))
+        return false;
+    m_bufferSizeMap.insert(sessionId, value);
+    return updateBufferSize();
+}
+
+bool NodeBase::clearBufferSize(int sessionId)
+{
+    int index = m_bufferSizeMap.remove(sessionId);
+    updateBufferSize();
+    return index != 0;
+}
+
+bool NodeBase::updateBufferSize()
+{
+    int key = 0;
+    int value = 0;
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferSizeMap.begin(); it != m_bufferSizeMap.end(); ++it)
+    {
+        if(it.key() >= key)
+        {
+            key = it.key();
+            value = it.value();
+        }
+    }
+    if(setBufferSize(value))
+    {
+        emit propertyChanged("buffersize");
+        return true;
+    }
+    return false;
+}
+
+bool NodeBase::setBufferInterval(int sessionId, unsigned int value)
+{
+    bool hwbuffering = false;
+    if(!isInRange(value, getAvailableBufferIntervals(hwbuffering)))
+        return false;
+    m_bufferIntervalMap.insert(sessionId, value);
+    return updateBufferInterval();
+}
+
+bool NodeBase::clearBufferInterval(int sessionId)
+{
+    int index = m_bufferIntervalMap.remove(sessionId);
+    updateBufferInterval();
+    return index != 0;
+}
+
+bool NodeBase::updateBufferInterval()
+{
+    int key = 0;
+    int value = 0;
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferIntervalMap.begin(); it != m_bufferIntervalMap.end(); ++it)
+    {
+        if(it.key() >= key)
+        {
+            key = it.key();
+            value = it.value();
+        }
+    }
+    if(setBufferInterval(value))
+    {
+        emit propertyChanged("bufferinterval");
+        return true;
+    }
+    return false;
 }
