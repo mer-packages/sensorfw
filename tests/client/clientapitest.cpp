@@ -454,7 +454,7 @@ void ClientApiTest::testBuffering()
     TestClient client(*magnetometer, true);
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
-    magnetometer->setBufferInterval(1000);
+    magnetometer->setBufferInterval(1500);
 
     magnetometer->start();
 
@@ -476,6 +476,29 @@ void ClientApiTest::testBuffering()
     delete magnetometer;
 }
 
+
+void ClientApiTest::testBufferingHighRate()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    TestClient client(*magnetometer, true);
+    magnetometer->setInterval(10);
+    magnetometer->setBufferSize(200);
+    magnetometer->setBufferInterval(5000);
+
+    magnetometer->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 3500ms.";
+    QTest::qWait(3500);
+
+    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getFrameDataCount() == 200);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
 void ClientApiTest::testBufferingCompatibility()
 {
     MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
@@ -483,7 +506,7 @@ void ClientApiTest::testBufferingCompatibility()
     TestClient client(*magnetometer, false);
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
-    magnetometer->setBufferInterval(1000);
+    magnetometer->setBufferInterval(1500);
 
     magnetometer->start();
 

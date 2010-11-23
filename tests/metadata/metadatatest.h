@@ -76,6 +76,8 @@ private slots:
     void testConcurrentRangeRequests();
 
     void testAvailableIntervals();
+    void testAvailableBufferIntervals();
+    void testAvailableBufferSizes();
 };
 
 #endif // METADATA_TEST_H

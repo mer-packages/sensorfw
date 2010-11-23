@@ -220,6 +220,42 @@ void MetaDataTest::testAvailableIntervals()
     QVERIFY2(intervalList.size() > 0, "No intervals received from sensor");
 }
 
+void MetaDataTest::testAvailableBufferIntervals()
+{
+    QString sensorName("accelerometersensor");
+    SensorManagerInterface& sm = SensorManagerInterface::instance();
+    QVERIFY( sm.isValid() );
+
+    // Get control session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+
+    // Request list of available intervals
+    IntegerRangeList intervalList = sensorIfc->getAvailableBufferIntervals();
+
+    delete sensorIfc;
+
+    QVERIFY2(intervalList.size() > 0, "No buffer intervals received from sensor");
+}
+
+void MetaDataTest::testAvailableBufferSizes()
+{
+    QString sensorName("accelerometersensor");
+    SensorManagerInterface& sm = SensorManagerInterface::instance();
+    QVERIFY( sm.isValid() );
+
+    // Get control session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+
+    // Request list of available intervals
+    IntegerRangeList sizeList = sensorIfc->getAvailableBufferSizes();
+
+    delete sensorIfc;
+
+    QVERIFY2(sizeList.size() > 0, "No buffer sizes received from sensor");
+}
+
 void MetaDataTest::printMetaData()
 {
     QList<QString> sensorNameList;

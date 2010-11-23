@@ -173,8 +173,14 @@ void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int
         node->getAvailableBufferIntervals(hwBuffering);
         if(hwBuffering)
         {
-            node->setBufferInterval(sessionId, value);
+            if(value == 0)
+                node->clearBufferInterval(sessionId);
+            else
+                node->setBufferInterval(sessionId, value);
+            value = 0;
         }
+        if(value == 0)
+            SensorManager::instance().socketHandler().clearBufferInterval(sessionId);
         else
             SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
     }
@@ -189,8 +195,13 @@ void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int val
         node->getAvailableBufferSizes(hwBuffering);
         if(hwBuffering)
         {
-            node->setBufferSize(sessionId, value);
+            if(value == 0)
+                node->clearBufferSize(sessionId);
+            else
+                node->setBufferSize(sessionId, value);
         }
+        if(value == 0)
+            SensorManager::instance().socketHandler().clearBufferSize(sessionId);
         else
             SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
     }

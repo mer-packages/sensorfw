@@ -57,6 +57,7 @@ private slots:
     void testCommonAdaptorPipeline();
     void testListenSessionInitiation();
     void testBuffering();
+    void testBufferingHighRate();
     void testBufferingCompatibility();
     void testAvailableBufferIntervals();
     void testAvailableBufferSizes();
