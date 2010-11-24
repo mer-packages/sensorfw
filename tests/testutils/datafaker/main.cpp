@@ -84,8 +84,9 @@ int main(int argc, char** argv)
         }
 
         for (int i = 0; i < numberList.length(); i+=3) {
-            dataFaker.write("target", EV_ABS, ABS_X, numberList.at(i).toInt());
-            dataFaker.write("target", EV_ABS, ABS_Y, numberList.at(i+1).toInt());
+            // Change coordinates temporarily for sensord-0.6.31
+            dataFaker.write("target", EV_ABS, ABS_X, numberList.at(i+1).toInt());
+            dataFaker.write("target", EV_ABS, ABS_Y, -numberList.at(i).toInt());
             dataFaker.write("target", EV_ABS, ABS_Z, numberList.at(i+2).toInt());
             dataFaker.write("target", EV_SYN, 0, 0);
         }

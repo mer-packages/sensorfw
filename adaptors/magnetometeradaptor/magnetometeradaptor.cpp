@@ -112,8 +112,8 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
     TimedXyzData* sample = magnetometerBuffer_->nextSlot();
 
     sample->timestamp_ = Utils::getTimeStamp();
-    sample->x_ = mag_data.x;
-    sample->y_ = mag_data.y;
+    sample->x_ = -mag_data.y;
+    sample->y_ = mag_data.x;
     sample->z_ = mag_data.z;
 
     magnetometerBuffer_->commit();
