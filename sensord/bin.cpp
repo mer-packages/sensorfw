@@ -36,127 +36,6 @@
 #include "ringbuffer.h"
 #include "logging.h"
 
-
-void PrivateThread::run()
-{
-    thread_.run();
-}
-
-
-class ThreadBin::Command
-{
-public:
-    virtual ~Command() {}
-
-    virtual void execute(ThreadBin& t) = 0;
-    // TODO
-};
-
-
-class StopCommand : public ThreadBin::Command
-{
-public:
-    void execute(ThreadBin& t)
-    {
-        t.running_ = false;
-    }
-};
-
-class ThreadBin::CommandReader : public RingBufferReader<Command*>
-{
-public:
-    CommandReader(ThreadBin& t) :
-        thread_(t)
-    {}
-
-    void pushNewData()
-    {
-        ThreadBin::Command* command;
-        while (read(1, &command)) {
-            command->execute(thread_);
-        }
-    }
-
-private:
-    ThreadBin& thread_;
-};
-
-ThreadBin::ThreadBin() :
-    thread_(*this),
-    commands_(new RingBuffer<Command*>(256)),
-    commandReader_(new CommandReader(*this)),
-    running_(false)
-{
-    commandReader_->setReadyCallback(&signalNewEvent_);
-    commands_->join(commandReader_);
-}
-
-ThreadBin::~ThreadBin()
-{
-    stop();
-    delete commands_;
-    delete commandReader_;
-}
-
-
-void ThreadBin::start()
-{
-    running_ = true;
-    thread_.start();
-}
-
-void ThreadBin::stop()
-{
-    if (thread_.isRunning()) {
-        // TODO: lure the thread to stop
-        static StopCommand s;
-        Command* c = &s;
-        SinkBase* commandSinkBase = commands_->sink("sink");
-        SinkTyped<Command*>* commandSink;
-        commandSink = dynamic_cast<SinkTyped<Command*>*>(commandSinkBase);
-        commandSink->collect(1, &c);
-        thread_.wait(); // TODO: set the timeout
-    }
-}
-
-void ThreadBin::run()
-{
-    while (running_) {
-        waitForNewEvents();
-        handleEvents();
-    }
-}
-
-// TODO: use eventfd(2) instead of mutex and condvar
-void ThreadBin::eventSignaled()
-{
-    if (!isNewEvent_.fetchAndStoreRelaxed(true)) {
-        mutex_.lock();
-        newEvent_.wakeAll();
-        mutex_.unlock();
-    }
-}
-
-void ThreadBin::waitForNewEvents()
-{
-    if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
-        mutex_.lock();
-        if (!isNewEvent_.fetchAndStoreRelaxed(false)) {
-            newEvent_.wait(&mutex_);
-            isNewEvent_ = false;
-        }
-        mutex_.unlock();
-    }
-}
-
-void ThreadBin::handleEvents()
-{
-    // execute new commands
-    commandReader_->pushNewData();
-
-    Bin::eventSignaled();
-}
-
 Bin::Bin() :
     signalNewEvent_(this, &Bin::signalNewEvent)
 {
@@ -190,21 +69,27 @@ void Bin::stop()
 
 void Bin::add(Pusher* pusher, const QString& name)
 {
-    pusher->setReadyCallback(&signalNewEvent_);
+    Q_ASSERT(!pushers_.contains(name));
+    Q_ASSERT(!filters_.contains(name));
 
-    // TODO: check for same name in producers_ and filters_
+    pusher->setReadyCallback(&signalNewEvent_);
     pushers_.insert(name, pusher);
 }
 
 void Bin::add(Consumer* consumer, const QString& name)
 {
-    // TODO: check for same name in consumers_ and filters_
+    Q_ASSERT(!consumers_.contains(name));
+    Q_ASSERT(!filters_.contains(name));
+
     consumers_.insert(name, consumer);
 }
 
 void Bin::add(FilterBase* filter, const QString& name)
 {
-    // TODO: check for same name in filters_ and producers_
+    Q_ASSERT(!pushers_.contains(name));
+    Q_ASSERT(!consumers_.contains(name));
+    Q_ASSERT(!filters_.contains(name));
+
     filters_.insert(name, filter);
 }
 
@@ -224,22 +109,22 @@ bool Bin::join(const QString& producerName,
             joined = true;
 
         } else {
-            sensordLogT() << "source"
+            sensordLogT() << " source "
                           << producerName << "/" << sourceName
-                          << "and sink"
+                          << " and sink "
                           << consumerName << "/" << sinkName
-                          << "are of incompatible types";
+                          << " are of incompatible types";
         }
     } else {
         if (!src) {
-            sensordLogT() << "source"
+            sensordLogT() << "source "
                      << producerName << "/" << sourceName
-                     << "not found";
+                     << " not found";
         }
         if (!snk) {
-            sensordLogT() << "sink"
+            sensordLogT() << "sink "
                      << consumerName << "/" << sinkName
-                     << "not found";
+                     << " not found";
         }
     }
 
@@ -266,14 +151,14 @@ bool Bin::unjoin(const QString& producerName,
         }
     } else {
         if (!src) {
-            sensordLogT() << "source"
+            sensordLogT() << "source "
                      << producerName << "/" << sourceName
-                     << "not found";
+                     << " not found";
         }
         if (!snk) {
-            sensordLogT() << "sink"
+            sensordLogT() << "sink "
                      << consumerName << "/" << sinkName
-                     << "not found";
+                     << " not found";
         }
     }
 
@@ -305,14 +190,12 @@ SinkBase* Bin::sink(const QString& consumerName, const QString& sinkName)
 
 Producer* Bin::producer(const QString& name)
 {
-    Producer* p;
+    Producer* p = 0;
 
     if (pushers_.contains(name)) {
         p = pushers_.value(name);
     } else if (filters_.contains(name)) {
         p = filters_.value(name);
-    } else {
-        p = 0;
     }
 
     return p;
@@ -320,14 +203,12 @@ Producer* Bin::producer(const QString& name)
 
 Consumer* Bin::consumer(const QString& name)
 {
-    Consumer* c;
+    Consumer* c = 0;
 
     if (consumers_.contains(name)) {
         c = consumers_.value(name);
     } else if (filters_.contains(name)) {
         c = filters_.value(name);
-    } else {
-        c = 0;
     }
 
     return c;

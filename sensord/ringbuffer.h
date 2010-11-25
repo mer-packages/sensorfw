@@ -24,8 +24,6 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
-
-   @todo add a check to make sure bufferSize_ is a power of 2
  */
 
 #ifndef RINGBUFFER_H
@@ -36,13 +34,9 @@
 #include "pusher.h"
 #include "logging.h"
 #include <QSet>
-#include <QAtomicInt>
-#include <QMutex>
-#include <QMutexLocker>
 
 template <class TYPE>
 class RingBuffer;
-
 
 class RingBufferReaderBase : public Pusher
 {
@@ -129,34 +123,36 @@ public:
 protected:
     TYPE* nextSlot()
     {
-        // TODO: convert writeCount_ to unsigned before %
         return &buffer_[writeCount_ % bufferSize_];
     }
 
     void commit()
     {
-        writeCount_.ref();
+        ++writeCount_;
     }
 
     void wakeUpReaders()
     {
-        // TODO: optimize by only waking up reading *threads*
         RingBufferReader<TYPE>* reader;
         foreach (reader, readers_) {
             reader->wakeup();
         }
     }
 
-    virtual void write(unsigned n, const TYPE* values)
+    void write(unsigned n, const TYPE* values)
     {
         // buffer incoming data
-        // TODO: optimize by using memcpy(), assuming TYPE is POD
-        while (n) {
-            *nextSlot() = *values++;
-            commit();
-            --n;
+        if(__is_pod(TYPE) && n <= bufferSize_) {
+            memcpy(nextSlot(), values, n);
+            writeCount_ += n;
         }
-
+        else {
+            while (n) {
+                *nextSlot() = *values++;
+                commit();
+                --n;
+            }
+        }
         wakeUpReaders();
     }
 
@@ -194,53 +190,8 @@ private:
     Sink<RingBuffer, TYPE>        sink_;
     const unsigned                bufferSize_;
     TYPE*                         buffer_;
-    QAtomicInt                    writeCount_;
+    unsigned int                  writeCount_;
     QSet<RingBufferReader<TYPE>*> readers_;
-};
-
-template <class TYPE>
-class SynchronizedRingBuffer : public RingBuffer<TYPE>
-{
-public:
-    SynchronizedRingBuffer(unsigned size) :
-        RingBuffer<TYPE>(size)
-    {
-    }
-
-    virtual ~SynchronizedRingBuffer()
-    {
-    }
-
-protected:
-    virtual unsigned read(unsigned                n,
-                          TYPE*                   values,
-                          RingBufferReader<TYPE>& reader) const
-    {
-        QMutexLocker locker(&mutex);
-        return RingBuffer<TYPE>::read(n, values, reader);
-    }
-
-    virtual void write(unsigned n, const TYPE* values)
-    {
-        QMutexLocker locker(&mutex);
-        RingBuffer<TYPE>::write(n, values);
-    }
-
-    virtual void joinTypeChecked(RingBufferReaderBase* reader)
-    {
-        QMutexLocker locker(&mutex);
-        RingBuffer<TYPE>::joinTypeChecked(reader);
-    }
-
-    virtual void unjoinTypeChecked(RingBufferReaderBase* reader)
-    {
-        QMutexLocker locker(&mutex);
-        RingBuffer<TYPE>::unjoinTypeChecked(reader);
-    }
-
-private:
-
-    mutable QMutex mutex;
 };
 
 #endif

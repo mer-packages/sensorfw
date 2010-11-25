@@ -31,11 +31,7 @@
 #define BIN_H
 
 #include "callback.h"
-#include <QThread>
 #include <QHash>
-#include <QAtomicInt>
-#include <QMutex>
-#include <QWaitCondition>
 
 class SourceBase;
 class SinkBase;
@@ -43,22 +39,6 @@ class Pusher;
 class Producer;
 class Consumer;
 class FilterBase;
-
-class ThreadBin;
-
-// hide QThread so that its methods are not directly accessible via Bin
-class PrivateThread : public QThread
-{
-public:
-    PrivateThread(ThreadBin& t) :
-        thread_(t)
-    {}
-
-private:
-    void run();
-
-    ThreadBin& thread_;
-};
 
 template <class TYPE>
 class RingBuffer;
@@ -74,12 +54,10 @@ public:
     virtual void start();
     virtual void stop();
 
-    // TODO: remove these
     void add(Pusher*     pusher,   const QString& name);
     void add(Consumer*   consumer, const QString& name);
     void add(FilterBase* filter,   const QString& name);
 
-    // TODO: bad name; joining a thread means something else
     bool join(const QString& producerName,
               const QString& sourceName,
               const QString& consumerName,
@@ -106,41 +84,5 @@ private:
     QHash<QString, Consumer*>   consumers_;
     QHash<QString, FilterBase*> filters_;
 };
-
-class ThreadBin : public Bin
-{
-friend class PrivateThread;
-public:
-
-    ThreadBin();
-    virtual ~ThreadBin();
-
-    virtual void start();
-    virtual void stop();
-
-protected:
-    virtual void eventSignaled();
-
-private:
-    class CommandReader;
-
-    friend class Command;
-    friend class StopCommand; // TODO: remove
-
-    PrivateThread               thread_;
-    RingBuffer<Command*>*       commands_;
-    CommandReader*              commandReader_;
-
-    QAtomicInt                  isNewEvent_;
-    QMutex                      mutex_;
-    QWaitCondition              newEvent_;
-    bool                        running_;
-
-    void run();
-    void waitForNewEvents();
-    void handleEvents();
-};
-
-typedef Bin* (*ProcessingBinFactoryMethod)(const QString& id);
 
 #endif
