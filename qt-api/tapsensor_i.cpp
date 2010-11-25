@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -26,9 +27,14 @@
 #include "sensormanagerinterface.h"
 #include "tapsensor_i.h"
 
+
 TapSensorChannelInterface::TapSensorChannelInterface(const QString &path, int sessionId)
     : AbstractSensorChannelInterface(path, TapSensorChannelInterface::staticInterfaceName(), sessionId)
 {
+    type_ = SingleDouble;
+    timer = new QTimer(this);
+    timer -> setSingleShot(true);
+    connect(timer, SIGNAL(timeout()), this, SLOT(output()));
 }
 
 const TapSensorChannelInterface* TapSensorChannelInterface::listenInterface(const QString& id)
@@ -39,7 +45,6 @@ const TapSensorChannelInterface* TapSensorChannelInterface::listenInterface(cons
     {
         return 0;
     }
-
     return dynamic_cast<const TapSensorChannelInterface*>(sm.listenInterface(id));
 }
 
@@ -50,15 +55,70 @@ TapSensorChannelInterface* TapSensorChannelInterface::controlInterface(const QSt
     {
         return 0;
     }
-
     return dynamic_cast<TapSensorChannelInterface*>(sm.controlInterface(id));
 }
 
 void TapSensorChannelInterface::dataReceived()
 {
     TapData value;
+    while (socketReader_->read((void *)&value, sizeof(TapData)))
+    {
+        if (type_ == Single)
+        {
+            tapValues_.prepend(value);
+            emit dataAvailable(Tap(tapValues_.takeLast()));
 
-    while (socketReader_->read((void *)&value, sizeof(TapData))) {
-        emit dataAvailable(Tap(value));
+        } else if (timer -> isActive())
+        {
+            if ((!tapValues_.isEmpty())&&(tapValues_.first().direction_ == value.direction_))
+            {
+                timer -> stop();
+                tapValues_.removeFirst();
+                value.type_ = TapData:: DoubleTap;
+                tapValues_.prepend(value);
+                output();
+
+            } else {
+                output();
+                tapValues_.prepend(value);
+                timer -> start(doubleClickInteval);
+            }
+        } else
+        {
+            tapValues_.prepend(value);
+            timer -> start(doubleClickInteval);
+        }
     }
+}
+
+
+void TapSensorChannelInterface::setTapType(TapSelection type)
+{
+    tapValues_.clear();
+    type_ = type;
+}
+
+
+TapSensorChannelInterface::TapSelection TapSensorChannelInterface::getTapType()
+{
+    return type_;
+}
+
+void TapSensorChannelInterface::output()
+{
+    if (type_ == Double)
+    {
+        if ((tapValues_.last().type_ == TapData::SingleTap)&&(tapValues_.size()==1))
+        {
+           tapValues_.removeLast();
+           return;
+        }
+
+        if (tapValues_.last().type_ == TapData::DoubleTap)
+            emit dataAvailable(Tap(tapValues_.takeLast()));
+    }
+
+    if (type_ == SingleDouble)
+        emit dataAvailable(Tap(tapValues_.takeLast()));
+
 }

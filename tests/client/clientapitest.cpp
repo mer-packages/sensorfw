@@ -273,6 +273,13 @@ void ClientApiTest::testTapSensor()
     QDBusReply<void> reply = sensorIfc->start();
     QVERIFY(reply.isValid());
 
+    // test get and set tap type
+    TapSensorChannelInterface::TapSelection tapType = sensorIfc->getTapType();
+    QCOMPARE(tapType, TapSensorChannelInterface::SingleDouble);
+    sensorIfc->setTapType(TapSensorChannelInterface::Double);
+    tapType = sensorIfc->getTapType();
+    QCOMPARE(tapType, TapSensorChannelInterface::Double);
+
     // test stop
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());

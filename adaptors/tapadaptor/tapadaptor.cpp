@@ -8,6 +8,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -35,11 +36,9 @@
 #include <errno.h>
 
 #define DEVICE_MATCH_STRING "accelerometer"
-#define DOUBLECLICK_INTERVAL 500
 
 TapAdaptor::TapAdaptor(const QString& id) :
-    InputDevAdaptor(id, 1),
-    waitingForDouble(false)
+    InputDevAdaptor(id, 1)
 {
     //This was previously in the base class, but it's not
     //possible call virtual methods from base class constructor.
@@ -90,47 +89,23 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
         tapValue.timestamp_ = Utils::getTimeStamp();
         tapValue.type_ = TapData::SingleTap;
 
-        if ((!tapValues_.isEmpty()) &&
-            (tapValues_.first().direction_ == dir)) {
-            tapValues_.removeFirst();
-            tapValue.type_ = TapData::DoubleTap;
-            tapValues_.prepend(tapValue);
-        }
-
-        tapValues_.prepend(tapValue);
+        commitOutput(tapValue);
     }
 }
+
 
 void TapAdaptor::interpretSync(int src)
 {
     Q_UNUSED(src);
-    if (!waitingForDouble) {
-        startTimer(DOUBLECLICK_INTERVAL);
-        waitingForDouble = true;
-    }
 }
 
-void TapAdaptor::timerEvent(QTimerEvent* event)
+void TapAdaptor::commitOutput(TapData data)
 {
-    waitingForDouble = false;
-    killTimer(event->timerId());
-    while (!tapValues_.isEmpty())
-        commitOutput();
-}
-
-void TapAdaptor::commitOutput()
-{
-    if (tapValues_.isEmpty())
-        return;
-
-    TapData tapValue_ = tapValues_.last();
-    tapValues_.removeLast();
-
     TapData* d = tapBuffer_->nextSlot();
 
-    d->timestamp_ = tapValue_.timestamp_;
-    d->direction_ = tapValue_.direction_;
-    d->type_ = tapValue_.type_;
+    d->timestamp_ = data.timestamp_;
+    d->direction_ = data.direction_;
+    d->type_ = data.type_;
 
     tapBuffer_->commit();
     tapBuffer_->wakeUpReaders();

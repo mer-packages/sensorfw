@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -29,7 +30,11 @@
 #include <QtDBus/QtDBus>
 
 #include "abstractsensor_i.h"
-#include <datatypes/tap.h>
+#include "datatypes/tap.h"
+#include "datatypes/tapdata.h"
+#include <QList>
+#include <QTimer>
+
 
 /**
  * @brief DBus-interface for accessing device tap events.
@@ -72,6 +77,7 @@ public:
 
 private Q_SLOTS: // METHODS
     void dataReceived();
+    void output();
 
 Q_SIGNALS: // SIGNALS
     /**
@@ -79,6 +85,25 @@ Q_SIGNALS: // SIGNALS
      * @param The tap event.
      */
     void dataAvailable(const Tap&);
+
+public:
+
+    enum TapSelection
+    {
+        Single = 1,
+        Double,
+        SingleDouble
+    };
+
+    void setTapType(TapSelection type);
+    TapSelection getTapType();
+
+private:
+
+    QList<TapData> tapValues_;
+    TapSelection type_;
+    QTimer *timer;
+    static const int doubleClickInteval = 500;
 };
 
 namespace local {

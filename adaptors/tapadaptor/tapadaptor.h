@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <lihan.guo@digia.com>
 
    This file is part of Sensord.
 
@@ -63,16 +64,11 @@ protected:
     ~TapAdaptor();
 
 private:
-    QList<TapData> tapValues_;
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */
-
-    bool waitingForDouble;
 
     void interpretEvent(int src, struct input_event *ev);
     void interpretSync(int src);
-
-    void timerEvent(QTimerEvent* event);
-    void commitOutput();
+    void commitOutput(TapData data);
 };
 
 #endif
