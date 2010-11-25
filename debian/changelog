@@ -1,5 +1,8 @@
 sensord (0.6.32) unstable; urgency=low
 
+  [Lihan Guo]
+  * Added new tap feature, tap sensor offers single, double and single/double tap data.
+
   [Timo Rongas]
   * Fixes: NB#206204 - sensord prints debugs to console on startup
 
