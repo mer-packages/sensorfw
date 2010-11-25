@@ -25,12 +25,9 @@
 
 #include "screeninterpreterfilter.h"
 #include "genericdata.h"
-#include "math.h"
 #include "logging.h"
 
 #include <ContextProvider>
-
-#include <QDebug>
 
 ScreenInterpreterFilter::ScreenInterpreterFilter(
     ContextProvider::Property* topEdgeProperty,
@@ -58,7 +55,6 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
 {
 
     sensordLogT() << "Screen orientation from contextprovider:" << orientation;
-
 
     // Any TopEdge value should set flat to false.
     if (isFlat && orientation != PoseData::Undefined && orientation != PoseData::FaceDown && orientation != PoseData::FaceUp)
@@ -96,6 +92,4 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
     topEdgeProperty->setValue(topEdge);
     isCoveredProperty->setValue(isCovered);
     isFlatProperty->setValue(isFlat);
-
-
 }

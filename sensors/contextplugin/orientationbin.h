@@ -76,6 +76,12 @@ private:
     CutterFilter cutterFilter;
     AvgVarFilter avgVarFilter;
     StabilityFilter stabilityFilter;
+    int sessionId;
+
+    static const int STABILITY_THRESHOLD = 7;
+    static const int UNSTABILITY_THRESHOLD = 300;
+    static const float STABILITY_HYSTERESIS = 0.1;
+    static const int POLL_INTERVAL = 250;
 };
 
 #endif

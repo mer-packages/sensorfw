@@ -23,7 +23,6 @@
 */
 
 #include "headingfilter.h"
-#include <QDebug>
 
 HeadingFilter::HeadingFilter(Property* headingProperty) :
     Filter<CompassData, HeadingFilter, CompassData>(this, &HeadingFilter::interpret),
@@ -36,4 +35,3 @@ void HeadingFilter::interpret(unsigned, const CompassData* data)
     headingProperty->setValue(data->degrees_);
     source_.propagate(1, data);
 }
-

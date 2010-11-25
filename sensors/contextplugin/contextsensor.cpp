@@ -27,8 +27,6 @@
 #include "sensord/sensormanager.h"
 #include "sensord/logging.h"
 
-#include <QDebug>
-
 ContextSensorChannel::ContextSensorChannel(const QString& id) :
     AbstractSensorChannel(id), service(QDBusConnection::systemBus()),
     orientationBin(service), compassBin(NULL)
@@ -55,4 +53,3 @@ ContextSensorChannel::~ContextSensorChannel()
         delete compassBin;
     }
 }
-

@@ -27,14 +27,6 @@
 #include "sensord/sensormanager.h"
 #include "sensord/config.h"
 
-
-#define SESSION_ID 1
-
-#define STABILITY_THRESHOLD 7
-#define UNSTABILITY_THRESHOLD 300
-#define STABILITY_HYSTERESIS 0.1
-#define POLL_INTERVAL 250
-
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
     isCoveredProperty(s, "Screen.IsCovered"),
@@ -50,7 +42,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     stabilityFilter(&isStableProperty, &isShakyProperty,
                     STABILITY_THRESHOLD, UNSTABILITY_THRESHOLD, STABILITY_HYSTERESIS)
 {
-    //qDebug() << "Creating the orientation bin";
+    sessionId = SensorManager::instance().createNewSessionId();
 
     accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
     Q_ASSERT(accelerometerAdaptor);
@@ -76,8 +68,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     join("cutterfilter", "source", "avgvarfilter", "sink");
     join("avgvarfilter", "source", "stabilityfilter", "sink");
 
-    RingBufferBase* rb;
-    rb = accelerometerAdaptor->findBuffer("accelerometer");
+    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->join(&accelerometerReader);
 
@@ -106,8 +97,7 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
 
 OrientationBin::~OrientationBin()
 {
-    RingBufferBase* rb;
-    rb = accelerometerAdaptor->findBuffer("accelerometer");
+    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
     Q_ASSERT(rb);
     rb->unjoin(&accelerometerReader);
 
@@ -127,12 +117,12 @@ void OrientationBin::startRun()
     orientationChain->start();
 
     unsigned int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toUInt();
-    orientationChain->setIntervalRequest(SESSION_ID, pollInterval);
+    orientationChain->setIntervalRequest(sessionId, pollInterval);
 }
 
 void OrientationBin::stopRun()
 {
-    orientationChain->requestDefaultInterval(SESSION_ID);
+    orientationChain->requestDefaultInterval(sessionId);
 
     accelerometerAdaptor->stopSensor("accelerometer");
     orientationChain->stop();

@@ -5,11 +5,12 @@
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-   @author Semi Malinen <semi.malinen@nokia.com
+   @author Semi Malinen <semi.malinen@nokia.com>
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Lihan Guo <ext-lihan.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com
 
    This file is part of Sensord.
 
@@ -31,6 +32,7 @@
 #include <QDBusConnection>
 #include <signal.h>
 #include <iostream>
+#include <errno.h>
 
 #include "config.h"
 #include "sensormanager.h"
@@ -123,47 +125,29 @@ int main(int argc, char *argv[])
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<DataRange>();
 
-   // TODO: this results in error messages in case only Ariane is used
-
-    // Leave loading for client app. ALS loaded for context fw.
-    //sensordLogD() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
-    //sensordLogD() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
-    sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
-    //sensordLogD() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
-    //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
-    //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
-
 #ifdef PROVIDE_CONTEXT_INFO
 
     if (parser.contextInfo())
     {
         sensordLogD() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
-        // FIXME: A HACK: make sure the AlsSensorChannel & ContextSensorChannel are created
-        sm.requestControlSensor("alssensor");
-        sm.requestControlSensor("contextsensor");
+        sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
     }
 
 #endif
 
-
     if (parser.createDaemon())
     {
-        int pid;
-        pid = fork();
+        int pid = fork();
 
         if(pid < 0)
         {
-            sensordLogC() << "Failed to create a daemon.";
+            sensordLogC() << "Failed to create a daemon: " << strerror(errno);
             exit(EXIT_FAILURE);
-        } else {
-            if (pid > 0)
-            {
-                sensordLogW() << "Create a daemon";
-                exit(EXIT_SUCCESS);
-            }
+        } else if (pid > 0) {
+            sensordLogW() << "Created a daemon";
+            exit(EXIT_SUCCESS);
         }
     }
-
 
     if (parser.magnetometerCalibration())
     {

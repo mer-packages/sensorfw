@@ -66,10 +66,8 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
 
-    TapData::Direction dir;
-    TapData tapValue;
-
     if (ev->type == EV_KEY && ev->value == 1) {
+        TapData::Direction dir;
         switch (ev->code) {
             case BTN_X:
                 dir = TapData::X;
@@ -84,7 +82,7 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
                 dir = TapData::X; // TODO: Add Unknown state to TapData
                 break;
         }
-
+        TapData tapValue;
         tapValue.direction_ = dir;
         tapValue.timestamp_ = Utils::getTimeStamp();
         tapValue.type_ = TapData::SingleTap;
@@ -99,7 +97,7 @@ void TapAdaptor::interpretSync(int src)
     Q_UNUSED(src);
 }
 
-void TapAdaptor::commitOutput(TapData data)
+void TapAdaptor::commitOutput(const TapData& data)
 {
     TapData* d = tapBuffer_->nextSlot();
 

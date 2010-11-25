@@ -93,8 +93,9 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringLi
         return false;
     }
 
-    newPluginNames.append(name);
-    newPlugins.append(plugin);
+    // Add plugins to the front of the list so they are initialized in reverse order. This will guarantee that dependencies are initialized first for each plugin.
+    newPluginNames.prepend(name);
+    newPlugins.prepend(plugin);
 
     // Get dependencies
     QStringList requiredPlugins(plugin->Dependencies());

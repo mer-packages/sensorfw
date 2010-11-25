@@ -35,6 +35,11 @@ void ContextPlugin::Register(class Loader&)
     sm.registerSensor<ContextSensorChannel>("contextsensor");
 }
 
+void ContextPlugin::Init(class Loader&)
+{
+    SensorManager::instance().requestControlSensor("contextsensor");
+}
+
 QStringList ContextPlugin::Dependencies() {
     return QString("accelerometeradaptor:coordinatealignfilter:orientationchain").split(":", QString::SkipEmptyParts);
 }

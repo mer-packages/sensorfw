@@ -86,6 +86,8 @@ class SensorManager : public QObject
     Q_PROPERTY(QString errorString READ errorString)
 
 public:
+    int createNewSessionId() { sessionIdCount_++; Q_ASSERT(sessionIdCount_ > 0); return sessionIdCount_; } // wrap-around issue?
+
     void printStatus(QStringList& output) const;
 
     SensorManagerError errorCode() const { return errorCode_; }
@@ -236,8 +238,6 @@ protected:
 
     void setError(SensorManagerError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SmNoError; errorString_.clear(); }
-
-    int createNewSessionId() { sessionIdCount_++; Q_ASSERT(sessionIdCount_ > 0); return sessionIdCount_; } // wrap-around issue?
 
     AbstractSensorChannel* addSensor(const QString& id, int sessionId, bool controllingSession = true);
     void removeSensor(const QString& id);

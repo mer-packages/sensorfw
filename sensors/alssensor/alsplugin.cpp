@@ -34,6 +34,12 @@ void ALSPlugin::Register(class Loader&)
     sensordLogD() << "registering alssensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<ALSSensorChannel>("alssensor");
+    sm.requestControlSensor("alssensor");
+}
+
+void ALSPlugin::Init(class Loader& l)
+{
+    SensorManager::instance().requestControlSensor("alssensor");
 }
 
 QStringList ALSPlugin::Dependencies() {

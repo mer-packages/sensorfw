@@ -3,6 +3,12 @@ sensord (0.6.32) unstable; urgency=low
   [Timo Rongas]
   * Fixes: NB#206204 - sensord prints debugs to console on startup
 
+  [Antti Virtanen]
+  * Loader now initializes plugins in reverse order so depenencies gets
+    initialized first.
+  * Moved context related sensor startup from main() to sensor plugin Init().
+  * Replaced some magic number #define with static consts.
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 
 sensord (0.6.31) unstable; urgency=low

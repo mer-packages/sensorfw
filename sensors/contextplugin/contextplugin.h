@@ -31,6 +31,7 @@ class ContextPlugin : public Plugin
 {
 private:
     void Register(class Loader& l);
+    void Init(class Loader& l);
     QStringList Dependencies();
 };
 

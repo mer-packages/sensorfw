@@ -68,7 +68,7 @@ private:
 
     void interpretEvent(int src, struct input_event *ev);
     void interpretSync(int src);
-    void commitOutput(TapData data);
+    void commitOutput(const TapData& data);
 };
 
 #endif

@@ -26,18 +26,13 @@
 #include "compassbin.h"
 #include "sensord/sensormanager.h"
 
-#include <QDebug>
-
-// TODO: ContextSensor always has session ID 2, but this should be taken from SM,
-// not written here.
-#define SESSION_ID 2
-
 CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     headingProperty(s, "Location.Heading"),
     compassChain(0),
     compassReader(10),
     headingFilter(&headingProperty)
 {
+    sessionId = SensorManager::instance().createNewSessionId();
     if (pluginValid)
     {
         compassChain = SensorManager::instance().requestChain("compasschain");
@@ -49,8 +44,7 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
         // Create a branching filter chain
         join("compass", "source", "headingfilter", "sink");
 
-        RingBufferBase* rb;
-        rb = compassChain->findBuffer("truenorth");
+        RingBufferBase* rb = compassChain->findBuffer("truenorth");
         Q_ASSERT(rb);
         rb->join(&compassReader);
     }
@@ -71,7 +65,7 @@ void CompassBin::startRun()
         compassChain->start();
 
         // Set interval for compass, as sane operation requires 10HZ!
-        compassChain->requestDefaultInterval(SESSION_ID);
+        compassChain->requestDefaultInterval(sessionId);
     }
 }
 
