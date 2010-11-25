@@ -29,6 +29,7 @@
 
 #include <QPair>
 #include <QVector>
+#include <QMutex>
 
 class AvgVarFilter : public QObject, public Filter<double, AvgVarFilter, QPair<double, double> >
 {
@@ -46,6 +47,8 @@ private:
     QVector<double> samplesSquared;
     double sampleSum;
     double sampleSquareSum;
+    QMutex mutex;
+
     void interpret(unsigned, const double* data);
 };
 

@@ -23,6 +23,7 @@
 */
 
 #include "avgvarfilter.h"
+#include <QMutexLocker>
 #include <math.h>
 
 AvgVarFilter::AvgVarFilter(int size) :
@@ -34,33 +35,38 @@ AvgVarFilter::AvgVarFilter(int size) :
 
 void AvgVarFilter::interpret(unsigned, const double* data)
 {
-    // Ramp-up-phase:
-    if (samplesReceived < size) {
-        samples[samplesReceived] = *data;
-        samplesSquared[samplesReceived] = (*data)*(*data);
-        sampleSum += *data;
-        sampleSquareSum += (*data)*(*data);
-        ++samplesReceived;
-        return;
+    double avg,var;
+    {
+        QMutexLocker locker(&mutex);
+
+        // Ramp-up-phase:
+        if (samplesReceived < size) {
+            samples[samplesReceived] = *data;
+            samplesSquared[samplesReceived] = (*data)*(*data);
+            sampleSum += *data;
+            sampleSquareSum += (*data)*(*data);
+            ++samplesReceived;
+            return;
+        }
+
+        //qDebug() << "Data received on AvgVarFilter:" << *data;
+        //qDebug() << "Cur data:" << samples;
+
+        // Moving average & variance computations:
+        // Remove the oldest sample, replace with the new sample
+        sampleSum = sampleSum - samples[current] + *data;
+        sampleSquareSum = sampleSquareSum - samples[current] * samples[current] + (*data) * (*data);
+
+        // Take the new value in
+        samples[current] = *data;
+        ++current;
+        if (current >= size) {
+            current = 0;
+        }
+
+        avg = sampleSum / size;
+        var = (size * sampleSquareSum - (sampleSum * sampleSum)) / (size * (size - 1));
     }
-
-    //qDebug() << "Data received on AvgVarFilter:" << *data;
-    //qDebug() << "Cur data:" << samples;
-
-    // Moving average & variance computations:
-    // Remove the oldest sample, replace with the new sample
-    sampleSum = sampleSum - samples[current] + *data;
-    sampleSquareSum = sampleSquareSum - samples[current] * samples[current] + (*data) * (*data);
-
-    // Take the new value in
-    samples[current] = *data;
-    ++current;
-    if (current >= size) {
-        current = 0;
-    }
-
-    double avg = sampleSum / size;
-    double var = (size * sampleSquareSum - (sampleSum * sampleSum)) / (size * (size - 1));
 
     //qDebug() << "Avg and var" << avg << var;
 
@@ -71,6 +77,8 @@ void AvgVarFilter::interpret(unsigned, const double* data)
 // Start the ramp-up again
 void AvgVarFilter::reset()
 {
+    QMutexLocker locker(&mutex);
+
     samplesReceived = 0;
     current = 0;
     sampleSum = 0;
