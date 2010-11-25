@@ -9,6 +9,7 @@ sensord (0.6.32) unstable; urgency=low
   * Moved context related sensor startup from main() to sensor plugin Init().
   * Replaced some magic number #define with static consts.
   * AvgVarFilter data is now protected with mutex.
+  * Bin and RingBuffer refactoring.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 
