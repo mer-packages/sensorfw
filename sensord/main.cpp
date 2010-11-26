@@ -29,7 +29,6 @@
  */
 
 #include <QtCore/QCoreApplication>
-#include <QDBusConnection>
 #include <signal.h>
 #include <iostream>
 #include <errno.h>
@@ -37,19 +36,9 @@
 #include "config.h"
 #include "sensormanager.h"
 #include "sensormanager_a.h"
-#include "datatypes/xyz.h"
-#include "datatypes/magneticfield.h"
-#include "datatypes/unsigned.h"
-#include "datatypes/compass.h"
 #include "logging.h"
-#include "datatypes/orientation.h"
 #include "calibrationhandler.h"
-#include "datatypes/datarange.h"
 #include "parser.h"
-#include "datatypes/tap.h"
-
-#define CONFIG_FILE_PATH     "/etc/sensorfw/sensord.conf"
-#define CONFIG_DIR_PATH      "/etc/sensorfw/sensord.conf.d/"
 
 void printUsage();
 
@@ -79,6 +68,9 @@ void signalFlush(int param)
 
 int main(int argc, char *argv[])
 {
+    const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
+    const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
+
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
@@ -115,15 +107,6 @@ int main(int argc, char *argv[])
 
     signal(SIGUSR1, signalHandler);
     signal(SIGUSR2, signalFlush);
-
-    // TODO: move these to plugins...
-    qDBusRegisterMetaType<XYZ>();
-    qDBusRegisterMetaType<Compass>();
-    qDBusRegisterMetaType<Unsigned>();
-    qDBusRegisterMetaType<Orientation>();
-    qDBusRegisterMetaType<MagneticField>();
-    qDBusRegisterMetaType<Tap>();
-    qDBusRegisterMetaType<DataRange>();
 
 #ifdef PROVIDE_CONTEXT_INFO
 

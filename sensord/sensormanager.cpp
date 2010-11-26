@@ -43,8 +43,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-#define SOCKET_NAME "/tmp/sensord.sock"
-
 typedef struct {
     int id;
     int size;
@@ -73,6 +71,8 @@ SensorManager& SensorManager::instance()
 SensorManager::SensorManager()
     : errorCode_(SmNoError)
 {
+    const char* SOCKET_NAME = "/tmp/sensord.sock";
+
     new SensorManagerAdaptor(this);
 
     socketHandler_ = new SocketHandler(this);

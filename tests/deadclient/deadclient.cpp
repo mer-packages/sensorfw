@@ -43,7 +43,6 @@ int main(int argc, char **argv)
         control = true;
     }
 
-    qDBusRegisterMetaType<XYZ>();
     TestWindow t(control);
     
     return app.exec();

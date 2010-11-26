@@ -40,12 +40,6 @@
 
 void ClientApiTest::initTestCase()
 {
-    qDBusRegisterMetaType<XYZ>();
-    qDBusRegisterMetaType<Compass>();
-    qDBusRegisterMetaType<MagneticField>();
-    qDBusRegisterMetaType<Tap>();
-    qDBusRegisterMetaType<Unsigned>();
-
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
     QVERIFY( remoteSensorManager.isValid() );
 

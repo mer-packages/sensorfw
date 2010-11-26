@@ -25,8 +25,31 @@
  */
 
 #include <QtGlobal>
+#include <QDBusMetaType>
 #include <ctime>
 #include "utils.h"
+#include "xyz.h"
+#include "magneticfield.h"
+#include "unsigned.h"
+#include "compass.h"
+#include "orientation.h"
+#include "datarange.h"
+#include "tap.h"
+
+void __attribute__ ((constructor)) datatypes_init(void)
+{
+    qDBusRegisterMetaType<XYZ>();
+    qDBusRegisterMetaType<Compass>();
+    qDBusRegisterMetaType<Unsigned>();
+    qDBusRegisterMetaType<Orientation>();
+    qDBusRegisterMetaType<MagneticField>();
+    qDBusRegisterMetaType<Tap>();
+    qDBusRegisterMetaType<DataRange>();
+}
+
+void __attribute__ ((destructor)) datatypes_fini(void)
+{
+}
 
 quint64 Utils::getTimeStamp()
 {
