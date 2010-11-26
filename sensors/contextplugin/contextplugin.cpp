@@ -28,6 +28,8 @@
 #include "contextsensor.h"
 #include "logging.h"
 
+int ContextPlugin::sessionId = 0;
+
 void ContextPlugin::Register(class Loader&)
 {
     sensordLogD() << "registering contextsensor";
@@ -37,11 +39,16 @@ void ContextPlugin::Register(class Loader&)
 
 void ContextPlugin::Init(class Loader&)
 {
-    SensorManager::instance().requestControlSensor("contextsensor");
+    sessionId = SensorManager::instance().requestControlSensor("contextsensor");
 }
 
 QStringList ContextPlugin::Dependencies() {
     return QString("accelerometeradaptor:coordinatealignfilter:orientationchain").split(":", QString::SkipEmptyParts);
+}
+
+int ContextPlugin::getSessionId()
+{
+    return sessionId;
 }
 
 Q_EXPORT_PLUGIN2(contextsensor, ContextPlugin)

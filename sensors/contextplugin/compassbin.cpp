@@ -24,6 +24,7 @@
 */
 
 #include "compassbin.h"
+#include "contextplugin.h"
 #include "sensord/sensormanager.h"
 
 CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
@@ -32,7 +33,6 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     compassReader(10),
     headingFilter(&headingProperty)
 {
-    sessionId = SensorManager::instance().createNewSessionId();
     if (pluginValid)
     {
         compassChain = SensorManager::instance().requestChain("compasschain");
@@ -65,7 +65,7 @@ void CompassBin::startRun()
         compassChain->start();
 
         // Set interval for compass, as sane operation requires 10HZ!
-        compassChain->requestDefaultInterval(sessionId);
+        compassChain->requestDefaultInterval(ContextPlugin::getSessionId());
     }
 }
 

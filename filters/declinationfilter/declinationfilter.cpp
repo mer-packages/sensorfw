@@ -27,9 +27,9 @@
 #include "declinationfilter.h"
 #include "logging.h"
 
-#define DECLINATION_KEY "/system/osso/location/settings/magneticvariation"
+const char* DeclinationFilter::declinationKey = "/system/osso/location/settings/magneticvariation";
 
-DeclinationFilter::DeclinationFilter() : 
+DeclinationFilter::DeclinationFilter() :
         Filter<CompassData, DeclinationFilter, CompassData>(this, &DeclinationFilter::correct),
         declinationCorrection_(*this)
 {
@@ -50,21 +50,22 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
 
 void DeclinationFilter::loadSettings()
 {
-    GConfClient *client = NULL;
-    int     value;
-    GError *error = NULL;
-
-    client = gconf_client_get_default();
+    GConfClient *client = gconf_client_get_default();
     if (! client ) {
         sensordLogW() << "Failed to initialise GConf client.";
         return;
     }
-
-    value = gconf_client_get_int(client, DECLINATION_KEY, &error);
+    GError *error = NULL;
+    int value = gconf_client_get_int(client, declinationKey, &error);
     if ( error != NULL) {
-        sensordLogW() << "Failed to read value for " << DECLINATION_KEY << "from GConf.";
+        GError *error2 = NULL;
+        value = gconf_client_get_float(client, declinationKey, &error2);
+        if ( error2 != NULL) {
+            sensordLogW() << "Failed to read value for " << declinationKey << " from GConf: " << error2->message;
+            g_error_free(error2);
+            return;
+        }
         g_error_free(error);
-        return;
     }
 
     declinationCorrection_(value);

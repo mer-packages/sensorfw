@@ -86,8 +86,6 @@ class SensorManager : public QObject
     Q_PROPERTY(QString errorString READ errorString)
 
 public:
-    int createNewSessionId() { sessionIdCount_++; Q_ASSERT(sessionIdCount_ > 0); return sessionIdCount_; } // wrap-around issue?
-
     void printStatus(QStringList& output) const;
 
     SensorManagerError errorCode() const { return errorCode_; }
@@ -254,6 +252,8 @@ protected:
     QMap<QString, FilterFactoryMethod>             filterFactoryMap_;
 
 private:
+    int createNewSessionId() { sessionIdCount_++; Q_ASSERT(sessionIdCount_ > 0); return sessionIdCount_; } // wrap-around issue?
+
     static SensorManager*                          instance_;
 
     SocketHandler*                                 socketHandler_;

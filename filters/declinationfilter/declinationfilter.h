@@ -62,6 +62,8 @@ private:
     CompassData orientation;
     CompassData newOrientation;
     FilterProperty<int> declinationCorrection_;
+
+    static const char* declinationKey;
 };
 
 #endif // DECLINATIONFILTER_H

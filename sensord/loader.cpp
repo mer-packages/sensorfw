@@ -132,12 +132,13 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
         foreach (PluginBase* base, newPlugins) {
             base->Register(*this);
         }
+        loadedPluginNames_.append(newPluginNames);
+        loaded = true;
+
         // Init newly loaded plugins
         foreach (PluginBase* base, newPlugins) {
             base->Init(*this);
         }
-        loadedPluginNames_.append(newPluginNames);
-        loaded = true;
 
     } else {
         if(errorString)

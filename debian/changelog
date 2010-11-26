@@ -13,6 +13,7 @@ sensord (0.6.32) unstable; urgency=low
   * Replaced some magic number #define with static consts.
   * AvgVarFilter data is now protected with mutex.
   * Bin and RingBuffer refactoring.
+  * magneticvariation GConf reading in DeclinationFilter fixed. 
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 

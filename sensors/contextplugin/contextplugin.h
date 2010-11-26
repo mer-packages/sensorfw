@@ -29,10 +29,15 @@
 
 class ContextPlugin : public Plugin
 {
+public:
+    static int getSessionId();
+
 private:
     void Register(class Loader& l);
     void Init(class Loader& l);
     QStringList Dependencies();
+
+    static int sessionId;
 };
 
 #endif

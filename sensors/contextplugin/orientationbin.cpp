@@ -24,6 +24,7 @@
 */
 
 #include "orientationbin.h"
+#include "contextplugin.h"
 #include "sensord/sensormanager.h"
 #include "sensord/config.h"
 
@@ -42,8 +43,6 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     stabilityFilter(&isStableProperty, &isShakyProperty,
                     STABILITY_THRESHOLD, UNSTABILITY_THRESHOLD, STABILITY_HYSTERESIS)
 {
-    sessionId = SensorManager::instance().createNewSessionId();
-
     accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
     Q_ASSERT(accelerometerAdaptor);
 
@@ -117,12 +116,12 @@ void OrientationBin::startRun()
     orientationChain->start();
 
     unsigned int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toUInt();
-    orientationChain->setIntervalRequest(sessionId, pollInterval);
+    orientationChain->setIntervalRequest(ContextPlugin::getSessionId(), pollInterval);
 }
 
 void OrientationBin::stopRun()
 {
-    orientationChain->requestDefaultInterval(sessionId);
+    orientationChain->requestDefaultInterval(ContextPlugin::getSessionId());
 
     accelerometerAdaptor->stopSensor("accelerometer");
     orientationChain->stop();

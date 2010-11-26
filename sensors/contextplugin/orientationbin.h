@@ -76,7 +76,6 @@ private:
     CutterFilter cutterFilter;
     AvgVarFilter avgVarFilter;
     StabilityFilter stabilityFilter;
-    int sessionId;
 
     static const int STABILITY_THRESHOLD = 7;
     static const int UNSTABILITY_THRESHOLD = 300;

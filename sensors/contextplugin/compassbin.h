@@ -53,7 +53,6 @@ private:
     AbstractChain* compassChain;
     BufferReader<CompassData> compassReader;
     HeadingFilter headingFilter;
-    int sessionId;
 };
 
 #endif
