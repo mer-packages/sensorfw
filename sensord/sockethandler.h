@@ -110,13 +110,11 @@ private slots:
     void newConnection();
     void socketReadable();
     void socketDisconnected();
-    void killSocket();
 
 private:
 
     QLocalServer*            m_server;
     QMap<int, SessionData*>  m_idMap;
-    QList<QLocalSocket*>     m_tmpSocks;
 };
 
 #endif // SOCKETHANDLER_H

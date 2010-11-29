@@ -43,7 +43,7 @@ public:
         addSource(&source_, "source");
     }
 
-    ~DbusEmitter()
+    virtual ~DbusEmitter()
     {
         delete[] chunk_;
     }

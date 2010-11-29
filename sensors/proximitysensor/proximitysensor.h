@@ -67,7 +67,6 @@ public:
      */
     Unsigned proximity() const { return previousValue_; }
 
-
 public Q_SLOTS:
     bool start();
     bool stop();
@@ -81,13 +80,13 @@ signals:
 
 protected:
     ProximitySensorChannel(const QString& id);
-    ~ProximitySensorChannel();
+    virtual ~ProximitySensorChannel();
 
 private:
     Bin*                         filterBin_;
     Bin*                         marshallingBin_;
     DeviceAdaptor*               proximityAdaptor_;
-    BufferReader<TimedUnsigned>* proximityReader_; 
+    BufferReader<TimedUnsigned>* proximityReader_;
     RingBuffer<TimedUnsigned>*   outputBuffer_;
     TimedUnsigned                previousValue_;
 

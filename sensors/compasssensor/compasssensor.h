@@ -66,7 +66,7 @@ public:
 
     bool declination() const { return declinationCorrection_; }
     void setDeclination(bool enable);
-    quint16 declinationAngle();
+    quint16 declinationAngle() const;
 
     Compass get() const { return compassData; }
 
@@ -79,7 +79,7 @@ signals:
 
 protected:
     CompassSensorChannel(const QString& id);
-    ~CompassSensorChannel();
+    virtual ~CompassSensorChannel();
 
 private:
     bool declinationCorrection_;

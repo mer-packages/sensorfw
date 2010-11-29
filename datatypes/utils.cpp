@@ -31,10 +31,12 @@
 #include "xyz.h"
 #include "magneticfield.h"
 #include "unsigned.h"
+#include "timedunsigned.h"
 #include "compass.h"
 #include "orientation.h"
 #include "datarange.h"
 #include "tap.h"
+#include "posedata.h"
 
 void __attribute__ ((constructor)) datatypes_init(void)
 {
@@ -48,6 +50,8 @@ void __attribute__ ((constructor)) datatypes_init(void)
     qDBusRegisterMetaType<DataRangeList>();
     qDBusRegisterMetaType<IntegerRange>();
     qDBusRegisterMetaType<IntegerRangeList>();
+    qRegisterMetaType<TimedUnsigned>();
+    qRegisterMetaType<PoseData>();
 }
 
 void __attribute__ ((destructor)) datatypes_fini(void)

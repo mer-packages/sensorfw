@@ -39,11 +39,7 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
     Q_ASSERT( accelerometerChain_ );
-    if (!accelerometerChain_->isValid()) {
-        isValid_ = false;
-    } else {
-        isValid_ = true;
-    }
+    isValid_ = accelerometerChain_->isValid();
 
     accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
@@ -79,7 +75,7 @@ AccelerometerSensorChannel::~AccelerometerSensorChannel()
     disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     sm.releaseChain("accelerometerchain");
- 
+
     delete accelerometerReader_;
     delete outputBuffer_;
     delete marshallingBin_;

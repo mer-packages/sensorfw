@@ -60,7 +60,7 @@ public:
         return sc;
     }
 
-    XYZ rotation()
+    XYZ rotation() const
     {
         return XYZ(prevRotation_);
     }
@@ -86,7 +86,7 @@ signals:
 
 protected:
     RotationSensorChannel(const QString& id);
-    ~RotationSensorChannel();
+    virtual ~RotationSensorChannel();
 
 private:
     Bin*                         filterBin_;

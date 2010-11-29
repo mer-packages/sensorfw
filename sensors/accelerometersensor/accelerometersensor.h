@@ -60,7 +60,7 @@ public:
     {
         AccelerometerSensorChannel* sc = new AccelerometerSensorChannel(id);
         new AccelerometerSensorChannelAdaptor(sc);
-        
+
         return sc;
     }
 
@@ -69,24 +69,24 @@ public:
 public Q_SLOTS:
     bool start();
     bool stop();
-    
+
 signals:
     /**
      * Sent when new measurement data has become available.
      * @param data Newly measured data.
      */
     void dataAvailable(const XYZ& data);
-    
+
 protected:
     AccelerometerSensorChannel(const QString& id);
-    ~AccelerometerSensorChannel();
-    
+    virtual ~AccelerometerSensorChannel();
+
 private:
     static double                    aconv_[3][3];
     Bin*                             filterBin_;
     Bin*                             marshallingBin_;
     AbstractChain*                   accelerometerChain_;
-    BufferReader<AccelerationData>*  accelerometerReader_; 
+    BufferReader<AccelerationData>*  accelerometerReader_;
     RingBuffer<AccelerationData>*    outputBuffer_;
     AccelerationData                 previousSample_;
 

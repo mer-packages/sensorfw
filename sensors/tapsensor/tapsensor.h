@@ -80,7 +80,7 @@ signals:
 
 protected:
     TapSensorChannel(const QString& id);
-    ~TapSensorChannel();
+    virtual ~TapSensorChannel();
 
 private:
     Bin*                   filterBin_;

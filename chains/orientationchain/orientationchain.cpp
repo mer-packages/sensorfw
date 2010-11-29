@@ -31,8 +31,6 @@
 OrientationChain::OrientationChain(const QString& id) :
     AbstractChain(id)
 {
-    qRegisterMetaType<TimedUnsigned>("TimedUnsigned");
-    qRegisterMetaType<PoseData>("PoseData");
     SensorManager& sm = SensorManager::instance();
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
@@ -87,6 +85,7 @@ OrientationChain::~OrientationChain()
     delete accelerometerReader_;
     delete topEdgeOutput_;
     delete faceOutput_;
+    delete orientationOutput_;
     delete filterBin_;
 }
 

@@ -48,8 +48,5 @@ ContextSensorChannel::ContextSensorChannel(const QString& id) :
 
 ContextSensorChannel::~ContextSensorChannel()
 {
-    if (compassBin)
-    {
-        delete compassBin;
-    }
+    delete compassBin;
 }

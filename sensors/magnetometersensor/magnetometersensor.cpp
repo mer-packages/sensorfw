@@ -34,22 +34,18 @@
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<CalibratedMagneticFieldData>(10),
+        scaleFilter_(NULL),
         prevMeasurement_(),
         prevRangeRequestId_(-1)
 {
-    isValid_ = true;
-
     SensorManager& sm = SensorManager::instance();
 
     compassChain_ = sm.requestChain("magcalibrationchain");
     Q_ASSERT( compassChain_ );
-    if (!compassChain_->isValid()) {
-        isValid_ = false;
-    }
+    isValid_ = compassChain_->isValid();
 
     magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(128);
 
-    scaleFilter_ = NULL;
     scaleCoefficient_ = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();
 
     if (scaleCoefficient_ != 1)

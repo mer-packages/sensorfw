@@ -90,7 +90,7 @@ signals:
 
 protected:
     OrientationSensorChannel(const QString& id);
-    ~OrientationSensorChannel();
+    virtual ~OrientationSensorChannel();
 
 private:
     PoseData                         prevOrientation;

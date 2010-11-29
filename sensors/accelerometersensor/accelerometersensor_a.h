@@ -28,7 +28,6 @@
 
 #include <QtDBus/QtDBus>
 
-//#include "datatypes/orientation.h"
 #include "datatypes/xyz.h"
 #include "abstractsensor_a.h"
 

@@ -34,7 +34,8 @@ class ContextSensorChannel : public AbstractSensorChannel
     Q_OBJECT
 
 public:
-    ~ContextSensorChannel();
+    virtual ~ContextSensorChannel();
+
     static AbstractSensorChannel* factoryMethod(const QString& id)
     {
         ContextSensorChannel* sc = new ContextSensorChannel(id);

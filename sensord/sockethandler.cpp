@@ -245,16 +245,7 @@ bool SocketHandler::removeSession(int sessionId)
     if (socket) {
         disconnect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
         disconnect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-
-        // NOTE NOTE NOTE NOTE NOTE NOTE KLUDGE KLUDGE
-        // Due to some timing issues that we have not been able to figure out,
-        // deleting the socket right away does not work if the session is closed
-        // after a client has been lost. Thus, socket deletion is pushed forward
-        // 2 seconds to allow all Qt internal async stuff to finish..
-        //delete socket;
-        // NOTE NOTE NOTE NOTE NOTE NOTE KLUDGE KLUDGE
-        m_tmpSocks.append(socket);
-        QTimer::singleShot(2000, this, SLOT(killSocket()));
+        socket->deleteLater();
     }
 
     delete m_idMap.take(sessionId);
@@ -316,16 +307,6 @@ void SocketHandler::socketDisconnected()
     }
 
     emit lostSession(sessionId);
-}
-
-void SocketHandler::killSocket()
-{
-    if (m_tmpSocks.size() > 0) {
-        sensordLogT() << "[SocketHandler]: Deleting socket pointer:" << m_tmpSocks.at(0);
-        delete m_tmpSocks.takeAt(0);
-    } else {
-        sensordLogW() << "[SocketHandler]: Ugly hack just went bad.. attempting to delete nonexisting pointer.";
-    }
 }
 
 int SocketHandler::getSocketFd(int sessionId) const

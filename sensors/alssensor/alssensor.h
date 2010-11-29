@@ -65,7 +65,7 @@ public:
     {
         ALSSensorChannel* sc = new ALSSensorChannel(id);
         new ALSSensorChannelAdaptor(sc);
-        
+
         return sc;
     }
 
@@ -78,24 +78,24 @@ public:
 public Q_SLOTS:
     bool start();
     bool stop();
-    
+
 signals:
     /**
      * Sent when a change in measured data is observed.
      * @param value Measured value.
      */
     void ALSChanged(const Unsigned& value);
-    
+
 protected:
     ALSSensorChannel(const QString& id);
-    ~ALSSensorChannel();
-    
+    virtual ~ALSSensorChannel();
+
 private:
     TimedUnsigned                 previousValue_;
     Bin*                          filterBin_;
     Bin*                          marshallingBin_;
     DeviceAdaptor*                alsAdaptor_;
-    BufferReader<TimedUnsigned>*  alsReader_; 
+    BufferReader<TimedUnsigned>*  alsReader_;
     RingBuffer<TimedUnsigned>*    outputBuffer_;
 
     void emitToDbus(const TimedUnsigned& value);

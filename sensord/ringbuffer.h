@@ -54,6 +54,7 @@ friend class RingBuffer<TYPE>;
 
 public:
     RingBufferReader() : readCount_(0) {}
+    virtual ~RingBufferReader() {};
 
     int typeId() { return 0; } // TODO
 

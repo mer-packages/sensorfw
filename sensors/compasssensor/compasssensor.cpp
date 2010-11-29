@@ -39,13 +39,9 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
 {
     SensorManager& sm = SensorManager::instance();
 
-    isValid_ = true;
-
     compassChain_ = sm.requestChain("compasschain");
     Q_ASSERT( compassChain_ );
-    if (!compassChain_->isValid()) {
-        isValid_ = false;
-    }
+    isValid_ = compassChain_->isValid();
 
     inputReader_ = new BufferReader<CompassData>(128);
 
@@ -103,7 +99,7 @@ void CompassSensorChannel::setDeclination(bool enable) {
         rb = compassChain_->findBuffer("magneticnorth");
         Q_ASSERT(rb);
         rb->unjoin(inputReader_);
-        
+
         rb = compassChain_->findBuffer("truenorth");
         Q_ASSERT(rb);
         rb->join(inputReader_);
@@ -111,7 +107,7 @@ void CompassSensorChannel::setDeclination(bool enable) {
         rb = compassChain_->findBuffer("truenorth");
         Q_ASSERT(rb);
         rb->unjoin(inputReader_);
-        
+
         rb = compassChain_->findBuffer("magneticnorth");
         Q_ASSERT(rb);
         rb->join(inputReader_);
@@ -121,7 +117,7 @@ void CompassSensorChannel::setDeclination(bool enable) {
     signalPropertyChanged("usedeclination");
 }
 
-quint16 CompassSensorChannel::declinationAngle() { 
+quint16 CompassSensorChannel::declinationAngle() const {
     return qvariant_cast< int >
         (compassChain_->property("declinationvalue"));
 }

@@ -9,7 +9,6 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
 
-
    This file is part of Sensord.
 
    Sensord is free software; you can redistribute it and/or modify
@@ -29,22 +28,8 @@
 #include "orientationinterpreter.h"
 #include <sensord/logging.h>
 #include <math.h>
+#include <stdlib.h>
 #include "config.h"
-#include <QDebug>
-
-#define DEFAULT_THRESHOLD 250
-#define RADIANS_TO_DEGREES 180.0/M_PI
-#define ANGLE_LIMIT 45
-#define SAME_AXIS_LIMIT 5
-
-#define OVERFLOW_MIN 800
-#define OVERFLOW_MAX 1250
-
-#define THRESHOLD_LANDSCAPE  25
-#define THRESHOLD_PORTRAIT  20
-
-#define DISCARD_TIME 750000
-#define AVG_BUFFER_MAX_SIZE 10
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
@@ -89,7 +74,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     // Avoids bloating when timestamps don't make sense
     if (dataBuffer.count() > AVG_BUFFER_MAX_SIZE)
     {
-        dataBuffer.erase(dataBuffer.begin(), dataBuffer.end()-10);
+        dataBuffer.erase(dataBuffer.begin(), dataBuffer.end() - 10);
     }
 
     // Clear old values from buffer.
@@ -175,13 +160,10 @@ void OrientationInterpreter::processTopEdge()
 
 void OrientationInterpreter::processFace()
 {
-
-    PoseData newFace;
-
-
-    if  (abs(data.z_) >= 300)
+    if (abs(data.z_) >= 300)
     {
-        newFace.orientation_ = ((data.z_>=0)? PoseData::FaceDown : PoseData::FaceUp);
+        PoseData newFace;
+        newFace.orientation_ = ((data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp);
 
         if (newFace.orientation_ == PoseData::FaceDown)
         {
@@ -195,8 +177,7 @@ void OrientationInterpreter::processFace()
             face.orientation_ = PoseData::FaceUp;
         }
 
-
-       if (face.orientation_ != previousFace.orientation_)
+        if (face.orientation_ != previousFace.orientation_)
         {
             previousFace.orientation_ = face.orientation_;
             face.timestamp_ = data.timestamp_;
@@ -204,7 +185,6 @@ void OrientationInterpreter::processFace()
         }
     }
 }
-
 
 void OrientationInterpreter::processOrientation()
 {

@@ -62,7 +62,7 @@ public:
         return sc;
     }
 
-    MagneticField magneticField()
+    MagneticField magneticField() const
     {
         return MagneticField(prevMeasurement_);
     }
@@ -81,7 +81,7 @@ signals:
 
 protected:
     MagnetometerSensorChannel(const QString& id);
-    ~MagnetometerSensorChannel();
+    virtual ~MagnetometerSensorChannel();
 
     virtual bool setDataRange(const DataRange& range, int sessionId);
 
