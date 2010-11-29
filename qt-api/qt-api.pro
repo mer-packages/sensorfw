@@ -33,10 +33,11 @@ HEADERS += sensormanagerinterface.h \
 
 SENSORFW_INCLUDEPATHS = .. \
     ../include \
-    ../filters \
     ../datatypes
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
+
+LIBS += -L../datatypes -lsensordatatypes
 
 include(../common-install.pri)
 publicheaders.files = $$HEADERS

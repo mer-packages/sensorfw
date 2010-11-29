@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,13 +29,14 @@
 #define MAGNETOMETERSENSOR_I_H
 
 #include <QtDBus/QtDBus>
+#include <QVector>
 
 #include "abstractsensor_i.h"
 #include <datatypes/magneticfield.h>
 
 /**
  * @brief DBus-interface for listening on magnetic field measurements.
- * 
+ *
  * Acts as a proxy class for interface \e local.MagnetometerSensor interface.
  *
  * For details of measurement process, see #MagnetometerSensorChannel.
@@ -43,26 +45,18 @@
  */
 class MagnetometerSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
-    Q_PROPERTY(MagneticField magneticField READ magneticField);
+    Q_OBJECT
+    Q_DISABLE_COPY(MagnetometerSensorChannelInterface)
+    Q_PROPERTY(MagneticField magneticField READ magneticField)
 
 public:
-    static inline const char *staticInterfaceName()
-    { return "local.MagnetometerSensor"; }
+    static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new MagnetometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    inline MagneticField magneticField() const
-    { 
-        return qvariant_cast< MagneticField >(internalPropGet("magneticField"));
-    }
+    MagneticField magneticField() const;
 
-public:
-    MagnetometerSensorChannelInterface(const QString &path, int sessionId);
+    MagnetometerSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
@@ -78,6 +72,12 @@ public:
      */
     static MagnetometerSensorChannelInterface* controlInterface(const QString& id);
 
+protected:
+    virtual void connectNotify(const char* signal);
+
+private:
+    bool frameAvailableConnected;
+
 public Q_SLOTS: // METHODS
     void dataReceived();
     QDBusReply<void> reset();
@@ -88,6 +88,14 @@ Q_SIGNALS: // SIGNALS
      * @param data Current magnetic field measurement.
      */
     void dataAvailable(const MagneticField& data);
+
+    /**
+     * Sent when new measurement frame has become available.
+     * If app doesn't connect to this signal content of frames
+     * will be sent through dataAvailable signal.
+     * @param data New measurement frame.
+     */
+    void frameAvailable(const QVector<MagneticField>& frame);
 };
 
 namespace local {

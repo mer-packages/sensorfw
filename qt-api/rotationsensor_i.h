@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,38 +28,35 @@
 #define ROTATIONSENSOR_I_H
 
 #include <QtDBus/QtDBus>
+#include <QVector>
 
 #include "abstractsensor_i.h"
 #include <datatypes/xyz.h>
 
 /**
  * @brief DBus-interface for listening on device rotation changes.
- * 
+ *
  * Acts as a proxy class for interface \e local.RotationSensor interface.
  *
- * For details of measurement process, see #RotationSensorChannel. 
+ * For details of measurement process, see #RotationSensorChannel.
  */
 class RotationSensorChannelInterface: public AbstractSensorChannelInterface
 {
     Q_OBJECT;
+    Q_DISABLE_COPY(RotationSensorChannelInterface)
     Q_PROPERTY(XYZ rotation READ rotation);
     Q_PROPERTY(bool hasZ READ hasZ);
 
 public:
-    static inline const char *staticInterfaceName()
-    { return "local.RotationSensor"; }
+    static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new RotationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    inline XYZ rotation() const { return qvariant_cast< XYZ >(internalPropGet("rotation")); }
-    inline bool hasZ() const { return qvariant_cast< bool >(internalPropGet("hasZ")); }
+    XYZ rotation() const;
 
-public:
-    RotationSensorChannelInterface(const QString &path, int sessionId);
+    bool hasZ() const;
+
+    RotationSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
@@ -74,6 +72,12 @@ public:
      */
     static RotationSensorChannelInterface* controlInterface(const QString& id);
 
+protected:
+    virtual void connectNotify(const char* signal);
+
+private:
+    bool frameAvailableConnected;
+
 public Q_SLOTS: // METHODS
     void dataReceived();
 
@@ -83,6 +87,14 @@ Q_SIGNALS: // SIGNALS
      * @param data Current device rotation.
      */
     void dataAvailable(const XYZ& data);
+
+    /**
+     * Sent when new measurement frame has become available.
+     * If app doesn't connect to this signal content of frames
+     * will be sent through dataAvailable signal.
+     * @param data New measurement frame.
+     */
+    void frameAvailable(const QVector<XYZ>& frame);
 };
 
 namespace local {

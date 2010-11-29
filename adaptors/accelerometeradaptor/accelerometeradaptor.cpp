@@ -100,7 +100,7 @@ void AccelerometerAdaptor::commitOutput()
     d->x_ = -orientationValue_.y_;
     d->y_ = orientationValue_.x_;
     d->z_ = orientationValue_.z_;
-    
+
     accelerometerBuffer_->commit();
     accelerometerBuffer_->wakeUpReaders();
 }

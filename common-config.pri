@@ -5,7 +5,9 @@
 #
 
 QT += dbus
+QT -= gui
 CONFIG += debug
+CONFIG += thread
 
 # Maemo specific options
 CONFIG += contextprovider

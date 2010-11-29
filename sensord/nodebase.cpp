@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -92,7 +93,7 @@ DataRangeRequest NodeBase::getCurrentDataRange() const
     return DataRangeRequest();
 }
 
-void NodeBase::requestDataRange(int sessionId, DataRange range)
+void NodeBase::requestDataRange(int sessionId, const DataRange& range)
 {
     if (hasLocalRange())
     {
@@ -118,7 +119,7 @@ void NodeBase::requestDataRange(int sessionId, DataRange range)
 
         // If an earlier request exists by same id, replace.
         bool hadPreviousRequest = false;
-        for (int i = 0; i < m_dataRangeQueue.size() && hadPreviousRequest == false; i++) {
+        for (int i = 0; i < m_dataRangeQueue.size() && hadPreviousRequest == false; ++i) {
             if (m_dataRangeQueue.at(i).id_ == sessionId) {
                 m_dataRangeQueue[i].range_ = range;
                 hadPreviousRequest = true;
@@ -129,7 +130,6 @@ void NodeBase::requestDataRange(int sessionId, DataRange range)
             DataRangeRequest request = { sessionId, range };
             m_dataRangeQueue.append(request);
         }
-
 
         if (rangeChanged)
         {
@@ -151,7 +151,7 @@ void NodeBase::removeDataRangeRequest(int sessionId)
     if (hasLocalRange())
     {
         int index = -1;
-        for (int i = 0; i < m_dataRangeQueue.size() && index == -1; i++) {
+        for (int i = 0; i < m_dataRangeQueue.size() && index == -1; ++i) {
             if (m_dataRangeQueue.at(i).id_ == sessionId) {
                 index = i;
             }
@@ -189,6 +189,7 @@ void NodeBase::removeDataRangeRequest(int sessionId)
         m_dataRangeSource->removeDataRangeRequest(sessionId);
     }
 }
+
 void NodeBase::setRangeSource(NodeBase* node)
 {
     m_dataRangeSource = node;
@@ -428,10 +429,9 @@ void NodeBase::removeIntervalRequest(const int sessionId)
     }
 }
 
-bool NodeBase::connectToSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+bool NodeBase::connectToSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader)
 {
-    RingBufferBase* rb;
-    rb = source->findBuffer(bufferName);
+    RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
         // This is critical as long as connections are statically defined.
@@ -450,10 +450,9 @@ bool NodeBase::connectToSource(NodeBase *source, const QString bufferName, RingB
     return success;
 }
 
-bool NodeBase::disconnectFromSource(NodeBase *source, const QString bufferName, RingBufferReaderBase *reader)
+bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader)
 {
-    RingBufferBase* rb;
-    rb = source->findBuffer(bufferName);
+    RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
         sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections";
@@ -481,6 +480,106 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
         {
             return true;
         }
+    }
+    return false;
+}
+
+IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
+{
+    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
+
+    foreach (NodeBase* source, m_sourceList)
+    {
+        return source->getAvailableBufferSizes(hwSupported);
+    }
+    IntegerRangeList list;
+    list.push_back(IntegerRange(1, 200));
+    hwSupported = false;
+    return list;
+}
+
+IntegerRangeList NodeBase::getAvailableBufferIntervals(bool& hwSupported) const
+{
+    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
+
+    foreach (NodeBase* source, m_sourceList)
+    {
+        return source->getAvailableBufferIntervals(hwSupported);
+    }
+    IntegerRangeList list;
+    list.push_back(IntegerRange(0, 60000));
+    hwSupported = false;
+    return list;
+}
+
+bool NodeBase::setBufferSize(int sessionId, unsigned int value)
+{
+    bool hwbuffering = false;
+    if(!isInRange(value, getAvailableBufferSizes(hwbuffering)))
+        return false;
+    m_bufferSizeMap.insert(sessionId, value);
+    return updateBufferSize();
+}
+
+bool NodeBase::clearBufferSize(int sessionId)
+{
+    int index = m_bufferSizeMap.remove(sessionId);
+    updateBufferSize();
+    return index != 0;
+}
+
+bool NodeBase::updateBufferSize()
+{
+    int key = 0;
+    int value = 0;
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferSizeMap.begin(); it != m_bufferSizeMap.end(); ++it)
+    {
+        if(it.key() >= key)
+        {
+            key = it.key();
+            value = it.value();
+        }
+    }
+    if(setBufferSize(value))
+    {
+        emit propertyChanged("buffersize");
+        return true;
+    }
+    return false;
+}
+
+bool NodeBase::setBufferInterval(int sessionId, unsigned int value)
+{
+    bool hwbuffering = false;
+    if(!isInRange(value, getAvailableBufferIntervals(hwbuffering)))
+        return false;
+    m_bufferIntervalMap.insert(sessionId, value);
+    return updateBufferInterval();
+}
+
+bool NodeBase::clearBufferInterval(int sessionId)
+{
+    int index = m_bufferIntervalMap.remove(sessionId);
+    updateBufferInterval();
+    return index != 0;
+}
+
+bool NodeBase::updateBufferInterval()
+{
+    int key = 0;
+    int value = 0;
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferIntervalMap.begin(); it != m_bufferIntervalMap.end(); ++it)
+    {
+        if(it.key() >= key)
+        {
+            key = it.key();
+            value = it.value();
+        }
+    }
+    if(setBufferInterval(value))
+    {
+        emit propertyChanged("bufferinterval");
+        return true;
     }
     return false;
 }

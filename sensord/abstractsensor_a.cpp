@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -63,6 +64,16 @@ unsigned int AbstractSensorChannelAdaptor::interval() const
     return qvariant_cast< unsigned int >(parent()->property("interval"));
 }
 
+unsigned int AbstractSensorChannelAdaptor::bufferInterval() const
+{
+    return qvariant_cast<unsigned int>(parent()->property("bufferInterval"));
+}
+
+unsigned int AbstractSensorChannelAdaptor::bufferSize() const
+{
+    return qvariant_cast<unsigned int>(parent()->property("bufferSize"));
+}
+
 /*
 SensorState AbstractSensorChannelAdaptor::state() const
 {
@@ -108,24 +119,14 @@ bool AbstractSensorChannelAdaptor::setStandbyOverride(int sessionId, bool value)
     return success;
 }
 
-int AbstractSensorChannelAdaptor::getDataRangeCount()
+DataRangeList AbstractSensorChannelAdaptor::getAvailableDataRanges()
 {
-    QList<DataRange> dataRanges;
-    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
-    return dataRanges.size();
-}
-
-DataRange AbstractSensorChannelAdaptor::getAvailableDataRange(int index)
-{
-    QList<DataRange> dataRanges;
-    QMetaObject::invokeMethod(parent(), "getAvailableDataRanges", Q_RETURN_ARG(QList<DataRange>, dataRanges));
-
-    if (dataRanges.size() > index && index >= 0)
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
     {
-        return dataRanges.at(index);
-    } else {
-        return DataRange();
+        return node->getAvailableDataRanges();
     }
+    return DataRangeList();
 }
 
 DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
@@ -145,24 +146,14 @@ void AbstractSensorChannelAdaptor::removeDataRangeRequest(int sessionId)
     QMetaObject::invokeMethod(parent(), "removeDataRangeRequest", Q_ARG(int, sessionId));
 }
 
-int AbstractSensorChannelAdaptor::getIntervalCount()
+DataRangeList AbstractSensorChannelAdaptor::getAvailableIntervals()
 {
-    QList<DataRange> intervals;
-    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
-    return intervals.size();
-}
-
-DataRange AbstractSensorChannelAdaptor::getAvailableInterval(int index)
-{
-    QList<DataRange> intervals;
-    QMetaObject::invokeMethod(parent(), "getAvailableIntervals", Q_RETURN_ARG(QList<DataRange>, intervals));
-
-    if (intervals.size() > index && index >= 0)
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
     {
-        return intervals.at(index);
-    } else {
-        return DataRange();
+        return node->getAvailableIntervals();
     }
+    return DataRangeList();
 }
 
 bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
@@ -171,4 +162,69 @@ bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
     QMetaObject::invokeMethod(parent(), "requestDefaultInterval", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId));
     SensorManager::instance().socketHandler().clearInterval(sessionId);
     return success;
+}
+
+void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int value)
+{
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool hwBuffering = false;
+        node->getAvailableBufferIntervals(hwBuffering);
+        if(hwBuffering)
+        {
+            if(value == 0)
+                node->clearBufferInterval(sessionId);
+            else
+                node->setBufferInterval(sessionId, value);
+            value = 0;
+        }
+        if(value == 0)
+            SensorManager::instance().socketHandler().clearBufferInterval(sessionId);
+        else
+            SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
+    }
+}
+
+void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int value)
+{
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool hwBuffering = false;
+        node->getAvailableBufferSizes(hwBuffering);
+        if(hwBuffering)
+        {
+            if(value == 0)
+                node->clearBufferSize(sessionId);
+            else
+                node->setBufferSize(sessionId, value);
+        }
+        if(value == 0)
+            SensorManager::instance().socketHandler().clearBufferSize(sessionId);
+        else
+            SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+    }
+}
+
+IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
+{
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool dummy;
+        return node->getAvailableBufferIntervals(dummy);
+    }
+    return IntegerRangeList();
+}
+
+IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferSizes() const
+{
+    NodeBase* node = dynamic_cast<NodeBase*>(parent());
+    if(node)
+    {
+        bool dummy;
+        return node->getAvailableBufferSizes(dummy);
+    }
+    return IntegerRangeList();
 }

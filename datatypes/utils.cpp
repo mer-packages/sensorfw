@@ -45,6 +45,9 @@ void __attribute__ ((constructor)) datatypes_init(void)
     qDBusRegisterMetaType<MagneticField>();
     qDBusRegisterMetaType<Tap>();
     qDBusRegisterMetaType<DataRange>();
+    qDBusRegisterMetaType<DataRangeList>();
+    qDBusRegisterMetaType<IntegerRange>();
+    qDBusRegisterMetaType<IntegerRangeList>();
 }
 
 void __attribute__ ((destructor)) datatypes_fini(void)

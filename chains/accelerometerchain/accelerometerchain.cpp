@@ -33,7 +33,7 @@
 #include "sensord/config.h"
 #include "sensord/logging.h"
 
-#include "filters/coordinatealignfilter/coordinatealignfilter.h"
+#include "coordinatealignfilter/coordinatealignfilter.h"
 
 double AccelerometerChain::aconv_[3][3] = { { 1.0, 0.0, 0.0 },
                                             { 0.0, 1.0, 0.0 },

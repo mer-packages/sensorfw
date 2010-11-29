@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,10 +26,18 @@
 
 #include "sensormanagerinterface.h"
 #include "compasssensor_i.h"
-#include <datatypes/orientationdata.h>
 
-CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName(), sessionId) {}
+const char* CompassSensorChannelInterface::staticInterfaceName = "local.CompassSensor";
+
+QDBusAbstractInterface* CompassSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new CompassSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path, int sessionId) :
+    AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName, sessionId)
+{}
 
 const CompassSensorChannelInterface* CompassSensorChannelInterface::listenInterface(const QString& id)
 {
@@ -57,10 +66,28 @@ void CompassSensorChannelInterface::dataReceived()
 {
     CompassData value;
 
-    while (socketReader_->read((void *)&value, sizeof(CompassData))) {
+    while (read((void*)&value, sizeof(CompassData))) {
 
         emit dataAvailable(value);
-
-        prevValue_ = value;
     }
+}
+
+Compass CompassSensorChannelInterface::get() const
+{
+    return qvariant_cast<Compass>(internalPropGet("value"));
+}
+
+bool CompassSensorChannelInterface::useDeclination() const
+{
+    return qvariant_cast<bool>(internalPropGet("usedeclination"));
+}
+
+void CompassSensorChannelInterface::setUseDeclination(bool enable)
+{
+    internalPropSet("usedeclination", qVariantFromValue(enable));
+}
+
+int CompassSensorChannelInterface::declinationValue() const
+{
+    return qvariant_cast<int>(internalPropGet("declinationvalue"));
 }

@@ -28,6 +28,13 @@
 
 #include <QObject>
 #include <QDBusArgument>
+#include <QPair>
+
+typedef QPair<unsigned int, unsigned int> IntegerRange;
+typedef QList<IntegerRange> IntegerRangeList;
+
+Q_DECLARE_METATYPE( IntegerRange )
+Q_DECLARE_METATYPE( IntegerRangeList )
 
 /**
  * Datatype for storing sensor data range information.
@@ -66,7 +73,10 @@ public:
 
 };
 
+typedef QList<DataRange> DataRangeList;
+
 Q_DECLARE_METATYPE( DataRange )
+Q_DECLARE_METATYPE( DataRangeList )
 
 // Marshall the DataRange data into a D-Bus argument
 inline
@@ -85,6 +95,76 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
     argument.beginStructure();
     argument >> data.min >> data.max >> data.resolution;
     argument.endStructure();
+    return argument;
+}
+
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
+{
+    argument.beginArray(qMetaTypeId<DataRange>());
+    foreach(DataRange range, data)
+    {
+        argument << range;
+    }
+    argument.endArray();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &data)
+{
+    argument.beginArray();
+    data.clear();
+    while ( !argument.atEnd() ) {
+        DataRange element;
+        argument >> element;
+        data.append( element );
+    }
+    argument.endArray();
+    return argument;
+}
+
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
+{
+    argument.beginStructure();
+    argument << data.first << data.second;
+    argument.endStructure();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &data)
+{
+    argument.beginStructure();
+    argument >> data.first >> data.second;
+    argument.endStructure();
+    return argument;
+}
+
+inline
+QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
+{
+    argument.beginArray(qMetaTypeId<IntegerRange>());
+    foreach(IntegerRange range, data)
+    {
+        argument << range;
+    }
+    argument.endArray();
+    return argument;
+}
+
+inline
+const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList &data)
+{
+    argument.beginArray();
+    data.clear();
+    while ( !argument.atEnd() ) {
+        IntegerRange element;
+        argument >> element;
+        data.append( element );
+    }
+    argument.endArray();
     return argument;
 }
 
@@ -115,5 +195,16 @@ public:
         return (id_ == right.id_ && value_ == right.value_);
     }
 };
+
+template<typename T, typename U>
+inline bool isInRange(T ref, const U& container)
+{
+    foreach(typename U::value_type value, container)
+    {
+        if(ref >= value.first && ref <= value.second)
+            return true;
+    }
+    return false;
+}
 
 #endif // DATARANGE_H

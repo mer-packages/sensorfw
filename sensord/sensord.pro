@@ -1,5 +1,4 @@
-QT += dbus network
-QT -= gui
+QT += network
 
 TEMPLATE = app
 TARGET = sensord
@@ -19,8 +18,7 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 LIBS += -Wl,-rpath,/usr/lib/sensord
 LIBS += -Wl,-E
-
-QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes
+LIBS += -L../datatypes -lsensordatatypes
 
 SOURCES += main.cpp \
     sensormanager.cpp \

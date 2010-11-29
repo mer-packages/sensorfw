@@ -108,6 +108,16 @@ int main(int argc, char *argv[])
     signal(SIGUSR1, signalHandler);
     signal(SIGUSR2, signalFlush);
 
+   // TODO: this results in error messages in case only Ariane is used
+
+    // Leave loading for client app. ALS loaded for context fw.
+    //sensordLogD() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
+    //sensordLogD() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
+    sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
+    //sensordLogD() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
+    //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
+    //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
+
 #ifdef PROVIDE_CONTEXT_INFO
 
     if (parser.contextInfo())

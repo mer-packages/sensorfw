@@ -8,6 +8,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Semi Malinen <semi.malinen@nokia.com
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,92 +30,64 @@
 #define ABSTRACTSENSOR_I_H
 
 #include <QtDBus/QtDBus>
-#include <QLocalSocket>
 #include <QList>
+#include <QVector>
+#include <QString>
 
 #include "sfwerror.h"
 #include "serviceinfo.h"
 #include "socketreader.h"
 #include "datatypes/datarange.h"
 
-/**
+/*
  * Proxy class for interface local.Sensor
  */
 class AbstractSensorChannelInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AbstractSensorChannelInterface)
+    Q_PROPERTY(int sessionId READ sessionId)
+    Q_PROPERTY(SensorError errorCode READ errorCode)
+    Q_PROPERTY(QString errorString READ errorString)
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(QString id READ id)
+    Q_PROPERTY(int interval READ interval WRITE setInterval)
+    Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride)
+    Q_PROPERTY(QString type READ type)
+    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval WRITE setBufferInterval)
+    Q_PROPERTY(unsigned int bufferSize READ bufferSize WRITE setBufferSize)
 
 public:
     virtual ~AbstractSensorChannelInterface();
 
     bool release();
 
-    Q_PROPERTY(int sessionId READ sessionId)
-    int sessionId() const { return sessionId_; }
+    int sessionId() const;
 
-    Q_PROPERTY(SensorError errorCode READ errorCode)
-    SensorError errorCode() const
-    {
-        // TODO: This solution may introduce problems, if errors are
-        //       not cleared before another happens.
-        if (errorCode_ != SNoError) {
-            return errorCode_;
-        }
-        return static_cast<SensorError>(errorCodeInt());
-    }
+    SensorError errorCode() const;
 
-    Q_PROPERTY(QString errorString READ errorString)
-    QString errorString() const
-    {
-        if (errorCode_ != SNoError) {
-            return errorString_;
-        }
-        return qvariant_cast< QString >(internalPropGet("errorString"));
-    }
+    QString errorString() const;
 
-    Q_PROPERTY(QString description READ description)
-    inline QString description() const
-    { return qvariant_cast< QString >(internalPropGet("description")); }
+    QString description() const;
 
-    Q_PROPERTY(QString id READ id)
-    inline QString id() const
-    { return qvariant_cast< QString >(internalPropGet("id")); }
+    QString id() const;
 
-    Q_PROPERTY(int interval READ interval WRITE setInterval)
-    inline int interval() const
-    {
-        // TODO: If stopped, return own request.
-        return qvariant_cast< int >(internalPropGet("interval"));
-    }
-    inline void setInterval(int value)
-    {
-        interval_ = value;
-        // Only set when running
-        if (running_) {
-            setInterval(sessionId_, value);
-        }
-    }
+    int interval() const;
+    void setInterval(int value);
 
-    Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride);
-    inline bool standbyOverride() const
-    {
-        return standbyOverride_ || qvariant_cast< bool >(internalPropGet("standbyOverride"));;
-    }
-    inline bool setStandbyOverride(bool override)
-    {
-        standbyOverride_ = override;
-        return setStandbyOverride(sessionId_, override);
-    }
+    bool standbyOverride() const;
+    bool setStandbyOverride(bool override);
 
-    /*
-    Q_PROPERTY(SensorState state READ state)
-    inline SensorState state() const
-    { return qvariant_cast< SensorState >(internalPropGet("state")); }
-    */
+    unsigned int bufferInterval() const;
+    void setBufferInterval(unsigned int value);
+    IntegerRangeList getAvailableBufferIntervals();
 
-    Q_PROPERTY(QString type READ type)
-    inline QString type() const
-    { return qvariant_cast< QString >(internalPropGet("type")); }
+    unsigned int bufferSize() const;
+    void setBufferSize(unsigned int value);
+    IntegerRangeList getAvailableBufferSizes();
+
+    QString type() const;
 
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
@@ -122,66 +95,56 @@ public:
     /**
      * Get the list of available intervals for the sensor.
      *
-     * @return List of available intervals.
+     * @return List of available intervals (or interval ranges)
      */
-    QList<DataRange> getAvailableIntervals();
+    DataRangeList getAvailableIntervals();
 
-    QList<DataRange> getAvailableDataRanges();
+    DataRangeList getAvailableDataRanges();
     DataRange getCurrentDataRange();
     void requestDataRange(DataRange range);
     void removeDataRangeRequest();
 
-private: // this exists as a hack because enums cannot be marshalled over D-BUS
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
-    int errorCodeInt() const
-    { return static_cast<SensorManagerError>(qvariant_cast< int >(internalPropGet("errorCodeInt"))); }
-
+private:
+    int errorCodeInt() const;
     void setError(SensorError errorCode, const QString& errorString);
-    void clearError() { errorCode_ = SNoError; errorString_.clear(); }
-
-public Q_SLOTS:
+    void clearError();
 
 protected Q_SLOTS:
     QDBusReply<void> setInterval(int sessionId, int value);
     QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
+    QDBusReply<void> setBufferInterval(int sessionId, unsigned int value);
+    QDBusReply<void> setBufferSize(int sessionId, unsigned int value);
 
 private Q_SLOTS: // METHODS
     QDBusReply<void> start(int sessionId);
     QDBusReply<void> stop(int sessionId);
 
-    virtual void dataReceived() {}
+    virtual void dataReceived();
 
 Q_SIGNALS: // SIGNALS
-    // TODO add state back
-    /*
-    void stateChanged(SensorState state);
-    */
     void propertyChanged(const QString& name);
 
-protected :
-    AbstractSensorChannelInterface(const QString &path, const char* interfaceName, int sessionId);
+protected:
+    AbstractSensorChannelInterface(const QString& path, const char* interfaceName, int sessionId);
 
-    int sessionId_;
-    bool running_;
-    bool standbyOverride_;
-    int interval_;
+    bool read(void* buffer, int size);
 
-    SocketReader* socketReader_;
+    template<typename T>
+    bool read(QVector<T>& values);
 
 private:
-    SensorError errorCode_;
-    QString errorString_;
+    struct AbstractSensorChannelInterfaceImpl;
 
-public:
-    /**
-     * Request the sensor to run at default interval. This will reset
-     * any interval requests that have been made from this client.
-     *
-     * Note that interval requests from other clients may affect the
-     * actual rate that is used.
-     */
-    void setDefaultInterval();
+    AbstractSensorChannelInterfaceImpl* pimpl_;
+
+    SocketReader& getSocketReader() const;
 };
+
+template<typename T>
+bool AbstractSensorChannelInterface::read(QVector<T>& values)
+{
+    return getSocketReader().read(values);
+}
 
 namespace local {
   typedef ::AbstractSensorChannelInterface AbstractSensor;

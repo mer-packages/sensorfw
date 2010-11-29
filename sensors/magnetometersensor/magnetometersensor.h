@@ -48,7 +48,7 @@ class MagnetometerSensorChannel :
     Q_OBJECT;
     Q_PROPERTY(MagneticField magneticField READ magneticField);
     Q_PROPERTY(int resetCalibration WRITE reset_);
-    
+
 public:
     /**
      * Factory method for MagnetometerSensorChannel.
@@ -58,7 +58,7 @@ public:
     {
         MagnetometerSensorChannel* sc = new MagnetometerSensorChannel(id);
         new MagnetometerSensorChannelAdaptor(sc);
-        
+
         return sc;
     }
 
@@ -78,13 +78,12 @@ signals:
      */
     void dataAvailable(const MagneticField& data);
     void internalData(const MagneticField& data);
-    
+
 protected:
     MagnetometerSensorChannel(const QString& id);
     ~MagnetometerSensorChannel();
 
-    virtual bool setDataRange(const DataRange range, const int sessionId);
-
+    virtual bool setDataRange(const DataRange& range, int sessionId);
 
 private:
     Bin*                                       filterBin_;

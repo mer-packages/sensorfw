@@ -25,8 +25,14 @@
 
 #include "socketreader.h"
 
+const char* SocketReader::channelIDString = "_SENSORCHANNEL_";
+
 SocketReader::SocketReader(QObject* parent) :
-    QObject(parent), socket_(NULL), tagRead_(false) {}
+    QObject(parent),
+    socket_(NULL),
+    tagRead_(false)
+{
+}
 
 SocketReader::~SocketReader()
 {
@@ -51,7 +57,7 @@ bool SocketReader::initiateConnection(int sessionId)
     }
 
     if (socket_->write((const char*)&sessionId, sizeof(sessionId)) != sizeof(sessionId)) {
-        qDebug() << "[SOCKETREADER]: SessionId write failed:" << socket_->errorString();
+        qDebug() << "[SOCKETREADER]: SessionId write failed: " << socket_->errorString();
     }
     socket_->flush();
 
@@ -64,7 +70,7 @@ bool SocketReader::dropConnection()
         qDebug() << "Attempting to drop non-existant connection.";
         return false;
     }
-    
+
     socket_->disconnectFromServer();
     delete socket_;
     socket_ = NULL;
@@ -85,12 +91,12 @@ bool SocketReader::readSocketTag()
         qDebug() << "Not connected";
         return false;
     }
-    
-    QString idString(CHANNEL_ID_STRING);
-    char tmpBuffer[idString.size()+1];
-    
-    memset(tmpBuffer, 0x0, idString.size()+1);
-    if (idString.size()+1 > socket_->read(tmpBuffer, idString.size()+1)) {
+
+    QString idString(channelIDString);
+    char tmpBuffer[idString.size() + 1];
+
+    memset(tmpBuffer, 0x0, idString.size() + 1);
+    if (idString.size() + 1 > socket_->read(tmpBuffer, idString.size() + 1)) {
         return false;
     }
     tagRead_ = true;
@@ -112,18 +118,12 @@ bool SocketReader::read(void* buffer, int size)
             // set error on failed tag read
         }
     }
-    
+
     int bytesRead = socket_->read((char *)buffer, size);
-    if (bytesRead <= 0) {
-        return false;
-    }
-    return true;
+    return (bytesRead > 0);
 }
 
 bool SocketReader::isConnected()
 {
-    if (socket_ && socket_->isValid() && socket_->state() == QLocalSocket::ConnectedState) {
-        return true;
-    }
-    return false;
+    return (socket_ && socket_->isValid() && socket_->state() == QLocalSocket::ConnectedState);
 }

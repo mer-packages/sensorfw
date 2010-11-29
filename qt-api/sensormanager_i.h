@@ -9,6 +9,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,7 +31,7 @@
 #define SENSORMANAGER_I_H
 
 #include <QtDBus/QtDBus>
-
+#include <QString>
 #include "sfwerror.h"
 
 /*
@@ -39,66 +40,35 @@
 class LocalSensorManagerInterface: public QDBusAbstractInterface
 {
     Q_OBJECT
+    Q_DISABLE_COPY(LocalSensorManagerInterface)
+    Q_PROPERTY(SensorManagerError errorCode READ errorCode)
+    Q_PROPERTY(QString errorString READ errorString)
+    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+
+    int errorCodeInt() const; // this exists as a hack because enums cannot be marshalled over D-BUS
 
 public:
-    static inline const char *staticInterfaceName()
-    { return "local.SensorManager"; }
-
-    Q_PROPERTY(SensorManagerError errorCode READ errorCode)
-    SensorManagerError errorCode() const
-    { return static_cast<SensorManagerError>(errorCodeInt()); }
-
-    Q_PROPERTY(QString errorString READ errorString)
-    QString errorString() const
-    { return qvariant_cast< QString >(internalPropGet("errorString")); }
+    static const char* staticInterfaceName;
 
     virtual ~LocalSensorManagerInterface();
 
-private: // this exists as a hack because enums cannot be marshalled over D-BUS
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
-    int errorCodeInt() const
-    { return static_cast<SensorManagerError>(qvariant_cast< int >(internalPropGet("errorCodeInt"))); }
+    SensorManagerError errorCode() const;
+    QString errorString() const;
 
 public Q_SLOTS: // METHODS
-    inline QDBusReply<bool> loadPlugin(const QString& name)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(name);
-        return callWithArgumentList(QDBus::Block, QLatin1String("loadPlugin"), argumentList);
-    }
+    QDBusReply<bool> loadPlugin(const QString& name);
 
-    inline QDBusReply<int> requestControlSensor(const QString &id)
-    {
-        QList<QVariant> argumentList;
-        qint64 pid = QCoreApplication::applicationPid();
-        argumentList << qVariantFromValue(id);
-        argumentList << qVariantFromValue(pid);
-        return callWithArgumentList(QDBus::Block, QLatin1String("requestControlSensor"), argumentList);
-    }
+    QDBusReply<int> requestControlSensor(const QString& id);
 
-    inline QDBusReply<int> requestListenSensor(const QString &id)
-    {
-        qint64 pid = QCoreApplication::applicationPid();
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(id);
-        argumentList << qVariantFromValue(pid);
-        return callWithArgumentList(QDBus::Block, QLatin1String("requestListenSensor"), argumentList);
-    }
+    QDBusReply<int> requestListenSensor(const QString& id);
 
-    inline QDBusReply<bool> releaseSensor(const QString &id, int sessionId)
-    {
-        QList<QVariant> argumentList;
-        argumentList << qVariantFromValue(id) << qVariantFromValue(sessionId);
-        qint64 pid = QCoreApplication::applicationPid();
-        argumentList << qVariantFromValue(pid);
-        return callWithArgumentList(QDBus::Block, QLatin1String("releaseSensor"), argumentList);
-    }
+    QDBusReply<bool> releaseSensor(const QString& id, int sessionId);
 
 Q_SIGNALS: // SIGNALS
     void errorSignal(int error);
 
 protected:
-    LocalSensorManagerInterface(const QString &service, const QString &path, const QDBusConnection &connection, QObject *parent = 0);
+    LocalSensorManagerInterface(const QString& service, const QString& path, const QDBusConnection& connection, QObject* parent = 0);
 };
 
 namespace local {

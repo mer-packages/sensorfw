@@ -71,7 +71,7 @@ public:
     }
 
     virtual unsigned int interval() const;
-    virtual bool setInterval(const unsigned int value, const int sessionId);
+    virtual bool setInterval(unsigned int value, int sessionId);
 
 public Q_SLOTS:
     bool start();

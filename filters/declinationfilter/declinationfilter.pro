@@ -1,22 +1,8 @@
-TEMPLATE = lib
-CONFIG += plugin link_pkgconfig
-
-QT += dbus
-QT -= gui
-
-PKGCONFIG   += gconf-2.0
-
 TARGET = declinationfilter
 
-include( ../../common-config.pri )
+CONFIG += link_pkgconfig
 
-SENSORFW_INCLUDEPATHS = ../.. \
-                        ../../include \
-                        ../../sensord \
-                        ../../datatypes
-
-DEPENDPATH += $$SENSORFW_INCLUDEPATHS
-INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
+PKGCONFIG += gconf-2.0
 
 HEADERS += declinationfilter.h \
            declinationfilterplugin.h
@@ -24,8 +10,4 @@ HEADERS += declinationfilter.h \
 SOURCES += declinationfilter.cpp \
            declinationfilterplugin.cpp
 
-include(../../common-install.pri)
-publicheaders.files = $$HEADERS
-
-target.path = $$PLUGINPATH
-INSTALLS += target
+include( ../filter-config.pri )

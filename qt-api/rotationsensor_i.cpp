@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,8 +27,19 @@
 #include "sensormanagerinterface.h"
 #include "rotationsensor_i.h"
 
-RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName(), sessionId) {}
+const char* RotationSensorChannelInterface::staticInterfaceName = "local.RotationSensor";
+
+QDBusAbstractInterface* RotationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new RotationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+RotationSensorChannelInterface::RotationSensorChannelInterface(const QString &path, int sessionId) :
+    AbstractSensorChannelInterface(path, RotationSensorChannelInterface::staticInterfaceName, sessionId),
+    frameAvailableConnected(false)
+{
+}
 
 const RotationSensorChannelInterface* RotationSensorChannelInterface::listenInterface(const QString& id)
 {
@@ -54,8 +66,44 @@ RotationSensorChannelInterface* RotationSensorChannelInterface::controlInterface
 
 void RotationSensorChannelInterface::dataReceived()
 {
-    TimedXyzData value;
-    while (socketReader_->read((void *)&value, sizeof(TimedXyzData))) {
-        emit dataAvailable(XYZ(value));
+    QVector<TimedXyzData> values;
+    while (read<TimedXyzData>(values))
+    {
+        if(values.size() == 1)
+            emit dataAvailable(XYZ(values.back()));
+        else
+        {
+            if(frameAvailableConnected)
+            {
+                QVector<XYZ> realValues;
+                realValues.reserve(values.size());
+                foreach(TimedXyzData data, values)
+                    realValues.push_back(XYZ(data));
+                emit frameAvailable(realValues);
+                values.clear();
+            }
+            else
+            {
+                foreach(TimedXyzData data, values)
+                    emit dataAvailable(XYZ(data));
+            }
+        }
     }
+}
+
+XYZ RotationSensorChannelInterface::rotation() const
+{
+    return qvariant_cast< XYZ >(internalPropGet("rotation"));
+}
+
+bool RotationSensorChannelInterface::hasZ() const
+{
+    return qvariant_cast< bool >(internalPropGet("hasZ"));
+}
+
+void RotationSensorChannelInterface::connectNotify(const char* signal)
+{
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+        frameAvailableConnected = true;
+    QDBusAbstractInterface::connectNotify(signal);
 }

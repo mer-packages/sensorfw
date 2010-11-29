@@ -446,4 +446,125 @@ void ClientApiTest::testListenSessionInitiation()
     QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor listen channel");
 }
 
+void ClientApiTest::testBuffering()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    TestClient client(*magnetometer, true);
+    magnetometer->setInterval(100);
+    magnetometer->setBufferSize(10);
+    magnetometer->setBufferInterval(1500);
+
+    magnetometer->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
+    QTest::qWait(1400);
+
+    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getFrameDataCount() == 10);
+
+    qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
+    QTest::qWait(1400);
+
+    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getFrameCount() == 2);
+    QVERIFY(client.getFrameDataCount() == 20);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+
+void ClientApiTest::testBufferingHighRate()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    TestClient client(*magnetometer, true);
+    magnetometer->setInterval(10);
+    magnetometer->setBufferSize(200);
+    magnetometer->setBufferInterval(5000);
+
+    magnetometer->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 3500ms.";
+    QTest::qWait(3500);
+
+    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getFrameDataCount() == 200);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+void ClientApiTest::testBufferingCompatibility()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    TestClient client(*magnetometer, false);
+    magnetometer->setInterval(100);
+    magnetometer->setBufferSize(10);
+    magnetometer->setBufferInterval(1500);
+
+    magnetometer->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
+    QTest::qWait(1400);
+
+    QVERIFY(client.getDataCount() == 10);
+    QVERIFY(client.getFrameCount() == 0);
+    QVERIFY(client.getFrameDataCount() == 0);
+
+    qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
+    QTest::qWait(1400);
+
+    QVERIFY(client.getDataCount() == 20);
+    QVERIFY(client.getFrameCount() == 0);
+    QVERIFY(client.getFrameDataCount() == 0);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+void ClientApiTest::testAvailableBufferIntervals()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    IntegerRangeList rangeList = magnetometer->getAvailableBufferIntervals();
+    QVERIFY(rangeList.size() == 1);
+    QVERIFY(rangeList.front().first == 0);
+    QVERIFY(rangeList.front().second == 60000);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+void ClientApiTest::testAvailableBufferSizes()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    IntegerRangeList rangeList = magnetometer->getAvailableBufferSizes();
+    QVERIFY(rangeList.size() == 1);
+    QVERIFY(rangeList.front().first == 1);
+    QVERIFY(rangeList.front().second == 200);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
+    dataCount(0),
+    frameCount(0),
+    frameDataCount(0)
+{
+    connect(&iface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(dataAvailable(const MagneticField&)));
+    if(listenFrames)
+        connect(&iface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(frameAvailable(const QVector<MagneticField>&)));
+}
+
+TestClient::~TestClient()
+{
+}
+
 QTEST_MAIN(ClientApiTest)

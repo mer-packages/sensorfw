@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,10 +26,18 @@
 
 #include "sensormanagerinterface.h"
 #include "accelerometersensor_i.h"
-#include <datatypes/orientationdata.h>
 
-AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName(), sessionId)
+const char* AccelerometerSensorChannelInterface::staticInterfaceName = "local.AccelerometerSensor";
+
+QDBusAbstractInterface* AccelerometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
+AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const QString &path, int sessionId) :
+    AbstractSensorChannelInterface(path, AccelerometerSensorChannelInterface::staticInterfaceName, sessionId),
+    frameAvailableConnected(false)
 {
 }
 
@@ -57,8 +66,39 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::contro
 
 void AccelerometerSensorChannelInterface::dataReceived()
 {
-    AccelerationData value;
-    while (socketReader_->read((void *)&value, sizeof(AccelerationData))) {
-        emit dataAvailable(XYZ(value));
+    QVector<AccelerationData> values;
+    while (read<AccelerationData>(values))
+    {
+        if(values.size() == 1)
+            emit dataAvailable(XYZ(values.back()));
+        else
+        {
+            if(frameAvailableConnected)
+            {
+                QVector<XYZ> realValues;
+                realValues.reserve(values.size());
+                foreach(AccelerationData data, values)
+                    realValues.push_back(XYZ(data));
+                emit frameAvailable(realValues);
+                values.clear();
+            }
+            else
+            {
+                foreach(AccelerationData data, values)
+                    emit dataAvailable(XYZ(data));
+            }
+        }
     }
+}
+
+XYZ AccelerometerSensorChannelInterface::get() const
+{
+    return qvariant_cast<XYZ>(internalPropGet("value"));
+}
+
+void AccelerometerSensorChannelInterface::connectNotify(const char* signal)
+{
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+        frameAvailableConnected = true;
+    QDBusAbstractInterface::connectNotify(signal);
 }

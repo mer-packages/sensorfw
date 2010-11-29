@@ -7,6 +7,7 @@
 
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,13 +28,37 @@
 #include "sensormanagerinterface.h"
 #include "abstractsensor_i.h"
 
-AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &path, const char* interfaceName, int sessionId) :
-        QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
-        sessionId_(sessionId), running_(false), interval_(-1), standbyOverride_(false), socketReader_(NULL)
+struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
 {
-    socketReader_ = new SocketReader(this);
+    AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId);
 
-    if (!socketReader_->initiateConnection(sessionId_)) {
+    SensorError errorCode_;
+    QString errorString_;
+    int sessionId_;
+    int interval_;
+    unsigned int bufferInterval_;
+    unsigned int bufferSize_;
+    SocketReader socketReader_;
+    bool running_;
+    bool standbyOverride_;
+};
+
+AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId) :
+    sessionId_(sessionId),
+    interval_(0),
+    bufferInterval_(0),
+    bufferSize_(1),
+    socketReader_(parent),
+    running_(false),
+    standbyOverride_(false)
+{
+}
+
+AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString& path, const char* interfaceName, int sessionId) :
+    QDBusAbstractInterface(SERVICE_NAME, path, interfaceName, QDBusConnection::systemBus(), 0),
+    pimpl_(new AbstractSensorChannelInterfaceImpl(this, sessionId))
+{
+    if (!pimpl_->socketReader_.initiateConnection(sessionId)) {
         setError(SClientSocketError, "Socket connection failed.");
         // TODO: Invalidate!
     }
@@ -46,71 +71,62 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString &pa
 AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
 {
     if ( isValid() )
-    {
         release();
-    }
+    if (!pimpl_->socketReader_.dropConnection())
+        setError(SClientSocketError, "Socket disconnect failed.");
+    delete pimpl_;
+}
 
-    if (socketReader_) {
-
-        if (!socketReader_->dropConnection()) {
-            setError(SClientSocketError, "Socket disconnect failed.");
-        }
-        delete socketReader_;
-    }
+SocketReader& AbstractSensorChannelInterface::getSocketReader() const
+{
+    return pimpl_->socketReader_;
 }
 
 bool AbstractSensorChannelInterface::release()
 {
     // ToDo: note that after release this interace becomes invalid (this should be handled correctly)
-    bool result = SensorManagerInterface::instance().releaseInterface(id(), sessionId_);
-    return result;
+    return SensorManagerInterface::instance().releaseInterface(id(), pimpl_->sessionId_);
 }
 
 void AbstractSensorChannelInterface::setError(SensorError errorCode, const QString& errorString)
 {
-    errorCode_   = errorCode;
-    errorString_ = errorString;
+    pimpl_->errorCode_   = errorCode;
+    pimpl_->errorString_ = errorString;
 
     //emit errorSignal(errorCode);
 }
 
 QDBusReply<void> AbstractSensorChannelInterface::start()
 {
-    return start(sessionId_);
+    return start(pimpl_->sessionId_);
 }
 
 QDBusReply<void> AbstractSensorChannelInterface::stop()
 {
-    return stop(sessionId_);
+    return stop(pimpl_->sessionId_);
 }
 
 QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
 {
     clearError();
 
-    if (running_) {
+    if (pimpl_->running_) {
         return QDBusReply<void>();
     }
-    running_ = true;
+    pimpl_->running_ = true;
 
-    if (socketReader_) {
-        connect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    }
+    connect(pimpl_->socketReader_.socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
     QDBusReply<void> returnValue = callWithArgumentList(QDBus::Block, QLatin1String("start"), argumentList);
-   
-    if (standbyOverride_)
+
+    if (pimpl_->standbyOverride_)
     {
         setStandbyOverride(sessionId, true);
-    } 
-
-    // Set interval request if valid request exists
-    if (interval_ >= 0)
-    {
-        setInterval(sessionId, interval_);
     }
+    /// Send interval request when started.
+    setInterval(sessionId, pimpl_->interval_);
 
     return returnValue;
 }
@@ -119,16 +135,15 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
 {
     clearError();
 
-    if (!running_) {
+    if (!pimpl_->running_) {
         return QDBusReply<void>();
     }
-    running_ = false ;
+    pimpl_->running_ = false ;
 
-    if (socketReader_) {
-        disconnect(socketReader_->socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    }
-
+    disconnect(pimpl_->socketReader_.socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
     setStandbyOverride(sessionId, false);
+    /// Drop interval requests when stopped
+    setInterval(sessionId, 0);
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
@@ -144,6 +159,24 @@ QDBusReply<void> AbstractSensorChannelInterface::setInterval(int sessionId, int 
     return callWithArgumentList(QDBus::Block, QLatin1String("setInterval"), argumentList);
 }
 
+QDBusReply<void> AbstractSensorChannelInterface::setBufferInterval(int sessionId, unsigned int value)
+{
+    clearError();
+
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
+    return callWithArgumentList(QDBus::Block, QLatin1String("setBufferInterval"), argumentList);
+}
+
+QDBusReply<void> AbstractSensorChannelInterface::setBufferSize(int sessionId, unsigned int value)
+{
+    clearError();
+
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
+    return callWithArgumentList(QDBus::Block, QLatin1String("setBufferSize"), argumentList);
+}
+
 QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionId, bool value)
 {
     clearError();
@@ -153,19 +186,10 @@ QDBusReply<bool> AbstractSensorChannelInterface::setStandbyOverride(int sessionI
     return callWithArgumentList(QDBus::Block, QLatin1String("setStandbyOverride"), argumentList);
 }
 
-QList<DataRange> AbstractSensorChannelInterface::getAvailableDataRanges()
+DataRangeList AbstractSensorChannelInterface::getAvailableDataRanges()
 {
-    clearError();
-
-    QList<DataRange> dataRanges;
-
-    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getDataRangeCount"));
-
-    for (int i = 0; i < retVal.value(); i++) {
-        QDBusReply<DataRange> range = call(QDBus::Block, QLatin1String("getAvailableDataRange"), qVariantFromValue(i));
-        dataRanges.append(range.value());
-    }
-    return dataRanges;
+    QDBusReply<DataRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableDataRanges"));
+    return ret.value();
 }
 
 DataRange AbstractSensorChannelInterface::getCurrentDataRange()
@@ -178,33 +202,134 @@ DataRange AbstractSensorChannelInterface::getCurrentDataRange()
 void AbstractSensorChannelInterface::requestDataRange(DataRange range)
 {
     clearError();
-    call(QDBus::Block, QLatin1String("requestDataRange"), qVariantFromValue(sessionId_), qVariantFromValue(range));
+    call(QDBus::Block, QLatin1String("requestDataRange"), qVariantFromValue(pimpl_->sessionId_), qVariantFromValue(range));
 }
 
 void AbstractSensorChannelInterface::removeDataRangeRequest()
 {
     clearError();
-    call(QDBus::Block, QLatin1String("removeDataRangeRequest"), qVariantFromValue(sessionId_));
+    call(QDBus::Block, QLatin1String("removeDataRangeRequest"), qVariantFromValue(pimpl_->sessionId_));
 }
 
-void AbstractSensorChannelInterface::setDefaultInterval()
+DataRangeList AbstractSensorChannelInterface::getAvailableIntervals()
 {
-    clearError();
-    interval_ = -1;
-    call(QDBus::Block, QLatin1String("requestDefaultInterval"), qVariantFromValue(sessionId_));
+    QDBusReply<DataRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableIntervals"));
+    return ret.value();
 }
 
-QList<DataRange> AbstractSensorChannelInterface::getAvailableIntervals()
+IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferIntervals()
 {
-    clearError();
+    QDBusReply<IntegerRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferIntervals"));
+    return ret.value();
+}
 
-    QList<DataRange> intervals;
+IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferSizes()
+{
+    QDBusReply<IntegerRangeList> ret = call(QDBus::Block, QLatin1String("getAvailableBufferSizes"));
+    return ret.value();
+}
 
-    QDBusReply<int> retVal = call(QDBus::Block, QLatin1String("getIntervalCount"));
+int AbstractSensorChannelInterface::sessionId() const
+{
+    return pimpl_->sessionId_;
+}
 
-    for (int i = 0; i < retVal.value(); i++) {
-        QDBusReply<DataRange> interval = call(QDBus::Block, QLatin1String("getAvailableInterval"), qVariantFromValue(i));
-        intervals.append(interval.value());
+SensorError AbstractSensorChannelInterface::errorCode() const
+{
+    // TODO: This solution may introduce problems, if errors are
+    //       not cleared before another happens.
+    if (pimpl_->errorCode_ != SNoError) {
+        return pimpl_->errorCode_;
     }
-    return intervals;
+    return static_cast<SensorError>(errorCodeInt());
+}
+
+QString AbstractSensorChannelInterface::errorString() const
+{
+    if (pimpl_->errorCode_ != SNoError) {
+        return pimpl_->errorString_;
+    }
+    return qvariant_cast<QString>(internalPropGet("errorString"));
+}
+
+QString AbstractSensorChannelInterface::description() const
+{
+    return qvariant_cast<QString>(internalPropGet("description"));
+}
+
+QString AbstractSensorChannelInterface::id() const
+{
+    return qvariant_cast<QString>(internalPropGet("id"));
+}
+
+int AbstractSensorChannelInterface::interval() const
+{
+    return qvariant_cast<int>(internalPropGet("interval"));
+}
+
+void AbstractSensorChannelInterface::setInterval(int value)
+{
+    pimpl_->interval_ = value;
+    if (!pimpl_->running_)
+        setInterval(pimpl_->sessionId_, value);
+}
+
+unsigned int AbstractSensorChannelInterface::bufferInterval() const
+{
+    return qvariant_cast<unsigned int>(internalPropGet("bufferInterval"));
+}
+
+void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
+{
+    pimpl_->bufferInterval_ = value;
+    if (!pimpl_->running_)
+        setBufferInterval(pimpl_->sessionId_, value);
+}
+
+unsigned int AbstractSensorChannelInterface::bufferSize() const
+{
+    return qvariant_cast<unsigned int>(internalPropGet("bufferSize"));
+}
+
+void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
+{
+    pimpl_->bufferSize_ = value;
+    if (!pimpl_->running_)
+        setBufferSize(pimpl_->sessionId_, value);
+}
+
+bool AbstractSensorChannelInterface::standbyOverride() const
+{
+    return pimpl_->standbyOverride_ || qvariant_cast<bool>(internalPropGet("standbyOverride"));
+}
+
+bool AbstractSensorChannelInterface::setStandbyOverride(bool override)
+{
+    pimpl_->standbyOverride_ = override;
+    return setStandbyOverride(pimpl_->sessionId_, override);
+}
+
+QString AbstractSensorChannelInterface::type() const
+{
+    return qvariant_cast<QString>(internalPropGet("type"));
+}
+
+int AbstractSensorChannelInterface::errorCodeInt() const
+{
+    return static_cast<SensorManagerError>(qvariant_cast<int>(internalPropGet("errorCodeInt")));
+}
+
+void AbstractSensorChannelInterface::clearError()
+{
+    pimpl_->errorCode_ = SNoError;
+    pimpl_->errorString_.clear();
+}
+
+void AbstractSensorChannelInterface::dataReceived()
+{
+}
+
+bool AbstractSensorChannelInterface::read(void* buffer, int size)
+{
+    return pimpl_->socketReader_.read(buffer, size);
 }

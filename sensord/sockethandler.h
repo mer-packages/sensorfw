@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -49,16 +50,25 @@ public:
     QLocalSocket* getSocket() const { return socket; };
     QLocalSocket* stealSocket();
     void setInterval(int interval);
+    int getInterval() const;
+    void setBufferSize(unsigned int size);
+    unsigned int getBufferSize() const;
+    void setBufferInterval(unsigned int interval);
+    unsigned int getBufferInterval() const;
 
 private:
     long sinceLastWrite() const;
+    bool write(const void* source, int size, unsigned int count);
 
     QLocalSocket* socket;
     int interval;
     char* buffer;
     int size;
+    unsigned int count;
     struct timeval lastWrite;
     QTimer timer;
+    unsigned int bufferSize;
+    unsigned int bufferInterval;
 
 private slots:
     void delayedWrite();
@@ -83,6 +93,15 @@ public:
 
     void setInterval(int sessionId, int value);
     void clearInterval(int sessionId);
+    int interval(int sessionId) const;
+
+    void setBufferSize(int sessionId, unsigned int value);
+    void clearBufferSize(int sessionId);
+    unsigned int bufferSize(int sessionId) const;
+
+    void setBufferInterval(int sessionId, unsigned int value);
+    void clearBufferInterval(int sessionId);
+    unsigned int bufferInterval(int sessionId) const;
 
 Q_SIGNALS:
     void lostSession(int sessionId);
@@ -96,7 +115,7 @@ private slots:
 private:
 
     QLocalServer*            m_server;
-    QMap<int, SessionData*>   m_idMap;
+    QMap<int, SessionData*>  m_idMap;
     QList<QLocalSocket*>     m_tmpSocks;
 };
 

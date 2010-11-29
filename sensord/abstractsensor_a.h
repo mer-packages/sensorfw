@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -60,6 +61,12 @@ public: // PROPERTIES
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
     bool standbyOverride() const;
 
+    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval);
+    unsigned int bufferInterval() const;
+
+    Q_PROPERTY(unsigned int bufferSize READ bufferSize);
+    unsigned int bufferSize() const;
+
     // TODO: put state back
     /*
     Q_PROPERTY(SensorState state READ state)
@@ -78,14 +85,17 @@ public Q_SLOTS: // METHODS
     void stop(int sessionId);
 
     void setInterval(int sessionId, int value);
-    int getIntervalCount();
-    DataRange getAvailableInterval(int index);
+    DataRangeList getAvailableIntervals();
     bool setDefaultInterval(int sessionId);
 
     bool setStandbyOverride(int sessionId, bool value);
 
-    int getDataRangeCount();
-    DataRange getAvailableDataRange(int index);
+    void setBufferInterval(int sessionId, unsigned int value);
+    void setBufferSize(int sessionId, unsigned int value);
+    IntegerRangeList getAvailableBufferIntervals() const;
+    IntegerRangeList getAvailableBufferSizes() const;
+
+    DataRangeList getAvailableDataRanges();
     DataRange getCurrentDataRange();
     void requestDataRange(int sessionId, DataRange range);
     void removeDataRangeRequest(int sessionId);

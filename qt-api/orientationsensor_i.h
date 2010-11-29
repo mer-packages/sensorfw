@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,36 +34,32 @@
 
 /**
  * @brief DBus-interface for listening on device orientation changes.
- * 
+ *
  * Acts as a proxy class for interface \e local.OrientationSensor interface.
  *
- * For details of measurement process, see #OrientationSensorChannel. 
- * 
+ * For details of measurement process, see #OrientationSensorChannel.
+ *
  * @todo Add property descriptions.
  */
 class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
-
-public:
-    static inline const char *staticInterfaceName()
-    { return "local.OrientationSensor"; }
-
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new OrientationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
-
+    Q_OBJECT
+    Q_DISABLE_COPY(OrientationSensorChannelInterface)
     Q_PROPERTY(Unsigned orientation READ orientation)
-    Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
-    
-    inline Unsigned orientation() const { return qvariant_cast< Unsigned >(internalPropGet("orientation")); }
-    inline int threshold() const { return qvariant_cast< int >(internalPropGet("threshold")); }
-    inline void setThreshold(int value) { internalPropSet("threshold", qVariantFromValue(value)); }
-    
+    Q_PROPERTY(int threshold READ threshold WRITE setThreshold)
+
 public:
-    OrientationSensorChannelInterface(const QString &path, int sessionId);
+    static const char* staticInterfaceName;
+
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+
+    Unsigned orientation() const;
+
+    int threshold() const;
+    void setThreshold(int value);
+
+public:
+    OrientationSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
@@ -84,10 +81,10 @@ public Q_SLOTS: // METHODS
 Q_SIGNALS: // SIGNALS
     /**
      * Sent when device orientation has changed.
-     * @param orientation Current device orientation. The given integer value is 
+     * @param orientation Current device orientation. The given integer value is
                           enumeration from PoseData::Orientation.
      */
-    void orientationChanged(const Unsigned& orientation);    
+    void orientationChanged(const Unsigned& orientation);
 };
 
 namespace local {
