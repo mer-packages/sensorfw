@@ -77,10 +77,10 @@ private:
     AvgVarFilter avgVarFilter;
     StabilityFilter stabilityFilter;
 
-    static const int STABILITY_THRESHOLD = 7;
-    static const int UNSTABILITY_THRESHOLD = 300;
-    static const float STABILITY_HYSTERESIS = 0.1;
-    static const int POLL_INTERVAL = 250;
+    static const int STABILITY_THRESHOLD;
+    static const int UNSTABILITY_THRESHOLD;
+    static const float STABILITY_HYSTERESIS;
+    static const int POLL_INTERVAL;
 };
 
 #endif

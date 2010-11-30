@@ -31,6 +31,17 @@
 #include <stdlib.h>
 #include "config.h"
 
+const int OrientationInterpreter::DEFAULT_THRESHOLD = 250;
+const float OrientationInterpreter::RADIANS_TO_DEGREES = 180.0/M_PI;
+const int OrientationInterpreter::ANGLE_LIMIT = 45;
+const int OrientationInterpreter::SAME_AXIS_LIMIT = 5;
+const int OrientationInterpreter::OVERFLOW_MIN = 800;
+const int OrientationInterpreter::OVERFLOW_MAX = 1250;
+const int OrientationInterpreter::THRESHOLD_LANDSCAPE = 25;
+const int OrientationInterpreter::THRESHOLD_PORTRAIT = 20;
+const int OrientationInterpreter::DISCARD_TIME = 750000;
+const int OrientationInterpreter::AVG_BUFFER_MAX_SIZE = 10;
+
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         threshold_(*this),

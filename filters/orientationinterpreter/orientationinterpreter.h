@@ -28,7 +28,6 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
-#include <math.h>
 #include <sensord/filter.h>
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
@@ -81,19 +80,19 @@ private:
 
     PoseData o_;
 
-    static const int DEFAULT_THRESHOLD = 250;
-    static const float RADIANS_TO_DEGREES = 180.0/M_PI;
-    static const int ANGLE_LIMIT = 45;
-    static const int SAME_AXIS_LIMIT = 5;
+    static const int DEFAULT_THRESHOLD;
+    static const float RADIANS_TO_DEGREES;
+    static const int ANGLE_LIMIT;
+    static const int SAME_AXIS_LIMIT;
 
-    static const int OVERFLOW_MIN = 800;
-    static const int OVERFLOW_MAX = 1250;
+    static const int OVERFLOW_MIN;
+    static const int OVERFLOW_MAX;
 
-    static const int THRESHOLD_LANDSCAPE = 25;
-    static const int THRESHOLD_PORTRAIT = 20;
+    static const int THRESHOLD_LANDSCAPE;
+    static const int THRESHOLD_PORTRAIT;
 
-    static const int DISCARD_TIME = 750000;
-    static const int AVG_BUFFER_MAX_SIZE = 10;
+    static const int DISCARD_TIME;
+    static const int AVG_BUFFER_MAX_SIZE;
 
 public:
     /**

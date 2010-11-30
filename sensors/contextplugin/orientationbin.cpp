@@ -28,6 +28,11 @@
 #include "sensord/sensormanager.h"
 #include "sensord/config.h"
 
+const int OrientationBin::STABILITY_THRESHOLD = 7;
+const int OrientationBin::UNSTABILITY_THRESHOLD = 300;
+const float OrientationBin::STABILITY_HYSTERESIS = 0.1;
+const int OrientationBin::POLL_INTERVAL = 250;
+
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
     isCoveredProperty(s, "Screen.IsCovered"),
