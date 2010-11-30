@@ -143,7 +143,7 @@ protected:
     void write(unsigned n, const TYPE* values)
     {
         // buffer incoming data
-        if(__is_pod(TYPE) && n <= bufferSize_) {
+        if(__is_pod(TYPE) && n <= bufferSize_ && ((bufferSize_ - writeCount_) < n)) {
             memcpy(nextSlot(), values, n);
             writeCount_ += n;
         }

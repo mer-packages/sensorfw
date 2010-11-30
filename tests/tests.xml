@@ -14,7 +14,9 @@
         <step expected_result="0">/usr/bin/sensoradaptors-test</step>
       </case>
       <case name="Sensord_Chains" level="Component" type="Functional" description="Unit test cases for sensor chains" timeout="15" subfeature="Sensor Framework">
-        <step expected_result="0">/usr/bin/sensorchains-test</step>
+        <step>stop sensord</step>
+	<step expected_result="0">/usr/bin/sensorchains-test</step>
+        <step>start sensord</step>
       </case>
       <case name="Sensor_Client_API" level="Component" type="Functional" description="Client API tests for sensord" timeout="15" subfeature="Sensor Framework">
         <step expected_result="0">/usr/bin/sensorapi-test</step>
