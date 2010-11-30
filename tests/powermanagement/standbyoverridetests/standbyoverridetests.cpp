@@ -73,26 +73,26 @@ void StandbyOverrideTest::cleanupTestCase()
  */
 void StandbyOverrideTest::testStandbyOverride()
 {
-   
+
     UNBLANK_SCREEN;
-       
+
     AccelerometerSensorChannelInterface* accOne;
     AccelerometerSensorChannelInterface* accTwo;
 
     accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
-    QVERIFY2((accOne != NULL && accOne->isValid()), accOne->errorString().toLatin1());
+    QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
-    QVERIFY2((accTwo != NULL && accTwo->isValid()), accTwo->errorString().toLatin1());
+    QVERIFY2(accTwo != NULL && accTwo->isValid(), accTwo ? accTwo->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper1, SLOT(dataAvailable(const XYZ&)));
     connect(accTwo, SIGNAL(dataAvailable(const XYZ&)), &helper2, SLOT(dataAvailable(const XYZ&)));
-   
+
     accOne->start();
     accTwo->start();
 
     QTest::qWait(500);
-  
+
     // Test standby override true when screen unblank
     accOne->setStandbyOverride(true);
     accTwo->setStandbyOverride(false);
@@ -120,14 +120,14 @@ void StandbyOverrideTest::testStandbyOverride()
     helper1.reset();
     helper2.reset();
     QTest::qWait(500);
-   
+
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
     QVERIFY2(helper2.m_valueCount == 0, "Samples leaking through.");
 
 
     accOne->setStandbyOverride(true);
     QTest::qWait(500);
-    helper1.reset(); 
+    helper1.reset();
     helper2.reset();
     QTest::qWait(500);
 
@@ -136,16 +136,16 @@ void StandbyOverrideTest::testStandbyOverride()
 
     accOne->setStandbyOverride(false);
     QTest::qWait(500);
-    helper1.reset(); 
+    helper1.reset();
     helper2.reset();
     QTest::qWait(500);
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
     QVERIFY2(helper2.m_valueCount == 0, "Samples leaking through.");
-    
+
 
     accOne->setStandbyOverride(true);
     QTest::qWait(500);
-    helper1.reset(); 
+    helper1.reset();
     helper2.reset();
     QTest::qWait(500);
     QVERIFY2(helper1.m_valueCount > 0, "No samples received.");
@@ -154,7 +154,7 @@ void StandbyOverrideTest::testStandbyOverride()
 
     accOne->stop();
     QTest::qWait(500);
-    helper1.reset(); 
+    helper1.reset();
     helper2.reset();
     QTest::qWait(500);
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
