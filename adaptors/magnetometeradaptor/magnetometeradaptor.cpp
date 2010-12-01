@@ -65,7 +65,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     }
 
     setDescription("Input device Magnetometer adaptor (ak897x)");
-    introduceAvailableInterval(DataRange(1, 2000, 0));
+    introduceAvailableInterval(DataRange(10, 1000, 0)); // -> [1,100] Hz
     setDefaultInterval(1000);
 }
 
