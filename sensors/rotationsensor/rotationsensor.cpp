@@ -94,7 +94,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     if (hasZ_)
     {
         // No less than 5hz allowed for compass
-        introduceAvailableInterval(DataRange(10, 200, 0)); -> [5-100] Hz
+        introduceAvailableInterval(DataRange(10, 200, 0));  //-> [5-100] Hz
     } else {
         setIntervalSource(accelerometerChain_);
     }
