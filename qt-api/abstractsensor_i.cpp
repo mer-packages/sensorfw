@@ -270,7 +270,7 @@ int AbstractSensorChannelInterface::interval() const
 void AbstractSensorChannelInterface::setInterval(int value)
 {
     pimpl_->interval_ = value;
-    if (!pimpl_->running_)
+    if (pimpl_->running_)
         setInterval(pimpl_->sessionId_, value);
 }
 

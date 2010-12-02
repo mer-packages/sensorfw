@@ -34,6 +34,7 @@
 #include <QDebug>
 
 #define DISABLE_TKLOCK QProcess::execute("gconftool-2 --set /system/osso/dsm/locks/touchscreen_keypad_autolock_enabled --type=bool false");
+#define ENABLE_TKLOCK QProcess::execute("gconftool-2 --set /system/osso/dsm/locks/touchscreen_keypad_autolock_enabled --type=bool true");
 #define OPEN_TKLOCK QProcess::execute("mcetool --set-tklock-mode=unlocked");
 #define BLANK_SCREEN QProcess::execute("mcetool --blank-screen");
 #define UNBLANK_SCREEN QProcess::execute("mcetool --unblank-screen");
@@ -61,12 +62,12 @@ void StandbyOverrideTest::init() {}
 void StandbyOverrideTest::cleanup() {}
 void StandbyOverrideTest::cleanupTestCase()
 {
+    ENABLE_TKLOCK;
     helper1.terminate();
     helper2.terminate();
     helper1.wait();
     helper2.wait();
 }
-
 
 /**
  * Verify standby override for screen blank and unblank.
@@ -76,13 +77,10 @@ void StandbyOverrideTest::testStandbyOverride()
 
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne;
-    AccelerometerSensorChannelInterface* accTwo;
-
-    accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
-    accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+    AccelerometerSensorChannelInterface* accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
     QVERIFY2(accTwo != NULL && accTwo->isValid(), accTwo ? accTwo->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper1, SLOT(dataAvailable(const XYZ&)));
@@ -99,37 +97,34 @@ void StandbyOverrideTest::testStandbyOverride()
     QTest::qWait(500);
     helper1.reset();  // Clear the buffer
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
 
     QVERIFY2(helper1.m_valueCount > 0, "No samples received.");
     QVERIFY2(helper2.m_valueCount > 0, "No samples received.");
-
 
     accOne->setStandbyOverride(false);
     QTest::qWait(500);
     helper1.reset();
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
     QVERIFY2(helper1.m_valueCount > 0, "No samples received.");
     QVERIFY2(helper2.m_valueCount > 0, "No samples received.");
-
 
     // Test standby override when screen blank
     BLANK_SCREEN;
     QTest::qWait(500);
     helper1.reset();
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
 
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
     QVERIFY2(helper2.m_valueCount == 0, "Samples leaking through.");
-
 
     accOne->setStandbyOverride(true);
     QTest::qWait(500);
     helper1.reset();
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
 
     QVERIFY2(helper1.m_valueCount > 0, "No samples received.");
     QVERIFY2(helper2.m_valueCount > 0, "No samples received.");
@@ -142,21 +137,19 @@ void StandbyOverrideTest::testStandbyOverride()
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
     QVERIFY2(helper2.m_valueCount == 0, "Samples leaking through.");
 
-
     accOne->setStandbyOverride(true);
     QTest::qWait(500);
     helper1.reset();
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
     QVERIFY2(helper1.m_valueCount > 0, "No samples received.");
     QVERIFY2(helper2.m_valueCount > 0, "No samples received.");
-
 
     accOne->stop();
     QTest::qWait(500);
     helper1.reset();
     helper2.reset();
-    QTest::qWait(500);
+    QTest::qWait(1500);
     QVERIFY2(helper1.m_valueCount == 0, "Samples leaking through.");
     QVERIFY2(helper2.m_valueCount == 0, "Samples leaking through.");
 

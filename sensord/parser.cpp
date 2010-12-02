@@ -25,6 +25,7 @@
 
 
 #include "parser.h"
+#include <iostream>
 
 Parser::Parser(QStringList arguments) :
     printHelp_(false),
@@ -50,8 +51,9 @@ void Parser::parsingCommandLine(QStringList arguments)
     foreach (QString opt, arguments)
     {
         QStringList data;
+        opt = opt.trimmed();
 
-        if (opt.contains("-l=")||opt.contains("--log-level"))
+        if (opt.startsWith("-l=") || opt.startsWith("--log-level"))
         {
             data = opt.split("=");
             changeLogLevel_ = true;
@@ -67,40 +69,32 @@ void Parser::parsingCommandLine(QStringList arguments)
             else
                 logLevel_ = SensordLogWarning;
         }
-
-        if (opt.contains("--log-target"))
+        else if (opt.startsWith("--log-target"))
         {
             data = opt.split("=");
             logTarget_= data.at(1).toInt();
         }
-
-        if (opt.contains("--log-file-path"))
+        else if (opt.startsWith("--log-file-path"))
         {
             data = opt.split("=");
             logFilePath_ = data.at(1);
         }
-
-        if (opt.contains("-c=")||opt.contains("--config-file"))
+        else if (opt.startsWith("-c=") || opt.startsWith("--config-file"))
         {
             data = opt.split("=");
             configFile_ = true;
             configFilePath_ = data.at(1);
         }
-
-        if (opt.contains("--no-context-info"))
+        else if (opt.startsWith("--no-context-info"))
             contextInfo_ = false;
-
-
-        if (opt.contains("--no-magnetometer-bg-calibration"))
+        else if (opt.startsWith("--no-magnetometer-bg-calibration"))
             magnetometerCalibration_ = false;
-
-
-        if (opt.contains("-d")||opt.contains("--daemon"))
+        else if (opt.startsWith("-d") || opt.startsWith("--daemon"))
             daemon_ = true;
-
-        if (opt.contains("-h")||opt.contains("--help"))
+        else if (opt.startsWith("-h") || opt.startsWith("--help"))
             printHelp_ = true;
-
+        else if (opt.startsWith("-"))
+            std::cerr << "Unknown option: " << opt.toStdString() << std::endl;
     }
 }
 

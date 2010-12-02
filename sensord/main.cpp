@@ -179,7 +179,7 @@ void printUsage()
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
     qDebug() << " --log-target=N                   logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
-    qDebug() << " --log-file=P                     Log file path\n";
+    qDebug() << " --log-file-path=P                Log file path\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /etc/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";

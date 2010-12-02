@@ -412,7 +412,11 @@ void SysfsAdaptorReader::run()
                         parent_->processSample(parent_->pathIds_.at(index), events[i].data.fd);
                         //emit readyRead(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(index));
                         // TODO: Wait on flag
-                        lseek(events[i].data.fd, 0, SEEK_SET);
+                        if (lseek(events[i].data.fd, 0, SEEK_SET) == -1)
+                        {
+                            sensordLogW() << "Failed to lseek fd: " << strerror(errno);
+                            QThread::msleep(1000);
+                        }
                     } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
                         running_ = false;
                     }

@@ -28,10 +28,6 @@
 #include <QTest>
 #include "helpslot.h"
 
-#define accPollFile "/tmp/fakedsensors/accelerometer_poll_rate"
-#define accInputFile "/tmp/fakedsensors/accelerometer"
-
-
 class PowerManagementTest : public QObject
 {
     Q_OBJECT;
@@ -55,6 +51,9 @@ private slots:
 
 private:
     HelpSlot helper;
+
+    static const char* accPollFile;
+    static const char* accInputFile;
 };
 
 #endif // SENSORPM_TEST_H

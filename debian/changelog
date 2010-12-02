@@ -26,7 +26,11 @@ sensord (0.6.32) unstable; urgency=low
   * Fixed memory leak from OrientationChain.
   * Removed SocketHandler::killSocket() hack. QObject::deleteLater() is used
     to clean up sockets.
-  * Fixed crash issues from StandbyOverrideTest and PowerManagementTest.
+  * Fixed crash and reliability issues from StandbyOverrideTest and PowerManagementTest.
+  * InputDevAdaptor now better handles cases when read() or lseek() fails for
+    invalid input devices.
+  * Typo fixed from --help output.
+  * Commandline parser improved.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 

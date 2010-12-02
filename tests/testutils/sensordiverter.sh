@@ -51,13 +51,12 @@ case "$1" in
   cp $TESTCONFIGSOURCE $TESTCONFIGTARGET
 
   initctl stop sensord
+  sleep 2
   killall sensord
   initctl start sensord
 
   sleep 0.5
-  for i in 1 2; do
-    echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
-  done
+  echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
 
   sleep 0.5
   result=`qdbus --system | grep -i sensor`
@@ -82,6 +81,7 @@ case "$1" in
     status=1
   fi
   initctl stop sensord
+  sleep 2
   killall sensord
 
   # Remove extra configuration file

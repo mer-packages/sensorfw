@@ -95,19 +95,18 @@ void SensordLogger::printToTarget(const char* data) const {
         fdLogData << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
         fdLogData << " [sensord] ";
         fdLogData << data;
-        fdLogData << '\n';
     }
     if (logTarget & STDERR_FILENO) {
-        std::cerr << fdLogData.str().c_str();
+        std::cerr << fdLogData.str().c_str() << std::endl;
     }
 
     if (logTarget & STDOUT_FILENO) {
-        std::cout << fdLogData.str().c_str();
+        std::cout << fdLogData.str().c_str() << std::endl;
     }
 
     if (logTarget & 4) {
         if(logFile)
-            *logFile << fdLogData.str().c_str();
+            *logFile << fdLogData.str().c_str() << std::endl;
     }
 
     if (logTarget & 8) {

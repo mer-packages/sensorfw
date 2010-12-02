@@ -110,11 +110,14 @@ int InputDevAdaptor::getInputDevices(QString matchString)
 int InputDevAdaptor::getEvents(int fd)
 {
     int bytes = read(fd, evlist_, sizeof(struct input_event)*64);
-
+    if (bytes == -1) {
+        sensordLogW() << "Error occured: " << strerror(errno);
+        return 0;
+    }
     if (bytes % sizeof(struct input_event)) {
         sensordLogW() << "Short read or stray bytes.";
+        return 0;
     }
-
     return bytes/sizeof(struct input_event);
 }
 
@@ -122,7 +125,7 @@ void InputDevAdaptor::processSample(int pathId, int fd)
 {
     int numEvents = getEvents(fd);
 
-    for (int i = 0; i < numEvents; i++) {
+    for (int i = 0; i < numEvents; ++i) {
         switch (evlist_[i].type) {
             case EV_SYN:
                 interpretSync(pathId);
