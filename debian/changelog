@@ -1,6 +1,7 @@
 sensord (0.6.32) unstable; urgency=low
 
   [Lihan Guo]
+  * Fixes: NB#199971 - proximity sensor never returns True
   * Added new tap feature, tap sensor offers single, double and single/double tap data.
 
   [Timo Rongas]
@@ -13,7 +14,7 @@ sensord (0.6.32) unstable; urgency=low
   * Replaced some magic number #define with static consts.
   * AvgVarFilter data is now protected with mutex.
   * Bin and RingBuffer refactoring.
-  * magneticvariation GConf reading in DeclinationFilter fixed. 
+  * magneticvariation GConf reading in DeclinationFilter fixed.
   * libsensordatatypes.so will now register all necessary metatypes during initialization.
   * Refactored makefiles and removed some unnecessary/deprecated definitions.
   * qt-api now hides internals behind pimpl. (Fixes: NB#198369).

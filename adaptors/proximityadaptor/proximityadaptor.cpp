@@ -30,8 +30,8 @@
 #include "datatypes/utils.h"
 #include "sensord/logging.h"
 #include "sensord/config.h"
-#include <linux/types.h>
 #include <QFile>
+#include <linux/types.h>
 
 #define THRESHOLD_FILE_PATH_RM680 "/sys/class/misc/bh1770glc_ps/device/ps_threshold"
 #define THRESHOLD_FILE_PATH_RM696 "/sys/class/misc/apds990x0/device/prox_threshold"
@@ -59,6 +59,12 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode),
     m_threshold(35)
 {
+
+#ifdef SENSORFW_MCE_WATCHER
+    dbusIfc = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
+                                                 QDBusConnection::systemBus(), this);
+#endif
+
     device = DeviceUnknown;
 
     QString rm680_ps = Config::configuration()->value("proximity_dev_path_rm680").toString();
@@ -89,6 +95,11 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         sensordLogW() << "Other HW except RM680 and RM696";
     }
 
+    if (device == RM696)
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_enable");
+#endif
+
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
@@ -105,10 +116,16 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 }
 
 
-
 ProximityAdaptor::~ProximityAdaptor()
 {
+    if (device == RM696)
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_disable");
+#endif
+
+
     delete proximityBuffer_;
+    delete dbusIfc;
 }
 
 
@@ -138,7 +155,6 @@ void ProximityAdaptor::processSample(int pathId, int fd)
     } else if(device == RM696)
     {
         apds990x_data ps_data;
-
         int bytesRead = read(fd, buffer, sizeof(buffer)-1);
 
         if (bytesRead > 0) {
@@ -161,7 +177,6 @@ void ProximityAdaptor::processSample(int pathId, int fd)
     TimedUnsigned* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
-
     proximityData->value_ = ret;
 
     proximityBuffer_->commit();
@@ -201,6 +216,5 @@ int ProximityAdaptor::readThreshold()
     }
 
     thresholdFile.close();
-
     return value;
 }

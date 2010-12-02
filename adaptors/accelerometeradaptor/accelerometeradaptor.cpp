@@ -55,7 +55,7 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     setDescription("Input device accelerometer adaptor (lis302d)");
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
     introduceAvailableInterval(DataRange(0, 0, 0));
-    introduceAvailableInterval(DataRange(1, 2000, 0));
+    introduceAvailableInterval(DataRange(10, 1000, 0)); // -> [1,100] Hz
     setDefaultInterval(0);
 }
 

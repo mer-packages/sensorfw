@@ -28,9 +28,13 @@
 #ifndef PROXIMITYADAPTOR_H
 #define PROXIMITYADAPTOR_H
 
+#include <QDBusInterface>
+#include <mce/mode-names.h>
+#include <mce/dbus-names.h>
 #include "sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
+
 
 /**
  * @brief Adaptor for proximity sensor.
@@ -88,9 +92,9 @@ private:
      * @return Threshold value for proximity. \c 0 on error.
      */
     int readThreshold();
-
     int m_threshold;
     ProximityAdaptor::DeviceType device;
+    QDBusInterface *dbusIfc;
 };
 
 #endif
