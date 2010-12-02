@@ -10,9 +10,10 @@ SOURCES += alssensor.cpp   \
            alssensor_a.cpp \
            alsplugin.cpp
 
+include( ../sensor-config.pri )
+
 contextprovider {
     DEFINES += PROVIDE_CONTEXT_INFO
-    PKGCONFIG   += contextprovider-1.0
+    PKGCONFIG += contextprovider-1.0
 }
 
-include( ../sensor-config.pri )

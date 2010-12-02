@@ -84,6 +84,11 @@ int main(int argc, char *argv[])
 
     }
 
+    if (parser.changeLogLevel())
+    {
+        SensordLogger::setOutputLevel(parser.getLogLevel());
+    }
+
     if (parser.configFileInput())
     {
         QString defConfigFile = parser.configFilePath();
@@ -95,9 +100,9 @@ int main(int argc, char *argv[])
             sensordLogW() << "Config file error! Load using default path.";
             Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
         }
-    }
-    else
+    } else {
         Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
+    }
 
     if (Config::configuration() == NULL)
     {
@@ -108,24 +113,12 @@ int main(int argc, char *argv[])
     signal(SIGUSR1, signalHandler);
     signal(SIGUSR2, signalFlush);
 
-   // TODO: this results in error messages in case only Ariane is used
-
-    // Leave loading for client app. ALS loaded for context fw.
-    //sensordLogD() << "Loading CompassSensor:" <<  sm.loadPlugin("compasssensor");
-    //sensordLogD() << "Loading OrientationSensor:" << sm.loadPlugin("orientationsensor");
-    sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
-    //sensordLogD() << "Loading TapSensor:" << sm.loadPlugin("tapsensor");
-    //sensordLogD() << "Loading AccelerometerSensor" << sm.loadPlugin("accelerometersensor");
-    //sensordLogD() << "Loading ProximitySensor" << sm.loadPlugin("proximitysensor");
-
 #ifdef PROVIDE_CONTEXT_INFO
-
     if (parser.contextInfo())
     {
-        sensordLogD() << "Loading ContextSensor" << sm.loadPlugin("contextsensor");
-        sensordLogD() << "Loading ALSSensor:" << sm.loadPlugin("alssensor");
+        sensordLogD() << "Loading ContextSensor " << sm.loadPlugin("contextsensor");
+        sensordLogD() << "Loading ALSSensor " << sm.loadPlugin("alssensor");
     }
-
 #endif
 
     if (parser.createDaemon())
@@ -149,13 +142,6 @@ int main(int argc, char *argv[])
         QObject::connect(&sm, SIGNAL(resumeCalibration()), calibrationHandler_, SLOT(resumeCalibration()));
         QObject::connect(&sm, SIGNAL(stopCalibration()), calibrationHandler_, SLOT(stopCalibration()));
     }
-
-
-    if (parser.changeLogLevel())
-    {
-        SensordLogger::setOutputLevel(parser.getLogLevel());
-    }
-
 
     if (!sm.registerService())
     {

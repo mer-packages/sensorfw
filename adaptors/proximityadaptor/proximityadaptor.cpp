@@ -96,9 +96,11 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     }
 
     if (device == RM696)
+    {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_enable");
 #endif
+    }
 
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
@@ -119,13 +121,14 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 ProximityAdaptor::~ProximityAdaptor()
 {
     if (device == RM696)
+    {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_disable");
+        delete dbusIfc;
 #endif
-
+    }
 
     delete proximityBuffer_;
-    delete dbusIfc;
 }
 
 
