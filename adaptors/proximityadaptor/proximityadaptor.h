@@ -94,7 +94,11 @@ private:
     int readThreshold();
     int m_threshold;
     ProximityAdaptor::DeviceType device;
+
+#ifdef SENSORFW_MCE_WATCHER
     QDBusInterface *dbusIfc;
+#endif
+
 };
 
 #endif
