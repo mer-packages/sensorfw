@@ -16,7 +16,7 @@ sensord (0.6.32) unstable; urgency=low
   * magneticvariation GConf reading in DeclinationFilter fixed. 
   * libsensordatatypes.so will now register all necessary metatypes during initialization.
   * Refactored makefiles and removed some unnecessary/deprecated definitions.
-  * qt-api now hides internals behind pimpl.
+  * qt-api now hides internals behind pimpl. (Fixes: NB#198369).
   * Implemented buffering with few unit test cases.
   * Replaced old index based accessors for available dataranges and intervals
     with methods which query list of data with single dbus call.
