@@ -460,14 +460,14 @@ void ClientApiTest::testBuffering()
     qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
     QTest::qWait(1400);
 
-    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 1);
     QVERIFY(client.getFrameDataCount() == 10);
 
     qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
     QTest::qWait(1400);
 
-    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 2);
     QVERIFY(client.getFrameDataCount() == 20);
 
@@ -490,7 +490,7 @@ void ClientApiTest::testBufferingHighRate()
     qDebug() << "Magnetometer sensor started, waiting for 3500ms.";
     QTest::qWait(3500);
 
-    QVERIFY(client.getDataCount() == 0);
+    QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 1);
     QVERIFY(client.getFrameDataCount() == 200);
 

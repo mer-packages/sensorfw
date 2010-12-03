@@ -8,6 +8,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,6 +30,7 @@
 #define SENSORMANAGER_A_H
 
 #include <QtDBus/QtDBus>
+#include "sensormanager.h"
 
 /*
  * Adaptor class for interface local.SensorManager
@@ -37,17 +39,18 @@ class SensorManagerAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "local.SensorManager")
+    Q_PROPERTY(QString errorString READ errorString)
+    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
 
 public:
     SensorManagerAdaptor(QObject *parent);
     virtual ~SensorManagerAdaptor() {}
 
-    Q_PROPERTY(QString errorString READ errorString)
     QString errorString() const;
 
 private: // PROPERTIES
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     int errorCodeInt() const;
+    SensorManager* sensorManager() const;
 
 public Q_SLOTS: // METHODS
     bool loadPlugin(const QString& name);

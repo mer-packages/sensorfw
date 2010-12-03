@@ -9,6 +9,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Semi Malinen <semi.malinen@nokia.com
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,66 +30,49 @@
 #include "sensormanager_a.h"
 #include "logging.h"
 
-#include "sfwerror.h"
-
 /*
  * Implementation of adaptor class SensorManagerAdaptor
  */
-
 SensorManagerAdaptor::SensorManagerAdaptor(QObject *parent)
     : QDBusAbstractAdaptor(parent)
 {
-    // constructor
     setAutoRelaySignals(true);
 }
 
 int SensorManagerAdaptor::errorCodeInt() const
 {
-    // note: enums can not be transferred over D-BUS
-    return static_cast<SensorManagerError>(qvariant_cast< int >(parent()->property("errorCodeInt")));
+    return sensorManager()->errorCodeInt();
 }
 
 QString SensorManagerAdaptor::errorString() const
 {
-    return qvariant_cast< QString >(parent()->property("errorString"));
+    return sensorManager()->errorString();
 }
 
 bool SensorManagerAdaptor::loadPlugin(const QString& name)
 {
-    bool out0;
-    QMetaObject::invokeMethod(parent(), "loadPlugin", Q_RETURN_ARG(bool, out0), Q_ARG(QString, name));
-    return out0;
+    return sensorManager()->loadPlugin(name);
 }
 
 int SensorManagerAdaptor::requestControlSensor(const QString &id, qint64 pid)
 {
-    QString dbg("Control sensor requested. Client PID: ");
-    dbg += QString::number(pid);
-    sensordLog() << dbg;
-    // handle method call local.SensorManager.requestControlSensor
-    int out0;
-    QMetaObject::invokeMethod(parent(), "requestControlSensor", Q_RETURN_ARG(int, out0), Q_ARG(QString, id));
-    return out0;
+    sensordLog() << "Control sensor requested. Client PID: " << pid;
+    return sensorManager()->requestControlSensor(id);
 }
 
 int SensorManagerAdaptor::requestListenSensor(const QString &id, qint64 pid)
 {
-    QString dbg("Listen sensor requested. Client PID: ");
-    dbg += QString::number(pid);
-    sensordLog() << dbg;
-    // handle method call local.SensorManager.requestListenSensor
-    int out0;
-    QMetaObject::invokeMethod(parent(), "requestListenSensor", Q_RETURN_ARG(int, out0), Q_ARG(QString, id));
-    return out0;
+    sensordLog() << "Listen sensor requested. Client PID: " << pid;
+    return sensorManager()->requestListenSensor(id);
 }
 
 bool SensorManagerAdaptor::releaseSensor(const QString &id, int sessionId, qint64 pid)
 {
-    QString dbg("Sensor release requested. Client PID: ");
-    dbg += QString::number(pid);
-    sensordLog() << dbg;
-    // handle method call local.SensorManager.releaseListenSensor
-    bool out0;
-    QMetaObject::invokeMethod(parent(), "releaseSensor", Q_RETURN_ARG(bool, out0), Q_ARG(QString, id), Q_ARG(int, sessionId));
-    return out0;
+    sensordLog() << "Sensor release requested. Client PID: " << pid;
+    return sensorManager()->releaseSensor(id, sessionId);
+}
+
+SensorManager* SensorManagerAdaptor::sensorManager() const
+{
+    return dynamic_cast<SensorManager*>(parent());
 }
