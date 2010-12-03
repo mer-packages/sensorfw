@@ -127,6 +127,8 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     }
     /// Send interval request when started.
     setInterval(sessionId, pimpl_->interval_);
+    setBufferInterval(sessionId, pimpl_->bufferInterval_);
+    setBufferSize(sessionId, pimpl_->bufferSize_);
 
     return returnValue;
 }
