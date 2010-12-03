@@ -39,8 +39,7 @@
  */
 class Config {
 public:
-    Config();
-    virtual ~Config();
+    ~Config();
 
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
 
@@ -49,6 +48,7 @@ public:
     static void close();
 
 private:
+    Config();
     Config(const Config &c);
     Config& operator=(const Config &c);
 

@@ -22,7 +22,7 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
- */
+*/
 
 #include "config.h"
 
@@ -43,10 +43,9 @@ Config::~Config() {
 }
 
 void Config::clearConfig() {
-    QListIterator<QSettings*> i(settings);
-
-    while(i.hasNext())
-        delete i.next();
+    foreach(QSettings* setting, settings)
+        delete setting;
+    settings.clear();
 }
 
 Config *Config::loadConfig(const QString &defConfigPath, const QString &configDPath) {
@@ -66,12 +65,10 @@ Config *Config::loadConfig(const QString &defConfigPath, const QString &configDP
     QDir dir(configDPath, "*.conf", QDir::Name, QDir::Files);
     QStringList fileList = dir.entryList();
 
-
     /* Load all conf files */
     config->loadConfigFile(defConfigPath);
-    QStringListIterator i(fileList);
-    while(i.hasNext())
-        config->loadConfigFile(dir.absoluteFilePath(i.next()));
+    foreach(QString file, fileList)
+        config->loadConfigFile(dir.absoluteFilePath(file));
 
     static_configuration = config;
 
@@ -79,41 +76,35 @@ Config *Config::loadConfig(const QString &defConfigPath, const QString &configDP
 }
 
 bool Config::loadConfigFile(const QString &configFileName) {
-    QFile file(configFileName);
-
-    /* Test if the file is readable */
-    if (file.open(QIODevice::ReadOnly)) {
-      file.close();
+    QSettings* setting = new QSettings(configFileName, QSettings::IniFormat);
+    if(setting->status() == QSettings::NoError) {
+        settings.append(setting);
+        sensordLogD() << "Config file \"" << configFileName << "\" successfully loaded";
+        return true;
     }
+    else if(setting->status() == QSettings::AccessError)
+        sensordLogW() << "Unable to open \"" << configFileName <<  "\" configuration file";
+    else if(setting->status() == QSettings::FormatError)
+        sensordLogW() << "Configuration file \"" << configFileName <<  "\" is in wrong format";
     else
-    {
-        sensordLogW() << "Unable to open \"" << configFileName <<  "\", check permissions";
-        return false;
-    }
-
-    settings.append(new QSettings(configFileName, QSettings::IniFormat));
-    sensordLogD() << "Config file \"" << configFileName << "\" successfully loaded";
-    return true;
+        sensordLogW() << "Configuration file \"" << configFileName <<  "\" parsing failed to unknown error: " << setting->status();
+    delete setting;
+    return false;
 }
 
 QVariant Config::value(const QString &key, const QVariant &defaultValue) const {
     /* Iterate through configs so that keys in the first files
      * have preference over the last.
      */
-    QListIterator<QSettings*> i(settings);
-    while(i.hasNext())
-    {
-        if(i.next()->contains(key))
-            return i.peekPrevious()->value(key, defaultValue);
+    foreach(QSettings* setting, settings) {
+        if(setting->contains(key))
+            return setting->value(key, defaultValue);
     }
-
     return defaultValue;
 }
 
 Config *Config::configuration() {
     if (!static_configuration) {
-        // This shouldn't happen because the configuration is loaded
-        // when sensord starts (and before any plugins are loaded)
         sensordLogW() << "Configuration has not been loaded";
     }
     return static_configuration;
