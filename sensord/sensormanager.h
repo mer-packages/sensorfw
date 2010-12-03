@@ -36,7 +36,6 @@
 #include "sfwerror.h"
 #include "idutils.h"
 #include "parameterparser.h"
-#include "propertyhandler.h"
 #include "logging.h"
 
 
@@ -190,11 +189,6 @@ public:
      */
     FilterBase* instantiateFilter(const QString& id);
 
-    /**
-     * Returns a reference to the PropertyHandler.
-     */
-    PropertyHandler& propertyHandler() { return propertyHandler_; }
-
 #ifdef SM_PRINT
     void print() const; // for debugging purposes only
 #endif
@@ -213,7 +207,6 @@ private Q_SLOTS:
 
     void displayStateChanged(const bool displayState);
     void devicePSMStateChanged(const bool deviceMode);
-    void propertyRequest(QString property, QString adaptor);
 
 public Q_SLOTS:
     bool loadPlugin(const QString& name);
@@ -265,7 +258,6 @@ private:
 
     static int                                     sessionIdCount_;
 
-    PropertyHandler                                propertyHandler_;
     MceWatcher*                                    mceWatcher_;
 
     SensorManagerError                             errorCode_;
@@ -274,4 +266,4 @@ private:
     bool                                           psmState_;
 };
 
-#endif // SENSORMANAGER_H
+#endif

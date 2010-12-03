@@ -27,7 +27,6 @@ HEADERS += filtertests.h \
     ../../sensord/logging.h \
     ../../sensord/config.h \
     ../../sensord/sockethandler.h \
-    ../../sensord/propertyhandler.h \
     ../../sensord/nodebase.h \
     ../../sensord/calibrationhandler.h \
     ../../filters/orientationinterpreter/orientationinterpreter.h \
@@ -54,7 +53,6 @@ SOURCES += filtertests.cpp \
     ../../sensord/logging.cpp \
     ../../sensord/config.cpp \
     ../../sensord/sockethandler.cpp \
-    ../../sensord/propertyhandler.cpp \
     ../../sensord/nodebase.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../filters/orientationinterpreter/orientationinterpreter.cpp \

@@ -41,7 +41,6 @@ SOURCES += main.cpp \
     sockethandler.cpp \
     inputdevadaptor.cpp \
     config.cpp \
-    propertyhandler.cpp \
     calibrationhandler.cpp \
     nodebase.cpp \
     parser.cpp
@@ -73,7 +72,6 @@ HEADERS += sensormanager.h \
     sockethandler.h \
     inputdevadaptor.h \
     config.h \
-    propertyhandler.h \
     calibrationhandler.h \
     nodebase.h \
     parser.h

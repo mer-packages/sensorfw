@@ -92,9 +92,6 @@ SensorManager::SensorManager()
         sensordLogW() << "Error setting socket permissions! " << SOCKET_NAME;
     }
 
-    connect(&propertyHandler_, SIGNAL(propertyRequestReceived(QString, QString)),
-            this, SLOT(propertyRequest(QString, QString)));
-
     displayState_ = true;
     psmState_ = false;
 
@@ -341,7 +338,6 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     }
 
     /// Remove any property requests by this session
-    propertyHandler_.clearRequests(sessionId);
     entryIt.value().sensor_->setStandbyOverrideRequest(sessionId, false);
     entryIt.value().sensor_->removeIntervalRequest(sessionId);
     entryIt.value().sensor_->removeDataRangeRequest(sessionId);
@@ -607,19 +603,6 @@ void SensorManager::lostClient(int sessionId)
             releaseSensor(it.key(), sessionId);
             return;
         }
-    }
-}
-
-// TODO: Make the signal contain the new value (as long as int is always enough)
-void SensorManager::propertyRequest(QString property, QString adaptor)
-{
-    int propertyValue = propertyHandler_.getHighestValue(property, adaptor);
-
-    // Check that we have such an adaptor present:
-    if (!deviceAdaptorInstanceMap_.contains(adaptor)) {
-        sensordLogW() << "Setting property" << property << "for nonexisting adaptor" << adaptor;
-    } else {
-        deviceAdaptorInstanceMap_[adaptor].adaptor_->setProperty(property.toLatin1().constData(), (unsigned)propertyValue);
     }
 }
 
