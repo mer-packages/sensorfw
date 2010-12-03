@@ -77,14 +77,13 @@ bool CalibrationHandler::initiateSession()
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
         m_sensor->start();
-        //~ sm.propertyHandler().setRequest("interval", "magnetometeradaptor", m_sessionId, BG_RATE);
         m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
     }
 
-    /// Connect data
+    // Connect data
     connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
 
-    /// Connect timeout
+    // Connect timeout
     connect(m_timer, SIGNAL(timeout()), this, SLOT(stopCalibration()));
 
     m_active = true;

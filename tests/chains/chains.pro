@@ -30,7 +30,6 @@ HEADERS += chainstest.h \
     ../../sensord/sysfsadaptor.h \
     ../../sensord/inputdevadaptor.h \
     ../../sensord/sockethandler.h \
-    ../../sensord/propertyhandler.h \
     ../../sensord/calibrationhandler.h \
     ../../sensord/nodebase.h
 
@@ -55,7 +54,6 @@ SOURCES += chainstest.cpp \
     ../../sensord/sysfsadaptor.cpp \
     ../../sensord/inputdevadaptor.cpp \
     ../../sensord/sockethandler.cpp \
-    ../../sensord/propertyhandler.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../sensord/nodebase.cpp
 

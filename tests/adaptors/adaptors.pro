@@ -28,7 +28,6 @@ HEADERS += adaptortest.h \
     ../../sensord/inputdevadaptor.h \
     ../../datatypes/utils.h \
     ../../sensord/sockethandler.h \
-    ../../sensord/propertyhandler.h \
     ../../sensord/nodebase.h \
     ../../sensord/calibrationhandler.h \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.h \
@@ -60,7 +59,6 @@ SOURCES += adaptortest.cpp \
     ../../sensord/inputdevadaptor.cpp \
     ../../datatypes/utils.cpp \
     ../../sensord/sockethandler.cpp \
-    ../../sensord/propertyhandler.cpp \
     ../../sensord/nodebase.cpp \
     ../../sensord/calibrationhandler.cpp \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.cpp \
