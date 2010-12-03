@@ -57,11 +57,11 @@
         <step>sleep 5</step>
       </pre_steps>
 
-      <case name="Sensord_Power_Management" type="Functional" level="Component" description="Sensord power management handling test" timeout="30" subfeature="Sensor Framework">
+      <case name="Sensord_Power_Management" type="Functional" level="Component" description="Sensord power management handling test" timeout="100" subfeature="Sensor Framework">
         <step expected_result="0">/usr/bin/sensorpowermanagement-test</step>
       </case>
 
-      <case name="Sensord_Standby_Override" type="Functional" level="Component" description="Sensord standby override test" timeout="30" subfeature="Sensor Framework">
+      <case name="Sensord_Standby_Override" type="Functional" level="Component" description="Sensord standby override test" timeout="100" subfeature="Sensor Framework">
         <step expected_result="0">/usr/bin/sensorstandbyoverride-test</step>
       </case>
  
