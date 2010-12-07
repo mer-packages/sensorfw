@@ -31,6 +31,10 @@ sensord (0.6.32) unstable; urgency=low
     invalid input devices.
   * Typo fixed from --help output.
   * Commandline parser improved.
+  * Removed pipe trick from sensormanager which was used to switch thread from
+    adaptor thread to Qt eventloop thread.
+  * SocketHandler now writes all data to socket with single write().
+  * SocketHandler::SessionData is now thread-safe.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 

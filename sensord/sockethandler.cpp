@@ -27,6 +27,7 @@
 
 #include <QLocalSocket>
 #include <QLocalServer>
+#include <QMutexLocker>
 #include <sys/socket.h>
 #include "logging.h"
 #include "sockethandler.h"
@@ -50,8 +51,8 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
 SessionData::~SessionData()
 {
     timer.stop();
-    delete[] buffer;
     delete socket;
+    delete[] buffer;
 }
 
 long SessionData::sinceLastWrite() const
@@ -63,77 +64,86 @@ long SessionData::sinceLastWrite() const
     return (now.tv_sec - lastWrite.tv_sec) * 1000 + ((now.tv_usec - lastWrite.tv_usec) / 1000);
 }
 
-bool SessionData::write(const void* source, int size, unsigned int count)
+bool SessionData::write(void* source, int size, unsigned int count)
 {
-    sensordLogT() << "[SocketHandler]: writing " << count << " fragments to socket with payload (bytes): " << size;
-    socket->write((const char*)&count, sizeof(count));
-    return (socket->write((const char*)source, size * count) < 0 ? false : true);
+    if(socket)
+    {
+        sensordLogT() << "[SocketHandler]: writing " << count << " fragments to socket with payload (bytes): " << size;
+        memcpy(source, &count, sizeof(unsigned int));
+        int written = socket->write((const char*)source, size * count + sizeof(unsigned int));
+        if(written < 0)
+        {
+            sensordLogW() << "[SocketHandler]: failed to write payload to the socket: " << socket->errorString();
+            return false;
+        }
+        return true;
+    }
+    return false;
 }
 
 bool SessionData::write(const void* source, int size)
 {
-    if(interval == -1 && bufferSize <= 1)
-    {
-        sensordLogT() << "[SocketHandler]: pass-through. interval not set";
-        gettimeofday(&lastWrite, 0);
-        return write(source, size, 1);
-    }
+    QMutexLocker locker(&mutex);
     long since = sinceLastWrite();
-    if(since >= interval && bufferSize <= 1)
+    int allocSize = bufferSize * size + sizeof(unsigned int);
+    if(!buffer)
+        buffer = new char[allocSize];
+    else if(size != this->size)
     {
-        sensordLogT() << "[SocketHandler]: pass-through. since > interval";
-        gettimeofday(&lastWrite, 0);
-        return write(source, size, 1);
+        if(buffer)
+        {
+            socket->waitForBytesWritten();
+            delete[] buffer;
+        }
+        buffer = new char[allocSize];
+    }
+    this->size = size;
+    if(bufferSize <= 1)
+    {
+        memcpy(buffer + sizeof(unsigned int), source, size);
+        if(since >= interval)
+        {
+            sensordLogT() << "[SocketHandler]: writing, since > interval";
+            gettimeofday(&lastWrite, 0);
+            return write(buffer, size, 1);
+        }
     }
     else
     {
-        int allocSize = bufferSize * size;;
-        if(!buffer)
-            buffer = new char[allocSize];
-        else if(size != this->size)
+        memcpy(buffer + sizeof(unsigned int) + size * count, source, size);
+        ++count;
+        if(bufferSize == count)
         {
-            if(buffer)
-                delete[] buffer;
-            buffer = new char[allocSize];
+            if(timer.isActive())
+                timer.stop();
+            count = 0;
+            gettimeofday(&lastWrite, 0);
+            return write(buffer, size, bufferSize);
         }
-        this->size = size;
-        if(bufferSize <= 1)
-            memcpy(buffer, source, size);
-        else
+    }
+    if(!timer.isActive())
+    {
+        if(bufferSize > 1)
         {
-            memcpy(buffer + size * count, source, size);
-            ++count;
-            if(bufferSize == count)
-            {
-                if(timer.isActive())
-                    timer.stop();
-                count = 0;
-                return write(buffer, size, bufferSize);
-            }
-        }
-        if(!timer.isActive())
-        {
-            if(bufferSize > 1)
-            {
-                sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
-                timer.start(bufferInterval);
-            }
-            else
-            {
-                sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
-                timer.start(interval - since);
-            }
+            sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
+            timer.start(bufferInterval);
         }
         else
         {
-            sensordLogT() << "[SocketHandler]: timer already running";
+            sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
+            timer.start(interval - since);
         }
+    }
+    else
+    {
+        sensordLogT() << "[SocketHandler]: timer already running";
     }
     return true;
 }
 
 void SessionData::delayedWrite()
 {
+    QMutexLocker locker(&mutex);
     if(timer.isActive())
         timer.stop();
     gettimeofday(&lastWrite, 0);
@@ -150,6 +160,7 @@ QLocalSocket* SessionData::stealSocket()
 
 void SessionData::setInterval(int interval)
 {
+    QMutexLocker locker(&mutex);
     this->interval = interval;
 }
 
@@ -160,6 +171,7 @@ int SessionData::getInterval() const
 
 void SessionData::setBufferInterval(unsigned int interval)
 {
+    QMutexLocker locker(&mutex);
     bufferInterval = interval;
 }
 
@@ -172,6 +184,10 @@ void SessionData::setBufferSize(unsigned int size)
 {
     if(size != bufferSize)
     {
+        QMutexLocker locker(&mutex);
+        if(timer.isActive())
+            timer.stop();
+        socket->waitForBytesWritten();
         delete[] buffer;
         buffer = 0;
         count = 0;

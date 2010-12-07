@@ -43,12 +43,6 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
-typedef struct {
-    int id;
-    int size;
-    void* buffer;
-} PipeData;
-
 SensorManager* SensorManager::instance_ = NULL;
 int SensorManager::sessionIdCount_ = 0;
 
@@ -79,14 +73,6 @@ SensorManager::SensorManager()
     connect(socketHandler_, SIGNAL(lostSession(int)), this, SLOT(lostClient(int)));
 
     Q_ASSERT(socketHandler_->listen(SOCKET_NAME));
-
-    if (pipe(pipefds_) == -1) {
-        sensordLogC() << strerror(errno);
-        pipefds_[0] = pipefds_[1] = 0;
-    } else {
-        pipeNotifier_ = new QSocketNotifier(pipefds_[0], QSocketNotifier::Read);
-        connect(pipeNotifier_, SIGNAL(activated(int)), this, SLOT(writeout(int)));
-    }
 
     if (chmod(SOCKET_NAME, S_IRWXU|S_IRWXG|S_IRWXO) != 0) {
         sensordLogW() << "Error setting socket permissions! " << SOCKET_NAME;
@@ -125,10 +111,6 @@ SensorManager::~SensorManager()
     if (socketHandler_) {
         delete socketHandler_;
     }
-
-    if (pipeNotifier_) delete pipeNotifier_;
-    if (pipefds_[0]) close(pipefds_[0]);
-    if (pipefds_[1]) close(pipefds_[1]);
 
 #ifdef SENSORFW_MCE_WATCHER
     delete mceWatcher_;
@@ -552,41 +534,11 @@ FilterBase* SensorManager::instantiateFilter(const QString& id)
 
 bool SensorManager::write(int id, const void* source, int size)
 {
-    void* buffer = malloc(size);
-    PipeData pipeData;
-
-    if(!buffer) {
-        sensordLogC() << "Malloc failed!";
-        return false;
-    }
-
-    pipeData.id = id;
-    pipeData.size = size;
-    pipeData.buffer = buffer;
-
-    memcpy(buffer, source, size);
-
-    if (::write(pipefds_[1], &pipeData, sizeof(pipeData)) < (int)sizeof(pipeData)) {
-        sensordLogW() << "Failed to write all data to pipe.";
-        return false;
-    }
-
-    return true;
-    // This used to be the old method, but must switch threads.
-    // Thus using the writeout function through pipe.
-    //return socketHandler_->write(id, source, size);
-}
-
-void SensorManager::writeout(int)
-{
-    PipeData pipeData;
-    read(pipefds_[0], &pipeData, sizeof(pipeData));
-
-    if (!socketHandler_->write(pipeData.id, pipeData.buffer, pipeData.size)) {
+    if (!socketHandler_->write(id, source, size)) {
         sensordLogW() << "Failed to write data to socket.";
+        return false;
     }
-
-    free(pipeData.buffer);
+    return true;
 }
 
 void SensorManager::lostClient(int sessionId)

@@ -80,7 +80,6 @@ void MagnetometerSensorChannelInterface::dataReceived()
                 foreach(CalibratedMagneticFieldData data, values)
                     realValues.push_back(MagneticField(data));
                 emit frameAvailable(realValues);
-                values.clear();
             }
             else
             {
@@ -88,6 +87,7 @@ void MagnetometerSensorChannelInterface::dataReceived()
                     emit dataAvailable(MagneticField(data));
             }
         }
+        values.clear();
     }
 }
 

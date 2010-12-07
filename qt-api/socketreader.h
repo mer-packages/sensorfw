@@ -118,7 +118,7 @@ bool SocketReader::read(QVector<T>& values)
         T value;
         if(!read((void*)&value, sizeof(T)))
         {
-            qDebug() << "Error occured while reading data index " << i << " from socket";
+            qDebug() << "Error occured while reading data index " << i << " from socket: " << socket_->errorString();
             return false;
         }
         values.push_back(value);

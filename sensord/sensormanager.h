@@ -198,13 +198,6 @@ public:
 private Q_SLOTS:
     void lostClient(int sessionId);
 
-    /**
-     * BIG UGLY KLUDGE
-     *
-     * Used to make switch-over from sensor thread to sensormanager thread.
-     */
-    void writeout(int);
-
     void displayStateChanged(const bool displayState);
     void devicePSMStateChanged(const bool deviceMode);
 
@@ -250,8 +243,6 @@ private:
     static SensorManager*                          instance_;
 
     SocketHandler*                                 socketHandler_;
-    int                                            pipefds_[2];
-    QSocketNotifier*                               pipeNotifier_;
 
     QString socketToPid(int id) const;
     QString socketToPid(QList<int> ids) const;

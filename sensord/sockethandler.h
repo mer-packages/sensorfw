@@ -31,6 +31,7 @@
 #include <QMap>
 #include <QTimer>
 #include <QList>
+#include <QMutex>
 #include <sys/time.h>
 
 class QLocalServer;
@@ -58,7 +59,7 @@ public:
 
 private:
     long sinceLastWrite() const;
-    bool write(const void* source, int size, unsigned int count);
+    bool write(void* source, int size, unsigned int count);
 
     QLocalSocket* socket;
     int interval;
@@ -69,6 +70,7 @@ private:
     QTimer timer;
     unsigned int bufferSize;
     unsigned int bufferInterval;
+    QMutex mutex;
 
 private slots:
     void delayedWrite();

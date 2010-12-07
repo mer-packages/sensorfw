@@ -80,7 +80,6 @@ void AccelerometerSensorChannelInterface::dataReceived()
                 foreach(AccelerationData data, values)
                     realValues.push_back(XYZ(data));
                 emit frameAvailable(realValues);
-                values.clear();
             }
             else
             {
@@ -88,6 +87,7 @@ void AccelerometerSensorChannelInterface::dataReceived()
                     emit dataAvailable(XYZ(data));
             }
         }
+        values.clear();
     }
 }
 
