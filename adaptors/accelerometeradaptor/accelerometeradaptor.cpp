@@ -97,8 +97,8 @@ void AccelerometerAdaptor::commitOutput()
     OrientationData* d = accelerometerBuffer_->nextSlot();
 
     d->timestamp_ = Utils::getTimeStamp();
-    d->x_ = -orientationValue_.y_;
-    d->y_ = orientationValue_.x_;
+    d->x_ = orientationValue_.x_;
+    d->y_ = orientationValue_.y_;
     d->z_ = orientationValue_.z_;
 
     accelerometerBuffer_->commit();
