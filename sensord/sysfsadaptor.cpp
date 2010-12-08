@@ -35,6 +35,7 @@
 
 SysfsAdaptor::SysfsAdaptor(const QString& id,
                            PollMode mode,
+                           bool seek,
                            const QString& path,
                            const int pathId) :
     DeviceAdaptor(id),
@@ -45,7 +46,8 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     initNotDone(true),
     inStandbyMode_(false),
     running_(false),
-    shouldBeRunning_(false)
+    shouldBeRunning_(false),
+    doSeek_(seek)
 {
     if (!path.isEmpty()) {
         addPath(path, pathId);
@@ -410,15 +412,17 @@ void SysfsAdaptorReader::run()
                     int index = parent_->sysfsDescriptors_.lastIndexOf(events[i].data.fd);
                     if (index != -1) {
                         parent_->processSample(parent_->pathIds_.at(index), events[i].data.fd);
-                        //emit readyRead(parent_->pathIds_.at(index), parent_->sysfsDescriptors_.at(index));
-                        // TODO: Wait on flag
-                        if (lseek(events[i].data.fd, 0, SEEK_SET) == -1)
+
+                        if (parent_->doSeek_)
                         {
-                            sensordLogW() << "Failed to lseek fd: " << strerror(errno);
-                            QThread::msleep(1000);
+                            if (lseek(events[i].data.fd, 0, SEEK_SET) == -1)
+                            {
+                                sensordLogW() << "Failed to lseek fd: " << strerror(errno);
+                                QThread::msleep(1000);
+                            }
                         }
                     } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
-                        running_ = false;
+                            running_ = false;
                     }
                 }
             }
@@ -428,11 +432,15 @@ void SysfsAdaptorReader::run()
             for (int i = 0; i < parent_->sysfsDescriptors_.size(); i++) {
 
                 parent_->processSample(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
-                //XXX: send signal dataReadable and wait on flag
-                //emit readyRead(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
-                // TODO:  wait on flag until read finished. sleep until implement
-                lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET);
 
+                if (parent_->doSeek_)
+                {
+                    if (lseek(parent_->sysfsDescriptors_.at(i), 0, SEEK_SET) == -1)
+                    {
+                        sensordLogW() << "Failed to lseek fd: " << strerror(errno);
+                        QThread::msleep(1000);
+                    }
+                }
             }
 
             // Sleep for interval

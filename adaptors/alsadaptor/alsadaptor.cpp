@@ -60,7 +60,7 @@ struct bh1770glc_als {
 
 
 ALSAdaptor::ALSAdaptor(const QString& id):
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode)
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
 {
     device = DeviceUnknown;
 

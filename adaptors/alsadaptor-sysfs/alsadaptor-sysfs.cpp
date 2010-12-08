@@ -36,7 +36,7 @@
 #include <linux/types.h>
 
 ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, Config::configuration()->value("als-sysfs_path").toString())
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, true, Config::configuration()->value("als-sysfs_path").toString())
 {
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);

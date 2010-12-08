@@ -6,6 +6,7 @@ sensord (0.6.32) unstable; urgency=low
 
   [Timo Rongas]
   * Fixes: NB#206204 - sensord prints debugs to console on startup
+  * Fixes: NB#203996 - sensord-contextfw-tests fail during execution.
 
   [Antti Virtanen]
   * Loader now initializes plugins in reverse order so depenencies gets

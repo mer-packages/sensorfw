@@ -86,10 +86,11 @@ public:
      * Constructor.
      * @param id   Identifier string for the adaptor.
      * @param mode Mode to use for monitoring.
+     * @param seek Whether lseek() should be called to rewind the monitored fds.
      * @param path Path to the sysfs file device to monitor.
      * @param id   Identifier for the path (used as parameter to processSample).
      */
-    SysfsAdaptor(const QString& id, PollMode mode = SelectMode, const QString& path = "", const int pathId = 0);
+    SysfsAdaptor(const QString& id, PollMode mode = SelectMode, bool seek = true, const QString& path = "", const int pathId = 0);
 
     /**
      * Add a new file device for monitoring. Adaptor must be restarted to
@@ -214,6 +215,7 @@ private:
     bool inStandbyMode_;
     bool running_;
     bool shouldBeRunning_;
+    bool doSeek_;
 
     friend class SysfsAdaptorReader;
 };
