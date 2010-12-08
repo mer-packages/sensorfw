@@ -42,7 +42,7 @@ struct ak8974_data {
 }; //__attribute__((packed)); <-- documentation states that this is a nogo for c++
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false),
     originalPollingRate_(1000)
 {
 

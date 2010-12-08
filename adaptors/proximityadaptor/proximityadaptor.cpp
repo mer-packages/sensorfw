@@ -56,7 +56,7 @@ struct apds990x_data {
 
 
 ProximityAdaptor::ProximityAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode),
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     m_threshold(35)
 {
 

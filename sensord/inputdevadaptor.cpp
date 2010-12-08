@@ -41,7 +41,7 @@
 #define MAX_EVENT_DEV           16
 
 InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
-    SysfsAdaptor(id),
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     deviceCount_(0),
     maxDeviceCount_(maxDeviceCount),
     deviceNumber_(-1),
