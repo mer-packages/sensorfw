@@ -35,6 +35,7 @@ sensord (0.6.32) unstable; urgency=low
     adaptor thread to Qt eventloop thread.
   * SocketHandler now writes all data to socket with single write().
   * SocketHandler::SessionData is now thread-safe.
+  * Replaced use of Qt reflection for getting property values and calling methods with direct function calls.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Wed, 10 Nov 2010 11:54:31 +0200
 

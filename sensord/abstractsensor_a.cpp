@@ -33,198 +33,162 @@
 
 bool AbstractSensorChannelAdaptor::isValid() const
 {
-    return qvariant_cast< bool >(parent()->property("isValid"));
+    return node()->isValid();
 }
 
 int AbstractSensorChannelAdaptor::errorCodeInt() const
 {
-    // note: enums can not be transferred over D-BUS
-    return static_cast<SensorError>(qvariant_cast< int >(parent()->property("errorCodeInt")));
+    return node()->errorCodeInt();
 }
 
 QString AbstractSensorChannelAdaptor::errorString() const
 {
-    return qvariant_cast< QString >(parent()->property("errorString"));
+    return node()->errorString();
 }
 
 QString AbstractSensorChannelAdaptor::description() const
 {
-    // get the value of property description
-    return qvariant_cast< QString >(parent()->property("description"));
+    return node()->description();
 }
 
 QString AbstractSensorChannelAdaptor::id() const
 {
-    // get the value of property id
-    return qvariant_cast< QString >(parent()->property("id"));
+    return node()->id();
 }
 
 unsigned int AbstractSensorChannelAdaptor::interval() const
 {
-    return qvariant_cast< unsigned int >(parent()->property("interval"));
+    return node()->getInterval();
 }
 
 unsigned int AbstractSensorChannelAdaptor::bufferInterval() const
 {
-    return qvariant_cast<unsigned int>(parent()->property("bufferInterval"));
+    return node()->bufferInterval();
 }
 
 unsigned int AbstractSensorChannelAdaptor::bufferSize() const
 {
-    return qvariant_cast<unsigned int>(parent()->property("bufferSize"));
+    return node()->bufferSize();
 }
 
 /*
 SensorState AbstractSensorChannelAdaptor::state() const
 {
-    // get the value of property state
-    return qvariant_cast< SensorState >(parent()->property("state"));
+    return node()->state();
 }
 */
 
 QString AbstractSensorChannelAdaptor::type() const
 {
-    // get the value of property type
-    return qvariant_cast< QString >(parent()->property("type"));
+    return node()->type();
 }
 
 void AbstractSensorChannelAdaptor::start(int sessionId)
 {
-    // handle method call local.Sensor.start
-    QMetaObject::invokeMethod(parent(), "start", Q_ARG(int, sessionId));
+    node()->start(sessionId);
 }
 
 void AbstractSensorChannelAdaptor::stop(int sessionId)
 {
-    // handle method call local.Sensor.stop
-    QMetaObject::invokeMethod(parent(), "stop", Q_ARG(int, sessionId));
+    node()->stop(sessionId);
 }
 
 void AbstractSensorChannelAdaptor::setInterval(int sessionId, int value)
 {
-    bool success;
-    QMetaObject::invokeMethod(parent(), "setIntervalRequest", Q_RETURN_ARG(bool, success), Q_ARG(const int, sessionId), Q_ARG(const unsigned int, (unsigned int)value));
+    node()->setIntervalRequest(sessionId, value);
     SensorManager::instance().socketHandler().setInterval(sessionId, value);
 }
 
 bool AbstractSensorChannelAdaptor::standbyOverride() const
 {
-    return qvariant_cast< bool >(parent()->property("standbyOverride"));
+    return node()->standbyOverride();
 }
 
 bool AbstractSensorChannelAdaptor::setStandbyOverride(int sessionId, bool value)
 {
-    bool success;
-    QMetaObject::invokeMethod(parent(), "setStandbyOverrideRequest", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId), Q_ARG(bool, value));
-    return success;
+    return node()->setStandbyOverrideRequest(sessionId, value);
 }
 
 DataRangeList AbstractSensorChannelAdaptor::getAvailableDataRanges()
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
-    {
-        return node->getAvailableDataRanges();
-    }
-    return DataRangeList();
+    return node()->getAvailableDataRanges();
 }
 
 DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
 {
-    DataRangeRequest rangeRequest;
-    QMetaObject::invokeMethod(parent(), "getCurrentDataRange", Q_RETURN_ARG(DataRangeRequest, rangeRequest));
-    return rangeRequest.range_;
+    return node()->getCurrentDataRange().range_;
 }
 
 void AbstractSensorChannelAdaptor::requestDataRange(int sessionId, DataRange range)
 {
-    QMetaObject::invokeMethod(parent(), "requestDataRange", Q_ARG(int, sessionId), Q_ARG(DataRange, range));
+    node()->requestDataRange(sessionId, range);
 }
 
 void AbstractSensorChannelAdaptor::removeDataRangeRequest(int sessionId)
 {
-    QMetaObject::invokeMethod(parent(), "removeDataRangeRequest", Q_ARG(int, sessionId));
+    node()->removeDataRangeRequest(sessionId);
 }
 
 DataRangeList AbstractSensorChannelAdaptor::getAvailableIntervals()
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
-    {
-        return node->getAvailableIntervals();
-    }
-    return DataRangeList();
+    return node()->getAvailableIntervals();
 }
 
 bool AbstractSensorChannelAdaptor::setDefaultInterval(int sessionId)
 {
-    bool success;
-    QMetaObject::invokeMethod(parent(), "requestDefaultInterval", Q_RETURN_ARG(bool, success), Q_ARG(int, sessionId));
+    bool ok = node()->requestDefaultInterval(sessionId);
     SensorManager::instance().socketHandler().clearInterval(sessionId);
-    return success;
+    return ok;
 }
 
 void AbstractSensorChannelAdaptor::setBufferInterval(int sessionId, unsigned int value)
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
+    bool hwBuffering = false;
+    node()->getAvailableBufferIntervals(hwBuffering);
+    if(hwBuffering)
     {
-        bool hwBuffering = false;
-        node->getAvailableBufferIntervals(hwBuffering);
-        if(hwBuffering)
-        {
-            if(value == 0)
-                node->clearBufferInterval(sessionId);
-            else
-                node->setBufferInterval(sessionId, value);
-            value = 0;
-        }
         if(value == 0)
-            SensorManager::instance().socketHandler().clearBufferInterval(sessionId);
+            node()->clearBufferInterval(sessionId);
         else
-            SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
+            node()->setBufferInterval(sessionId, value);
+        value = 0;
     }
+    if(value == 0)
+        SensorManager::instance().socketHandler().clearBufferInterval(sessionId);
+    else
+        SensorManager::instance().socketHandler().setBufferInterval(sessionId, value);
 }
 
 void AbstractSensorChannelAdaptor::setBufferSize(int sessionId, unsigned int value)
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
+    bool hwBuffering = false;
+    node()->getAvailableBufferSizes(hwBuffering);
+    if(hwBuffering)
     {
-        bool hwBuffering = false;
-        node->getAvailableBufferSizes(hwBuffering);
-        if(hwBuffering)
-        {
-            if(value == 0)
-                node->clearBufferSize(sessionId);
-            else
-                node->setBufferSize(sessionId, value);
-        }
         if(value == 0)
-            SensorManager::instance().socketHandler().clearBufferSize(sessionId);
+            node()->clearBufferSize(sessionId);
         else
-            SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
+            node()->setBufferSize(sessionId, value);
     }
+    if(value == 0)
+        SensorManager::instance().socketHandler().clearBufferSize(sessionId);
+    else
+        SensorManager::instance().socketHandler().setBufferSize(sessionId, value);
 }
 
 IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferIntervals() const
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
-    {
-        bool dummy;
-        return node->getAvailableBufferIntervals(dummy);
-    }
-    return IntegerRangeList();
+    bool dummy;
+    return node()->getAvailableBufferIntervals(dummy);
 }
 
 IntegerRangeList AbstractSensorChannelAdaptor::getAvailableBufferSizes() const
 {
-    NodeBase* node = dynamic_cast<NodeBase*>(parent());
-    if(node)
-    {
-        bool dummy;
-        return node->getAvailableBufferSizes(dummy);
-    }
-    return IntegerRangeList();
+    bool dummy;
+    return node()->getAvailableBufferSizes(dummy);
+}
+
+AbstractSensorChannel* AbstractSensorChannelAdaptor::node() const
+{
+    return dynamic_cast<AbstractSensorChannel*>(parent());
 }

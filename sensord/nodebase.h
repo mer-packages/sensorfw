@@ -165,6 +165,9 @@ public Q_SLOTS:
     virtual IntegerRangeList getAvailableBufferSizes(bool& hwSupported) const;
     virtual IntegerRangeList getAvailableBufferIntervals(bool& hwSupported) const;
 
+    virtual unsigned int bufferSize() const { return 0; };
+    virtual unsigned int bufferInterval() const { return 0; };
+
     bool setBufferSize(int sessionId, unsigned int value);
     bool clearBufferSize(int sessionId);
     bool setBufferInterval(int sessionId, unsigned int value);

@@ -30,11 +30,24 @@
 #define ABSTRACTSENSORADAPTOR_H
 
 #include <QtDBus/QtDBus>
+#include "abstractsensor.h"
 #include "datatypes/datarange.h"
 
 class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(AbstractSensorChannelAdaptor)
+    Q_PROPERTY(bool isValid READ isValid)
+    Q_PROPERTY(QString errorString READ errorString)
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(QString id READ id)
+    Q_PROPERTY(unsigned int interval READ interval)
+    Q_PROPERTY(bool standbyOverride READ standbyOverride)
+    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval)
+    Q_PROPERTY(unsigned int bufferSize READ bufferSize)
+    Q_PROPERTY(QString type READ type)
+    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    // Q_PROPERTY(SensorState state READ state) //TODO: put state back
 
 public:
     virtual ~AbstractSensorChannelAdaptor() {}
@@ -42,43 +55,21 @@ public:
 protected:
     AbstractSensorChannelAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent) {}
 
-public: // PROPERTIES
-    Q_PROPERTY(bool isValid READ isValid)
+public:
     bool isValid() const;
-
-    Q_PROPERTY(QString errorString READ errorString)
     QString errorString() const;
-
-    Q_PROPERTY(QString description READ description)
     QString description() const;
-
-    Q_PROPERTY(QString id READ id)
     QString id() const;
-
-    Q_PROPERTY(unsigned int interval READ interval)
     unsigned int interval() const;
-
-    Q_PROPERTY(bool standbyOverride READ standbyOverride);
     bool standbyOverride() const;
-
-    Q_PROPERTY(unsigned int bufferInterval READ bufferInterval);
     unsigned int bufferInterval() const;
-
-    Q_PROPERTY(unsigned int bufferSize READ bufferSize);
     unsigned int bufferSize() const;
-
-    // TODO: put state back
-    /*
-    Q_PROPERTY(SensorState state READ state)
-    SensorState state() const;
-    */
-
-    Q_PROPERTY(QString type READ type)
     QString type() const;
+    // SensorState state() const; //TODO: put state back
 
 private: // PROPERTIES
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     int errorCodeInt() const;
+    AbstractSensorChannel* node() const;
 
 public Q_SLOTS: // METHODS
     void start(int sessionId);
