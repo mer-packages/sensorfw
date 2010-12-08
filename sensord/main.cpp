@@ -42,7 +42,7 @@
 
 void printUsage();
 
-void signalHandler(int param)
+void signalUSR1(int param)
 {
     Q_UNUSED(param);
 
@@ -51,7 +51,7 @@ void signalHandler(int param)
     std::cerr << "New debugging level: " << SensordLogger::getOutputLevel() << "\n";
 }
 
-void signalFlush(int param)
+void signalUSR2(int param)
 {
     Q_UNUSED(param);
 
@@ -64,6 +64,12 @@ void signalFlush(int param)
     foreach (QString line, output) {
         sensordLogW() << line.toLocal8Bit().data();
     }
+}
+
+void signalINT(int param)
+{
+    Q_UNUSED(param);
+    QCoreApplication::exit(0);
 }
 
 int main(int argc, char *argv[])
@@ -110,8 +116,9 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    signal(SIGUSR1, signalHandler);
-    signal(SIGUSR2, signalFlush);
+    signal(SIGUSR1, signalUSR1);
+    signal(SIGUSR2, signalUSR2);
+    signal(SIGINT, signalINT);
 
 #ifdef PROVIDE_CONTEXT_INFO
     if (parser.contextInfo())
@@ -150,6 +157,7 @@ int main(int argc, char *argv[])
     }
 
     int ret = app.exec();
+    sensordLogD() << "Exitting...";
     Config::close();
     SensordLogger::close();
     return ret;

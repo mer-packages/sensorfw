@@ -19,3 +19,12 @@ CONFIG += contextprovider
 ### default is armel. If internal sensors are included in manual build for x86,
 ### uncomment the following line:
 #### CONFIG+= x86build
+
+profile {
+  QMAKE_CXXFLAGS += -pg
+  QMAKE_LFLAGS += -pg
+}
+
+profile-libc {
+  QMAKE_LFLAGS += -lc_p
+}
