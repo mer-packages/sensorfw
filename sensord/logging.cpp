@@ -56,11 +56,6 @@ SensordLogger::~SensordLogger()
     printToTarget(oss.str().c_str());
 }
 
-bool SensordLogger::isLoggable(int level)
-{
-    return ((level >= SensordLogTest) && (level < SensordLogN) && (level >= getOutputLevel()));
-}
-
 void SensordLogger::setOutputLevel(SensordLogLevel level)
 {
     outputLevel = level;

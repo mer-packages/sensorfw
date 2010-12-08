@@ -89,7 +89,10 @@ private:
     void printToTarget(const char* data) const;
     static int logPriority(int currentLevel);
     static const char* logLevelToText(int level);
-    static bool isLoggable(int level);
+    inline static bool isLoggable(int level)
+    {
+        return ((level >= SensordLogTest) && (level < SensordLogN) && (level >= getOutputLevel()));
+    }
 };
 
 #define sensordLogT() (SensordLogger(__PRETTY_FUNCTION__, __FILE__, __LINE__, SensordLogTest))

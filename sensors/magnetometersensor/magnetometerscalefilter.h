@@ -56,6 +56,7 @@ protected:
 private:
     void filter(unsigned, const CalibratedMagneticFieldData*);
 
+    int factor;
 };
 
 #endif

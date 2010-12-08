@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,11 +30,11 @@
 MagnetometerScaleFilter::MagnetometerScaleFilter() :
         Filter<CalibratedMagneticFieldData, MagnetometerScaleFilter, CalibratedMagneticFieldData>(this, &MagnetometerScaleFilter::filter)
 {
+    factor = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();;
 }
 
 void MagnetometerScaleFilter::filter(unsigned, const CalibratedMagneticFieldData* data)
 {
-    int factor = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();;
     CalibratedMagneticFieldData transformed;
 
     transformed.timestamp_ = data->timestamp_;
