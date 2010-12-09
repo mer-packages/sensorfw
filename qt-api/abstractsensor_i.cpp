@@ -60,12 +60,7 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString& pa
 {
     if (!pimpl_->socketReader_.initiateConnection(sessionId)) {
         setError(SClientSocketError, "Socket connection failed.");
-        // TODO: Invalidate!
     }
-
-    qDBusRegisterMetaType<DataRange>();
-
-    Q_ASSERT ( isValid() );
 }
 
 AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
