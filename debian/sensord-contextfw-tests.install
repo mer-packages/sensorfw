@@ -2,3 +2,4 @@
 /usr/share/sensord-contextfw-tests/testorientation.py
 /usr/share/sensord-contextfw-tests/testorientation-manual.sh
 /usr/share/sensord-contextfw-tests/testals.py
+/usr/share/sensord-contextfw-tests/teststationary.py
