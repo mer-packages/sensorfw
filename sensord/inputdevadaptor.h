@@ -25,12 +25,13 @@
    </p>
  */
 
-#ifndef INPUTDEVADAPTOR_H 
-#define INPUTDEVADAPTOR_H 
+#ifndef INPUTDEVADAPTOR_H
+#define INPUTDEVADAPTOR_H
 
 #include "sensord/sysfsadaptor.h"
 #include <QString>
 #include <QStringList>
+#include <QFile>
 #include <linux/input.h>
 #include <sensord/filterproperty.h>
 
@@ -55,16 +56,16 @@ public:
 
     /**
      * See SysfsAdaptor::startSensor()
-     * 
+     *
      * Extended to allow polling rate adjustment.
-     */ 
+     */
     virtual bool startSensor(const QString& sensorId);
 
     /**
      * See SysfsAdaptor::startSensor()
-     * 
+     *
      * Extended to allow polling rate adjustment.
-     */ 
+     */
     virtual void stopSensor(const QString& sensorId);
 
 protected:
@@ -84,7 +85,7 @@ protected:
      * @param ev  Read event.
      */
     virtual void interpretEvent(int src, struct input_event *ev) = 0;
-    
+
     /**
      * Interpret a a synchronization event from the device.
      */
@@ -94,11 +95,11 @@ protected:
      * Scans through the /dev/input/event* device handles and registers the
      * ones that pass the test with the #checkInputDevice method.
      * @param matchString String to match in device name fields.
-     * @param matchingDeviceNumber Pointer to integer where to store the 
+     * @param matchingDeviceNumber Pointer to integer where to store the
      *                             last found matching device number.
      *
      * @return Number of devices detected.
-     * 
+     *
      * @todo Redesign to provide proper listing of matched devices.
      */
     int getInputDevices(QString matchString = "");
@@ -125,8 +126,11 @@ private:
      */
     int getEvents(int fd);
 
+    bool openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const;
+
     QString deviceSysPathString_;
     QString devicePollFilePath_;
+    QString usedDevicePollFilePath_;
     QString deviceString_;
     int deviceCount_;
     int maxDeviceCount_;

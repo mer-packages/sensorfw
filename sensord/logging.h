@@ -57,7 +57,7 @@ public:
     SensordLogger& operator<<(const QString& item)
     {
         if(isLoggable(currentLevel))
-            oss << item.toStdString();
+            *oss << item.toStdString();
         return *this;
     }
 
@@ -65,7 +65,7 @@ public:
     SensordLogger& operator<<(const T& item)
     {
         if(isLoggable(currentLevel))
-            oss << item;
+            *oss << item;
         return *this;
     }
 
@@ -77,7 +77,7 @@ public:
     static void close();
 
 private:
-    std::ostringstream oss;
+    std::ostringstream* oss;
     SensordLogLevel currentLevel;
 
     static SensordLogLevel outputLevel;

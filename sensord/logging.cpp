@@ -40,12 +40,14 @@ QMutex SensordLogger::mutex;
 std::ofstream* SensordLogger::logFile = 0;
 
 SensordLogger::SensordLogger (const char* func, const char *file, int line, SensordLogLevel level) :
-        currentLevel(level)
+    oss(0),
+    currentLevel(level)
 {
     if (!initialized || !isLoggable(level))
         return;
-    oss << logLevelToText(level);
-    oss << "[" << file << ":" << line << ":" << func << "]: ";
+    oss = new std::ostringstream();
+    *oss << logLevelToText(level);
+    *oss << "[" << file << ":" << line << ":" << func << "]: ";
 }
 
 SensordLogger::~SensordLogger()
@@ -53,7 +55,8 @@ SensordLogger::~SensordLogger()
     if (!initialized || !isLoggable(currentLevel))
         return;
 
-    printToTarget(oss.str().c_str());
+    printToTarget(oss->str().c_str());
+    delete oss;
 }
 
 void SensordLogger::setOutputLevel(SensordLogLevel level)

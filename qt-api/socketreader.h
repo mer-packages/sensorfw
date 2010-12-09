@@ -112,6 +112,12 @@ bool SocketReader::read(QVector<T>& values)
     if(!read((void*)&count, sizeof(unsigned int)))
         return false;
     qDebug() << "Received notification about " << count << " fragments waiting in socket";
+    if(count > 1000)
+    {
+        qWarning() << "Too many samples waiting in socket. Flushing it to empty";
+        socket_->readAll();
+        return false;
+    }
     values.reserve(values.size() + count);
     for(unsigned int i = 0; i < count; ++i)
     {
@@ -119,6 +125,7 @@ bool SocketReader::read(QVector<T>& values)
         if(!read((void*)&value, sizeof(T)))
         {
             qDebug() << "Error occured while reading data index " << i << " from socket: " << socket_->errorString();
+            socket_->readAll();
             return false;
         }
         values.push_back(value);

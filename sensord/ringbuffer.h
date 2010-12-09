@@ -106,9 +106,9 @@ public:
 
     int typeId() { return 0; } // TODO
 
-    virtual unsigned read(unsigned                n,
-                          TYPE*                   values,
-                          RingBufferReader<TYPE>& reader) const
+    unsigned read(unsigned                n,
+                  TYPE*                   values,
+                  RingBufferReader<TYPE>& reader) const
     {
         unsigned itemsRead = 0;
         while (itemsRead < n && reader.readCount_ != (unsigned)writeCount_) {

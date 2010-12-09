@@ -30,6 +30,7 @@ sensord (0.6.32) unstable; urgency=low
   * Fixed crash and reliability issues from StandbyOverrideTest and PowerManagementTest. Fixes: NB#204003.
   * InputDevAdaptor now better handles cases when read() or lseek() fails for
     invalid input devices.
+  * Optimized InputDevAdaptor interval handling.
   * Typo fixed from --help output.
   * Commandline parser improved.
   * Removed pipe trick from sensormanager which was used to switch thread from

@@ -86,17 +86,26 @@ int InputDevAdaptor::getInputDevices(QString matchString)
         deviceCount_++;
         deviceNumber_ = deviceNumber;
         return deviceCount_;
-     }
-
-    // No configuration for this device, try find the device from the device system path
-    while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
-        deviceName = deviceSysPathString_.arg(deviceNumber);
-        if (checkInputDevice(deviceName, matchString)) {
-            addPath(deviceName, deviceCount_);
-            deviceCount_++;
-            deviceNumber_ = deviceNumber;
+    }
+    else
+    {
+        // No configuration for this device, try find the device from the device system path
+        while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
+            deviceName = deviceSysPathString_.arg(deviceNumber);
+            if (checkInputDevice(deviceName, matchString)) {
+                addPath(deviceName, deviceCount_);
+                deviceCount_++;
+                deviceNumber_ = deviceNumber;
+            }
+            deviceNumber++;
         }
-        deviceNumber++;
+    }
+
+    QString pollConfigKey = QString("dev_poll_%1").arg(deviceString_);
+    if (Config::configuration()->value(pollConfigKey, "").toString().size() > 0) {
+        usedDevicePollFilePath_ = Config::configuration()->value(pollConfigKey, "").toString();
+    } else {
+        usedDevicePollFilePath_ = devicePollFilePath_.arg(deviceNumber_);
     }
 
     if (deviceCount_ == 0) {
@@ -167,37 +176,31 @@ bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool s
     return check;
 }
 
+bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const
+{
+    pollFile.setFileName(usedDevicePollFilePath_);
+    if (!(pollFile.exists() && pollFile.open(mode))) {
+        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
+        return false;
+    }
+    return true;
+}
+
 unsigned int InputDevAdaptor::interval() const
 {
     if (deviceNumber_ < 0) {
         return -1;
     }
 
-    unsigned int result = 0;
-
-    // TODO: Clean this up somehow..
-    // Check if this device name is defined in configuration
-    QString configKey = QString("dev_poll_%1").arg(deviceString_);
     QFile pollFile;
-
-    if (Config::configuration()->value(configKey, "").toString().size() > 0) {
-        pollFile.setFileName(Config::configuration()->value(configKey, "").toString());
-    } else {
-        pollFile.setFileName(devicePollFilePath_.arg(deviceNumber_));
-    }
-
-    if (!(pollFile.exists() && pollFile.open(QIODevice::ReadOnly))) {
-        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
-        return result;
-    }
+    if(!openPollFile(pollFile, QIODevice::ReadOnly))
+        return 0;
 
     char buf[16];
     if (pollFile.readLine(buf, sizeof(buf)) > 0) {
-        result = QString(buf).toUInt();
+        return QString(buf).toUInt();
     }
-
-    pollFile.close();
-    return result;
+    return 0;
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
@@ -206,27 +209,15 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 
     sensordLogD() << "Setting poll interval for" << deviceString_ << " to " << value;
 
-    // TODO: Clean this up somehow..
-    // Check if this device name is defined in configuration
-    QString configKey = QString("dev_poll_%1").arg(deviceString_);
     QFile pollFile;
-
-    if (Config::configuration()->value(configKey, "").toString().size() > 0) {
-        pollFile.setFileName(Config::configuration()->value(configKey, "").toString());
-    } else {
-        pollFile.setFileName(devicePollFilePath_.arg(deviceNumber_));
-    }
-
-    if (!(pollFile.exists() && pollFile.open(QIODevice::WriteOnly))) {
-        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
+    if(!openPollFile(pollFile, QIODevice::WriteOnly))
         return false;
-    }
+
     QString frequencyString = QString("%1\n").arg(value);
 
     if (pollFile.write(frequencyString.toAscii().constData(), frequencyString.length()) < 0) {
         sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ":" << pollFile.error();
+        return false;
     }
-
-    pollFile.close();
     return true;
 }
