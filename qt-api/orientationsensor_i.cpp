@@ -65,10 +65,12 @@ OrientationSensorChannelInterface* OrientationSensorChannelInterface::controlInt
 
 void OrientationSensorChannelInterface::dataReceived()
 {
-    TimedUnsigned value;
-
-    while (read((void*)&value, sizeof(value))) {
-        emit orientationChanged(value);
+    QVector<TimedUnsigned> values;
+    while (read<TimedUnsigned>(values))
+    {
+        foreach(TimedUnsigned data, values)
+            emit orientationChanged(data);
+        values.clear();
     }
 }
 

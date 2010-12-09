@@ -64,11 +64,12 @@ CompassSensorChannelInterface* CompassSensorChannelInterface::controlInterface(c
 
 void CompassSensorChannelInterface::dataReceived()
 {
-    CompassData value;
-
-    while (read((void*)&value, sizeof(CompassData))) {
-
-        emit dataAvailable(value);
+    QVector<CompassData> values;
+    while (read<CompassData>(values))
+    {
+        foreach(CompassData data, values)
+            emit dataAvailable(data);
+        values.clear();
     }
 }
 

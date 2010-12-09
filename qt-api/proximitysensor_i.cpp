@@ -67,10 +67,12 @@ ProximitySensorChannelInterface* ProximitySensorChannelInterface::controlInterfa
 
 void ProximitySensorChannelInterface::dataReceived()
 {
-    TimedUnsigned value;
-
-    while (read((void*)&value, sizeof(TimedUnsigned))) {
-        emit dataAvailable(value);
+    QVector<TimedUnsigned> values;
+    while (read<TimedUnsigned>(values))
+    {
+        foreach(TimedUnsigned data, values)
+            emit dataAvailable(data);
+        values.clear();
     }
 }
 

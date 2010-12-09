@@ -69,23 +69,18 @@ void RotationSensorChannelInterface::dataReceived()
     QVector<TimedXyzData> values;
     while (read<TimedXyzData>(values))
     {
-        if(values.size() == 1)
-            emit dataAvailable(XYZ(values.back()));
+        if(frameAvailableConnected || values.size() == 1)
+        {
+            foreach(TimedXyzData data, values)
+                emit dataAvailable(XYZ(data));
+        }
         else
         {
-            if(frameAvailableConnected)
-            {
-                QVector<XYZ> realValues;
-                realValues.reserve(values.size());
-                foreach(TimedXyzData data, values)
-                    realValues.push_back(XYZ(data));
-                emit frameAvailable(realValues);
-            }
-            else
-            {
-                foreach(TimedXyzData data, values)
-                    emit dataAvailable(XYZ(data));
-            }
+            QVector<XYZ> realValues;
+            realValues.reserve(values.size());
+            foreach(TimedXyzData data, values)
+                realValues.push_back(XYZ(data));
+            emit frameAvailable(realValues);
         }
         values.clear();
     }

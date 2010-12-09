@@ -68,29 +68,29 @@ TapSensorChannelInterface* TapSensorChannelInterface::controlInterface(const QSt
 
 void TapSensorChannelInterface::dataReceived()
 {
-    TapData value;
-    while (read((void*)&value, sizeof(TapData)))
-    {
-        if (type_ == Single)
-        {
-            emit dataAvailable(Tap(value));
-        } else if (timer->isActive()) {
-            if ((!tapValues_.isEmpty()) && (tapValues_.first().direction_ == value.direction_))
-            {
-                timer->stop();
-                tapValues_.removeFirst();
-                value.type_ = TapData:: DoubleTap;
-                tapValues_.prepend(value);
-                output();
+    QVector<TapData> values;
+    while (read<TapData>(values)) {
+        foreach(TapData value, values) {
+            if (type_ == Single) {
+                emit dataAvailable(Tap(value));
+            } else if (timer->isActive()) {
+                if ((!tapValues_.isEmpty()) && (tapValues_.first().direction_ == value.direction_)) {
+                    timer->stop();
+                    tapValues_.removeFirst();
+                    value.type_ = TapData:: DoubleTap;
+                    tapValues_.prepend(value);
+                    output();
+                } else {
+                    output();
+                    tapValues_.prepend(value);
+                    timer->start(doubleClickInteval);
+                }
             } else {
-                output();
                 tapValues_.prepend(value);
                 timer->start(doubleClickInteval);
             }
-        } else {
-            tapValues_.prepend(value);
-            timer->start(doubleClickInteval);
         }
+        values.clear();
     }
 }
 

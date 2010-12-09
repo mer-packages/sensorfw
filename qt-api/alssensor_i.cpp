@@ -66,9 +66,12 @@ ALSSensorChannelInterface* ALSSensorChannelInterface::controlInterface(const QSt
 
 void ALSSensorChannelInterface::dataReceived()
 {
-    TimedUnsigned value;
-    while (read((void*)&value, sizeof(value))) {
-        emit ALSChanged(value);
+    QVector<TimedUnsigned> values;
+    while (read<TimedUnsigned>(values))
+    {
+        foreach(TimedUnsigned data, values)
+            emit ALSChanged(data);
+        values.clear();
     }
 }
 

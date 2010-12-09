@@ -69,23 +69,18 @@ void MagnetometerSensorChannelInterface::dataReceived()
     QVector<CalibratedMagneticFieldData> values;
     while (read<CalibratedMagneticFieldData>(values))
     {
-        if(values.size() == 1)
-            emit dataAvailable(MagneticField(values.back()));
+        if(!frameAvailableConnected || values.size() == 1)
+        {
+            foreach(CalibratedMagneticFieldData data, values)
+                emit dataAvailable(MagneticField(data));
+        }
         else
         {
-            if(frameAvailableConnected)
-            {
-                QVector<MagneticField> realValues;
-                realValues.reserve(values.size());
-                foreach(CalibratedMagneticFieldData data, values)
-                    realValues.push_back(MagneticField(data));
-                emit frameAvailable(realValues);
-            }
-            else
-            {
-                foreach(CalibratedMagneticFieldData data, values)
-                    emit dataAvailable(MagneticField(data));
-            }
+            QVector<MagneticField> realValues;
+            realValues.reserve(values.size());
+            foreach(CalibratedMagneticFieldData data, values)
+                realValues.push_back(MagneticField(data));
+            emit frameAvailable(realValues);
         }
         values.clear();
     }
