@@ -14,4 +14,5 @@ SUBDIRS = alsadaptor \
           proximityadaptor \
           proximityadaptor-evdev \
           proximityadaptor-ascii \
-          mrstaccelerometer
+          mrstaccelerometer \
+          gyroscopeadaptor
