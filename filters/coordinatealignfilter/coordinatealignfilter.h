@@ -30,12 +30,12 @@
 #include "sensord/filter.h"
 #include "sensord/filterproperty.h"
 
-#define DIM 3
-
 /**
  * TMatrix holds a transformation matrix.
  */
 class TMatrix {
+private:
+    static const int DIM = 3;
 
 public:
     TMatrix() {
@@ -55,7 +55,7 @@ public:
         }
         return data_[i][j];
     };
-    
+
     void setMatrix(const double m[DIM][DIM]) {
         memcpy(data_, m, sizeof(double[DIM][DIM]));
     }
@@ -66,7 +66,7 @@ Q_DECLARE_METATYPE(TMatrix);
 
 /**
  * @brief Coordinate alignment filter.
- * 
+ *
  * Performs three dimensional coordinate transformations.
  * Transformation is described by transformation matrix which is set through
  * \c TMatrix property. Matrix must be of size 3x3. Default TMatrix is

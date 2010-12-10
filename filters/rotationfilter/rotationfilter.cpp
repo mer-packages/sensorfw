@@ -21,14 +21,10 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
- */
+*/
 
 #include "rotationfilter.h"
-
-#include <QVariant>
 #include <math.h>
-
-#define RADIANS_TO_DEGREES 180/M_PI
 
 RotationFilter::RotationFilter() :
         accelerometerDataSink_(this, &RotationFilter::interpret),
@@ -42,29 +38,23 @@ RotationFilter::RotationFilter() :
 
 void RotationFilter::interpret(unsigned, const TimedXyzData* data)
 {
+    const int RADIANS_TO_DEGREES = 180/M_PI;
+
     rotation_.timestamp_ = data->timestamp_;
 
-    /// X-Rotation
-    //~ if (data->x_ == 0 && data->z_ == 0) {
-        //~ rotation_.x_ = 0;
-    //~ } else {
-        rotation_.x_ = round(atan((double)data->y_ / sqrt(data->x_*data->x_ + data->z_*data->z_)) * RADIANS_TO_DEGREES);
-        rotation_.x_ = -rotation_.x_;
-    //~ }
+    // X-Rotation
+    rotation_.x_ = round(atan((double)data->y_ / sqrt(data->x_ * data->x_ + data->z_ * data->z_)) * RADIANS_TO_DEGREES);
+    rotation_.x_ = -rotation_.x_;
 
-    /// Y-rotation
+    // Y-rotation
     if (data->x_ == 0 && data->y_ == 0 && data->z_ > 0) {
         rotation_.y_ = 180;
     } else if (data->x_ == 0 && data->z_  == 0) {
         rotation_.y_ = 0;
     } else {
-        //~ if (data->y_  == 0 && data->z_ == 0) {
-            //~ rotation_.y_ = 0;
-        //~ } else {
-            rotation_.y_ = round(atan((double)data->x_ / sqrt(data->y_*data->y_ + data->z_*data->z_)) * RADIANS_TO_DEGREES);
-        //~ }
+        rotation_.y_ = round(atan((double)data->x_ / sqrt(data->y_ * data->y_ + data->z_ * data->z_)) * RADIANS_TO_DEGREES);
 
-        qreal theta = atan(sqrt(data->x_*data->x_ + data->y_*data->y_) / data->z_) * RADIANS_TO_DEGREES;
+        qreal theta = atan(sqrt(data->x_ * data->x_ + data->y_ * data->y_) / data->z_) * RADIANS_TO_DEGREES;
         if (theta > 0) {
             if (rotation_.y_ >= 0)
                 rotation_.y_ = 180 - rotation_.y_;
@@ -78,7 +68,7 @@ void RotationFilter::interpret(unsigned, const TimedXyzData* data)
 
 double RotationFilter::vectorLength(const TimedXyzData& data)
 {
-    return sqrt(data.x_*data.x_ + data.y_*data.y_ + data.z_*data.z_);
+    return sqrt(data.x_ * data.x_ + data.y_ * data.y_ + data.z_ * data.z_);
 }
 
 void RotationFilter::updateZvalue(unsigned, const CompassData* data)
@@ -87,7 +77,7 @@ void RotationFilter::updateZvalue(unsigned, const CompassData* data)
 
     /// Z-rotation
     /// Compass output is [0, 360), rotation is (-180, 180]
-    rotation_.z_ = -1*(data->degrees_ - 180);
-    
+    rotation_.z_ = -1 * (data->degrees_ - 180);
+
     source_.propagate(1, &rotation_);
 }

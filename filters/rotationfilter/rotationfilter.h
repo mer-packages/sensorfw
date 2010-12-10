@@ -21,7 +21,7 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
- */
+*/
 
 #ifndef ROTATIONFILTER_H
 #define ROTATIONFILTER_H
@@ -30,8 +30,6 @@
 
 #include "orientationdata.h"
 #include "sensord/filter.h"
-
-#define DEFAULT_THRESHOLD 50
 
 /**
  * @brief Filter for calculating device axis rotations.
@@ -74,7 +72,7 @@ private:
     void updateZvalue(unsigned, const CompassData*);
 
     inline int dotProduct(TimedXyzData a, TimedXyzData b) const {
-        return (a.x_*b.x_)+(a.y_*b.y_)+(a.z_*b.z_);
+        return (a.x_ * b.x_) + (a.y_ * b.y_) + (a.z_ * b.z_);
     }
 
     TimedXyzData rotation_;

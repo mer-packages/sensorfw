@@ -38,8 +38,6 @@
 #include <QDir>
 #include <QString>
 
-#define MAX_EVENT_DEV           16
-
 InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     deviceCount_(0),
@@ -89,6 +87,8 @@ int InputDevAdaptor::getInputDevices(QString matchString)
     }
     else
     {
+        const int MAX_EVENT_DEV = 16;
+
         // No configuration for this device, try find the device from the device system path
         while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
             deviceName = deviceSysPathString_.arg(deviceNumber);
