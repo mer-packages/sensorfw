@@ -31,7 +31,7 @@
 
 void GyroscopePlugin::Register(class Loader&)
 {
-    qDebug() << "registering gyroscopesensor";
+    sensordLogD() << "registering gyroscopesensor";
     SensorManager& sm = SensorManager::instance();
     sm.registerSensor<GyroscopeSensorChannel>("gyroscopesensor");
 }

@@ -79,9 +79,9 @@ private Q_SLOTS: // METHODS
 Q_SIGNALS: // SIGNALS
     /**
      * Sent when new tap event has occurred.
-     * @param The tap event.
+     * @param data The tap event.
      */
-    void dataAvailable(const Tap&);
+    void dataAvailable(const Tap& data);
 
 public:
 

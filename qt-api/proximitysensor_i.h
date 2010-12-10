@@ -64,7 +64,7 @@ public:
     /**
      * Constructor.
      * @param path      path.
-     * @param sessionid session id.
+     * @param sessionId session id.
      */
     ProximitySensorChannelInterface(const QString& path, int sessionId);
 

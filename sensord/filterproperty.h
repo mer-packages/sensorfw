@@ -53,9 +53,9 @@ public:
     /**
      * Run when a property value has been set in a FilterProperty this tracker
      * is monitoring.
-     * @param Pointer to the calling FilterPropertyBase.
+     * @param property Pointer to the calling FilterPropertyBase.
      */
-    virtual void trackWrite(FilterPropertyBase*) {}
+    virtual void trackWrite(FilterPropertyBase* property) {}
 };
 
 

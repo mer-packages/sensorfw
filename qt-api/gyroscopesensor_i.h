@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -43,33 +44,27 @@
 class GyroscopeSensorChannelInterface: public AbstractSensorChannelInterface
 {
     Q_OBJECT;
+    Q_DISABLE_COPY(GyroscopeSensorChannelInterface)
+    Q_PROPERTY(XYZ value READ get)
 
 public:
     /**
-     * Get name of the D-Bus interface for this class.
-     * @return Name of the interface.
+     * Name of the D-Bus interface for this class.
      */
-    static inline const char *staticInterfaceName()
-    { return "local.GyroscopeSensor"; }
+    static const char* staticInterfaceName;
 
     /**
      * Get an instance of the class.
      * @return Pointer to new instance of the class.
      */
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId)
-    {
-        // ToDo: see which arguments can be made explicit
-        return new GyroscopeSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
-    }
+    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Q_PROPERTY(XYZ value READ get);
-    inline XYZ get() const { return qvariant_cast<XYZ>(internalPropGet("value")); }
+    XYZ get() const;
 
-public:
     /**
      * Constructor.
      * @param path      path.
-     * @param sessionid session id.
+     * @param sessionId session id.
      */
     GyroscopeSensorChannelInterface(const QString &path, int sessionId);
 
@@ -90,15 +85,12 @@ public:
 protected:
     virtual void connectNotify(const char* signal);
 
-
 private:
     bool frameAvailableConnected;
-
 
 public Q_SLOTS: // METHODS
     void dataReceived();
     QDBusReply<void> reset();
-
 
 Q_SIGNALS: // SIGNALS
     /**
@@ -107,12 +99,11 @@ Q_SIGNALS: // SIGNALS
      */
     void dataAvailable(const XYZ& data);
 
-
     /**
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
-     * @param data New measurement frame.
+     * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<XYZ>& frame);
 

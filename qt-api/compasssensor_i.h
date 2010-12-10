@@ -85,7 +85,7 @@ Q_SIGNALS: // SIGNALS
 
     /**
      * Sent when compass direction or calibration level has changed.
-     * @param level Current compass measurement.
+     * @param value Current compass measurement.
      */
     void dataAvailable(const Compass& value);
 };

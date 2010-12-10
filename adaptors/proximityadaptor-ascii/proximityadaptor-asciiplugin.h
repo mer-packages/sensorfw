@@ -1,5 +1,5 @@
 /**
-   @file proximityadaptor-asciiplugin.cpp
+   @file proximityadaptor-asciiplugin.h
    @brief plugin for ProximityAdaptorAscii
 
    <p>

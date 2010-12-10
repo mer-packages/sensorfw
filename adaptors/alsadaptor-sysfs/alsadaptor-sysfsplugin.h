@@ -1,5 +1,5 @@
 /**
-   @file alsadaptorplugin-sysfs.h
+   @file alsadaptor-sysfsplugin.h
    @brief Plugin for ALSAdaptorSysfs
 
    <p>

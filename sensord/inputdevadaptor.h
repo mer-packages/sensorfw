@@ -95,8 +95,6 @@ protected:
      * Scans through the /dev/input/event* device handles and registers the
      * ones that pass the test with the #checkInputDevice method.
      * @param matchString String to match in device name fields.
-     * @param matchingDeviceNumber Pointer to integer where to store the
-     *                             last found matching device number.
      *
      * @return Number of devices detected.
      *

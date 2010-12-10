@@ -63,7 +63,7 @@ public:
     /**
      * Constructor.
      * @param path      path.
-     * @param sessionid session id.
+     * @param sessionId session id.
      */
     AccelerometerSensorChannelInterface(const QString& path, int sessionId);
 
@@ -101,7 +101,7 @@ Q_SIGNALS: // SIGNALS
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
-     * @param data New measurement frame.
+     * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<XYZ>& frame);
 };

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -22,15 +23,23 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
- */
+*/
 
 #include "sensormanagerinterface.h"
 #include "gyroscopesensor_i.h"
 #include <datatypes/orientationdata.h>
 
+const char* GyroscopeSensorChannelInterface::staticInterfaceName = "local.GyroscopeSensor";
+
+QDBusAbstractInterface* GyroscopeSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+{
+    // ToDo: see which arguments can be made explicit
+    return new GyroscopeSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
+}
+
 GyroscopeSensorChannelInterface::GyroscopeSensorChannelInterface(const QString &path, int sessionId)
-    : AbstractSensorChannelInterface(path, GyroscopeSensorChannelInterface::staticInterfaceName(), sessionId),
-    frameAvailableConnected(false)
+    : AbstractSensorChannelInterface(path, GyroscopeSensorChannelInterface::staticInterfaceName, sessionId),
+      frameAvailableConnected(false)
 {
 }
 
@@ -57,32 +66,25 @@ GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::controlInterfa
     return dynamic_cast<GyroscopeSensorChannelInterface*>(sm.controlInterface(id));
 }
 
-
-
 void GyroscopeSensorChannelInterface::dataReceived()
 {
     QVector<AngularVelocityData> values;
     while (read<AngularVelocityData>(values))
     {
-        if(values.size() == 1)
-            emit dataAvailable(XYZ(values.back()));
+        if(!frameAvailableConnected || values.size() == 1)
+        {
+            foreach(AngularVelocityData data, values)
+                emit dataAvailable(XYZ(data));
+        }
         else
         {
-            if(frameAvailableConnected)
-            {
-                QVector<XYZ> realValues;
-                realValues.reserve(values.size());
-                foreach(AngularVelocityData data, values)
-                    realValues.push_back(XYZ(data));
-                emit frameAvailable(realValues);
-                values.clear();
-            }
-            else
-            {
-                foreach(AngularVelocityData data, values)
-                    emit dataAvailable(XYZ(data));
-            }
+            QVector<XYZ> realValues;
+            realValues.reserve(values.size());
+            foreach(AngularVelocityData data, values)
+                realValues.push_back(XYZ(data));
+            emit frameAvailable(realValues);
         }
+        values.clear();
     }
 }
 
@@ -100,4 +102,7 @@ QDBusReply<void> GyroscopeSensorChannelInterface::reset()
     return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
 }
 
-
+XYZ GyroscopeSensorChannelInterface::get() const
+{
+    return qvariant_cast<XYZ>(internalPropGet("value"));
+}

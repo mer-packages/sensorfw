@@ -64,7 +64,7 @@ public Q_SLOTS:
 
     /**
      * Remove a range request.
-     * @param sessionID ID of the session whose request to remove.
+     * @param sessionId ID of the session whose request to remove.
      */
     void removeDataRangeRequest(int sessionId);
 
@@ -230,6 +230,7 @@ protected:
      * it. For nodes which merely get several options from previous nodes
      * this won't get invoked.
      * @param range The range to set
+     * @param sessionId The session Id
      * @return \c true on succesfull set, \c false otherwise. The base
      *         class implementation always returns false.
      */

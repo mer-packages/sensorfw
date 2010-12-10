@@ -30,7 +30,6 @@
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
 
-
 GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<AngularVelocityData>(10),
@@ -73,20 +72,16 @@ GyroscopeSensorChannel::~GyroscopeSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    // Disconnect reader
     disconnectFromSource(gyroscopeAdaptor_, "gyroscope", gyroscopeReader_);
 
-    // Release chain (dont delete!)
     sm.releaseDeviceAdaptor("gyroscopeadaptor");
 
-    // ...and delete locally owned things
     delete gyroscopeReader_;
     delete outputBuffer_;
     delete marshallingBin_;
     delete filterBin_;
 }
 
-// Start bins and sources
 bool GyroscopeSensorChannel::start()
 {
     sensordLogD() << "Starting GyroscopeSensorChannel";
@@ -99,7 +94,6 @@ bool GyroscopeSensorChannel::start()
     return true;
 }
 
-// Stopping is start() in reverse.
 bool GyroscopeSensorChannel::stop()
 {
     sensordLogD() << "Stopping GyroscopeSensorChannel";
@@ -112,9 +106,6 @@ bool GyroscopeSensorChannel::stop()
     return true;
 }
 
-// Store the previous value for use by the accessor function, and
-// push data towards clients (the data will be pushed to socket(s) by
-// sensormanager).
 void GyroscopeSensorChannel::emitToDbus(const AngularVelocityData& value)
 {
     previousSample_ = value;

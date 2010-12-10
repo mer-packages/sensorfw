@@ -77,7 +77,7 @@ public:
      * written in single operation are available for immediate reading
      * with a single operation.
      *
-     * @param unitSize Number of bytes to read.
+     * @param size Number of bytes to read.
      * @param buffer   Location for storing the data.
      * @return \c true if any bytes were read, \c false otherwise.
      */

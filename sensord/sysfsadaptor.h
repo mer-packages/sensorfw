@@ -88,7 +88,7 @@ public:
      * @param mode Mode to use for monitoring.
      * @param seek Whether lseek() should be called to rewind the monitored fds.
      * @param path Path to the sysfs file device to monitor.
-     * @param id   Identifier for the path (used as parameter to processSample).
+     * @param pathId   Identifier for the path (used as parameter to processSample).
      */
     SysfsAdaptor(const QString& id, PollMode mode = SelectMode, bool seek = true, const QString& path = "", const int pathId = 0);
 

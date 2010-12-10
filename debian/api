@@ -6,7 +6,6 @@ libs-pkg: sensord
 dev-pkg: libsensord-dev
 headers:
  /usr/include/sensord/datatypes/*
- /usr/include/sensord/filters/*
  /usr/include/sensord/*_i.h
 libs:
  /usr/lib/libsensorclient.so.1.0.0

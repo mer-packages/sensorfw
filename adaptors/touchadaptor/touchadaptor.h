@@ -40,7 +40,7 @@
  * Provides input data from touchscreen input device.
  *
  * @todo <ul><li>Kernel update will change all the traffic into one handle,
- *           separated by sync messages. Change accordingly.</li>
+ *           separated by sync messages. Change accordingly.</li></ul>
  */
 class TouchAdaptor : public InputDevAdaptor
 {
@@ -118,4 +118,3 @@ private:
 };
 
 #endif
-

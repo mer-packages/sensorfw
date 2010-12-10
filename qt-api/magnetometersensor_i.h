@@ -93,7 +93,7 @@ Q_SIGNALS: // SIGNALS
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
-     * @param data New measurement frame.
+     * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<MagneticField>& frame);
 };

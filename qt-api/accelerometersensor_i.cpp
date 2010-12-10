@@ -69,7 +69,7 @@ void AccelerometerSensorChannelInterface::dataReceived()
     QVector<AccelerationData> values;
     while (read<AccelerationData>(values))
     {
-        if(frameAvailableConnected || values.size() == 1)
+        if(!frameAvailableConnected || values.size() == 1)
         {
             foreach(AccelerationData data, values)
                 emit dataAvailable(XYZ(data));

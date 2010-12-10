@@ -46,7 +46,7 @@ typedef struct {
 } sensorfw_interval_t;
 
 /**
- * @brier Structure containing data range information for sensor.
+ * @brief Structure containing data range information for sensor.
  */
 typedef struct {
     int min; ///< Minimum value
@@ -122,7 +122,7 @@ int sensorfw_get_interval(int sessionId);
  * @brief Sets the sample interval for sensor.
  *
  * See sensorfw_get_interval.
- * 
+ *
  * @param sessionId Session ID to run this request on.
  * @param interval Milliseconds to wait between measurements.
  * @return \c true on success, \c false on failure or invalid session ID.
@@ -167,7 +167,7 @@ bool sensorfw_get_description(int sessionId, char** description);
  * @brief Registers a callback function to handle sensor output.
  *
  * @todo Description of callback requirements.
- * 
+ *
  * @param sessionId Session ID to run this request on.
  * @param cb_func Pointer to function to use as callback.
  * @return \c true on success, \c false on failure or invalid session ID.

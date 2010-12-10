@@ -41,7 +41,7 @@ class FilterBase;
  *
  * <b>Output buffers:</b>
  * <ul><li>\em accelerometer</li></ul>
- * 
+ *
  * For direct raw data (no coordinate correction) use #AccelerometerAdaptor.
  */
 class AccelerometerChain : public AbstractChain
