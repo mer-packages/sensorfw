@@ -63,6 +63,8 @@ private:
     bool isFlat;
     PoseData::Orientation lastOrientation;
     QString topEdge;
+    int offset;
+    static const char* orientationValues[4];
 };
 
 #endif

@@ -25,9 +25,12 @@
 
 #include "screeninterpreterfilter.h"
 #include "genericdata.h"
+#include "config.h"
 #include "logging.h"
 
 #include <ContextProvider>
+
+const char* ScreenInterpreterFilter::orientationValues[4] = {"left", "top", "right", "bottom"};
 
 ScreenInterpreterFilter::ScreenInterpreterFilter(
     ContextProvider::Property* topEdgeProperty,
@@ -42,7 +45,10 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     isFlat(false),
     lastOrientation(PoseData::BottomDown),
     topEdge("top")
-{}
+{
+    // Get offset from config
+    offset = Config::configuration()->value("orientation_offset", QVariant(0)).toInt();
+}
 
 void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)
 {
@@ -71,15 +77,19 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
             break;
         case PoseData::LeftUp:
             topEdge = "left";
+            topEdge = orientationValues[(0+offset)%4];
             break;
         case PoseData::RightUp:
             topEdge = "right";
+            topEdge = orientationValues[(2+offset)%4];
             break;
         case PoseData::BottomDown:
             topEdge = "top";
+            topEdge = orientationValues[(1+offset)%4];
             break;
         case PoseData::BottomUp:
             topEdge = "bottom";
+            topEdge = orientationValues[(3+offset)%4];
             break;
         case PoseData::Undefined:
             isFlat = true;
