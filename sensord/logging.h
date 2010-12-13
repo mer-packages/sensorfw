@@ -49,14 +49,14 @@ public:
 
     SensordLogger& operator<<(const QStringList& item)
     {
-        if(isLoggable(currentLevel))
+        if(initialized && isLoggable(currentLevel))
             return this->operator<<(item.join(", "));
         return *this;
     }
 
     SensordLogger& operator<<(const QString& item)
     {
-        if(isLoggable(currentLevel))
+        if(initialized && isLoggable(currentLevel))
             *oss << item.toStdString();
         return *this;
     }
@@ -64,7 +64,7 @@ public:
     template <typename T>
     SensordLogger& operator<<(const T& item)
     {
-        if(isLoggable(currentLevel))
+        if(initialized && isLoggable(currentLevel))
             *oss << item;
         return *this;
     }
