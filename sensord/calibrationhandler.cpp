@@ -27,14 +27,8 @@
 #include "calibrationhandler.h"
 #include "sensormanager.h"
 #include "logging.h"
-
 #include "abstractsensor.h"
-
-#define BG_RATE 1000
-#define CALIBRATION_RATE 100
-#define STOPPED_RATE 1000
-#define CALIB_TIMEOUT 900000
-
+#include "sensord/config.h"
 
 CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_sensor(NULL),
@@ -44,6 +38,12 @@ CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_active(false)
 {
     m_timer = new QTimer(this);
+
+    bg_rate = Config::configuration()->value("calibration_background_rate", QVariant(1000)).toInt();
+    calibration_rate = Config::configuration()->value("calibration_rate",  QVariant(100)).toInt();
+    stopped_rate = Config::configuration()->value("calibration_stopped_rate", QVariant(1000)).toInt();
+    calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(900000)).toInt();
+
 }
 
 CalibrationHandler::~CalibrationHandler()
@@ -54,13 +54,11 @@ CalibrationHandler::~CalibrationHandler()
         sm.releaseSensor(m_sensorName, m_sessionId);
         m_sensor = NULL;
     }
-
     delete m_timer;
 }
 
 bool CalibrationHandler::initiateSession()
 {
-
     SensorManager& sm = SensorManager::instance();
     sensordLogD() << "Loading MagnetometerSensorPlugin";
     if (!sm.loadPlugin(m_sensorName))
@@ -77,7 +75,7 @@ bool CalibrationHandler::initiateSession()
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
         m_sensor->start();
-        m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
+        m_sensor->setIntervalRequest(m_sessionId, bg_rate);
     }
 
     // Connect data
@@ -87,7 +85,6 @@ bool CalibrationHandler::initiateSession()
     connect(m_timer, SIGNAL(timeout()), this, SLOT(stopCalibration()));
 
     m_active = true;
-
     return true;
 }
 
@@ -95,8 +92,7 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
 {
     // Resume background calibration if magnetometer becomes active
     // due to some external reason (i.e. we receive values while inactive)
-
- if (m_active == false)
+    if (m_active == false)
     {
         SensorManager& sm = SensorManager::instance();
         if (!sm.getPSMState())
@@ -113,17 +109,17 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
         if (sample.level() < 3)
         {
             // Raise frequency if calibration is not at level 3
-            m_sensor->setIntervalRequest(m_sessionId, CALIBRATION_RATE);
+            m_sensor->setIntervalRequest(m_sessionId,  calibration_rate);
 
 
             // Set timer to stop calibration if it does not happen.
             // We only end up here if level has changed --> reset timer each time.
-            m_timer->start(CALIB_TIMEOUT);
+            m_timer->start(calib_timeout);
 
         } else
         {
             // Drop frequency when valid calibration has been reached.
-            m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
+            m_sensor->setIntervalRequest(m_sessionId, bg_rate);
 
             m_timer->stop();
         }
@@ -139,7 +135,7 @@ void CalibrationHandler::stopCalibration()
 
     sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
     // TODO: Release the sensor?
-    m_sensor->setIntervalRequest(m_sessionId, STOPPED_RATE);
+    m_sensor->setIntervalRequest(m_sessionId, stopped_rate);
 
     m_timer->stop();
 
@@ -160,7 +156,7 @@ void CalibrationHandler::resumeCalibration()
         return;
     }
     sensordLogD() << "Resuming magnetometer background calibration.";
-    m_sensor->setIntervalRequest(m_sessionId, BG_RATE);
+    m_sensor->setIntervalRequest(m_sessionId, bg_rate);
 
     m_active = true;
 

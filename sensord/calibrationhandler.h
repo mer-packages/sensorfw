@@ -72,6 +72,10 @@ private:
     int                        m_level;
     QTimer*                    m_timer;
     bool                       m_active;
+    int                        bg_rate;
+    int                        calibration_rate;
+    int                        stopped_rate;
+    int                        calib_timeout;
 };
 
 #endif // CALIBRATION_HANDLER
