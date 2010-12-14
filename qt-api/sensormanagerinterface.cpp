@@ -7,6 +7,7 @@
 
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -40,11 +41,10 @@ SensorManagerInterface& SensorManagerInterface::instance()
     if ( !ifc_ )
     {
         ifc_ = new SensorManagerInterface;
-        if (! ifc_->isValid() )
+        if ( !ifc_->isValid() )
         {
             qDebug() << "ERROR:" << ifc_->lastError().message();
         }
-        //Q_ASSERT( ifc_->isValid() ); // Stay alive, check with isValid() on client side
     }
 
     return *ifc_;
@@ -58,8 +58,6 @@ bool SensorManagerInterface::registeredAndCorrectClassName(const QString& id, co
 
 const QDBusAbstractInterface* SensorManagerInterface::listenInterface(const QString& id)
 {
-    QString cleanId = getCleanId(id);
-
     if ( !sensorInterfaceMap_.contains(id) )
     {
         qDebug() << "Requested sensor id " << id << "interface not known";
@@ -76,6 +74,7 @@ const QDBusAbstractInterface* SensorManagerInterface::listenInterface(const QStr
         qDebug() << "New listen sensor" << id << "interface created with session id" << sessionId << "...";
 
         // TODO: uses both id for key and as parameter...
+        QString cleanId = getCleanId(id);
         ifc = sensorInterfaceMap_[cleanId].sensorInterfaceFactory(cleanId, sessionId);
     }
     else
@@ -88,7 +87,11 @@ const QDBusAbstractInterface* SensorManagerInterface::listenInterface(const QStr
 
 QDBusAbstractInterface* SensorManagerInterface::controlInterface(const QString& id)
 {
-    QString cleanId = getCleanId(id);
+    if ( !sensorInterfaceMap_.contains(id) )
+    {
+        qDebug() << "Requested sensor id " << id << "interface not known";
+        return 0;
+    }
 
     // TODO: who owns this interface and how to deal with derived Sensors?
     // TODO: make a real distinction between control and listening
@@ -98,9 +101,9 @@ QDBusAbstractInterface* SensorManagerInterface::controlInterface(const QString& 
     if ( sessionId >= 0 ) // sensor is available
     {
         qDebug() << "New control sensor" << id << "interface created with session id" << sessionId << "...";
-        
+
         // TODO: uses both id for key and as parameter...
-        Q_ASSERT( sensorInterfaceMap_.contains(cleanId) );
+        QString cleanId = getCleanId(id);
         ifc = sensorInterfaceMap_[cleanId].sensorInterfaceFactory(cleanId, sessionId);
     }
     else
@@ -120,7 +123,5 @@ bool SensorManagerInterface::releaseInterface(const QString& id, int sessionId)
     {
         qDebug() << "Error:" << reply.error().message();
     }
-    Q_ASSERT( reply.isValid() );
     return reply.value();
 }
-

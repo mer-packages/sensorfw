@@ -7,6 +7,7 @@
 
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,13 +46,7 @@ public:
 
     // TODO: should the map key be the class type instead of the sensor type
     template<class SensorInterfaceType>
-    void registerSensorInterface(const QString& sensorName)
-    {
-        Q_ASSERT( !sensorInterfaceMap_.contains(sensorName) );
-        sensorInterfaceMap_[sensorName].sensorInterfaceFactory = SensorInterfaceType::factoryMethod;
-        sensorInterfaceMap_[sensorName].type = SensorInterfaceType::staticMetaObject.className();
-        Q_ASSERT( sensorInterfaceMap_[sensorName].sensorInterfaceFactory == SensorInterfaceType::factoryMethod );
-    }
+    void registerSensorInterface(const QString& sensorName);
 
     // TODO: maybe deal with SensorInterface or something less abstract here?
     const QDBusAbstractInterface* listenInterface(const QString& id);
@@ -68,5 +63,12 @@ protected:
 
     static SensorManagerInterface* ifc_;
 };
+
+template<class SensorInterfaceType>
+void SensorManagerInterface::registerSensorInterface(const QString& sensorName)
+{
+    sensorInterfaceMap_[sensorName].sensorInterfaceFactory = SensorInterfaceType::factoryMethod;
+    sensorInterfaceMap_[sensorName].type = SensorInterfaceType::staticMetaObject.className();
+}
 
 #endif // SENSORMANAGERINTERFACE_H
