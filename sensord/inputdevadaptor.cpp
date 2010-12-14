@@ -83,7 +83,6 @@ int InputDevAdaptor::getInputDevices(QString matchString)
         addPath(deviceName, deviceCount_);
         deviceCount_++;
         deviceNumber_ = deviceNumber;
-        return deviceCount_;
     }
     else
     {

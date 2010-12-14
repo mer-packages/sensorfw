@@ -398,17 +398,22 @@ void SysfsAdaptorReader::run()
 
         if (parent_->mode_ == SysfsAdaptor::SelectMode) {
 
-            int descriptors;
-            struct epoll_event events[parent_->sysfsDescriptors_.size()+1];
+            struct epoll_event events[parent_->sysfsDescriptors_.size() + 1];
             memset(events, 0x0, sizeof(events));
 
-            descriptors = epoll_wait(parent_->epollDescriptor_, events, parent_->sysfsDescriptors_.size()+1, -1);
+            int descriptors = epoll_wait(parent_->epollDescriptor_, events, parent_->sysfsDescriptors_.size() + 1, -1);
 
             if (descriptors == -1) {
                 // TODO: deal with errors
-                sensordLogD() << "epoll_wait():" << strerror(errno);
+                sensordLogD() << "epoll_wait(): " << strerror(errno);
+                QThread::msleep(1000);
             } else {
+                bool errorInInput = false;
                 for (int i = 0; i < descriptors; ++i) {
+                    if (events[i].events & (EPOLLHUP | EPOLLERR)) { //TODO: we sort of ignore these type of errors to get sensordiverter.sh working
+                        sensordLogD() << "epoll_wait(): error in input fd";
+                        errorInInput = true;
+                    }
                     int index = parent_->sysfsDescriptors_.lastIndexOf(events[i].data.fd);
                     if (index != -1) {
                         parent_->processSample(parent_->pathIds_.at(index), events[i].data.fd);
@@ -425,6 +430,8 @@ void SysfsAdaptorReader::run()
                             running_ = false;
                     }
                 }
+                if (errorInInput)
+                    QThread::msleep(250);
             }
         } else { //IntervalMode
 
