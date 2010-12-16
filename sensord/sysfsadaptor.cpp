@@ -431,7 +431,7 @@ void SysfsAdaptorReader::run()
                     }
                 }
                 if (errorInInput)
-                    QThread::msleep(250);
+                    QThread::msleep(50);
             }
         } else { //IntervalMode
 
