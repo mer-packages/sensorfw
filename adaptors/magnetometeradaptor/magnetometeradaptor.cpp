@@ -46,18 +46,18 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     originalPollingRate_(1000)
 {
 
-    QString driverHandle = getDriverHandle();
-    if (driverHandle.size() == 0) {
+    driverHandle_ = getDriverHandle();
+    if (driverHandle_.size() == 0) {
         sensordLogW() << "Input device not found.";
     } else {
-        sensordLogD() << "Detected magnetometer driver at " << driverHandle;
-        addPath(driverHandle, 0);
+        sensordLogD() << "Detected magnetometer driver at " << driverHandle_;
+        addPath(driverHandle_, 0);
         magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
         addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     }
 
     // Pick correct datarange based on chip...
-    if (driverHandle.contains("8975"))
+    if (driverHandle_.contains("8975"))
     {
         introduceAvailableDataRange(DataRange(-4096, 4096, 1));
     } else {
@@ -65,7 +65,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     }
 
     setDescription("Input device Magnetometer adaptor (ak897x)");
-    introduceAvailableInterval(DataRange(10, 1000, 0)); // -> [1,100] Hz
+    introduceAvailableInterval(DataRange(25, 1000, 0)); // -> [1,40] Hz
     setDefaultInterval(1000);
 }
 
@@ -119,4 +119,15 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
     magnetometerBuffer_->commit();
     magnetometerBuffer_->wakeUpReaders();
 
+}
+
+bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessionId)
+{
+    if(driverHandle_.contains("8975"))
+    {
+        // Driver spends approximately 16ms between starting the read to returning
+        // Compensating here.
+        return SysfsAdaptor::setInterval(value>16 ? value-16 : 0, sessionId);
+    }
+    return SysfsAdaptor::setInterval(value, sessionId);
 }

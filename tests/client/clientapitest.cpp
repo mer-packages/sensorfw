@@ -465,7 +465,7 @@ void ClientApiTest::testBuffering()
     QVERIFY(client.getFrameDataCount() == 10);
 
     qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
-    QTest::qWait(1400);
+    QTest::qWait(1200);
 
     QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 2);
@@ -473,6 +473,7 @@ void ClientApiTest::testBuffering()
 
     magnetometer->stop();
     delete magnetometer;
+
 }
 
 
@@ -481,21 +482,23 @@ void ClientApiTest::testBufferingHighRate()
     MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
     QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
     TestClient client(*magnetometer, true);
-    magnetometer->setInterval(10);
-    magnetometer->setBufferSize(200);
-    magnetometer->setBufferInterval(5000);
+    magnetometer->setInterval(25);
+    magnetometer->setBufferSize(100);
+    magnetometer->setBufferInterval(6000);
 
     magnetometer->start();
 
     qDebug() << "Magnetometer sensor started, waiting for 3500ms.";
     QTest::qWait(3500);
 
+
     QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 1);
-    QVERIFY(client.getFrameDataCount() == 200);
+    QVERIFY(client.getFrameDataCount() == 100);
 
     magnetometer->stop();
     delete magnetometer;
+
 }
 
 void ClientApiTest::testBufferingCompatibility()
@@ -510,14 +513,14 @@ void ClientApiTest::testBufferingCompatibility()
     magnetometer->start();
 
     qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
-    QTest::qWait(1400);
+    QTest::qWait(1200);
 
     QVERIFY(client.getDataCount() == 10);
     QVERIFY(client.getFrameCount() == 0);
     QVERIFY(client.getFrameDataCount() == 0);
 
     qDebug() << "Magnetometer sensor started, waiting for 1400ms.";
-    QTest::qWait(1400);
+    QTest::qWait(1200);
 
     QVERIFY(client.getDataCount() == 20);
     QVERIFY(client.getFrameCount() == 0);

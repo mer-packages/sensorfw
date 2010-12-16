@@ -62,6 +62,9 @@ protected:
     MagnetometerAdaptor(const QString& id);
     ~MagnetometerAdaptor();
 
+
+    bool setInterval(const unsigned int value, const int sessionId);
+
 private:
 
     /**
@@ -83,6 +86,7 @@ private:
     QTime time;
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
     int originalPollingRate_;
+    QString driverHandle_;
 };
 
 #endif
