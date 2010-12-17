@@ -28,6 +28,7 @@
 #include "abstractsensor.h"
 #include "orientationbin.h"
 #include "compassbin.h"
+#include "stabilitybin.h"
 
 class ContextSensorChannel : public AbstractSensorChannel
 {
@@ -49,6 +50,7 @@ private:
     ContextProvider::Service service;
     OrientationBin orientationBin;
     CompassBin* compassBin;
+    StabilityBin stabilityBin;
 };
 
 #endif

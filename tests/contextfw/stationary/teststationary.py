@@ -53,18 +53,18 @@ class Orientation(unittest.TestCase):
              os.system("echo  -36 -90 953 | " + self.datafaker + " " + self.fpath)
              index = index + 1
 
-        time.sleep(1)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
 
         os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
-        time.sleep(1)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:false'))
 
         while index > 1:
             os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
             index = index - 1
 
-        time.sleep(1)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
 
 if __name__ == "__main__":

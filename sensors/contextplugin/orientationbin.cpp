@@ -28,68 +28,51 @@
 #include "sensord/sensormanager.h"
 #include "sensord/config.h"
 
-const int OrientationBin::STABILITY_THRESHOLD = 7;
-const int OrientationBin::UNSTABILITY_THRESHOLD = 300;
-const float OrientationBin::STABILITY_HYSTERESIS = 0.1;
 const int OrientationBin::POLL_INTERVAL = 250;
 
 OrientationBin::OrientationBin(ContextProvider::Service& s):
     topEdgeProperty(s, "Screen.TopEdge"),
     isCoveredProperty(s, "Screen.IsCovered"),
     isFlatProperty(s, "Position.IsFlat"),
-    isStableProperty(s, "Position.Stable"),
-    isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),
     topEdgeReader(10),
     faceReader(10),
     screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty, &isFlatProperty),
-    cutterFilter(4.0),
-    avgVarFilter(100),
-    stabilityFilter(&isStableProperty, &isShakyProperty,
-                    STABILITY_THRESHOLD, UNSTABILITY_THRESHOLD, STABILITY_HYSTERESIS)
+    sessionId(0)
 {
-    accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
-    Q_ASSERT(accelerometerAdaptor);
-
     orientationChain = SensorManager::instance().requestChain("orientationchain");
-    Q_ASSERT(orientationChain);
-
-    add(&accelerometerReader, "accelerometer");
+    if (!orientationChain)
+    {
+        sensordLogC() << "Unable to access OrientationChain for orientation properties.";
+    }
     add(&topEdgeReader, "topedge");
     add(&faceReader, "face");
     add(&screenInterpreterFilter, "screeninterpreterfilter");
-    add(&normalizerFilter, "normalizerfilter");
-    add(&cutterFilter, "cutterfilter");
-    add(&avgVarFilter, "avgvarfilter");
-    add(&stabilityFilter, "stabilityfilter");
 
     // Create a branching filter chain
     join("topedge", "source", "screeninterpreterfilter", "sink");
     join("face", "source", "screeninterpreterfilter", "sink");
 
-    join("accelerometer", "source", "normalizerfilter", "sink");
-    join("normalizerfilter", "source", "cutterfilter", "sink");
-    join("cutterfilter", "source", "avgvarfilter", "sink");
-    join("avgvarfilter", "source", "stabilityfilter", "sink");
-
-    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->join(&accelerometerReader);
-
-    rb = orientationChain->findBuffer("topedge");
-    Q_ASSERT(rb);
-    rb->join(&topEdgeReader);
+    RingBufferBase* rb = orientationChain->findBuffer("topedge");
+    if (!rb)
+    {
+        sensordLogC() << "Unable to connect to TopEdge orientation buffer.";
+    } else {
+        rb->join(&topEdgeReader);
+    }
 
     rb = orientationChain->findBuffer("face");
-    Q_ASSERT(rb);
-    rb->join(&faceReader);
+    if (!rb)
+    {
+        sensordLogC() << "Unable to connect to face orientation buffer.";
+    } else {
+        rb->join(&faceReader);
+    }
 
     // Context group
     group.add(topEdgeProperty);
     group.add(isCoveredProperty);
     group.add(isFlatProperty);
-    group.add(isStableProperty);
-    group.add(isShakyProperty);
     connect(&group, SIGNAL(firstSubscriberAppeared()), this, SLOT(startRun()));
     connect(&group, SIGNAL(lastSubscriberDisappeared()), this, SLOT(stopRun()));
 
@@ -101,34 +84,43 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
 
 OrientationBin::~OrientationBin()
 {
-    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
-    Q_ASSERT(rb);
-    rb->unjoin(&accelerometerReader);
+    RingBufferBase* rb = orientationChain->findBuffer("topedge");
+    if (rb)
+    {
+        rb->unjoin(&topEdgeReader);
+    }
+
+    rb = orientationChain->findBuffer("face");
+    if (rb)
+    {
+        rb->unjoin(&faceReader);
+    }
 
     SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
 }
 
 void OrientationBin::startRun()
 {
-    // Reset the status of the avg & var computation; reset default
-    // values for properties whose values aren't reliable after a
-    // restart
-    avgVarFilter.reset();
-    isStableProperty.unsetValue();
-    isShakyProperty.unsetValue();
+    // Get unique sessionId for this Bin.
+    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
+    if (sessionId == INVALID_SESSION)
+    {
+        sensordLogC() << "Failed to get unique id for orientation detection.";
+    }
+
     start();
-    accelerometerAdaptor->startSensor("accelerometer");
     orientationChain->start();
 
     unsigned int pollInterval = Config::configuration()->value("orientation_poll_interval", QVariant(POLL_INTERVAL)).toUInt();
-    orientationChain->setIntervalRequest(ContextPlugin::getSessionId(), pollInterval);
+    orientationChain->setIntervalRequest(sessionId, pollInterval);
 }
 
 void OrientationBin::stopRun()
 {
-    orientationChain->requestDefaultInterval(ContextPlugin::getSessionId());
+    orientationChain->requestDefaultInterval(sessionId);
 
-    accelerometerAdaptor->stopSensor("accelerometer");
     orientationChain->stop();
     stop();
+
+    SensorManager::instance().releaseSensor("contextsensor", sessionId);
 }

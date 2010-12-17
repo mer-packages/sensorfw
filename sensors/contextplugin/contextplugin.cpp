@@ -43,7 +43,7 @@ void ContextPlugin::Init(class Loader&)
 }
 
 QStringList ContextPlugin::Dependencies() {
-    return QString("accelerometeradaptor:coordinatealignfilter:orientationchain").split(":", QString::SkipEmptyParts);
+    return QString("accelerometeradaptor:orientationchain").split(":", QString::SkipEmptyParts);
 }
 
 int ContextPlugin::getSessionId()
