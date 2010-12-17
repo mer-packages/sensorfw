@@ -29,12 +29,14 @@
 #define PROXIMITYADAPTOR_H
 
 #include <QDBusInterface>
-#include <mce/mode-names.h>
-#include <mce/dbus-names.h>
 #include "sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 
+#ifdef SENSORFW_MCE_WATCHER
+#include <mce/mode-names.h>
+#include <mce/dbus-names.h>
+#endif
 
 /**
  * @brief Adaptor for proximity sensor.
