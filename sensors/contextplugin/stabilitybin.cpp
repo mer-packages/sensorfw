@@ -107,6 +107,7 @@ void StabilityBin::startRun()
 
 void StabilityBin::stopRun()
 {
+    accelerometerAdaptor->setStandbyOverrideRequest(sessionId, false);
     accelerometerAdaptor->stopSensor("accelerometer");
     stop();
     SensorManager::instance().releaseSensor("contextsensor", sessionId);
