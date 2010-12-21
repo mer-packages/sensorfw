@@ -24,17 +24,23 @@
 
 #include "normalizerfilter.h"
 #include "genericdata.h"
+#include "sensord/logging.h"
 #include <math.h>
 
 NormalizerFilter::NormalizerFilter() :
-        Filter<TimedXyzData, NormalizerFilter, double>(this, &NormalizerFilter::interpret)
-{
-    //qDebug() << "Creating the NormalizerFilter";
-}
+        Filter<TimedXyzData, NormalizerFilter, double>(this, &NormalizerFilter::interpret),
+        prevTime(0)
+{}
 
 void NormalizerFilter::interpret(unsigned, const TimedXyzData* data)
 {
-    //qDebug() << "Data received on Normalizer... analyzing and pushing forward";
+    // Subsample to 1hz rate.
+    if (data->timestamp_ - prevTime < 1000000)
+    {
+        sensordLogT() << "Discarded sample from normalizer due to too short time delta.";
+        return;
+    }
     double n = sqrt(data->x_ * data->x_ + data->y_ * data->y_ + data->z_ * data-> z_);
     source_.propagate(1, &n);
+    prevTime = data->timestamp_;
 }

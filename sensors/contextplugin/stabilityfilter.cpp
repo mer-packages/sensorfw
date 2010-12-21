@@ -23,6 +23,9 @@
 */
 
 #include "stabilityfilter.h"
+#include "sensord/logging.h"
+
+const int StabilityFilter::timeout = 60000;
 
 StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstableProperty,
                                  double lowThreshold, double highThreshold, double hysteresis)
@@ -33,6 +36,7 @@ StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstablePro
       stableProperty(stableProperty),
       unstableProperty(unstableProperty)
 {
+    connect(&timer, SIGNAL(timeout()), this, SLOT(timeoutTriggered()));
 }
 
 void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)
@@ -41,9 +45,14 @@ void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)
     // stability and instability separately
     if (data->second < lowThreshold * (1 - hysteresis)) {
         stableProperty->setValue(true);
+        timer.stop();
     }
-    else if (data->second > lowThreshold * (1 + hysteresis)) {
-        stableProperty->setValue(false);
+    else {
+        timer.start(timeout);
+
+        if (data->second > lowThreshold * (1 + hysteresis)) {
+            stableProperty->setValue(false);
+        }
     }
 
     if (data->second < highThreshold * (1 - hysteresis)) {
@@ -57,3 +66,10 @@ void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)
     source_.propagate(1, data);
 }
 
+void StabilityFilter::timeoutTriggered()
+{
+    sensordLogT() << "Stationary timeout triggered.";
+
+    stableProperty->setValue(true);
+    timer.stop();
+}

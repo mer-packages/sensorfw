@@ -30,6 +30,7 @@
 #include <ContextProvider>
 
 #include <QPair>
+#include <QTimer>
 
 /*!
 
@@ -54,6 +55,9 @@ public:
     StabilityFilter(Property* stableProperty, Property* unstableProperty,
                     double lowThreshold, double highThreshold, double hysteresis = 0.0);
 
+public Q_SLOTS:
+    void timeoutTriggered();
+
 private:
     double lowThreshold;
     double highThreshold;
@@ -61,6 +65,9 @@ private:
     Property* stableProperty;
     Property* unstableProperty;
     void interpret(unsigned, const QPair<double, double>* data);
+    QTimer timer;
+
+    static const int timeout;
 };
 
 #endif
