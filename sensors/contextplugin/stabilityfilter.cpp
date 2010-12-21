@@ -24,8 +24,9 @@
 
 #include "stabilityfilter.h"
 #include "sensord/logging.h"
+#include "sensord/config.h"
 
-const int StabilityFilter::timeout = 60000;
+const int StabilityFilter::defaultTimeout = 60; // seconds
 
 StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstableProperty,
                                  double lowThreshold, double highThreshold, double hysteresis)
@@ -37,6 +38,7 @@ StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstablePro
       unstableProperty(unstableProperty)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeoutTriggered()));
+    timeout = Config::configuration()->value("stability_timeout", QVariant(defaultTimeout)).toInt() * 1000;
 }
 
 void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)

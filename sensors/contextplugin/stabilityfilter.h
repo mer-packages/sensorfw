@@ -67,7 +67,8 @@ private:
     void interpret(unsigned, const QPair<double, double>* data);
     QTimer timer;
 
-    static const int timeout;
+    int timeout;
+    static const int defaultTimeout;
 };
 
 #endif
