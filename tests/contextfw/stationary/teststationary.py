@@ -49,9 +49,10 @@ class Orientation(unittest.TestCase):
     def testStationary(self):
 
         index = 0
-        while index < 100:
+        while index < 60:
              os.system("echo  -36 -90 953 | " + self.datafaker + " " + self.fpath)
              index = index + 1
+             time.sleep(1.1)
 
         time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
@@ -63,6 +64,7 @@ class Orientation(unittest.TestCase):
         while index > 1:
             os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
             index = index - 1
+            time.sleep(1.1)
 
         time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
@@ -70,5 +72,5 @@ class Orientation(unittest.TestCase):
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(60)
+    signal.alarm(600)
     unittest.main()

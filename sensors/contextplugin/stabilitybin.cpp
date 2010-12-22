@@ -39,7 +39,7 @@ StabilityBin::StabilityBin(ContextProvider::Service& s):
     isShakyProperty(s, "Position.Shaky"),
     accelerometerReader(10),
     cutterFilter(4.0),
-    avgVarFilter(100),
+    avgVarFilter(60),
     stabilityFilter(&isStableProperty, &isShakyProperty, STABILITY_THRESHOLD, UNSTABILITY_THRESHOLD, STABILITY_HYSTERESIS),
     sessionId(0)
 {
