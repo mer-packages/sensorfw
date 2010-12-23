@@ -34,16 +34,13 @@ CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_sensor(NULL),
     m_sessionId(-1),
     m_sensorName("magnetometersensor"),
-    m_level(-1),
-    m_active(false)
+    m_level(-1)
 {
     m_timer = new QTimer(this);
+    m_timer -> setSingleShot(true);
 
-    bg_rate = Config::configuration()->value("calibration_background_rate", QVariant(1000)).toInt();
     calibration_rate = Config::configuration()->value("calibration_rate",  QVariant(100)).toInt();
-    stopped_rate = Config::configuration()->value("calibration_stopped_rate", QVariant(1000)).toInt();
-    calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(900000)).toInt();
-
+    calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(60000)).toInt();
 }
 
 CalibrationHandler::~CalibrationHandler()
@@ -75,93 +72,60 @@ bool CalibrationHandler::initiateSession()
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
         m_sensor->start();
-        m_sensor->setIntervalRequest(m_sessionId, bg_rate);
     }
 
     // Connect data
     connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
 
     // Connect timeout
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(stopCalibration()));
-
-    m_active = true;
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(calibrationTimeout()));
     return true;
 }
 
 void CalibrationHandler::sampleReceived(const MagneticField& sample)
 {
-    // Resume background calibration if magnetometer becomes active
-    // due to some external reason (i.e. we receive values while inactive)
-    if (m_active == false)
+   if (!m_timer->isActive())
     {
-        SensorManager& sm = SensorManager::instance();
-        if (!sm.getPSMState())
-        {
-            resumeCalibration();
-        }
+        return;
     }
 
+    //Reset timer when level changes
     if ((sample.level() != m_level))
     {
         m_level = sample.level();
-
-
-        if (sample.level() < 3)
-        {
-            // Raise frequency if calibration is not at level 3
-            m_sensor->setIntervalRequest(m_sessionId,  calibration_rate);
-
-
-            // Set timer to stop calibration if it does not happen.
-            // We only end up here if level has changed --> reset timer each time.
-            m_timer->start(calib_timeout);
-
-        } else
-        {
-            // Drop frequency when valid calibration has been reached.
-            m_sensor->setIntervalRequest(m_sessionId, bg_rate);
-
-            m_timer->stop();
-        }
+        m_timer->start(calib_timeout);
     }
 }
 
 void CalibrationHandler::stopCalibration()
 {
-    if (!m_active)
+    if (m_timer->isActive())
     {
-        return;
+        m_timer->stop();
+        m_sensor->setStandbyOverrideRequest(m_sessionId, false);
+        m_sensor->stop();
+        sensordLogD() << "Stopping magnetometer background calibration due to PSM on";
     }
-
-    sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
-    // TODO: Release the sensor?
-    m_sensor->setIntervalRequest(m_sessionId, stopped_rate);
-
-    m_timer->stop();
-
-    // Sleep for a moment to let the queue get empty (kludgy...)
-    QTimer::singleShot(1000, this, SLOT(setActiveToFalse()));
-    //~ m_active = false;
 }
 
-void CalibrationHandler::setActiveToFalse()
+
+void CalibrationHandler::calibrationTimeout()
 {
-    m_active = false;
+
+    sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
+    //m_sensor->setIntervalRequest(m_sessionId, stopped_rate);
+    m_sensor->setStandbyOverrideRequest(m_sessionId, false);
+    m_sensor->stop();
 }
 
 void CalibrationHandler::resumeCalibration()
 {
-    if (m_active)
-    {
-        return;
-    }
     sensordLogD() << "Resuming magnetometer background calibration.";
-    m_sensor->setIntervalRequest(m_sessionId, bg_rate);
-
-    m_active = true;
-
-    // Set internal level to -1 to ascertain that the next received sample
-    // defines the resumed rate.
-    m_level = -1;
-
+    if (!m_timer->isActive())
+    {
+        m_sensor->start();
+        m_sensor->setIntervalRequest(m_sessionId, calibration_rate);
+        m_sensor->setStandbyOverrideRequest(m_sessionId, true);
+    }
+    m_timer->start(calib_timeout);
 }

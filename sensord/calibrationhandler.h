@@ -61,9 +61,7 @@ public slots:
     void sampleReceived(const MagneticField&);
     void stopCalibration();
     void resumeCalibration();
-
-private slots:
-    void setActiveToFalse();
+    void calibrationTimeout();
 
 private:
     MagnetometerSensorChannel* m_sensor;
@@ -71,10 +69,7 @@ private:
     QString                    m_sensorName;
     int                        m_level;
     QTimer*                    m_timer;
-    bool                       m_active;
-    int                        bg_rate;
     int                        calibration_rate;
-    int                        stopped_rate;
     int                        calib_timeout;
 };
 

@@ -43,6 +43,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+
 SensorManager* SensorManager::instance_ = NULL;
 int SensorManager::sessionIdCount_ = 0;
 
@@ -566,13 +567,11 @@ void SensorManager::displayStateChanged(const bool displayState)
 
     if (displayState_) {
         /// Emit signal to make background calibration resume from sleep
+        emit displayOn();
         if (!psmState_)
         {
             emit resumeCalibration();
         }
-        emit displayOn();
-    } else {
-        emit stopCalibration();
     }
 
     foreach (DeviceAdaptorInstanceEntry adaptor, deviceAdaptorInstanceMap_) {
@@ -596,11 +595,6 @@ void SensorManager::devicePSMStateChanged(const bool psmState)
     if (psmState_)
     {
         emit stopCalibration();
-    } else {
-        if (displayState_)
-        {
-            emit resumeCalibration();
-        }
     }
 }
 

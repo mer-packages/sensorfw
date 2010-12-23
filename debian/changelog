@@ -1,6 +1,7 @@
 sensord (0.6.33) unstable; urgency=low
 
-  *
+  [Lihan Guo]
+  * Added: Calibration runs for 1 min after switch display on
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 17 Dec 2010 12:39:45 +0200
 
