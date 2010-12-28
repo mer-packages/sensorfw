@@ -31,12 +31,16 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     headingProperty(s, "Location.Heading"),
     compassChain(0),
     compassReader(10),
-    headingFilter(&headingProperty)
+    headingFilter(&headingProperty),
+    sessionId(0)
 {
     if (pluginValid)
     {
         compassChain = SensorManager::instance().requestChain("compasschain");
-        Q_ASSERT(compassChain);
+        if (!compassChain)
+        {
+            sensordLogC() << "Unable to access Compass for heading property.";
+        }
 
         add(&compassReader, "compass");
         add(&headingFilter, "headingfilter");
@@ -45,8 +49,14 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
         join("compass", "source", "headingfilter", "sink");
 
         RingBufferBase* rb = compassChain->findBuffer("truenorth");
-        Q_ASSERT(rb);
-        rb->join(&compassReader);
+        if (!rb)
+        {
+            sensordLogC() << "Unable to connect to compass direction buffer.";
+        }
+        else
+        {
+            rb->join(&compassReader);
+        }
     }
 
     // Listening for context property subscriptions
@@ -56,16 +66,25 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
 
 CompassBin::~CompassBin()
 {
+    RingBufferBase* rb = compassChain->findBuffer("truenorth");
+    if (rb)
+    {
+        rb->unjoin(&compassReader);
+    }
 }
 
 void CompassBin::startRun()
 {
+    // Get unique sessionId for this Bin.
+    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
+    if (sessionId == INVALID_SESSION)
+    {
+        sensordLogC() << "Failed to get unique id for compass info via context.";
+    }
+
     start();
     if (compassChain) {
         compassChain->start();
-
-        // Set interval for compass, as sane operation requires 10HZ!
-        compassChain->requestDefaultInterval(ContextPlugin::getSessionId());
     }
 }
 
@@ -75,4 +94,6 @@ void CompassBin::stopRun()
         compassChain->stop();
     }
     stop();
+
+    SensorManager::instance().releaseSensor("contextsensor", sessionId);
 }

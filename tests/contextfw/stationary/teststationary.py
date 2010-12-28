@@ -49,26 +49,50 @@ class Orientation(unittest.TestCase):
     def testStationary(self):
 
         index = 0
-        while index < 100:
+        # Verify that buffer of similar samples results in stable = true
+        while index < 62:
              os.system("echo  -36 -90 953 | " + self.datafaker + " " + self.fpath)
              index = index + 1
+             time.sleep(1.1)
 
-        time.sleep(1)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
 
+        # Verify that two samples are enough to set stable = false
         os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
-        time.sleep(1)
+        time.sleep(2)
+        os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:false'))
 
-        while index > 1:
+        # ...and that we return when those two samples disappear from the buffer
+        while index > 0:
             os.system("echo  -500 -100 -300 | " + self.datafaker + " " + self.fpath)
             index = index - 1
+            time.sleep(1.1)
 
-        time.sleep(1)
+        time.sleep(2)
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
+
+        # Go back to stable = false
+        os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
+        time.sleep(2)
+        os.system("echo -36 -90 953 | " + self.datafaker + " " + self.fpath)
+        time.sleep(2)
+        self.assert_(self.context_client_stable.expect('Position.Stable = bool:false'))
+
+        # Verify that timer works
+        timeout = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep stability_timeout | head -n1 | cut -f2 -d=", "r").read())
+        if (timeout <= 0):
+            # Timeout not set in config, 60s is the default
+            timeout = 60
+
+        time.sleep(timeout)
+        self.assert_(self.context_client_stable.expect('Position.Stable = bool:true'))
+
 
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(60)
+    signal.alarm(600)
     unittest.main()

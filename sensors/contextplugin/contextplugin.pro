@@ -4,32 +4,31 @@ PKGCONFIG   += contextprovider-1.0
 
 TARGET       = contextsensor
 
-SENSORFW_INCLUDEPATHS = ../../filters/orientationinterpreter \
-                        ../../filters/coordinatealignfilter \
-                        ../../adaptors/sysfsadaptor \
-                        ../../adaptors/accelerometeradaptor \
-                        ../../adaptors/magnetometeradaptor 
+SENSORFW_INCLUDEPATHS = ../../
 
 HEADERS += contextplugin.h \
            orientationbin.h \
+           compassbin.h \
+           stabilitybin.h \
            contextsensor.h \
            screeninterpreterfilter.h \
            normalizerfilter.h \
            avgvarfilter.h \
            cutterfilter.h \
            stabilityfilter.h \
-           compassbin.h \
            headingfilter.h
+
 
 SOURCES += contextplugin.cpp \
            orientationbin.cpp \
+           compassbin.cpp \
+           stabilitybin.cpp \
            contextsensor.cpp \
            screeninterpreterfilter.cpp \
            normalizerfilter.cpp \
            avgvarfilter.cpp \
            cutterfilter.cpp \
            stabilityfilter.cpp \
-           compassbin.cpp \
            headingfilter.cpp
 
 CONTEXT.files = 'com.nokia.SensorService.context'

@@ -1,11 +1,12 @@
 /**
-   @file orientationbin.h
-   @brief Orientation Bin for ContextFW
+   @file stabilitybin.h
+   @brief Stability Bin for ContextFW
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
 
    This file is part of Sensord.
 
@@ -23,16 +24,18 @@
    </p>
 */
 
-#ifndef ORIENTATION_BIN_H
-#define ORIENTATION_BIN_H
+#ifndef STABILITY_BIN
+#define STABILITY_BIN
 
 #include "sensord/bin.h"
 #include "sensord/bufferreader.h"
 #include "sensord/abstractchain.h"
 #include "datatypes/orientationdata.h"
-#include "posedata.h"
 
-#include "screeninterpreterfilter.h"
+#include "normalizerfilter.h"
+#include "cutterfilter.h"
+#include "avgvarfilter.h"
+#include "stabilityfilter.h"
 
 #include <ContextProvider>
 
@@ -40,34 +43,38 @@
 
 class DeviceAdaptor;
 
-class OrientationBin : public QObject, Bin
+class StabilityBin : public QObject, Bin
 {
     Q_OBJECT
 
 public:
-    OrientationBin(ContextProvider::Service& service);
-    ~OrientationBin();
+    StabilityBin(ContextProvider::Service& service);
+    ~StabilityBin();
 
 private Q_SLOTS:
     void startRun();
     void stopRun();
 
 private:
-    ContextProvider::Property topEdgeProperty;
-    ContextProvider::Property isCoveredProperty;
-    ContextProvider::Property isFlatProperty;
+    ContextProvider::Property isStableProperty;
+    ContextProvider::Property isShakyProperty;
     ContextProvider::Group group;
 
     BufferReader<AccelerationData> accelerometerReader;
-    BufferReader<PoseData> topEdgeReader;
-    BufferReader<PoseData> faceReader;
+    DeviceAdaptor* accelerometerAdaptor;
 
-    AbstractChain* orientationChain;
-    ScreenInterpreterFilter screenInterpreterFilter;
+    NormalizerFilter normalizerFilter;
+    CutterFilter cutterFilter;
+    AvgVarFilter avgVarFilter;
+    StabilityFilter stabilityFilter;
 
     int sessionId;
 
-    static const int POLL_INTERVAL;
+    static const int STABILITY_THRESHOLD;
+    static const int UNSTABILITY_THRESHOLD;
+    static const float STABILITY_HYSTERESIS;
 };
+
+
 
 #endif

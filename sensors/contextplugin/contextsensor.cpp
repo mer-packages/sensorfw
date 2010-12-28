@@ -29,7 +29,7 @@
 
 ContextSensorChannel::ContextSensorChannel(const QString& id) :
     AbstractSensorChannel(id), service(QDBusConnection::systemBus()),
-    orientationBin(service), compassBin(NULL)
+    orientationBin(service), compassBin(NULL), stabilityBin(service)
 {
     // Attempt to load compasschain
     if (SensorManager::instance().loadPlugin("compasschain"))

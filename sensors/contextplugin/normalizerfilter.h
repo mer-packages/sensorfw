@@ -37,6 +37,7 @@ public:
 
 private:
     void interpret(unsigned, const TimedXyzData* data);
+    quint64 prevTime;
 };
 
 #endif
