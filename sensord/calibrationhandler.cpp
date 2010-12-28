@@ -74,9 +74,6 @@ bool CalibrationHandler::initiateSession()
         m_sensor->start();
     }
 
-    // Connect data
-    connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
-
     // Connect timeout
     connect(m_timer, SIGNAL(timeout()), this, SLOT(calibrationTimeout()));
     return true;
@@ -84,11 +81,6 @@ bool CalibrationHandler::initiateSession()
 
 void CalibrationHandler::sampleReceived(const MagneticField& sample)
 {
-   if (!m_timer->isActive())
-    {
-        return;
-    }
-
     //Reset timer when level changes
     if ((sample.level() != m_level))
     {
@@ -104,6 +96,7 @@ void CalibrationHandler::stopCalibration()
         m_timer->stop();
         m_sensor->setStandbyOverrideRequest(m_sessionId, false);
         m_sensor->stop();
+        disconnect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
         sensordLogD() << "Stopping magnetometer background calibration due to PSM on";
     }
 }
@@ -116,6 +109,7 @@ void CalibrationHandler::calibrationTimeout()
     //m_sensor->setIntervalRequest(m_sessionId, stopped_rate);
     m_sensor->setStandbyOverrideRequest(m_sessionId, false);
     m_sensor->stop();
+    disconnect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
 }
 
 void CalibrationHandler::resumeCalibration()
@@ -126,6 +120,7 @@ void CalibrationHandler::resumeCalibration()
         m_sensor->start();
         m_sensor->setIntervalRequest(m_sessionId, calibration_rate);
         m_sensor->setStandbyOverrideRequest(m_sessionId, true);
+        connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
     }
     m_timer->start(calib_timeout);
 }
