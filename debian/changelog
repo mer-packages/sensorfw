@@ -3,6 +3,11 @@ sensord (0.6.33) unstable; urgency=low
   [Lihan Guo]
   * Added: Calibration runs for 1 min after switch display on
 
+  [Timo Rongas]
+  * Separated Position.Stable calculation from Screen.* calculations
+  * Modified Position.Stable logic to subsample rate to 1hz and utilize
+    timer for cases when dataflow stops.
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 17 Dec 2010 12:39:45 +0200
 
 sensord (0.6.32) unstable; urgency=low
