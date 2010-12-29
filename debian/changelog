@@ -8,6 +8,11 @@ sensord (0.6.33) unstable; urgency=low
   * Modified Position.Stable logic to subsample rate to 1hz and utilize
     timer for cases when dataflow stops.
 
+  [Antti Virtanen]
+  * Logger callpath optimized for cases when no logging happens due to too low log level.
+    Check for deciding should something be logged or not is now inlined
+    to make it as cheap as possible. Fixes: NB#194595.
+
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 17 Dec 2010 12:39:45 +0200
 
 sensord (0.6.32) unstable; urgency=low
