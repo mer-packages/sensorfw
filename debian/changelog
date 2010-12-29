@@ -1,7 +1,7 @@
 sensord (0.6.33) unstable; urgency=low
 
   [Lihan Guo]
-  * Added: Calibration runs for 1 min after switch display on
+  * Calibration runs for 1 min after switch display on. Fixes: NB#197193.
 
   [Timo Rongas]
   * Separated Position.Stable calculation from Screen.* calculations
