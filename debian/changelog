@@ -7,6 +7,8 @@ sensord (0.6.33) unstable; urgency=low
   * Separated Position.Stable calculation from Screen.* calculations
   * Modified Position.Stable logic to subsample rate to 1hz and utilize
     timer for cases when dataflow stops.
+  * Context Bins are connected / disconnected with start/stop to avoid
+    useless propagation.
 
   [Antti Virtanen]
   * Logger callpath optimized for cases when no logging happens due to too low log level.

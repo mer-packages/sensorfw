@@ -36,42 +36,21 @@ CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
 {
     if (pluginValid)
     {
-        compassChain = SensorManager::instance().requestChain("compasschain");
-        if (!compassChain)
-        {
-            sensordLogC() << "Unable to access Compass for heading property.";
-        }
-
         add(&compassReader, "compass");
         add(&headingFilter, "headingfilter");
 
         // Create a branching filter chain
         join("compass", "source", "headingfilter", "sink");
 
-        RingBufferBase* rb = compassChain->findBuffer("truenorth");
-        if (!rb)
-        {
-            sensordLogC() << "Unable to connect to compass direction buffer.";
-        }
-        else
-        {
-            rb->join(&compassReader);
-        }
-    }
 
-    // Listening for context property subscriptions
-    connect(&headingProperty, SIGNAL(firstSubscriberAppeared(QString)), this, SLOT(startRun()));
-    connect(&headingProperty, SIGNAL(lastSubscriberDisappeared(QString)), this, SLOT(stopRun()));
-}
 
-CompassBin::~CompassBin()
-{
-    RingBufferBase* rb = compassChain->findBuffer("truenorth");
-    if (rb)
-    {
-        rb->unjoin(&compassReader);
+        // Listening for context property subscriptions
+        connect(&headingProperty, SIGNAL(firstSubscriberAppeared(QString)), this, SLOT(startRun()));
+        connect(&headingProperty, SIGNAL(lastSubscriberDisappeared(QString)), this, SLOT(stopRun()));
     }
 }
+
+CompassBin::~CompassBin() {}
 
 void CompassBin::startRun()
 {
@@ -82,18 +61,41 @@ void CompassBin::startRun()
         sensordLogC() << "Failed to get unique id for compass info via context.";
     }
 
-    start();
-    if (compassChain) {
-        compassChain->start();
+    compassChain = SensorManager::instance().requestChain("compasschain");
+    if (!compassChain)
+    {
+        sensordLogC() << "Unable to access Compass for heading property.";
+        return;
     }
+
+    RingBufferBase* rb = compassChain->findBuffer("truenorth");
+    if (!rb)
+    {
+        sensordLogC() << "Unable to connect to compass direction buffer.";
+    }
+    else
+    {
+        rb->join(&compassReader);
+    }
+
+    start();
+    compassChain->start();
 }
 
 void CompassBin::stopRun()
 {
+    stop();
     if (compassChain) {
         compassChain->stop();
-    }
-    stop();
 
+        RingBufferBase* rb = compassChain->findBuffer("truenorth");
+        if (rb)
+        {
+            rb->unjoin(&compassReader);
+        }
+        SensorManager::instance().releaseChain("compasschain");
+        compassChain = NULL;
+    }
     SensorManager::instance().releaseSensor("contextsensor", sessionId);
+
 }
