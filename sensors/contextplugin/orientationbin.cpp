@@ -40,11 +40,6 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     screenInterpreterFilter(&topEdgeProperty, &isCoveredProperty, &isFlatProperty),
     sessionId(0)
 {
-    orientationChain = SensorManager::instance().requestChain("orientationchain");
-    if (!orientationChain)
-    {
-        sensordLogC() << "Unable to access OrientationChain for orientation properties.";
-    }
     add(&topEdgeReader, "topedge");
     add(&faceReader, "face");
     add(&screenInterpreterFilter, "screeninterpreterfilter");
@@ -52,6 +47,40 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
     // Create a branching filter chain
     join("topedge", "source", "screeninterpreterfilter", "sink");
     join("face", "source", "screeninterpreterfilter", "sink");
+
+    // Context group
+    group.add(topEdgeProperty);
+    group.add(isCoveredProperty);
+    group.add(isFlatProperty);
+    connect(&group, SIGNAL(firstSubscriberAppeared()), this, SLOT(startRun()));
+    connect(&group, SIGNAL(lastSubscriberDisappeared()), this, SLOT(stopRun()));
+
+    // Set default values (if the default isn't Unknown)
+    topEdgeProperty.setValue("top");
+    isCoveredProperty.setValue(false);
+    isFlatProperty.setValue(false);
+}
+
+OrientationBin::~OrientationBin()
+{
+    stopRun();
+}
+
+void OrientationBin::startRun()
+{
+    // Get unique sessionId for this Bin.
+    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
+    if (sessionId == INVALID_SESSION)
+    {
+        sensordLogC() << "Failed to get unique id for orientation detection.";
+    }
+
+    orientationChain = SensorManager::instance().requestChain("orientationchain");
+    if (!orientationChain)
+    {
+        sensordLogC() << "Unable to access OrientationChain for orientation properties.";
+        return;
+    }
 
     RingBufferBase* rb = orientationChain->findBuffer("topedge");
     if (!rb)
@@ -69,45 +98,6 @@ OrientationBin::OrientationBin(ContextProvider::Service& s):
         rb->join(&faceReader);
     }
 
-    // Context group
-    group.add(topEdgeProperty);
-    group.add(isCoveredProperty);
-    group.add(isFlatProperty);
-    connect(&group, SIGNAL(firstSubscriberAppeared()), this, SLOT(startRun()));
-    connect(&group, SIGNAL(lastSubscriberDisappeared()), this, SLOT(stopRun()));
-
-    // Set default values (if the default isn't Unknown)
-    topEdgeProperty.setValue("top");
-    isCoveredProperty.setValue(false);
-    isFlatProperty.setValue(false);
-}
-
-OrientationBin::~OrientationBin()
-{
-    RingBufferBase* rb = orientationChain->findBuffer("topedge");
-    if (rb)
-    {
-        rb->unjoin(&topEdgeReader);
-    }
-
-    rb = orientationChain->findBuffer("face");
-    if (rb)
-    {
-        rb->unjoin(&faceReader);
-    }
-
-    SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
-}
-
-void OrientationBin::startRun()
-{
-    // Get unique sessionId for this Bin.
-    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
-    if (sessionId == INVALID_SESSION)
-    {
-        sensordLogC() << "Failed to get unique id for orientation detection.";
-    }
-
     start();
     orientationChain->start();
 
@@ -117,10 +107,28 @@ void OrientationBin::startRun()
 
 void OrientationBin::stopRun()
 {
-    orientationChain->requestDefaultInterval(sessionId);
-
-    orientationChain->stop();
     stop();
+    if (orientationChain)
+    {
+        orientationChain->requestDefaultInterval(sessionId);
+
+        orientationChain->stop();
+
+        RingBufferBase* rb = orientationChain->findBuffer("topedge");
+        if (rb)
+        {
+            rb->unjoin(&topEdgeReader);
+        }
+
+        rb = orientationChain->findBuffer("face");
+        if (rb)
+        {
+            rb->unjoin(&faceReader);
+        }
+
+        SensorManager::instance().releaseChain("orientationchain");
+        orientationChain = NULL;
+    }
 
     SensorManager::instance().releaseSensor("contextsensor", sessionId);
 }

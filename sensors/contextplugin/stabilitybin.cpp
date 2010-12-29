@@ -43,12 +43,6 @@ StabilityBin::StabilityBin(ContextProvider::Service& s):
     stabilityFilter(&isStableProperty, &isShakyProperty, STABILITY_THRESHOLD, UNSTABILITY_THRESHOLD, STABILITY_HYSTERESIS),
     sessionId(0)
 {
-    accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
-    if (!accelerometerAdaptor)
-    {
-        sensordLogC() << "Unable to access Accelerometer for stability properties.";
-    }
-
     add(&accelerometerReader, "accelerometer");
     add(&normalizerFilter, "normalizerfilter");
     add(&cutterFilter, "cutterfilter");
@@ -60,13 +54,6 @@ StabilityBin::StabilityBin(ContextProvider::Service& s):
     join("cutterfilter", "source", "avgvarfilter", "sink");
     join("avgvarfilter", "source", "stabilityfilter", "sink");
 
-    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
-    if (!rb)
-    {
-        sensordLogC() << "Unable to connect to accelerometer.";
-    } else {
-        rb->join(&accelerometerReader);
-    }
     // Context group
     group.add(isStableProperty);
     group.add(isShakyProperty);
@@ -76,12 +63,7 @@ StabilityBin::StabilityBin(ContextProvider::Service& s):
 
 StabilityBin::~StabilityBin()
 {
-    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
-    if (rb)
-    {
-        rb->unjoin(&accelerometerReader);
-    }
-    SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
+    stopRun();
 }
 
 void StabilityBin::startRun()
@@ -91,6 +73,21 @@ void StabilityBin::startRun()
     if (sessionId == INVALID_SESSION)
     {
         sensordLogC() << "Failed to get unique id for stability detection.";
+    }
+
+    accelerometerAdaptor = SensorManager::instance().requestDeviceAdaptor("accelerometeradaptor");
+    if (!accelerometerAdaptor)
+    {
+        sensordLogC() << "Unable to access Accelerometer for stability properties.";
+        return;
+    }
+
+    RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
+    if (!rb)
+    {
+        sensordLogC() << "Unable to connect to accelerometer.";
+    } else {
+        rb->join(&accelerometerReader);
     }
 
     // Reset the status of the avg & var computation; reset default
@@ -107,8 +104,19 @@ void StabilityBin::startRun()
 
 void StabilityBin::stopRun()
 {
-    accelerometerAdaptor->setStandbyOverrideRequest(sessionId, false);
-    accelerometerAdaptor->stopSensor("accelerometer");
     stop();
+    if (accelerometerAdaptor)
+    {
+        accelerometerAdaptor->setStandbyOverrideRequest(sessionId, false);
+        accelerometerAdaptor->stopSensor("accelerometer");
+
+        RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
+        if (rb)
+        {
+            rb->unjoin(&accelerometerReader);
+        }
+        SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
+        accelerometerAdaptor = NULL;
+    }
     SensorManager::instance().releaseSensor("contextsensor", sessionId);
 }
