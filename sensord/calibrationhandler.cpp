@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -36,8 +37,7 @@ CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_sensorName("magnetometersensor"),
     m_level(-1)
 {
-    m_timer = new QTimer(this);
-    m_timer -> setSingleShot(true);
+    m_timer.setSingleShot(true);
 
     calibration_rate = Config::configuration()->value("calibration_rate",  QVariant(100)).toInt();
     calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(60000)).toInt();
@@ -51,7 +51,6 @@ CalibrationHandler::~CalibrationHandler()
         sm.releaseSensor(m_sensorName, m_sessionId);
         m_sensor = NULL;
     }
-    delete m_timer;
 }
 
 bool CalibrationHandler::initiateSession()
@@ -68,14 +67,15 @@ bool CalibrationHandler::initiateSession()
     if (m_sessionId <= 0)
     {
         sensordLogW() << "Failed to get listen session for magnetometersensor.";
-    } else
+    }
+    else
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
-        m_sensor->start();
     }
 
     // Connect timeout
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(calibrationTimeout()));
+    connect(&m_timer, SIGNAL(timeout()), this, SLOT(calibrationTimeout()));
+    resumeCalibration();
     return true;
 }
 
@@ -85,15 +85,15 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
     if ((sample.level() != m_level))
     {
         m_level = sample.level();
-        m_timer->start(calib_timeout);
+        m_timer.start(calib_timeout);
     }
 }
 
 void CalibrationHandler::stopCalibration()
 {
-    if (m_timer->isActive())
+    if (m_sensor && m_timer.isActive())
     {
-        m_timer->stop();
+        m_timer.stop();
         m_sensor->setStandbyOverrideRequest(m_sessionId, false);
         m_sensor->stop();
         disconnect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
@@ -101,26 +101,26 @@ void CalibrationHandler::stopCalibration()
     }
 }
 
-
 void CalibrationHandler::calibrationTimeout()
 {
-
-    sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
-    //m_sensor->setIntervalRequest(m_sessionId, stopped_rate);
-    m_sensor->setStandbyOverrideRequest(m_sessionId, false);
-    m_sensor->stop();
-    disconnect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
+    if (m_sensor)
+    {
+        sensordLogD() << "Stopping magnetometer background calibration due to timeout.";
+        m_sensor->setStandbyOverrideRequest(m_sessionId, false);
+        m_sensor->stop();
+        disconnect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
+    }
 }
 
 void CalibrationHandler::resumeCalibration()
 {
     sensordLogD() << "Resuming magnetometer background calibration.";
-    if (!m_timer->isActive())
+    if (m_sensor && !m_timer.isActive())
     {
         m_sensor->start();
         m_sensor->setIntervalRequest(m_sessionId, calibration_rate);
         m_sensor->setStandbyOverrideRequest(m_sessionId, true);
         connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
     }
-    m_timer->start(calib_timeout);
+    m_timer.start(calib_timeout);
 }

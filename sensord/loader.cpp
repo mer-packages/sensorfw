@@ -107,7 +107,7 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringLi
         {
             sensordLogT() << requiredPlugins.at(i) << " is not yet loaded, trying to load.";
             QString resolvedName = resolveRealPluginName(requiredPlugins.at(i));
-            sensordLogT() << requiredPlugins.at(i) << "resolved as" << resolvedName << ". Loading";
+            sensordLogT() << requiredPlugins.at(i) << " resolved as " << resolvedName << ". Loading";
             loaded = loadPluginFile(resolvedName, errorString, newPluginNames, newPlugins);
         }
     }
@@ -157,7 +157,7 @@ QString Loader::resolveRealPluginName(const QString& pluginName) const
     QString nameFromConfig = Config::configuration()->value(key).toString();
 
     if (nameFromConfig == "") {
-        sensordLogT() << "Plugin setting for " << pluginName << "not found from configuration. Using key as value.";
+        sensordLogT() << "Plugin setting for " << pluginName << " not found from configuration. Using key as value.";
         return pluginName;
     }
 

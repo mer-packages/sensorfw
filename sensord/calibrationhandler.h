@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,12 +28,10 @@
 #define CALIBRATION_HANDLER
 
 #include <QObject>
+#include <QString>
 #include <QTimer>
 #include "datatypes/magneticfield.h"
 #include "sensors/magnetometersensor/magnetometersensor.h"
-
-class SensorManager;
-
 
 /**
  * @brief Helper class for maintaining magnetometer calibration.
@@ -42,7 +41,8 @@ class SensorManager;
  */
 class CalibrationHandler : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(CalibrationHandler)
 
 public:
     /**
@@ -68,7 +68,7 @@ private:
     int                        m_sessionId;
     QString                    m_sensorName;
     int                        m_level;
-    QTimer*                    m_timer;
+    QTimer                     m_timer;
     int                        calibration_rate;
     int                        calib_timeout;
 };
