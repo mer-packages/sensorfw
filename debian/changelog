@@ -2,6 +2,7 @@ sensord (0.6.33) unstable; urgency=low
 
   [Lihan Guo]
   * Calibration runs for 1 min after switch display on. Fixes: NB#197193.
+  * Fixes: NB#202427
 
   [Timo Rongas]
   * Separated Position.Stable calculation from Screen.* calculations
@@ -9,6 +10,7 @@ sensord (0.6.33) unstable; urgency=low
     timer for cases when dataflow stops.
   * Context Bins are connected / disconnected with start/stop to avoid
     useless propagation.
+  * Fixes: NB#212767
 
   [Antti Virtanen]
   * Logger callpath optimized for cases when no logging happens due to too low log level.
