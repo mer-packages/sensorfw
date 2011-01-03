@@ -28,7 +28,6 @@
 MagnetometerSensorChannelAdaptor::MagnetometerSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 MagneticField MagnetometerSensorChannelAdaptor::magneticField() const

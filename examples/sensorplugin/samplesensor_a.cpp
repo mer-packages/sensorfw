@@ -28,7 +28,6 @@
 SampleSensorChannelAdaptor::SampleSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 Unsigned SampleSensorChannelAdaptor::get() const

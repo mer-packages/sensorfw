@@ -28,5 +28,4 @@
 TapSensorChannelAdaptor::TapSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }

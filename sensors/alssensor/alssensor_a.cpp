@@ -28,7 +28,6 @@
 ALSSensorChannelAdaptor::ALSSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 Unsigned ALSSensorChannelAdaptor::lux() const

@@ -28,9 +28,7 @@
 OrientationSensorChannelAdaptor::OrientationSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
-
 
 Unsigned OrientationSensorChannelAdaptor::orientation() const
 {

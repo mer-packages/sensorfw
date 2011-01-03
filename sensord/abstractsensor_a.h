@@ -53,7 +53,7 @@ public:
     virtual ~AbstractSensorChannelAdaptor() {}
 
 protected:
-    AbstractSensorChannelAdaptor(QObject *parent) : QDBusAbstractAdaptor(parent) {}
+    AbstractSensorChannelAdaptor(QObject *parent);
 
 public:
     bool isValid() const;

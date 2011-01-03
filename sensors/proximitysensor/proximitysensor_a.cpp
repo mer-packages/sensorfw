@@ -28,7 +28,6 @@
 ProximitySensorChannelAdaptor::ProximitySensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 Unsigned ProximitySensorChannelAdaptor::proximity() const

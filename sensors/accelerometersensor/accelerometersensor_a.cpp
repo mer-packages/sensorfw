@@ -28,7 +28,6 @@
 AccelerometerSensorChannelAdaptor::AccelerometerSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 XYZ AccelerometerSensorChannelAdaptor::get() const

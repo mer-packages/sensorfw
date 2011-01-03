@@ -36,7 +36,7 @@
 SensorManagerAdaptor::SensorManagerAdaptor(QObject *parent)
     : QDBusAbstractAdaptor(parent)
 {
-    setAutoRelaySignals(true);
+    setAutoRelaySignals(false); //disabling signals since no public client API supports the use of these
 }
 
 int SensorManagerAdaptor::errorCodeInt() const

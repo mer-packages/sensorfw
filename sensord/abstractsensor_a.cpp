@@ -31,6 +31,12 @@
 #include <sensormanager.h>
 #include <sockethandler.h>
 
+AbstractSensorChannelAdaptor::AbstractSensorChannelAdaptor(QObject *parent) :
+    QDBusAbstractAdaptor(parent)
+{
+    setAutoRelaySignals(false); //disabling signals since no public client API supports the use of these
+}
+
 bool AbstractSensorChannelAdaptor::isValid() const
 {
     return node()->isValid();

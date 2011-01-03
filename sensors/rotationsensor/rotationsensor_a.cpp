@@ -28,7 +28,6 @@
 RotationSensorChannelAdaptor::RotationSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 XYZ RotationSensorChannelAdaptor::rotation() const

@@ -29,7 +29,6 @@
 GyroscopeSensorChannelAdaptor::GyroscopeSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 AngularVelocityData GyroscopeSensorChannelAdaptor::get() const

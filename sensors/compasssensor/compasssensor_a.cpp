@@ -28,7 +28,6 @@
 CompassSensorChannelAdaptor::CompassSensorChannelAdaptor(QObject* parent) :
     AbstractSensorChannelAdaptor(parent)
 {
-    setAutoRelaySignals(true);
 }
 
 Compass CompassSensorChannelAdaptor::get() const
@@ -50,4 +49,3 @@ int CompassSensorChannelAdaptor::declinationValue() const
 {
     return qvariant_cast< int >(parent()->property("declinationvalue"));
 }
-
