@@ -31,11 +31,11 @@
 #ifndef ALSADAPTOR_ASCII_H
 #define ALSADAPTOR_ASCII_H
 
+#include <QObject>
+#include <QString>
 #include "sysfsadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
-#include <QTime>
-
 
 class ALSAdaptorAscii : public SysfsAdaptor
 {
@@ -54,7 +54,6 @@ protected:
 private:
 
     void processSample(int pathId, int fd);
-    int devId;
     char buf[16];
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;

@@ -30,7 +30,6 @@
 #include "inputdevadaptor.h"
 #include "sensord/deviceadaptorringbuffer.h"
 #include <sensord/filterproperty.h>
-#include <QTime>
 #include <QObject>
 #include "touchdata.h"
 
@@ -65,6 +64,8 @@ protected:
     ~TouchAdaptor();
 
 private:
+
+    static const int HARD_MAX_TOUCH_POINTS;
 
     /**
      * Holds values read from the driver.
@@ -111,7 +112,6 @@ private:
 
     void interpretSync(int src);
 
-    QTime time;
     DeviceAdaptorRingBuffer<TouchData>* outputBuffer_;
     TouchValues touchValues_[5];
     FilterProperty<RangeInfo> rangeInfo_;

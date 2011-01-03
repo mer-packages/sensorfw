@@ -28,7 +28,6 @@
 #include "qt-api/sensormanagerinterface.h"
 #include "gyroclient.h"
 
-
 GyroClient::GyroClient()
 {
     QDBusReply<void> reply;
@@ -55,18 +54,14 @@ GyroClient::~GyroClient()
     delete m_sensorIfc;
 }
 
-
 void GyroClient::slotDataAvailable(const XYZ& data)
 {
     qDebug() << "raw gyro data: (" << data.x() << data.y() << data.z() << ")";
 }
 
-
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-
-    GyroClient *gyro = new GyroClient();
-
+    GyroClient gyro;
     return app.exec();
 }

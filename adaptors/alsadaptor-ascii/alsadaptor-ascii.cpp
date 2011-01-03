@@ -40,34 +40,24 @@
 #include <stdlib.h>
 #include <linux/types.h>
 
-#define SYSFS_RANGE_PATH "/sys/bus/i2c/devices/5-0029/apds9802als/sensing_range"
-#define SYSFS_LUX_PATH "/sys/bus/i2c/devices/5-0029/apds9802als/lux_output"
-#define DEFAULT_RANGE 65535
-
 ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
+    const unsigned int DEFAULT_RANGE = 65535;
+
     int range = DEFAULT_RANGE;
-    QFile sysFile;
-    QString devPath;
+    QFile sysFile(Config::configuration()->value("als-ascii_range_sysfs_path").toString());
 
-    // Check if a file has been provided as range source
-    sysFile.setFileName(Config::configuration()->value("als-ascii_range_sysfs_path").toString());
-
-    if (sysFile.size() > 0)
-    {
-        if (!(sysFile.exists() && sysFile.open(QIODevice::ReadOnly))) {
-            sensordLogW() << "Unable to config ALS range from sysfs, using default value: " << DEFAULT_RANGE;
-        } else {
-            sysFile.readLine(buf, sizeof(buf));
-            range = QString(buf).toInt();
-        }
+    if (!(sysFile.open(QIODevice::ReadOnly))) {
+        sensordLogW() << "Unable to config ALS range from sysfs, using default value: " << DEFAULT_RANGE;
+    } else {
+        sysFile.readLine(buf, sizeof(buf));
+        range = QString(buf).toInt();
     }
 
     sensordLogT() << "Ambient light range: " << range;
 
-
     // Locate the actual handle
-    devPath = Config::configuration()->value("als-ascii_sysfs_path").toString();
+    QString devPath = Config::configuration()->value("als-ascii_sysfs_path").toString();
 
     if (devPath.isEmpty())
     {

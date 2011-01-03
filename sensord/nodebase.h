@@ -51,7 +51,7 @@ class NodeBase : public QObject
     Q_PROPERTY(unsigned int interval READ getInterval);
 
 protected:
-    NodeBase(QObject* parent = 0) : QObject(parent), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
+    NodeBase(QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
     virtual ~NodeBase() {}
 
 public Q_SLOTS:

@@ -83,6 +83,7 @@ OrientationChain::~OrientationChain()
     disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
     delete accelerometerReader_;
+    delete orientationInterpreterFilter_;
     delete topEdgeOutput_;
     delete faceOutput_;
     delete orientationOutput_;

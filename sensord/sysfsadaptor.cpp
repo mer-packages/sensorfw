@@ -342,6 +342,7 @@ bool SysfsAdaptor::writeToFile(QString path, QString content)
     }
 
     if (write(fd, content.toLocal8Bit().constData(), path.size()*sizeof(char)) == -1) {
+        close(fd);
         return false;
     }
 

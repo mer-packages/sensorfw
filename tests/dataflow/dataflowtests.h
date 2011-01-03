@@ -32,6 +32,8 @@
 class DataFlowTest : public QObject
 {
     Q_OBJECT;
+public:
+    DataFlowTest() : sm(0) {};
 
 private:
     SensorManager* sm;
@@ -46,10 +48,6 @@ private slots:
     void cleanup() {};
     void cleanupTestCase();
 };
-
-
-
-
 
 class TestSensorManager2: public SensorManager
 {

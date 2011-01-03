@@ -2,6 +2,13 @@ sensord (0.6.34) unstable; urgency=low
 
   [Antti Virtanen]
   * propertyChanged signals aren't anymore sent through dbus to apps since qmSystem nor QtMob Sensors API supports property notifications. Fixes: NB#216173.
+  * Refactored ALSAdaptorAscii: removed unnecessary members, fixed missing initializations and simplified the constructor.
+  * Fixed fd leak from TouchAdaptor and did some minor refactorings.
+  * Fixed memory leak and removed unnecessary members from OrientationChain.
+  * NodeBase didn't initialize all members.
+  * SysfsAdaptor leaked fd in case of error.
+  * ProximitySensorChannelAdaptor::dataAvailable() now passes value by ref.
+  * Minor refactoring to test cases.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 03 Jan 2011 16:25:22 +0200
 

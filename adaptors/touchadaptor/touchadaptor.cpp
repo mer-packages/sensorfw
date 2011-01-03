@@ -31,11 +31,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 
-#define TOUCH_SYS_PATH_STR      "/dev/input/event%1"
-#define HARD_MAX_TOUCH_POINTS   5
-
-#define X_RESOLUTION            800
-#define Y_RESOLUTION            480
+const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 
 TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS), rangeInfo_(*this)
 {
@@ -79,23 +75,27 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     ioctl(fd, EVIOCGNAME(sizeof(deviceName)), deviceName);
 
     if (ioctl(fd, EVIOCGBIT(0, sizeof(evtype_bitmask)), evtype_bitmask) < 0) {
-        qWarning() << __PRETTY_FUNCTION__ << deviceName << "EVIOCGBIT error";
+        sensordLogW() << __PRETTY_FUNCTION__ << deviceName << "EVIOCGBIT error";
+        close(fd);
         return false;
     }
 
 #define test_bit(bit, array)    (array[bit/8] & (1<<(bit%8)))
 
     if (!test_bit(EV_ABS, evtype_bitmask)) {
+        close(fd);
         return false;
     }
 
     if (ioctl(fd, EVIOCGBIT(EV_ABS, sizeof(evtype_bitmask)), evtype_bitmask) < 0) {
         sensordLogW() << __PRETTY_FUNCTION__ << deviceName << "EVIOGBIT EV_ABS error.";
+        close(fd);
         return false;
     }
 
     if (!test_bit(ABS_X, evtype_bitmask) || !test_bit(ABS_Y, evtype_bitmask)) {
         sensordLogW() << __PRETTY_FUNCTION__ << deviceName << "Testbit ABS_X or ABS_Y failed.";
+        close(fd);
         return false;
     }
 
@@ -113,6 +113,8 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     rInfo.yRange = info.maximum - info.minimum;
 
     rangeInfo_(rInfo);
+
+    close(fd);
 
     return true;
 }

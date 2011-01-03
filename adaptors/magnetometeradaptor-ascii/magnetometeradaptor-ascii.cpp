@@ -37,14 +37,14 @@
 #define SYSFS_MAGNET_PATH "/sys/bus/i2c/devices/5-000f/ak8974/curr_pos"
 
 MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
+    devId(0)
 {
     if (access(SYSFS_MAGNET_PATH, R_OK) < 0) {
         sensordLogW() << SYSFS_MAGNET_PATH << ": "<< strerror(errno);
         return;
     }
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    devId = 0;
     addPath(SYSFS_MAGNET_PATH, devId);
     magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(16);
     addAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);

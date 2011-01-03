@@ -43,7 +43,7 @@ public:
     ProximitySensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:
-    void dataAvailable(const Unsigned data);
+    void dataAvailable(const Unsigned& data);
 };
 
 #endif

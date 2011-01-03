@@ -143,7 +143,6 @@ void DataFlowTest::testChainSharing()
 {
     SensorManager& sm = SensorManager::instance();
 
-
     QCOMPARE(sm.loadPlugin("accelerometerchain"), true);
 
     AbstractChain* chainA = NULL;
@@ -185,9 +184,6 @@ void DataFlowTest::testChainSharing()
     // release second time
     sm.releaseChain("accelerometerchain");
     // check that does not exist
-
-
 }
-
 
 QTEST_MAIN(DataFlowTest)

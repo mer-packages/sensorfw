@@ -90,8 +90,6 @@ private:
 
     AbstractChain*                   accelerometerChain_;
     BufferReader<AccelerationData>*  accelerometerReader_;
-    FilterBase*                      topEdgeInterpreterFilter_;
-    FilterBase*                      faceInterpreterFilter_;
     FilterBase*                      orientationInterpreterFilter_;
     RingBuffer<PoseData>*            topEdgeOutput_;
     RingBuffer<PoseData>*            faceOutput_;
