@@ -1,7 +1,7 @@
 sensord (0.6.34) unstable; urgency=low
 
   [Antti Virtanen]
-  * propertyChanged signals aren't anymore sent through dbus to apps since qmSystem nor QtMob Sensors API supports property notifications.
+  * propertyChanged signals aren't anymore sent through dbus to apps since qmSystem nor QtMob Sensors API supports property notifications. Fixes: NB#216173.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 03 Jan 2011 16:25:22 +0200
 
