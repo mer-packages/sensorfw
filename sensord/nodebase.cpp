@@ -493,7 +493,7 @@ IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
         return source->getAvailableBufferSizes(hwSupported);
     }
     IntegerRangeList list;
-    list.push_back(IntegerRange(1, 200));
+    list.push_back(IntegerRange(1, 256));
     hwSupported = false;
     return list;
 }
