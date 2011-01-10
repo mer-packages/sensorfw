@@ -550,7 +550,7 @@ void ClientApiTest::testAvailableBufferSizes()
     IntegerRangeList rangeList = magnetometer->getAvailableBufferSizes();
     QVERIFY(rangeList.size() == 1);
     QVERIFY(rangeList.front().first == 1);
-    QVERIFY(rangeList.front().second == 200);
+    QVERIFY(rangeList.front().second == 256);
 
     magnetometer->stop();
     delete magnetometer;
