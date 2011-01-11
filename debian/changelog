@@ -11,7 +11,7 @@ sensord (0.6.34) unstable; urgency=low
   * Minor refactoring to test cases.
   * Removed QThread::terminate() calls from testcases.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 03 Jan 2011 16:25:22 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 11 Jan 2011 19:16:14 +0200
 
 sensord (0.6.33) unstable; urgency=low
 
