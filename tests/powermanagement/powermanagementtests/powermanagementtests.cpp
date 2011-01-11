@@ -78,7 +78,7 @@ void PowerManagementTest::cleanup() {}
 void PowerManagementTest::cleanupTestCase()
 {
     ENABLE_TKLOCK;
-    helper.terminate();
+    helper.stop();
     helper.wait();
 }
 

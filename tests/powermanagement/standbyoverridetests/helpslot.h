@@ -31,7 +31,7 @@
 #include <QProcess>
 #include "xyz.h"
 
-/** 
+/**
  * Helper class for data faking - must nudge acc handle if no sensor
  * is started on sensord start (UI does not start, no contextfw)
  */
@@ -40,24 +40,26 @@ class HelpSlot : public QThread
     Q_OBJECT;
 
 public:
-    HelpSlot(QString inputFile = "") : m_inputFile(inputFile), m_valueCount(0) {}
+    HelpSlot(QString inputFile = "") : m_inputFile(inputFile), m_valueCount(0), m_stop(false) {}
 
     void setInputFile(QString inputFile) { m_inputFile = inputFile; }
     void reset() { m_valueCount = 0; }
+    void stop() { m_stop = true; }
 
     void run()
     {
         if (!(m_inputFile == ""))
         {
-            while(1) {
+            while(!m_stop) {
                 msleep(250);
                 system(QString("echo 0 0 0 | datafaker %1 & { sleep 0.1; eval 'kill $!' &> /dev/null; }").arg(m_inputFile).toLatin1().constData());
             }
- 
+
         }
     }
     QString m_inputFile;
     int m_valueCount;
+    bool m_stop;
 
 public slots:
     void dataAvailable(const XYZ& data)

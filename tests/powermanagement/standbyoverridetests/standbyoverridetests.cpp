@@ -63,8 +63,8 @@ void StandbyOverrideTest::cleanup() {}
 void StandbyOverrideTest::cleanupTestCase()
 {
     ENABLE_TKLOCK;
-    helper1.terminate();
-    helper2.terminate();
+    helper1.stop();
+    helper2.stop();
     helper1.wait();
     helper2.wait();
 }

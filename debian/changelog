@@ -9,6 +9,7 @@ sensord (0.6.34) unstable; urgency=low
   * SysfsAdaptor leaked fd in case of error.
   * ProximitySensorChannelAdaptor::dataAvailable() now passes value by ref.
   * Minor refactoring to test cases.
+  * Removed QThread::terminate() calls from testcases.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 03 Jan 2011 16:25:22 +0200
 
