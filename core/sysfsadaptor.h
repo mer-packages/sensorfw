@@ -27,12 +27,12 @@
 #ifndef SYSFSADAPTOR_H
 #define SYSFSADAPTOR_H
 
-#include "sensord/deviceadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptor.h"
+#include "deviceadaptorringbuffer.h"
 #include <QString>
 #include <QStringList>
 #include <QThread>
-#include <sensord/filterproperty.h>
+#include "filterproperty.h"
 #include <QMutex>
 
 class SysfsAdaptor;

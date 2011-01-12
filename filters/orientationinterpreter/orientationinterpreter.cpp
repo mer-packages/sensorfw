@@ -26,7 +26,7 @@
  */
 
 #include "orientationinterpreter.h"
-#include <sensord/logging.h>
+#include "logging.h"
 #include <math.h>
 #include <stdlib.h>
 #include "config.h"

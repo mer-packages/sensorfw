@@ -1,11 +1,11 @@
 #ifndef MRSTACCELEROMETERADPTOR_H
 #define MRSTACCELEROMETERADPTOR_H
-#include "sensord/sysfsadaptor.h"
+#include "sysfsadaptor.h"
 #include <QString>
 #include <QStringList>
 #include <linux/input.h>
-#include <sensord/filterproperty.h>
-#include "sensord/deviceadaptorringbuffer.h"
+#include <filterproperty.h>
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
 #include <QTime>
 

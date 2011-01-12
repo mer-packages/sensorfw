@@ -24,8 +24,8 @@
 
 #include "contextsensor.h"
 #include "serviceinfo.h"
-#include "sensord/sensormanager.h"
-#include "sensord/logging.h"
+#include "sensormanager.h"
+#include "logging.h"
 
 ContextSensorChannel::ContextSensorChannel(const QString& id) :
     AbstractSensorChannel(id), service(QDBusConnection::systemBus()),

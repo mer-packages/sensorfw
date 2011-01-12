@@ -28,12 +28,12 @@
 #ifndef INPUTDEVADAPTOR_H
 #define INPUTDEVADAPTOR_H
 
-#include "sensord/sysfsadaptor.h"
+#include "sysfsadaptor.h"
 #include <QString>
 #include <QStringList>
 #include <QFile>
 #include <linux/input.h>
-#include <sensord/filterproperty.h>
+#include "filterproperty.h"
 
 /**
  * @brief Base class for adaptors accessing device drivers through Linux Input

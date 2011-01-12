@@ -27,7 +27,7 @@
 #include "orientationchainplugin.h"
 #include "orientationchain.h"
 #include "sensormanager.h"
-#include "sensord/logging.h"
+#include "logging.h"
 
 void OrientationChainPlugin::Register(class Loader&)
 {

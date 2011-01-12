@@ -27,7 +27,7 @@
 #define MAGNETOMETERSCALEFILTER_H
 
 #include "orientationdata.h"
-#include "sensord/filter.h"
+#include "filter.h"
 
 /**
  * @brief Scaling filter for CalibratedMagneticFieldData.

@@ -25,8 +25,8 @@
 #ifndef COMPASS_BIN_H
 #define COMPASS_BIN_H
 
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
+#include "bin.h"
+#include "bufferreader.h"
 #include "datatypes/orientationdata.h"
 
 #include "headingfilter.h"

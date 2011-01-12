@@ -30,7 +30,7 @@
 
 #include <QDBusInterface>
 #include "sysfsadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 
 #ifdef SENSORFW_MCE_WATCHER

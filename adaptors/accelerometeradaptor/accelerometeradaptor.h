@@ -28,7 +28,7 @@
 #define ACCELEROMETERADAPTOR_H
 
 #include "inputdevadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
 #include <QTime>
 

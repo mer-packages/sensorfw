@@ -25,7 +25,7 @@
 #ifndef NORMALIZERFILTER_H
 #define NORMALIZERFILTER_H
 
-#include "sensord/filter.h"
+#include "filter.h"
 #include "orientationdata.h"
 
 class NormalizerFilter : public QObject, public Filter<TimedXyzData, NormalizerFilter, double>

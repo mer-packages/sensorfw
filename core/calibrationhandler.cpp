@@ -29,7 +29,7 @@
 #include "sensormanager.h"
 #include "logging.h"
 #include "abstractsensor.h"
-#include "sensord/config.h"
+#include "config.h"
 
 CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_sensor(NULL),

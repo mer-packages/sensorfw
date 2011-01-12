@@ -30,7 +30,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <string.h>
-#include <sensord/logging.h>
+#include <logging.h>
 #include "datatypes/utils.h"
 #include "config.h"
 

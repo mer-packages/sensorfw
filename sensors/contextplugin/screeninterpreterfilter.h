@@ -27,7 +27,7 @@
 #ifndef SCREENINTERPRETERFILTER_H
 #define SCREENINTERPRETERFILTER_H
 
-#include "sensord/filter.h"
+#include "filter.h"
 #include "posedata.h"
 
 #include <ContextProvider>

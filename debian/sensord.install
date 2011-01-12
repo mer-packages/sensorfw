@@ -1,6 +1,7 @@
 #/usr/lib/libfilters.so*
 /usr/lib/libsensorclient.so*
 /usr/lib/libsensordatatypes.so*
+/usr/lib/libsensorfw.so*
 /usr/lib/sensord/*so
 /usr/sbin/sensord
 /usr/share/contextkit/providers/*

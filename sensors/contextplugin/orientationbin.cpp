@@ -25,8 +25,8 @@
 
 #include "orientationbin.h"
 #include "contextplugin.h"
-#include "sensord/sensormanager.h"
-#include "sensord/config.h"
+#include "sensormanager.h"
+#include "config.h"
 
 const int OrientationBin::POLL_INTERVAL = 250;
 

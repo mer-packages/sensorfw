@@ -29,7 +29,7 @@
 #define ALSADAPTOR_SYSFS_H
 
 #include "sysfsadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 #include <QTime>
 

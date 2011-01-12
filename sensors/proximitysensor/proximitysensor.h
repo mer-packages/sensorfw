@@ -29,8 +29,8 @@
 
 #include "abstractsensor.h"
 #include "proximitysensor_a.h"
-#include "sensord/dbusemitter.h"
-#include "sensord/deviceadaptor.h"
+#include "dbusemitter.h"
+#include "deviceadaptor.h"
 #include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
 

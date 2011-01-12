@@ -28,10 +28,10 @@
 #define GYROSCOPE_SENSOR_CHANNEL_H
 
 #include "abstractsensor.h"
-#include "sensord/deviceadaptor.h"
+#include "deviceadaptor.h"
 
 #include "gyroscopesensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dbusemitter.h"
 
 #include "datatypes/orientationdata.h"
 #include "datatypes/xyz.h"

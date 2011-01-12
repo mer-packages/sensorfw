@@ -4,6 +4,7 @@ SUBDIRS = datatypes \
           adaptors \
           filters \
           sensors \
+          core \
           sensord \
           qt-api \
           chains \

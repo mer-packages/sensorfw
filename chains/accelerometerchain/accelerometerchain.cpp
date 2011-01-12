@@ -27,11 +27,11 @@
 #include "accelerometerchain.h"
 #include <QVariant>
 #include <QStringList>
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/config.h"
-#include "sensord/logging.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "config.h"
+#include "logging.h"
 
 #include "coordinatealignfilter/coordinatealignfilter.h"
 

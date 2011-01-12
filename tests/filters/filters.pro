@@ -10,25 +10,6 @@ CONFIG += testcase link_pkgconfig
 PKGCONFIG += gconf-2.0
 
 HEADERS += filtertests.h \
-    ../../sensord/producer.h \
-    ../../sensord/consumer.h \
-    ../../sensord/bin.h \
-    ../../sensord/ringbuffer.h \
-    ../../sensord/filter.h \
-    ../../sensord/source.h \
-    ../../sensord/deviceadaptor.h \
-    ../../sensord/abstractsensor.h \
-    ../../sensord/sensormanager.h \
-    ../../sensord/sensormanager_a.h \
-    ../../sensord/loader.h \
-    ../../sensord/plugin.h \
-    ../../sensord/filterproperty.h \
-    ../../sensord/parameterparser.h \
-    ../../sensord/logging.h \
-    ../../sensord/config.h \
-    ../../sensord/sockethandler.h \
-    ../../sensord/nodebase.h \
-    ../../sensord/calibrationhandler.h \
     ../../filters/orientationinterpreter/orientationinterpreter.h \
     ../../filters/coordinatealignfilter/coordinatealignfilter.h \
     ../../filters/declinationfilter/declinationfilter.h \
@@ -36,25 +17,6 @@ HEADERS += filtertests.h \
 
     
 SOURCES += filtertests.cpp \
-    ../../sensord/producer.cpp \
-    ../../sensord/consumer.cpp \
-    ../../sensord/bin.cpp \
-    ../../sensord/ringbuffer.cpp \
-    ../../sensord/filter.cpp \
-    ../../sensord/source.cpp \
-    ../../sensord/deviceadaptor.cpp \
-    ../../sensord/abstractsensor.cpp \
-    ../../sensord/sensormanager.cpp \
-    ../../sensord/sensormanager_a.cpp \
-    ../../sensord/loader.cpp \
-    ../../sensord/plugin.cpp \
-    ../../sensord/filterproperty.cpp \
-    ../../sensord/parameterparser.cpp \
-    ../../sensord/logging.cpp \
-    ../../sensord/config.cpp \
-    ../../sensord/sockethandler.cpp \
-    ../../sensord/nodebase.cpp \
-    ../../sensord/calibrationhandler.cpp \
     ../../filters/orientationinterpreter/orientationinterpreter.cpp \
     ../../filters/coordinatealignfilter/coordinatealignfilter.cpp \
     ../../filters/declinationfilter/declinationfilter.cpp \
@@ -68,8 +30,9 @@ INCLUDEPATH += ../.. \
     ../../filters/coordinatealignfilter \
     ../../filters/declinationfilter \
     ../../filters/rotationfilter \
-    ../../sensord \
+    ../../core \
     ../../datatypes
     
-QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes \
+QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
 

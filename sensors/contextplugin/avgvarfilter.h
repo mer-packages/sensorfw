@@ -25,7 +25,7 @@
 #ifndef AVGVARFILTER_H
 #define AVGVARFILTER_H
 
-#include "sensord/filter.h"
+#include "filter.h"
 
 #include <QPair>
 #include <QVector>

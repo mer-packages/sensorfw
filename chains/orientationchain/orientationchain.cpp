@@ -24,9 +24,9 @@
  */
 
 #include "orientationchain.h"
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
 
 OrientationChain::OrientationChain(const QString& id) :
     AbstractChain(id)

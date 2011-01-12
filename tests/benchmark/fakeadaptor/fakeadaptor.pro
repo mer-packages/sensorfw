@@ -13,7 +13,7 @@ SOURCES += fakeadaptor.cpp \
 
 SENSORFW_INCLUDEPATHS = ../../../ \
                         ../../../include \
-                        ../../../sensord \
+                        ../../../core \
                         ../../../datatypes \
                         ../../../filters
 

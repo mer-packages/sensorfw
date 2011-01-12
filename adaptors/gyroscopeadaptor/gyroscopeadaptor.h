@@ -27,7 +27,7 @@
 #ifndef GYROSCOPEADAPTOR_H
 #define GYROSCOPEADAPTOR_H
 
-#include "sensord/sysfsadaptor.h"
+#include "sysfsadaptor.h"
 #include "datatypes/orientationdata.h"
 
 /**

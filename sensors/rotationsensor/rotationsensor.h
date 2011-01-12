@@ -29,7 +29,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "rotationsensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dbusemitter.h"
 #include "datatypes/orientationdata.h"
 
 class Bin;

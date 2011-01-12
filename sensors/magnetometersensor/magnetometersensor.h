@@ -30,8 +30,8 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "magnetometersensor_a.h"
-#include "sensord/dbusemitter.h"
-#include "sensord/deviceadaptor.h"
+#include "dbusemitter.h"
+#include "deviceadaptor.h"
 #include "datatypes/orientationdata.h"
 
 class Bin;

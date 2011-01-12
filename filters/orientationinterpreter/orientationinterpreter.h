@@ -28,10 +28,10 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
-#include <sensord/filter.h>
+#include "filter.h"
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
-#include "sensord/filterproperty.h"
+#include "filterproperty.h"
 
 /**
  * @brief Filter for calculating device orientation.

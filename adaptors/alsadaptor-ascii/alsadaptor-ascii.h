@@ -34,7 +34,7 @@
 #include <QObject>
 #include <QString>
 #include "sysfsadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 
 class ALSAdaptorAscii : public SysfsAdaptor

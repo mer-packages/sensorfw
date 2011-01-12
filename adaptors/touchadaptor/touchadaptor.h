@@ -28,8 +28,8 @@
 #define TOUCHADAPTOR_H
 
 #include "inputdevadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
-#include <sensord/filterproperty.h>
+#include "deviceadaptorringbuffer.h"
+#include "filterproperty.h"
 #include <QObject>
 #include "touchdata.h"
 

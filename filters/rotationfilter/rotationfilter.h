@@ -29,7 +29,7 @@
 #include <QObject>
 
 #include "orientationdata.h"
-#include "sensord/filter.h"
+#include "filter.h"
 
 /**
  * @brief Filter for calculating device axis rotations.

@@ -5,7 +5,7 @@ include( ../common-config.pri )
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
-                        ../../sensord \
+                        ../../core \
                         ../../datatypes
 
 DEPENDPATH  += $$SENSORFW_INCLUDEPATHS

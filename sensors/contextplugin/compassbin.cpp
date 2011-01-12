@@ -25,7 +25,7 @@
 
 #include "compassbin.h"
 #include "contextplugin.h"
-#include "sensord/sensormanager.h"
+#include "sensormanager.h"
 
 CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     headingProperty(s, "Location.Heading"),

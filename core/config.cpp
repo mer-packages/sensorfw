@@ -26,7 +26,7 @@
 
 #include "config.h"
 
-#include <sensord/logging.h>
+#include "logging.h"
 #include <QSettings>
 #include <QVariant>
 #include <QFile>

@@ -26,9 +26,9 @@
 
 #include "stabilitybin.h"
 #include "contextplugin.h"
-#include "sensord/sensormanager.h"
-#include "sensord/config.h"
-#include "sensord/logging.h"
+#include "sensormanager.h"
+#include "config.h"
+#include "logging.h"
 
 const int StabilityBin::STABILITY_THRESHOLD = 7;
 const int StabilityBin::UNSTABILITY_THRESHOLD = 300;

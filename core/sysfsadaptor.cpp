@@ -31,7 +31,7 @@
 #include <fcntl.h>
 #include <sys/epoll.h>
 #include <QFile>
-#include "sensord/logging.h"
+#include "logging.h"
 
 SysfsAdaptor::SysfsAdaptor(const QString& id,
                            PollMode mode,

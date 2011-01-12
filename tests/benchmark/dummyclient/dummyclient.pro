@@ -5,7 +5,7 @@ QT += dbus network
 include( ../../common-install.pri)
 
 INCLUDEPATH += ../../../qt-api \
-               ../../../sensord \
+               ../../../core \
                ../../../ \
                ../../../include
 
