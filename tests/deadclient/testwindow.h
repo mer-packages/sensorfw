@@ -37,7 +37,7 @@ class TestWindow
 {
 public:
 
-    TestWindow(bool control = false)
+    TestWindow()
     {
         SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
 
@@ -54,15 +54,14 @@ public:
         remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>("magnetometersensor");
 
 #ifdef ORIENTATION
-        if (control) {
-            sensorIfc = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::interface("orientationsensor"));
-            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
-        }
-#else
-        if (control) {
-            sensorIfc = const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::interface("rotationsensor"));
-            QObject::connect(sensorIfc, SIGNAL(dataAvailable(const XYZ&)), &dump, SLOT(dump(const XYZ&)));
-        }
+
+        sensorIfc = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::interface("orientationsensor"));
+        QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
+
+#else       
+        sensorIfc = const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::interface("rotationsensor"));
+        QObject::connect(sensorIfc, SIGNAL(dataAvailable(const XYZ&)), &dump, SLOT(dump(const XYZ&)));
+       
 #endif
         sensorIfc->start();
     }

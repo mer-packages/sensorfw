@@ -36,14 +36,12 @@
 
 int main(int argc, char **argv)
 {
-    bool control = false;
-
     QCoreApplication app(argc, argv);
     if (argc > 1 && !strcmp(argv[1], "-c")) {
         control = true;
     }
 
-    TestWindow t(control);
+    TestWindow t();
     
     return app.exec();
 };
