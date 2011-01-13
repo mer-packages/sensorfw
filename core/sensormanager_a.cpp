@@ -54,16 +54,10 @@ bool SensorManagerAdaptor::loadPlugin(const QString& name)
     return sensorManager()->loadPlugin(name);
 }
 
-int SensorManagerAdaptor::requestControlSensor(const QString &id, qint64 pid)
+int SensorManagerAdaptor::requestSensor(const QString &id, qint64 pid)
 {
-    sensordLog() << "Control sensor requested. Client PID: " << pid;
-    return sensorManager()->requestControlSensor(id);
-}
-
-int SensorManagerAdaptor::requestListenSensor(const QString &id, qint64 pid)
-{
-    sensordLog() << "Listen sensor requested. Client PID: " << pid;
-    return sensorManager()->requestListenSensor(id);
+    sensordLog() << "Sensor requested. Client PID: " << pid;
+    return sensorManager()->requestSensor(id);
 }
 
 bool SensorManagerAdaptor::releaseSensor(const QString &id, int sessionId, qint64 pid)

@@ -44,17 +44,15 @@ ProximitySensorChannelInterface::ProximitySensorChannelInterface(const QString& 
 
 const ProximitySensorChannelInterface* ProximitySensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, ProximitySensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const ProximitySensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const ProximitySensorChannelInterface*>(interface(id));
 }
 
 ProximitySensorChannelInterface* ProximitySensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+ProximitySensorChannelInterface* ProximitySensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, ProximitySensorChannelInterface::staticMetaObject.className() ) )
@@ -62,7 +60,7 @@ ProximitySensorChannelInterface* ProximitySensorChannelInterface::controlInterfa
         return 0;
     }
 
-    return dynamic_cast<ProximitySensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<ProximitySensorChannelInterface*>(sm.interface(id));
 }
 
 void ProximitySensorChannelInterface::dataReceived()

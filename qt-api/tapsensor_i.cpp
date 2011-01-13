@@ -47,23 +47,22 @@ TapSensorChannelInterface::TapSensorChannelInterface(const QString& path, int se
 
 const TapSensorChannelInterface* TapSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, TapSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-    return dynamic_cast<const TapSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const TapSensorChannelInterface*>(interface(id));
 }
 
 TapSensorChannelInterface* TapSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+TapSensorChannelInterface* TapSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, TapSensorChannelInterface::staticMetaObject.className() ) )
     {
         return 0;
     }
-    return dynamic_cast<TapSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<TapSensorChannelInterface*>(sm.interface(id));
 }
 
 void TapSensorChannelInterface::dataReceived()

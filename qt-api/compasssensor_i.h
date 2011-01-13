@@ -78,6 +78,14 @@ public:
      */
     static CompassSensorChannelInterface* controlInterface(const QString& id);
 
+    /**
+     * Request a interface to the sensor.
+     * @param id Identifier string for the sensor.
+     * @return Pointer to interface, or NULL on failure.
+     */
+    static CompassSensorChannelInterface* interface(const QString& id);
+
+
 public Q_SLOTS: // METHODS
     void dataReceived();
 

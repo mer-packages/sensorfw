@@ -55,18 +55,12 @@ public:
 
 #ifdef ORIENTATION
         if (control) {
-            sensorIfc = OrientationSensorChannelInterface::controlInterface("orientationsensor");
-            QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
-        } else {
-            sensorIfc = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
+            sensorIfc = const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::interface("orientationsensor"));
             QObject::connect(sensorIfc, SIGNAL(orientationChanged(const Unsigned&)), &dump, SLOT(dump(const Unsigned&)));
         }
 #else
         if (control) {
-            sensorIfc = RotationSensorChannelInterface::listenInterface("rotationsensor");
-            QObject::connect(sensorIfc, SIGNAL(dataAvailable(const XYZ&)), &dump, SLOT(dump(const XYZ&)));
-        } else {
-            sensorIfc = const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::listenInterface("rotationsensor"));
+            sensorIfc = const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::interface("rotationsensor"));
             QObject::connect(sensorIfc, SIGNAL(dataAvailable(const XYZ&)), &dump, SLOT(dump(const XYZ&)));
         }
 #endif

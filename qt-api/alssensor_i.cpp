@@ -43,17 +43,16 @@ ALSSensorChannelInterface::ALSSensorChannelInterface(const QString& path, int se
 
 const ALSSensorChannelInterface* ALSSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, ALSSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const ALSSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const ALSSensorChannelInterface*> (interface(id));
 }
 
 ALSSensorChannelInterface* ALSSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+
+ALSSensorChannelInterface* ALSSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, ALSSensorChannelInterface::staticMetaObject.className() ) )
@@ -61,7 +60,7 @@ ALSSensorChannelInterface* ALSSensorChannelInterface::controlInterface(const QSt
         return 0;
     }
 
-    return dynamic_cast<ALSSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<ALSSensorChannelInterface*>(sm.interface(id));
 }
 
 void ALSSensorChannelInterface::dataReceived()

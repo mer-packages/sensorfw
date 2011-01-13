@@ -81,6 +81,13 @@ public:
      */
     static AccelerometerSensorChannelInterface* controlInterface(const QString& id);
 
+    /**
+     * Request a interface to the sensor.
+     * @param id Identifier string for the sensor.
+     * @return Pointer to interface, or NULL on failure.
+     */
+    static AccelerometerSensorChannelInterface* interface(const QString& id);
+
 protected:
     virtual void connectNotify(const char* signal);
 

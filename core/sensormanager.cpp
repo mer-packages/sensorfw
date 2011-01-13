@@ -158,7 +158,7 @@ bool SensorManager::registerService()
     return true;
 }
 
-AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId, bool controllingSession)
+AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId)
 {
     clearError();
 
@@ -188,14 +188,9 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId
         Q_ASSERT( entryIt.value().sensor_ == 0 );
         entryIt.value().sensor_ = sensorChannel;
 
-        Q_ASSERT( entryIt.value().listenSessions_.empty() );
-        Q_ASSERT( entryIt.value().controllingSession_ == INVALID_SESSION );
-
-        if (controllingSession) {
-            entryIt.value().controllingSession_ = sessionId;
-        } else {
-            entryIt.value().listenSessions_.append(sessionId);
-        }
+        Q_ASSERT( entryIt.value().sessions_.empty() );
+    
+        entryIt.value().sessions_.append(sessionId);
 
         // ToDo: decide whether SensorManager should really be D-BUS aware
         bool ok = bus().registerObject(OBJECT_PATH + "/" + sensorChannel->id(), sensorChannel);
@@ -220,7 +215,7 @@ void SensorManager::removeSensor(const QString& id)
 {
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
 
-    Q_ASSERT( entryIt.value().listenSessions_.empty() && entryIt.value().controllingSession_ == INVALID_SESSION);
+    Q_ASSERT( entryIt.value().sessions_.empty());
 
     bus().unregisterObject(OBJECT_PATH + "/" + id);
     sensordLogD() << __PRETTY_FUNCTION__ << "object unregistered";
@@ -242,7 +237,7 @@ bool SensorManager::loadPlugin(const QString& name)
     return result;
 }
 
-int SensorManager::requestControlSensor(const QString& id)
+int SensorManager::requestSensor(const QString& id)
 {
     clearError();
 
@@ -251,53 +246,14 @@ int SensorManager::requestControlSensor(const QString& id)
 
     if ( entryIt == sensorInstanceMap_.end() )
     {
-        setError(SmIdNotRegistered, QString(tr("requested control sensor id '%1' not registered")).arg(cleanId));
-        return INVALID_SESSION;
-    }
-
-    if ( entryIt.value().controllingSession_ >= 0 )
-    {
-        setError(SmAlreadyUnderControl, tr("requested sensor already under control"));
+        setError(SmIdNotRegistered, QString(tr("requested sensor id '%1' not registered")).arg(cleanId));
         return INVALID_SESSION;
     }
 
     int sessionId = createNewSessionId();
-    if ( entryIt.value().listenSessions_.size() > 0 )
-    {
-        entryIt.value().controllingSession_ = sessionId;
-    }
-    else
+    if ( entryIt.value().sessions_.size() == 0 )
     {
         AbstractSensorChannel* sensor = addSensor(id, sessionId);
-        if ( sensor == NULL )
-        {
-            return INVALID_SESSION;
-        }
-    }
-
-    return sessionId;
-}
-
-int SensorManager::requestListenSensor(const QString& id)
-{
-    clearError();
-
-    QString cleanId = getCleanId(id);
-    QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(cleanId);
-    if ( entryIt == sensorInstanceMap_.end() )
-    {
-        setError( SmIdNotRegistered, QString(tr("requested listen sensor id '%1' not registered")).arg(cleanId) );
-        return INVALID_SESSION;
-    }
-
-    int sessionId = createNewSessionId();
-    if ( (entryIt.value().listenSessions_.size() > 0) || (entryIt.value().controllingSession_ >= 0) )
-    {
-        entryIt.value().listenSessions_.append(sessionId);
-    }
-    else
-    {
-        AbstractSensorChannel* sensor = addSensor(id, sessionId, false);
         if ( sensor == NULL )
         {
             return INVALID_SESSION;
@@ -325,7 +281,7 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     entryIt.value().sensor_->removeIntervalRequest(sessionId);
     entryIt.value().sensor_->removeDataRangeRequest(sessionId);
 
-    if ( (entryIt.value().controllingSession_ < 0) && (entryIt.value().listenSessions_.empty()))
+    if (entryIt.value().sessions_.empty())
     {
         setError(SmNotInstantiated, tr("sensor has not been instantiated, no session to release"));
         return false;
@@ -333,43 +289,24 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
     bool returnValue = false;
     // TODO: simplify this condition
-    if ( entryIt.value().controllingSession_ >= 0 && entryIt.value().controllingSession_ == sessionId )
+ 
+    // sessionId does not correspond to a request
+    if ( entryIt.value().sessions_.contains( sessionId ) )
     {
-        // sessionId corresponds to a control request
-        if ( entryIt.value().listenSessions_.empty() )
+        // sessionId does correspond to a request
+        entryIt.value().sessions_.removeAll( sessionId );
+        
+        if ( entryIt.value().sessions_.empty() )
         {
-            // no listen sessions, sensor can be removed
-            entryIt.value().controllingSession_ = INVALID_SESSION;
             removeSensor(id);
         }
-        else
-        {
-            // listen sessions active, only remove control
-            entryIt.value().controllingSession_ = INVALID_SESSION;
-        }
-
+        
         returnValue = true;
     }
     else
     {
-        // sessionId does not correspond to a control request
-        if ( entryIt.value().listenSessions_.contains( sessionId ) )
-        {
-            // sessionId does correspond to a listen request
-            entryIt.value().listenSessions_.removeAll( sessionId );
-
-            if ( entryIt.value().listenSessions_.empty() && entryIt.value().controllingSession_ == INVALID_SESSION )
-            {
-                removeSensor(id);
-            }
-
-            returnValue = true;
-        }
-        else
-        {
-            // sessionId does not correspond to a listen request
-            setError( SmNotInstantiated, tr("invalid sessionId, no session to release") );
-        }
+        // sessionId does not correspond to a request
+        setError( SmNotInstantiated, tr("invalid sessionId, no session to release") );
     }
 
     // TODO: Release the socket, bind to single place
@@ -545,8 +482,7 @@ bool SensorManager::write(int id, const void* source, int size)
 void SensorManager::lostClient(int sessionId)
 {
     for(QMap<QString, SensorInstanceEntry>::iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it) {
-        if (it.value().controllingSession_ == sessionId ||
-            it.value().listenSessions_.contains(sessionId)) {
+        if (it.value().sessions_.contains(sessionId)) {
             sensordLogD() << "[SensorManager]: Lost session " << sessionId << " detected as " << it.key();
 
             sensordLogD() << "[SensorManager]: Stopping sessionId " << sessionId;
@@ -613,20 +549,13 @@ void SensorManager::printStatus(QStringList& output) const
 
     output.append("  Logical sensors:\n");
     for (QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it) {
-        bool control = true;
-        if (it.value().controllingSession_ <= 0) {
-            control = false;
-        }
+ 
         QString str;
         str.append(QString("    %1 [").arg(it.value().type_));
-        if(control)
-            str.append(QString("Control (PID: %1) + ").arg(socketToPid(it.value().controllingSession_)));
+        if(it.value().sessions_.size())
+            str.append(QString("%1 session(s), PID(s): %2]").arg(it.value().sessions_.size()).arg(socketToPid(it.value().sessions_)));
         else
-            str.append("No control, ");
-        if(it.value().listenSessions_.size())
-            str.append(QString("%1 listen session(s), PID(s): %2]").arg(it.value().listenSessions_.size()).arg(socketToPid(it.value().listenSessions_)));
-        else
-            str.append("No listen sessions]");
+            str.append("No sessions]");
         str.append(QString(". %1\n").arg((it.value().sensor_ && it.value().sensor_->running()) ? "Running" : "Stopped"));
         output.append(str);
     }
@@ -675,8 +604,7 @@ void SensorManager::print() const
     {
         sensordLogD() << "Registry entry id  =" << id;
 
-        sensordLogD() << "controllingSession =" << sensorInstanceMap_[id].controllingSession_;
-        sensordLogD() << "listenSessions     =" << sensorInstanceMap_[id].listenSessions_;
+        sensordLogD() << "sessions     =" << sensorInstanceMap_[id].sessions_;
         sensordLogD() << "sensor             =" << sensorInstanceMap_[id].sensor_;
         sensordLogD() << "type               =" << sensorInstanceMap_[id].type_ << endl;
     }

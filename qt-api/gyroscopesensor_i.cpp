@@ -45,17 +45,15 @@ GyroscopeSensorChannelInterface::GyroscopeSensorChannelInterface(const QString &
 
 const GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, GyroscopeSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const GyroscopeSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const GyroscopeSensorChannelInterface*>(interface(id));
 }
 
 GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, GyroscopeSensorChannelInterface::staticMetaObject.className() ) )
@@ -63,7 +61,7 @@ GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::controlInterfa
         return 0;
     }
 
-    return dynamic_cast<GyroscopeSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<GyroscopeSensorChannelInterface*>(sm.interface(id));
 }
 
 void GyroscopeSensorChannelInterface::dataReceived()

@@ -69,7 +69,7 @@ StabilityBin::~StabilityBin()
 void StabilityBin::startRun()
 {
     // Get unique sessionId for this Bin.
-    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
+    sessionId = SensorManager::instance().requestSensor("contextsensor");
     if (sessionId == INVALID_SESSION)
     {
         sensordLogC() << "Failed to get unique id for stability detection.";

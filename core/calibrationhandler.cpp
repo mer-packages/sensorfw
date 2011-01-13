@@ -63,12 +63,11 @@ bool CalibrationHandler::initiateSession()
         return false;
     }
 
-    m_sessionId = sm.requestListenSensor(m_sensorName);
+    m_sessionId = sm.requestSensor(m_sensorName);
     if (m_sessionId <= 0)
     {
-        sensordLogW() << "Failed to get listen session for magnetometersensor.";
-    }
-    else
+        sensordLogW() << "Failed to get session for magnetometersensor.";
+    } else
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
     }

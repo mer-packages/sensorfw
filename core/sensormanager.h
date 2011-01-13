@@ -45,11 +45,10 @@ class MceWatcher;
 
 class SensorInstanceEntry {
 public:
-    SensorInstanceEntry(const QString& type = "none") : controllingSession_(-1), sensor_(0), type_(type) {}
+    SensorInstanceEntry(const QString& type = "none") : sensor_(0), type_(type) {}
     ~SensorInstanceEntry() {}
 
-    int                     controllingSession_;
-    QList<int>              listenSessions_;
+    QList<int>              sessions_;
     AbstractSensorChannel*  sensor_;
     QString                 type_;
 };
@@ -204,8 +203,7 @@ private Q_SLOTS:
 public Q_SLOTS:
     bool loadPlugin(const QString& name);
 
-    int requestControlSensor(const QString& id);
-    int requestListenSensor(const QString& id);
+    int requestSensor(const QString& id);
     bool releaseSensor(const QString& id, int sessionId);
     const SensorInstanceEntry getSensorInstance(const QString& id) const { return sensorInstanceMap_.value(id); }
     SocketHandler& socketHandler() const { return *socketHandler_; };
@@ -223,7 +221,7 @@ protected:
     void setError(SensorManagerError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SmNoError; errorString_.clear(); }
 
-    AbstractSensorChannel* addSensor(const QString& id, int sessionId, bool controllingSession = true);
+    AbstractSensorChannel* addSensor(const QString& id, int sessionId);
     void removeSensor(const QString& id);
 
     QMap<QString, SensorChannelFactoryMethod>      sensorFactoryMap_;

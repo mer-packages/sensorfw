@@ -86,7 +86,7 @@ void PowerManagementTest::testIntervalStartStop()
 {
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     // Screen orientation keeps acc open, the 'default' may change.
@@ -99,7 +99,6 @@ void PowerManagementTest::testIntervalStartStop()
     QVERIFY(readPollInterval(accPollFile) == originalInterval);
 
     accOne->start();
-
     QVERIFY(readPollInterval(accPollFile) == testInterval);
 
     accOne->stop();
@@ -113,10 +112,10 @@ void PowerManagementTest::testIntervalRace()
 {
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
-    AccelerometerSensorChannelInterface* accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+    AccelerometerSensorChannelInterface* accTwo = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accTwo != NULL && accTwo->isValid(), accTwo ? accTwo->errorString().toLatin1() : "Null pointer");
 
     // Screen orientation keeps acc open, the 'default' may change.
@@ -169,7 +168,7 @@ void PowerManagementTest::testScreenBlank1()
     // Unblank to make sure we notice going into blank
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper, SLOT(dataAvailable(const XYZ&)));
@@ -212,7 +211,7 @@ void PowerManagementTest::testScreenBlank2()
     // Unblank to make sure we notice going into blank
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper, SLOT(dataAvailable(const XYZ&)));
@@ -257,7 +256,7 @@ void PowerManagementTest::testScreenBlank3()
     UNBLANK_SCREEN;
     QTest::qWait(1000);
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper, SLOT(dataAvailable(const XYZ&)));
@@ -298,7 +297,7 @@ void PowerManagementTest::testScreenBlank4()
     UNBLANK_SCREEN;
     QTest::qWait(1000);
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper, SLOT(dataAvailable(const XYZ&)));

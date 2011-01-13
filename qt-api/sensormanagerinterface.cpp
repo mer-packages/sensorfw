@@ -56,36 +56,7 @@ bool SensorManagerInterface::registeredAndCorrectClassName(const QString& id, co
     return ( sensorInterfaceMap_.contains(cleanId) ) && ( sensorInterfaceMap_[cleanId].type == className );
 }
 
-const QDBusAbstractInterface* SensorManagerInterface::listenInterface(const QString& id)
-{
-    if ( !sensorInterfaceMap_.contains(id) )
-    {
-        qDebug() << "Requested sensor id " << id << "interface not known";
-        return 0;
-    }
-
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    QDBusAbstractInterface* ifc = 0;
-    int sessionId = sm.requestListenSensor(id);
-    if ( sessionId >= 0 ) // sensor is available
-    {
-        // TODO: who owns this interface and how to deal with derived Sensors?
-        // TODO: make a real distinction between control and listening
-        qDebug() << "New listen sensor" << id << "interface created with session id" << sessionId << "...";
-
-        // TODO: uses both id for key and as parameter...
-        QString cleanId = getCleanId(id);
-        ifc = sensorInterfaceMap_[cleanId].sensorInterfaceFactory(cleanId, sessionId);
-    }
-    else
-    {
-        qDebug( "Request for listen interface not granted..." );
-    }
-
-    return ifc;
-}
-
-QDBusAbstractInterface* SensorManagerInterface::controlInterface(const QString& id)
+QDBusAbstractInterface* SensorManagerInterface::interface(const QString& id)
 {
     if ( !sensorInterfaceMap_.contains(id) )
     {
@@ -94,13 +65,12 @@ QDBusAbstractInterface* SensorManagerInterface::controlInterface(const QString& 
     }
 
     // TODO: who owns this interface and how to deal with derived Sensors?
-    // TODO: make a real distinction between control and listening
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QDBusAbstractInterface* ifc = 0;
-    int sessionId = sm.requestControlSensor(id);
+    int sessionId = sm.requestSensor(id);
     if ( sessionId >= 0 ) // sensor is available
     {
-        qDebug() << "New control sensor" << id << "interface created with session id" << sessionId << "...";
+        qDebug() << "New sensor" << id << "interface created with session id" << sessionId << "...";
 
         // TODO: uses both id for key and as parameter...
         QString cleanId = getCleanId(id);
@@ -108,7 +78,7 @@ QDBusAbstractInterface* SensorManagerInterface::controlInterface(const QString& 
     }
     else
     {
-        qDebug( "Request for control interface not granted..." );
+        qDebug( "Request for interface not granted..." );
     }
 
     return ifc;

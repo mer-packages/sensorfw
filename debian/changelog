@@ -6,6 +6,9 @@ sensord (0.6.35) maverick; urgency=low
 
 sensord (0.6.34) unstable; urgency=low
 
+  [Lihan Guo]
+  * Combined listen and control session.
+
   [Antti Virtanen]
   * propertyChanged signals aren't anymore sent through dbus to apps since qmSystem nor QtMob Sensors API supports property notifications. Fixes: NB#216173.
   * Refactored ALSAdaptorAscii: removed unnecessary members, fixed missing initializations and simplified the constructor.

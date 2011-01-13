@@ -39,7 +39,7 @@ void ContextPlugin::Register(class Loader&)
 
 void ContextPlugin::Init(class Loader&)
 {
-    sessionId = SensorManager::instance().requestControlSensor("contextsensor");
+    sessionId = SensorManager::instance().requestSensor("contextsensor");
 }
 
 QStringList ContextPlugin::Dependencies() {

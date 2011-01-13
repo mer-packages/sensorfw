@@ -66,22 +66,13 @@ QDBusReply<bool> LocalSensorManagerInterface::loadPlugin(const QString& name)
     return callWithArgumentList(QDBus::Block, QLatin1String("loadPlugin"), argumentList);
 }
 
-QDBusReply<int> LocalSensorManagerInterface::requestControlSensor(const QString& id)
-{
-    QList<QVariant> argumentList;
-    qint64 pid = QCoreApplication::applicationPid();
-    argumentList << qVariantFromValue(id);
-    argumentList << qVariantFromValue(pid);
-    return callWithArgumentList(QDBus::Block, QLatin1String("requestControlSensor"), argumentList);
-}
-
-QDBusReply<int> LocalSensorManagerInterface::requestListenSensor(const QString& id)
+QDBusReply<int> LocalSensorManagerInterface::requestSensor(const QString& id)
 {
     qint64 pid = QCoreApplication::applicationPid();
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(id);
     argumentList << qVariantFromValue(pid);
-    return callWithArgumentList(QDBus::Block, QLatin1String("requestListenSensor"), argumentList);
+    return callWithArgumentList(QDBus::Block, QLatin1String("requestSensor"), argumentList);
 }
 
 QDBusReply<bool> LocalSensorManagerInterface::releaseSensor(const QString& id, int sessionId)

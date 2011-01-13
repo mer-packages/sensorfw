@@ -82,6 +82,13 @@ public:
      */
     static GyroscopeSensorChannelInterface* controlInterface(const QString& id);
 
+    /**
+     * Request a interface to the sensor.
+     * @param id Identifier string for the sensor.
+     * @return Pointer to interface, or NULL on failure.
+     */
+    static GyroscopeSensorChannelInterface* interface(const QString& id);
+
 protected:
     virtual void connectNotify(const char* signal);
 

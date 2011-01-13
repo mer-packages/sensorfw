@@ -43,25 +43,23 @@ AccelerometerSensorChannelInterface::AccelerometerSensorChannelInterface(const Q
 
 const AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::listenInterface(const QString& id)
 {
+    return dynamic_cast<const AccelerometerSensorChannelInterface*> (interface(id));
+}
+
+AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::controlInterface(const QString& id)
+{
+   return interface(id);
+}
+
+AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::interface(const QString& id)
+{
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     // ToDo: can conversion from class name to type string be automated?
     if ( !sm.registeredAndCorrectClassName( id, AccelerometerSensorChannelInterface::staticMetaObject.className() ) )
     {
         return 0;
     }
-
-    return dynamic_cast<const AccelerometerSensorChannelInterface*>(sm.listenInterface(id));
-}
-
-AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::controlInterface(const QString& id)
-{
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    if ( !sm.registeredAndCorrectClassName( id, AccelerometerSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<AccelerometerSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<AccelerometerSensorChannelInterface*>(sm.interface(id));
 }
 
 void AccelerometerSensorChannelInterface::dataReceived()
