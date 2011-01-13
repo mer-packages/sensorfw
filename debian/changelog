@@ -1,3 +1,9 @@
+sensord (0.6.35) maverick; urgency=low
+
+  * Seperate the old sensord fold to core and new sensord folders.
+
+ -- shenghua <ext-shenghua.1.liu@nokia>  Thu, 13 Jan 2011 13:29:01 +0200
+
 sensord (0.6.34) unstable; urgency=low
 
   [Antti Virtanen]
