@@ -25,7 +25,7 @@
 
 #include "compassbin.h"
 #include "contextplugin.h"
-#include "sensord/sensormanager.h"
+#include "sensormanager.h"
 
 CompassBin::CompassBin(ContextProvider::Service& s, bool pluginValid):
     headingProperty(s, "Location.Heading"),
@@ -55,7 +55,7 @@ CompassBin::~CompassBin() {}
 void CompassBin::startRun()
 {
     // Get unique sessionId for this Bin.
-    sessionId = SensorManager::instance().requestListenSensor("contextsensor");
+    sessionId = SensorManager::instance().requestSensor("contextsensor");
     if (sessionId == INVALID_SESSION)
     {
         sensordLogC() << "Failed to get unique id for compass info via context.";

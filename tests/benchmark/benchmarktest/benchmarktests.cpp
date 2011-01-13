@@ -82,10 +82,10 @@ void BenchmarkTest::testThroughput()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    ALSSensorChannelInterface* sensorIfc = const_cast<ALSSensorChannelInterface*>(ALSSensorChannelInterface::listenInterface(sensorName));
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get listen session");
+    ALSSensorChannelInterface* sensorIfc = const_cast<ALSSensorChannelInterface*>(ALSSensorChannelInterface::interface(sensorName));
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    qDebug() << "Listening to sensor data for" << DELAY << "seconds";
+    qDebug() << "Connecting to sensor data for" << DELAY << "seconds";
 
     // get mem
     signalDump.recordMemUsage(sensordPid);

@@ -26,8 +26,8 @@
 #ifndef FAKEADAPTOR_H
 #define FAKEADAPTOR_H
 
-#include "sensord/deviceadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptor.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 #include <QTime>
 #include <QThread>

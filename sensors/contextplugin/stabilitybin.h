@@ -27,9 +27,9 @@
 #ifndef STABILITY_BIN
 #define STABILITY_BIN
 
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/abstractchain.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "abstractchain.h"
 #include "datatypes/orientationdata.h"
 
 #include "normalizerfilter.h"

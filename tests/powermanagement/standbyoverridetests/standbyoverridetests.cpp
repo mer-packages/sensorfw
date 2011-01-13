@@ -77,10 +77,10 @@ void StandbyOverrideTest::testStandbyOverride()
 
     UNBLANK_SCREEN;
 
-    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
+    AccelerometerSensorChannelInterface* accOne = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accOne != NULL && accOne->isValid(), accOne ? accOne->errorString().toLatin1() : "Null pointer");
 
-    AccelerometerSensorChannelInterface* accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+    AccelerometerSensorChannelInterface* accTwo = AccelerometerSensorChannelInterface::interface("accelerometersensor");
     QVERIFY2(accTwo != NULL && accTwo->isValid(), accTwo ? accTwo->errorString().toLatin1() : "Null pointer");
 
     connect(accOne, SIGNAL(dataAvailable(const XYZ&)), &helper1, SLOT(dataAvailable(const XYZ&)));

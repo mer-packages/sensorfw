@@ -38,7 +38,7 @@ void ALSPlugin::Register(class Loader&)
 
 void ALSPlugin::Init(class Loader& l)
 {
-    SensorManager::instance().requestControlSensor("alssensor");
+    SensorManager::instance().requestSensor("alssensor");
 }
 
 QStringList ALSPlugin::Dependencies() {

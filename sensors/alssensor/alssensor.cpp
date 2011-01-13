@@ -25,9 +25,9 @@
 
 #include "alssensor.h"
 
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
 #include "datatypes/orientation.h"
 
 #ifdef PROVIDE_CONTEXT_INFO

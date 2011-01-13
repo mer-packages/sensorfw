@@ -31,11 +31,11 @@
 
 #include <typeinfo>
 
-#include <sensord/sensormanager.h>
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/filter.h"
-#include "sensord/dbusemitter.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "filter.h"
+#include "dbusemitter.h"
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
 #include "orientationinterpreter.h"
@@ -43,7 +43,7 @@
 #include "rotationfilter.h"
 #include "filtertests.h"
 #include "timedunsigned.h"
-#include "sensord/config.h"
+#include "config.h"
 
 #define WAIT_ROUND_DELAY 100
 #define MAX_WAIT_ROUNDS 5

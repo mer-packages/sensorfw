@@ -49,8 +49,7 @@ public:
     void registerSensorInterface(const QString& sensorName);
 
     // TODO: maybe deal with SensorInterface or something less abstract here?
-    const QDBusAbstractInterface* listenInterface(const QString& id);
-    QDBusAbstractInterface* controlInterface(const QString& id);
+    QDBusAbstractInterface* interface(const QString& id);
     bool releaseInterface(const QString& id, int sessionId);
 
     bool registeredAndCorrectClassName(const QString& id, const QString& className ) const;

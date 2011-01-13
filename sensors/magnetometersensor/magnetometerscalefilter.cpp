@@ -25,7 +25,7 @@
  */
 
 #include "magnetometerscalefilter.h"
-#include "sensord/config.h"
+#include "config.h"
 
 MagnetometerScaleFilter::MagnetometerScaleFilter() :
         Filter<CalibratedMagneticFieldData, MagnetometerScaleFilter, CalibratedMagneticFieldData>(this, &MagnetometerScaleFilter::filter)

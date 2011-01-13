@@ -25,7 +25,7 @@
 #ifndef CUTTERFILTER_H
 #define CUTTERFILTER_H
 
-#include "sensord/filter.h"
+#include "filter.h"
 
 class CutterFilter : public QObject, public Filter<double, CutterFilter, double>
 {

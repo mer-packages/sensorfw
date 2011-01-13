@@ -27,8 +27,8 @@
 #define COORDINATEALIGNFILTER_H
 
 #include "datatypes/orientationdata.h"
-#include "sensord/filter.h"
-#include "sensord/filterproperty.h"
+#include "filter.h"
+#include "filterproperty.h"
 
 /**
  * TMatrix holds a transformation matrix.

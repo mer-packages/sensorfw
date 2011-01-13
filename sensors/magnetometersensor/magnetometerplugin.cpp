@@ -27,7 +27,7 @@
 #include "magnetometersensor.h"
 #include "magnetometerscalefilter.h"
 #include "sensormanager.h"
-#include "sensord/logging.h"
+#include "logging.h"
 
 void MagnetometerPlugin::Register(class Loader&)
 {

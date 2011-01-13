@@ -26,10 +26,10 @@
 
 #include "magnetometersensor.h"
 
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/config.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "config.h"
 
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),

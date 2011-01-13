@@ -31,7 +31,7 @@
 #include "deviceadaptor.h"
 #include "abstractsensor.h"
 #include "alssensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dbusemitter.h"
 #include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
 

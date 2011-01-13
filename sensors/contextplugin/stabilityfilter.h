@@ -25,7 +25,7 @@
 #ifndef STABILITYFILTER_H
 #define STABILITYFILTER_H
 
-#include "sensord/filter.h"
+#include "filter.h"
 
 #include <ContextProvider>
 

@@ -41,7 +41,7 @@
 #include "adaptors/kbslideradaptor/kbslideradaptor.h"
 #include "adaptors/proximityadaptor/proximityadaptor.h"
 
-#include "sensord/config.h"
+#include "config.h"
 
 void AdaptorTest::initTestCase()
 {

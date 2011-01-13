@@ -29,7 +29,7 @@
 #include "sensormanager.h"
 #include "logging.h"
 #include "abstractsensor.h"
-#include "sensord/config.h"
+#include "config.h"
 
 CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
     m_sensor(NULL),
@@ -63,12 +63,11 @@ bool CalibrationHandler::initiateSession()
         return false;
     }
 
-    m_sessionId = sm.requestListenSensor(m_sensorName);
+    m_sessionId = sm.requestSensor(m_sensorName);
     if (m_sessionId <= 0)
     {
-        sensordLogW() << "Failed to get listen session for magnetometersensor.";
-    }
-    else
+        sensordLogW() << "Failed to get session for magnetometersensor.";
+    } else
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
     }

@@ -23,8 +23,8 @@
 */
 
 #include "stabilityfilter.h"
-#include "sensord/logging.h"
-#include "sensord/config.h"
+#include "logging.h"
+#include "config.h"
 
 const int StabilityFilter::defaultTimeout = 60; // seconds
 

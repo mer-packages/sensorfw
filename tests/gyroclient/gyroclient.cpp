@@ -39,7 +39,7 @@ GyroClient::GyroClient()
     sm.loadPlugin("gyroscopesensor");
     sm.registerSensorInterface<GyroscopeSensorChannelInterface>("gyroscopesensor");
 
-    m_sensorIfc = GyroscopeSensorChannelInterface::controlInterface(sensorName);
+    m_sensorIfc = GyroscopeSensorChannelInterface::interface(sensorName);
     Q_ASSERT (m_sensorIfc && m_sensorIfc->isValid());
     reply = m_sensorIfc->start();
     Q_ASSERT (reply.isValid());

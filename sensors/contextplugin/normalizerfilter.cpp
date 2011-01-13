@@ -24,7 +24,7 @@
 
 #include "normalizerfilter.h"
 #include "genericdata.h"
-#include "sensord/logging.h"
+#include "logging.h"
 #include <math.h>
 
 NormalizerFilter::NormalizerFilter() :

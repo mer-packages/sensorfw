@@ -27,9 +27,9 @@
 
 #include "chainstest.h"
 
-#include <sensord/sensormanager.h>
-#include <sensord/abstractchain.h>
-#include <sensord/config.h>
+#include "sensormanager.h"
+#include "abstractchain.h"
+#include "config.h"
 
 void ChainTest::initTestCase()
 {

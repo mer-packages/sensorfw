@@ -8,28 +8,7 @@ TEMPLATE = app
 TARGET = sensoradaptors-test
 
 HEADERS += adaptortest.h \
-    ../../sensord/producer.h \
-    ../../sensord/consumer.h \
-    ../../sensord/bin.h \
-    ../../sensord/ringbuffer.h \
-    ../../sensord/filter.h \
-    ../../sensord/source.h \
-    ../../sensord/deviceadaptor.h \
-    ../../sensord/sensormanager.h \
-    ../../sensord/sensormanager_a.h \
-    ../../sensord/loader.h \
-    ../../sensord/plugin.h \
-    ../../sensord/filterproperty.h \
-    ../../sensord/abstractsensor.h \
-    ../../sensord/logging.h \
-    ../../sensord/config.h \
-    ../../sensord/parameterparser.h \
-    ../../sensord/sysfsadaptor.h \
-    ../../sensord/inputdevadaptor.h \
-    ../../datatypes/utils.h \
-    ../../sensord/sockethandler.h \
-    ../../sensord/nodebase.h \
-    ../../sensord/calibrationhandler.h \
+       ../../datatypes/utils.h \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.h \
     ../../adaptors/magnetometeradaptor/magnetometeradaptor.h \
     ../../adaptors/alsadaptor/alsadaptor.h \
@@ -39,28 +18,7 @@ HEADERS += adaptortest.h \
     ../../adaptors/proximityadaptor/proximityadaptor.h
 
 SOURCES += adaptortest.cpp \
-    ../../sensord/producer.cpp \
-    ../../sensord/consumer.cpp \
-    ../../sensord/bin.cpp \
-    ../../sensord/ringbuffer.cpp \
-    ../../sensord/filter.cpp \
-    ../../sensord/source.cpp \
-    ../../sensord/deviceadaptor.cpp \
-    ../../sensord/sensormanager.cpp \
-    ../../sensord/sensormanager_a.cpp \
-    ../../sensord/loader.cpp \
-    ../../sensord/plugin.cpp \
-    ../../sensord/filterproperty.cpp \
-    ../../sensord/abstractsensor.cpp \
-    ../../sensord/logging.cpp \
-    ../../sensord/config.cpp \
-    ../../sensord/parameterparser.cpp \
-    ../../sensord/sysfsadaptor.cpp \
-    ../../sensord/inputdevadaptor.cpp \
     ../../datatypes/utils.cpp \
-    ../../sensord/sockethandler.cpp \
-    ../../sensord/nodebase.cpp \
-    ../../sensord/calibrationhandler.cpp \
     ../../adaptors/accelerometeradaptor/accelerometeradaptor.cpp \
     ../../adaptors/magnetometeradaptor/magnetometeradaptor.cpp \
     ../../adaptors/alsadaptor/alsadaptor.cpp \
@@ -71,7 +29,7 @@ SOURCES += adaptortest.cpp \
 
 INCLUDEPATH += ../.. \
     ../../include \
-    ../../sensord \
+    ../../core \
     ../../datatypes \
     ../../filters \
     ../../adaptors/sysfsadaptor \
@@ -82,4 +40,6 @@ INCLUDEPATH += ../.. \
     ../../adaptors/accelerometeradaptor \
     ../../adaptors/kbslideradaptor \
     ../../adaptors/proximityadaptor
+
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
     

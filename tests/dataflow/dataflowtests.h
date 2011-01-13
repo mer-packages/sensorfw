@@ -27,7 +27,7 @@
 #define DATAFLOWTESTS_H
 
 #include <QTest>
-#include <sensord/sensormanager.h>
+#include "sensormanager.h"
 
 class DataFlowTest : public QObject
 {

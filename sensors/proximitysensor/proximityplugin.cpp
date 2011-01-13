@@ -26,7 +26,7 @@
 #include "proximityplugin.h"
 #include "proximitysensor.h"
 #include "sensormanager.h"
-#include "sensord/logging.h"
+#include "logging.h"
 
 void ProximityPlugin::Register(class Loader&)
 {

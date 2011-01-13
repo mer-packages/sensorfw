@@ -55,8 +55,7 @@ private: // PROPERTIES
 public Q_SLOTS: // METHODS
     bool loadPlugin(const QString& name);
 
-    int  requestControlSensor(const QString &id, qint64 pid);
-    int  requestListenSensor(const QString &id, qint64 pid);
+    int  requestSensor(const QString &id, qint64 pid);
     bool releaseSensor(const QString &id, int sessionId, qint64 pid);
 
 Q_SIGNALS: // SIGNALS

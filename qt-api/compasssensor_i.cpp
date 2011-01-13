@@ -41,17 +41,16 @@ CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path
 
 const CompassSensorChannelInterface* CompassSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, CompassSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const CompassSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const CompassSensorChannelInterface*>(interface(id));
 }
 
 CompassSensorChannelInterface* CompassSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+
+CompassSensorChannelInterface* CompassSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, CompassSensorChannelInterface::staticMetaObject.className() ) )
@@ -59,7 +58,7 @@ CompassSensorChannelInterface* CompassSensorChannelInterface::controlInterface(c
         return 0;
     }
 
-    return dynamic_cast<CompassSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<CompassSensorChannelInterface*>(sm.interface(id));
 }
 
 void CompassSensorChannelInterface::dataReceived()

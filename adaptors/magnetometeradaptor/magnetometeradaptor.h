@@ -27,8 +27,8 @@
 #ifndef MAGNETOMETERADAPTOR_H
 #define MAGNETOMETERADAPTOR_H
 
-#include "sensord/sysfsadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "sysfsadaptor.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/genericdata.h"
 #include <QTime>
 #include <QString>

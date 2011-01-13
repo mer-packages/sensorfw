@@ -88,9 +88,9 @@ void MetaDataTest::testDescription()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     QString desc = sensorIfc->description();
 
@@ -107,9 +107,9 @@ void MetaDataTest::testAvailableRanges()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available data ranges
     QList<DataRange> dataRangeList = sensorIfc->getAvailableDataRanges();
@@ -129,9 +129,9 @@ void MetaDataTest::testGetCurrentRange()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available data ranges
     QList<DataRange> dataRangeList = sensorIfc->getAvailableDataRanges();
@@ -171,9 +171,9 @@ void MetaDataTest::testChangeNotifications()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available data ranges
     QList<DataRange> dataRangeList = sensorIfc->getAvailableDataRanges();
@@ -208,9 +208,9 @@ void MetaDataTest::testAvailableIntervals()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available intervals
     QList<DataRange> intervalList = sensorIfc->getAvailableIntervals();
@@ -226,9 +226,9 @@ void MetaDataTest::testAvailableBufferIntervals()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available intervals
     IntegerRangeList intervalList = sensorIfc->getAvailableBufferIntervals();
@@ -244,9 +244,9 @@ void MetaDataTest::testAvailableBufferSizes()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Request list of available intervals
     IntegerRangeList sizeList = sensorIfc->getAvailableBufferSizes();
@@ -263,28 +263,28 @@ void MetaDataTest::printMetaData()
 
     // Initiate sensors
     sensorNameList << "accelerometer";
-    sensorList << const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+    sensorList << const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::interface("accelerometersensor"));
 
     sensorNameList << "magnetometer";
-    sensorList << const_cast<MagnetometerSensorChannelInterface*>(MagnetometerSensorChannelInterface::listenInterface("magnetometersensor"));
+    sensorList << const_cast<MagnetometerSensorChannelInterface*>(MagnetometerSensorChannelInterface::interface("magnetometersensor"));
 
     sensorNameList << "als";
-    sensorList << const_cast<ALSSensorChannelInterface*>(ALSSensorChannelInterface::listenInterface("alssensor"));
+    sensorList << const_cast<ALSSensorChannelInterface*>(ALSSensorChannelInterface::interface("alssensor"));
 
     sensorNameList << "proximity";
-    sensorList << const_cast<ProximitySensorChannelInterface*>(ProximitySensorChannelInterface::listenInterface("proximitysensor"));
+    sensorList << const_cast<ProximitySensorChannelInterface*>(ProximitySensorChannelInterface::interface("proximitysensor"));
 
     sensorNameList << "orientation";
-    sensorList << const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::listenInterface("orientationsensor"));
+    sensorList << const_cast<OrientationSensorChannelInterface*>(OrientationSensorChannelInterface::interface("orientationsensor"));
 
     sensorNameList << "tap";
-    sensorList << const_cast<TapSensorChannelInterface*>(TapSensorChannelInterface::listenInterface("tapsensor"));
+    sensorList << const_cast<TapSensorChannelInterface*>(TapSensorChannelInterface::interface("tapsensor"));
 
     sensorNameList << "compass";
-    sensorList << const_cast<CompassSensorChannelInterface*>(CompassSensorChannelInterface::listenInterface("compasssensor"));
+    sensorList << const_cast<CompassSensorChannelInterface*>(CompassSensorChannelInterface::interface("compasssensor"));
 
     sensorNameList << "rotation";
-    sensorList << const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::listenInterface("rotationsensor"));
+    sensorList << const_cast<RotationSensorChannelInterface*>(RotationSensorChannelInterface::interface("rotationsensor"));
 
     AbstractSensorChannelInterface* sensor;
     while (sensorList.size() > 0)

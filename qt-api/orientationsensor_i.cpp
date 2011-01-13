@@ -42,17 +42,15 @@ OrientationSensorChannelInterface::OrientationSensorChannelInterface(const QStri
 
 const OrientationSensorChannelInterface* OrientationSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, OrientationSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const OrientationSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const OrientationSensorChannelInterface*>(interface(id));
 }
 
 OrientationSensorChannelInterface* OrientationSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+OrientationSensorChannelInterface* OrientationSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, OrientationSensorChannelInterface::staticMetaObject.className() ) )
@@ -60,7 +58,7 @@ OrientationSensorChannelInterface* OrientationSensorChannelInterface::controlInt
         return 0;
     }
 
-    return dynamic_cast<OrientationSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<OrientationSensorChannelInterface*>(sm.interface(id));
 }
 
 void OrientationSensorChannelInterface::dataReceived()

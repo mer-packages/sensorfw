@@ -28,8 +28,8 @@
 #include "proximityadaptor.h"
 #include <errno.h>
 #include "datatypes/utils.h"
-#include "sensord/logging.h"
-#include "sensord/config.h"
+#include "logging.h"
+#include "config.h"
 #include <QFile>
 #include <linux/types.h>
 

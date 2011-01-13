@@ -32,7 +32,7 @@
 #define PROXIMITYADAPTOR_ASCII_H
 
 #include "sysfsadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 
 class ProximityAdaptorAscii : public SysfsAdaptor

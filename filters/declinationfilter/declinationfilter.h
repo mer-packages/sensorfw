@@ -28,8 +28,8 @@
 
 #include <QObject>
 #include "orientationdata.h"
-#include "sensord/filter.h"
-#include "sensord/filterproperty.h"
+#include "filter.h"
+#include "filterproperty.h"
 
 /**
  * @brief Filter for calculating declination correction for Compass data..

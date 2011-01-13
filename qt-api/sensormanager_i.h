@@ -58,9 +58,7 @@ public:
 public Q_SLOTS: // METHODS
     QDBusReply<bool> loadPlugin(const QString& name);
 
-    QDBusReply<int> requestControlSensor(const QString& id);
-
-    QDBusReply<int> requestListenSensor(const QString& id);
+    QDBusReply<int> requestSensor(const QString& id);
 
     QDBusReply<bool> releaseSensor(const QString& id, int sessionId);
 

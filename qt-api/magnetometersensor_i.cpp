@@ -43,17 +43,16 @@ MagnetometerSensorChannelInterface::MagnetometerSensorChannelInterface(const QSt
 
 const MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::listenInterface(const QString& id)
 {
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
-    if ( !sm.registeredAndCorrectClassName( id, MagnetometerSensorChannelInterface::staticMetaObject.className() ) )
-    {
-        return 0;
-    }
-
-    return dynamic_cast<const MagnetometerSensorChannelInterface*>(sm.listenInterface(id));
+    return dynamic_cast<const MagnetometerSensorChannelInterface*>(interface(id));
 }
 
 MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::controlInterface(const QString& id)
+{
+    return interface(id);
+}
+
+
+MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     if ( !sm.registeredAndCorrectClassName( id, MagnetometerSensorChannelInterface::staticMetaObject.className() ) )
@@ -61,7 +60,7 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::controlI
         return 0;
     }
 
-    return dynamic_cast<MagnetometerSensorChannelInterface*>(sm.controlInterface(id));
+    return dynamic_cast<MagnetometerSensorChannelInterface*>(sm.interface(id));
 }
 
 void MagnetometerSensorChannelInterface::dataReceived()

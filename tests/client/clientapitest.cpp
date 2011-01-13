@@ -87,18 +87,14 @@ void ClientApiTest::testOrientationSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    OrientationSensorChannelInterface* sensorIfc = OrientationSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    OrientationSensorChannelInterface* sensorIfc = OrientationSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    OrientationSensorChannelInterface* failIfc = OrientationSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const OrientationSensorChannelInterface* listenIfc = OrientationSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    OrientationSensorChannelInterface* sensorIfc2 = OrientationSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -122,18 +118,14 @@ void ClientApiTest::testAccelerometerSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
+    // Get session
+    AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
 
-    // Attempt to get another control session
-    AccelerometerSensorChannelInterface* failIfc = AccelerometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const AccelerometerSensorChannelInterface* listenIfc = AccelerometerSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    AccelerometerSensorChannelInterface* sensorIfc2 = AccelerometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -159,22 +151,17 @@ void ClientApiTest::testMagnetometerSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    MagnetometerSensorChannelInterface* sensorIfc = MagnetometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    MagnetometerSensorChannelInterface* sensorIfc = MagnetometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    MagnetometerSensorChannelInterface* failIfc = MagnetometerSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const MagnetometerSensorChannelInterface* listenIfc = MagnetometerSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    MagnetometerSensorChannelInterface* sensorIfc2 = MagnetometerSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
-
 
     // Need simulated data to make sensible test ouf of this.
     MagneticField sample1 = sensorIfc->magneticField();
@@ -201,18 +188,14 @@ void ClientApiTest::testCompassSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    CompassSensorChannelInterface* sensorIfc = CompassSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    CompassSensorChannelInterface* sensorIfc = CompassSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    CompassSensorChannelInterface* failIfc = CompassSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const CompassSensorChannelInterface* listenIfc = CompassSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    CompassSensorChannelInterface* sensorIfc2 = CompassSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -228,7 +211,6 @@ void ClientApiTest::testCompassSensor()
     sensorIfc->setUseDeclination(!declinationInUse);
 
     // TODO: Compare declination value against value in gconf
-
 
     // test start
     QDBusReply<void> reply = sensorIfc->start();
@@ -247,18 +229,14 @@ void ClientApiTest::testTapSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    TapSensorChannelInterface* sensorIfc = TapSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    TapSensorChannelInterface* sensorIfc = TapSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    TapSensorChannelInterface* failIfc = TapSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const TapSensorChannelInterface* listenIfc = TapSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    TapSensorChannelInterface* sensorIfc2 = TapSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -287,34 +265,31 @@ void ClientApiTest::testALSSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
+    // Get session
     // TODO: Because context takes control over ALS in sensord::main(),
     //       we can't test this. (applies to all other possible open
     //       sessions too...)
-    //ALSSensorChannelInterface* sensorIfc = ALSSensorChannelInterface::controlInterface(sensorName);
-    //QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    
+    ALSSensorChannelInterface* sensorIfc = ALSSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    ALSSensorChannelInterface* failIfc = ALSSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const ALSSensorChannelInterface* listenIfc = ALSSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Get another session
+    ALSSensorChannelInterface* sensorIfc2 = ALSSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     //sensorIfc->setInterval(100);
 
     // test start
-    //QDBusReply<void> reply = sensorIfc->start();
-    //QVERIFY(reply.isValid());
+    QDBusReply<void> reply = sensorIfc->start();
+    QVERIFY(reply.isValid());
 
     // test stop
-    //reply = sensorIfc->stop();
-    //QVERIFY(reply.isValid());
+    reply = sensorIfc->stop();
+    QVERIFY(reply.isValid());
 
-    //delete sensorIfc;
+    delete sensorIfc;
 }
 
 void ClientApiTest::testProximitySensor()
@@ -323,18 +298,14 @@ void ClientApiTest::testProximitySensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    ProximitySensorChannelInterface* sensorIfc = ProximitySensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    ProximitySensorChannelInterface* sensorIfc = ProximitySensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    ProximitySensorChannelInterface* failIfc = ProximitySensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const ProximitySensorChannelInterface* listenIfc = ProximitySensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    ProximitySensorChannelInterface* sensorIfc2 = ProximitySensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -356,18 +327,14 @@ void ClientApiTest::testRotationSensor()
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     QVERIFY( sm.isValid() );
 
-    // Get control session
-    RotationSensorChannelInterface* sensorIfc = RotationSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+    // Get session
+    RotationSensorChannelInterface* sensorIfc = RotationSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
-    // Attempt to get another control session
-    RotationSensorChannelInterface* failIfc = RotationSensorChannelInterface::controlInterface(sensorName);
-    QVERIFY2(!failIfc, "Got another control session");
-
-    // Get listen session
-    const RotationSensorChannelInterface* listenIfc = RotationSensorChannelInterface::listenInterface(sensorName);
-    QVERIFY2(listenIfc && listenIfc->isValid(), "Failed to get listen session");
-    delete listenIfc;
+    // Attempt to get another session
+    RotationSensorChannelInterface* sensorIfc2 = RotationSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -407,16 +374,16 @@ void ClientApiTest::testCommonAdaptorPipeline()
     OrientationSensorChannelInterface *orientation;
     AccelerometerSensorChannelInterface *accelerometer;
 
-    orientation = OrientationSensorChannelInterface::controlInterface("orientationsensor");
-    QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor control channel");
+    orientation = OrientationSensorChannelInterface::interface("orientationsensor");
+    QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor channel");
     orientation->setInterval(100);
 
     orientation->start();
     qDebug() << "Orientation sensor started, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);
 
-    accelerometer = AccelerometerSensorChannelInterface::controlInterface("accelerometersensor");
-    QVERIFY2(accelerometer && accelerometer->isValid(), "Could not get accelerometer sensor control channel");
+    accelerometer = AccelerometerSensorChannelInterface::interface("accelerometersensor");
+    QVERIFY2(accelerometer && accelerometer->isValid(), "Could not get accelerometer sensor channel");
     accelerometer->setInterval(100);
 
     accelerometer->start();
@@ -437,19 +404,18 @@ void ClientApiTest::testCommonAdaptorPipeline()
     delete accelerometer;
 }
 
-void ClientApiTest::testListenSessionInitiation()
+void ClientApiTest::testSessionInitiation()
 {
     const OrientationSensorChannelInterface *orientation;
 
-    orientation = OrientationSensorChannelInterface::listenInterface("orientationsensor");
-
-    QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor listen channel");
+    orientation = OrientationSensorChannelInterface::interface("orientationsensor");
+    QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor channel");
 }
 
 void ClientApiTest::testBuffering()
 {
-    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
-    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
     TestClient client(*magnetometer, true);
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
@@ -479,8 +445,8 @@ void ClientApiTest::testBuffering()
 
 void ClientApiTest::testBufferingHighRate()
 {
-    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
-    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
     TestClient client(*magnetometer, true);
     magnetometer->setInterval(25);
     magnetometer->setBufferSize(100);
@@ -503,8 +469,8 @@ void ClientApiTest::testBufferingHighRate()
 
 void ClientApiTest::testBufferingCompatibility()
 {
-    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
-    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
     TestClient client(*magnetometer, false);
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
@@ -532,8 +498,8 @@ void ClientApiTest::testBufferingCompatibility()
 
 void ClientApiTest::testAvailableBufferIntervals()
 {
-    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
-    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
     IntegerRangeList rangeList = magnetometer->getAvailableBufferIntervals();
     QVERIFY(rangeList.size() == 1);
     QVERIFY(rangeList.front().first == 0);
@@ -545,8 +511,8 @@ void ClientApiTest::testAvailableBufferIntervals()
 
 void ClientApiTest::testAvailableBufferSizes()
 {
-    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::controlInterface("magnetometersensor");
-    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor control channel");
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
     IntegerRangeList rangeList = magnetometer->getAvailableBufferSizes();
     QVERIFY(rangeList.size() == 1);
     QVERIFY(rangeList.front().first == 1);

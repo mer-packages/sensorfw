@@ -28,11 +28,11 @@
 #include <QVariant>
 
 #include <typeinfo>
-#include <sensord/sensormanager.h>
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/filter.h"
-#include "sensord/config.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "filter.h"
+#include "config.h"
 #include "dataflowtests.h"
 #include "loader.h"
 #include "plugin.h"

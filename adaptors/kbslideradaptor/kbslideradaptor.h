@@ -28,7 +28,7 @@
 #define KBSLIDERADAPTOR_H
 
 #include "inputdevadaptor.h"
-#include "sensord/deviceadaptorringbuffer.h"
+#include "deviceadaptorringbuffer.h"
 
 /**
  * @brief Adaptor for device keyboard slider state.

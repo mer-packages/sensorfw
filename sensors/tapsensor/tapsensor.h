@@ -30,7 +30,7 @@
 
 #include "abstractsensor.h"
 #include "tapsensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dbusemitter.h"
 #include "datatypes/tapdata.h"
 #include "deviceadaptor.h"
 

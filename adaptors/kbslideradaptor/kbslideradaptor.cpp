@@ -29,7 +29,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <string.h>
-#include <sensord/logging.h>
+#include "logging.h"
 
 #include "kbslideradaptor.h"
 

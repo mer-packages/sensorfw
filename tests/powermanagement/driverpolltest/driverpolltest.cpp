@@ -51,11 +51,11 @@ DriverPollTester::DriverPollTester(QObject *parent) : QObject(parent), poll(fals
     remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>("accelerometersensor");
 
     // Start interfaces in polling mode.
-    accOne = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
-    accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::listenInterface("accelerometersensor"));
+    accOne = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::interface("accelerometersensor"));
+    accTwo = const_cast<AccelerometerSensorChannelInterface*>(AccelerometerSensorChannelInterface::interface("accelerometersensor"));
 
     if (!(accOne && accTwo)) {
-        qDebug() << "FATAL. Unable to get accelerometer listen interfaces";
+        qDebug() << "FATAL. Unable to get accelerometer interfaces";
         return;
     }
 

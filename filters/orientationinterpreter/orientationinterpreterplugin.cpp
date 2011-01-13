@@ -27,7 +27,7 @@
 #include "orientationinterpreterplugin.h"
 #include "orientationinterpreter.h"
 #include "sensormanager.h"
-#include "sensord/logging.h"
+#include "logging.h"
 
 void OrientationInterpreterPlugin::Register(class Loader&)
 {
