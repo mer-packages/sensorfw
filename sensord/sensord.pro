@@ -27,7 +27,10 @@ SOURCES += main.cpp \
 
 HEADERS += parser.h
 
-
+contextprovider {
+    DEFINES += PROVIDE_CONTEXT_INFO
+    PKGCONFIG += contextprovider-1.0
+}
 
 TARGET_H.path += /usr/include/sensord
 TARGET_H.files = $$HEADERS

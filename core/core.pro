@@ -78,11 +78,6 @@ HEADERS += sensormanager.h \
     DEFINES += SENSORFW_MCE_WATCHER
 }
 
-contextprovider {
-    DEFINES += PROVIDE_CONTEXT_INFO
-    PKGCONFIG += contextprovider-1.0
-}
-
 
 publicheaders.path  = $${publicheaders.path}/core
 publicheaders.files = $$HEADERS
