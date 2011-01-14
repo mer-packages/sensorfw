@@ -41,7 +41,8 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   size(0),
                                                                   count(0),
                                                                   bufferSize(1),
-                                                                  bufferInterval(0)
+                                                                  bufferInterval(0),
+                                                                  mutex(QMutex::Recursive)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -66,7 +67,7 @@ long SessionData::sinceLastWrite() const
 
 bool SessionData::write(void* source, int size, unsigned int count)
 {
-    if(socket)
+    if(socket && count)
     {
         sensordLogT() << "[SocketHandler]: writing " << count << " fragments to socket with payload (bytes): " << size;
         memcpy(source, &count, sizeof(unsigned int));
@@ -113,26 +114,22 @@ bool SessionData::write(const void* source, int size)
         memcpy(buffer + sizeof(unsigned int) + size * count, source, size);
         ++count;
         if(bufferSize == count)
-        {
-            if(timer.isActive())
-                timer.stop();
-            count = 0;
-            gettimeofday(&lastWrite, 0);
-            return write(buffer, size, bufferSize);
-        }
+            delayedWrite();
     }
     if(!timer.isActive())
     {
-        if(bufferSize > 1)
+        if(bufferSize > 1 && bufferInterval)
         {
             sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
             timer.start(bufferInterval);
         }
-        else
+        else if((interval - since) > 0)
         {
             sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
             timer.start(interval - since);
         }
+        else
+            delayedWrite();
     }
     else
     {
