@@ -37,10 +37,6 @@
 int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
-    if (argc > 1 && !strcmp(argv[1], "-c")) {
-        control = true;
-    }
-
     TestWindow t();
     
     return app.exec();
