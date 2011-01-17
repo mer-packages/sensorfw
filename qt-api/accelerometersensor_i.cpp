@@ -69,14 +69,14 @@ void AccelerometerSensorChannelInterface::dataReceived()
     {
         if(!frameAvailableConnected || values.size() == 1)
         {
-            foreach(AccelerationData data, values)
+            foreach(const AccelerationData& data, values)
                 emit dataAvailable(XYZ(data));
         }
         else
         {
             QVector<XYZ> realValues;
             realValues.reserve(values.size());
-            foreach(AccelerationData data, values)
+            foreach(const AccelerationData& data, values)
                 realValues.push_back(XYZ(data));
             emit frameAvailable(realValues);
         }

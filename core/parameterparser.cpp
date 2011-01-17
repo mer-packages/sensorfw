@@ -40,7 +40,7 @@ QMap<QString, QString> ParameterParser::getPropertyMap(const QString& id)
         QString propertiesString = id.mid(pos + 1);
         QStringList properties = propertiesString.split(PROP_STRING_SEPARATOR);
 
-        foreach (QString property, properties)
+        foreach (const QString& property, properties)
         {
             pos = property.indexOf(PROP_NAME_VALUE_SEPARATOR);
             if ( pos != -1 )
@@ -66,14 +66,12 @@ void ParameterParser::applyPropertyMap(QObject* object, const QMap<QString, QStr
 {
     Q_ASSERT( object );
 
-    QList<QString> keys = propertyMap.keys();
-    foreach(QString key, keys)
+    for(QMap<QString, QString>::const_iterator it = propertyMap.begin(); it != propertyMap.end(); ++it)
     {
-        bool result = object->setProperty(key.toAscii().data(), QVariant(propertyMap.value(key)));
+        bool result = object->setProperty(it.key().toAscii().data(), QVariant(it.value()));
         if ( !result )
         {
             //sensordLogW() << "Property" << key << "is not static.";
         }
     }
 }
-

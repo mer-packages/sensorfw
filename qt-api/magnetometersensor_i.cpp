@@ -70,14 +70,14 @@ void MagnetometerSensorChannelInterface::dataReceived()
     {
         if(!frameAvailableConnected || values.size() == 1)
         {
-            foreach(CalibratedMagneticFieldData data, values)
+            foreach(const CalibratedMagneticFieldData& data, values)
                 emit dataAvailable(MagneticField(data));
         }
         else
         {
             QVector<MagneticField> realValues;
             realValues.reserve(values.size());
-            foreach(CalibratedMagneticFieldData data, values)
+            foreach(const CalibratedMagneticFieldData& data, values)
                 realValues.push_back(MagneticField(data));
             emit frameAvailable(realValues);
         }

@@ -97,7 +97,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     long x = 0;
     long y = 0;
     long z = 0;
-    foreach (AccelerationData sample, dataBuffer)
+    foreach (const AccelerationData& sample, dataBuffer)
     {
         // Dummy average calculations, optimise if a neater method
         // is figured out.

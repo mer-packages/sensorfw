@@ -69,14 +69,14 @@ void RotationSensorChannelInterface::dataReceived()
     {
         if(!frameAvailableConnected || values.size() == 1)
         {
-            foreach(TimedXyzData data, values)
+            foreach(const TimedXyzData& data, values)
                 emit dataAvailable(XYZ(data));
         }
         else
         {
             QVector<XYZ> realValues;
             realValues.reserve(values.size());
-            foreach(TimedXyzData data, values)
+            foreach(const TimedXyzData& data, values)
                 realValues.push_back(XYZ(data));
             emit frameAvailable(realValues);
         }

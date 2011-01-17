@@ -97,13 +97,13 @@ SensorManager::SensorManager()
 
 SensorManager::~SensorManager()
 {
-    foreach (QString key, sensorInstanceMap_.keys())
+    foreach (const QString& key, sensorInstanceMap_.keys())
     {
          sensordLogW() << "ERROR: sensor" << key << "not released!";
          Q_ASSERT( sensorInstanceMap_[key].sensor_ == 0 );
     }
 
-    foreach (QString key, deviceAdaptorInstanceMap_.keys())
+    foreach (const QString& key, deviceAdaptorInstanceMap_.keys())
     {
          sensordLogW() << "ERROR: device adaptor" << key << "not released!";
          Q_ASSERT( deviceAdaptorInstanceMap_[key].adaptor_ == 0 );
@@ -486,7 +486,7 @@ void SensorManager::displayStateChanged(const bool displayState)
         }
     }
 
-    foreach (DeviceAdaptorInstanceEntry adaptor, deviceAdaptorInstanceMap_) {
+    foreach (const DeviceAdaptorInstanceEntry& adaptor, deviceAdaptorInstanceMap_) {
         if (adaptor.adaptor_) {
             if (displayState) {
                 adaptor.adaptor_->setScreenBlanked(false);
@@ -576,7 +576,7 @@ bool SensorManager::getPSMState()
 void SensorManager::print() const
 {
     sensordLogD() << "Registry Dump:";
-    foreach(QString id, sensorInstanceMap_.keys())
+    foreach(const QString& id, sensorInstanceMap_.keys())
     {
         sensordLogD() << "Registry entry id  =" << id;
 

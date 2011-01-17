@@ -88,7 +88,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     {
         // Get available ranges and introduce modified ones
         QList<DataRange> rangeList = compassChain_->getAvailableDataRanges();
-        foreach(DataRange range, rangeList)
+        foreach(const DataRange& range, rangeList)
         {
             introduceAvailableDataRange(DataRange(scaleCoefficient_*range.min, scaleCoefficient_*range.max, scaleCoefficient_*range.resolution));
         }

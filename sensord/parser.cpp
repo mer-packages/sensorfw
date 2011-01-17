@@ -48,10 +48,10 @@ Parser::~Parser()
 
 void Parser::parsingCommandLine(QStringList arguments)
 {
-    foreach (QString opt, arguments)
+    foreach (const QString& arg, arguments)
     {
         QStringList data;
-        opt = opt.trimmed();
+        QString opt = arg.trimmed();
 
         if (opt.startsWith("-l=") || opt.startsWith("--log-level"))
         {

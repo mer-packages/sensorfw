@@ -53,8 +53,7 @@ void Bin::signalNewEvent()
 void Bin::eventSignaled()
 {
     // filter new data
-    Pusher* pusher;
-    foreach (pusher, pushers_) {
+    foreach (Pusher* pusher, pushers_) {
         pusher->pushNewData();
     }
 }

@@ -71,14 +71,14 @@ void GyroscopeSensorChannelInterface::dataReceived()
     {
         if(!frameAvailableConnected || values.size() == 1)
         {
-            foreach(AngularVelocityData data, values)
+            foreach(const AngularVelocityData& data, values)
                 emit dataAvailable(XYZ(data));
         }
         else
         {
             QVector<XYZ> realValues;
             realValues.reserve(values.size());
-            foreach(AngularVelocityData data, values)
+            foreach(const AngularVelocityData& data, values)
                 realValues.push_back(XYZ(data));
             emit frameAvailable(realValues);
         }

@@ -105,7 +105,7 @@ bool AbstractSensorChannel::stop()
 
 bool AbstractSensorChannel::writeToClients(const void* source, int size)
 {
-    foreach(int sessionId, activeSessions_) {
+    foreach(const int& sessionId, activeSessions_) {
         if (!(SensorManager::instance().write(sessionId, source, size))) {
             sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
             return false;

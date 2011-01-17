@@ -66,7 +66,7 @@ void CompassSensorChannelInterface::dataReceived()
     QVector<CompassData> values;
     while (read<CompassData>(values))
     {
-        foreach(CompassData data, values)
+        foreach(const CompassData& data, values)
             emit dataAvailable(data);
         values.clear();
     }

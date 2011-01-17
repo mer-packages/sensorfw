@@ -76,7 +76,7 @@ void TapSensorChannelInterface::dataReceived()
                 if ((!tapValues_.isEmpty()) && (tapValues_.first().direction_ == value.direction_)) {
                     timer->stop();
                     tapValues_.removeFirst();
-                    value.type_ = TapData:: DoubleTap;
+                    value.type_ = TapData::DoubleTap;
                     tapValues_.prepend(value);
                     output();
                 } else {

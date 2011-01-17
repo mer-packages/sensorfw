@@ -67,7 +67,7 @@ Config *Config::loadConfig(const QString &defConfigPath, const QString &configDP
 
     /* Load all conf files */
     config->loadConfigFile(defConfigPath);
-    foreach(QString file, fileList)
+    foreach(const QString& file, fileList)
         config->loadConfigFile(dir.absoluteFilePath(file));
 
     static_configuration = config;

@@ -61,7 +61,7 @@ void signalUSR2(int param)
     output.append(QString("  Logging level: %1\n").arg(SensordLogger::getOutputLevel()));
     SensorManager::instance().printStatus(output);
 
-    foreach (QString line, output) {
+    foreach (const QString& line, output) {
         sensordLogW() << line.toLocal8Bit().data();
     }
 }
