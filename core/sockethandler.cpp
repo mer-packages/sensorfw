@@ -114,7 +114,10 @@ bool SessionData::write(const void* source, int size)
         memcpy(buffer + sizeof(unsigned int) + size * count, source, size);
         ++count;
         if(bufferSize == count)
-            delayedWrite();
+        {
+            sensordLogT() << "[SocketHandler]: writing, bufferSize == count";
+            return delayedWrite();
+        }
     }
     if(!timer.isActive())
     {
@@ -128,8 +131,6 @@ bool SessionData::write(const void* source, int size)
             sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
             timer.start(interval - since);
         }
-        else
-            delayedWrite();
     }
     else
     {
@@ -138,14 +139,15 @@ bool SessionData::write(const void* source, int size)
     return true;
 }
 
-void SessionData::delayedWrite()
+bool SessionData::delayedWrite()
 {
     QMutexLocker locker(&mutex);
     if(timer.isActive())
         timer.stop();
     gettimeofday(&lastWrite, 0);
-    write(buffer, size, count);
+    bool ret = write(buffer, size, count);
     count = 0;
+    return ret;
 }
 
 QLocalSocket* SessionData::stealSocket()

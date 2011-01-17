@@ -7,7 +7,8 @@ sensord (0.6.35) unstable; urgency=low
   * Seperate the old sensord fold to core and new sensord folders.
 
   [Antti Virtanen]
-  * SocketHandler doesn't anymore delegate the work through QTimer if the data must be sent immediately.
+  * SocketHandler doesn't anymore delegate the work through QTimer if the data must be sent immediately. Small refactoring also done.
+  * testBufferingInterval test added for verifying bufferInterval functionality.
 
  -- shenghua <ext-shenghua.1.liu@nokia>  Thu, 13 Jan 2011 13:29:01 +0200
 

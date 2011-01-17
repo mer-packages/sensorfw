@@ -73,7 +73,7 @@ private:
     QMutex mutex;
 
 private slots:
-    void delayedWrite();
+    bool delayedWrite();
 };
 
 /**

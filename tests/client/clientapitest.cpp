@@ -37,7 +37,6 @@
 
 #include "clientapitest.h"
 
-
 void ClientApiTest::initTestCase()
 {
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
@@ -66,19 +65,14 @@ void ClientApiTest::initTestCase()
 
 void ClientApiTest::init()
 {
-    //qDebug() << "Run before each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void ClientApiTest::cleanup()
 {
-    //qDebug() << "Run after each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void ClientApiTest::cleanupTestCase()
 {
-    //qDebug() << "Run after all test cases";
 }
 
 void ClientApiTest::testOrientationSensor()
@@ -269,7 +263,7 @@ void ClientApiTest::testALSSensor()
     // TODO: Because context takes control over ALS in sensord::main(),
     //       we can't test this. (applies to all other possible open
     //       sessions too...)
-    
+
     ALSSensorChannelInterface* sensorIfc = ALSSensorChannelInterface::interface(sensorName);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
@@ -358,7 +352,6 @@ void ClientApiTest::testRotationSensor()
     delete sensorIfc;
 }
 
-
 /**
  * Runs two sensors using the same adaptor/chain simultaneously.
  *
@@ -439,9 +432,7 @@ void ClientApiTest::testBuffering()
 
     magnetometer->stop();
     delete magnetometer;
-
 }
-
 
 void ClientApiTest::testBufferingHighRate()
 {
@@ -457,14 +448,12 @@ void ClientApiTest::testBufferingHighRate()
     qDebug() << "Magnetometer sensor started, waiting for 3500ms.";
     QTest::qWait(3500);
 
-
     QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 1);
     QVERIFY(client.getFrameDataCount() == 100);
 
     magnetometer->stop();
     delete magnetometer;
-
 }
 
 void ClientApiTest::testBufferingCompatibility()
@@ -491,6 +480,37 @@ void ClientApiTest::testBufferingCompatibility()
     QVERIFY(client.getDataCount() == 20);
     QVERIFY(client.getFrameCount() == 0);
     QVERIFY(client.getFrameDataCount() == 0);
+
+    magnetometer->stop();
+    delete magnetometer;
+}
+
+void ClientApiTest::testBufferingInterval()
+{
+    MagnetometerSensorChannelInterface* magnetometer = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer && magnetometer->isValid(), "Could not get magnetometer sensor channel");
+    TestClient client(*magnetometer, true);
+    magnetometer->setInterval(100);
+    magnetometer->setBufferInterval(0);
+    magnetometer->setBufferSize(40);
+
+    magnetometer->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 4500ms.";
+    QTest::qWait(4500);
+
+    QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
+    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getFrameDataCount() == 40);
+
+    magnetometer->setBufferInterval(2000);
+
+    qDebug() << "Magnetometer sensor started, waiting for 2500ms.";
+    QTest::qWait(2500);
+
+    QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
+    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getFrameDataCount() < 80);
 
     magnetometer->stop();
     delete magnetometer;

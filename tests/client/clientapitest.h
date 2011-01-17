@@ -59,6 +59,7 @@ private slots:
     void testBuffering();
     void testBufferingHighRate();
     void testBufferingCompatibility();
+    void testBufferingInterval();
     void testAvailableBufferIntervals();
     void testAvailableBufferSizes();
 };
