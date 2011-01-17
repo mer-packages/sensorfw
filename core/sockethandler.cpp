@@ -237,7 +237,6 @@ bool SocketHandler::listen(QString serverName)
 
 bool SocketHandler::write(int id, const void* source, int size)
 {
-    // TODO: Calculate failed writes (some are expected if sockets initialize too slow)
     QMap<int, SessionData*>::iterator it = m_idMap.find(id);
     if (it == m_idMap.end())
     {
@@ -251,7 +250,7 @@ bool SocketHandler::write(int id, const void* source, int size)
 bool SocketHandler::removeSession(int sessionId)
 {
     if (!(m_idMap.keys().contains(sessionId))) {
-        sensordLogD() << "[SocketHandler]: Trying to remove nonexistent session.";
+        sensordLogW() << "[SocketHandler]: Trying to remove nonexistent session.";
         return false;
     }
 
@@ -260,6 +259,7 @@ bool SocketHandler::removeSession(int sessionId)
     if (socket) {
         disconnect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
         disconnect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+        disconnect(socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socketError(QLocalSocket::LocalSocketError)));
         socket->deleteLater();
     }
 
@@ -277,6 +277,7 @@ void SocketHandler::newConnection()
         QLocalSocket* socket = m_server->nextPendingConnection();
         connect(socket, SIGNAL(readyRead()), this, SLOT(socketReadable()));
         connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
+        connect(socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socketError(QLocalSocket::LocalSocketError)));
 
         /// Do an initial write to instantiate the QObject child (why
         /// this happens in the write operation and not above is a
@@ -321,7 +322,14 @@ void SocketHandler::socketDisconnected()
         return;
     }
 
+    sensordLogW() << "[SocketHandler]: Noticed lost session: " << sessionId;
     emit lostSession(sessionId);
+}
+
+void SocketHandler::socketError(QLocalSocket::LocalSocketError socketError)
+{
+    sensordLogW() << "[SocketHandler]: Socket error: " << socketError;
+    socketDisconnected();
 }
 
 int SocketHandler::getSocketFd(int sessionId) const

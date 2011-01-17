@@ -9,6 +9,8 @@ sensord (0.6.35) unstable; urgency=low
   [Antti Virtanen]
   * SocketHandler doesn't anymore delegate the work through QTimer if the data must be sent immediately. Small refactoring also done.
   * testBufferingInterval test added for verifying bufferInterval functionality.
+  * Refactored SensorManager.
+  * SocketHandler now listens for QLocalSocket::error() signals.
 
  -- shenghua <ext-shenghua.1.liu@nokia>  Thu, 13 Jan 2011 13:29:01 +0200
 

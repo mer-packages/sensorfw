@@ -221,7 +221,7 @@ protected:
     void setError(SensorManagerError errorCode, const QString& errorString);
     void clearError() { errorCode_ = SmNoError; errorString_.clear(); }
 
-    AbstractSensorChannel* addSensor(const QString& id, int sessionId);
+    AbstractSensorChannel* addSensor(const QString& id);
     void removeSensor(const QString& id);
 
     QMap<QString, SensorChannelFactoryMethod>      sensorFactoryMap_;

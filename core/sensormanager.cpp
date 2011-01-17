@@ -158,7 +158,7 @@ bool SensorManager::registerService()
     return true;
 }
 
-AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId)
+AbstractSensorChannel* SensorManager::addSensor(const QString& id)
 {
     clearError();
 
@@ -181,48 +181,31 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id, int sessionId
 
     //sensordLogD() << "Creating sensor type:" << typeName << "id:" << id;
     AbstractSensorChannel* sensorChannel = sensorFactoryMap_[typeName](id);
-    Q_ASSERT( sensorChannel );
-    if ( sensorChannel->isValid() )
-    {
-        // TODO: why does this trap? does it?
-        Q_ASSERT( entryIt.value().sensor_ == 0 );
-        entryIt.value().sensor_ = sensorChannel;
-
-        Q_ASSERT( entryIt.value().sessions_.empty() );
-    
-        entryIt.value().sessions_.append(sessionId);
-
-        // ToDo: decide whether SensorManager should really be D-BUS aware
-        bool ok = bus().registerObject(OBJECT_PATH + "/" + sensorChannel->id(), sensorChannel);
-        if ( !ok )
-        {
-            QDBusError error = bus().lastError();
-            setError(SmCanNotRegisterObject, error.message());
-            Q_ASSERT ( false ); // TODO: release the sensor and update administration accordingly...
-            return NULL;
-        }
-    }
-    else
+    if ( !sensorChannel->isValid() )
     {
         delete sensorChannel;
         return NULL;
     }
+    Q_ASSERT( entryIt.value().sensor_ == 0 );
+    entryIt.value().sensor_ = sensorChannel;
 
+    bool ok = bus().registerObject(OBJECT_PATH + "/" + sensorChannel->id(), sensorChannel);
+    if ( !ok )
+    {
+        QDBusError error = bus().lastError();
+        setError(SmCanNotRegisterObject, error.message());
+        Q_ASSERT ( false ); // TODO: release the sensor and update administration accordingly...
+        return NULL;
+    }
     return sensorChannel;
 }
 
 void SensorManager::removeSensor(const QString& id)
 {
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
-
-    Q_ASSERT( entryIt.value().sessions_.empty());
-
     bus().unregisterObject(OBJECT_PATH + "/" + id);
-    sensordLogD() << __PRETTY_FUNCTION__ << "object unregistered";
-    sensordLogD() << __PRETTY_FUNCTION__ << "deleting " << entryIt.value().sensor_;
     delete entryIt.value().sensor_;
     entryIt.value().sensor_ = 0;
-    sensordLogD() << __PRETTY_FUNCTION__ << "sensor instance deleted.";
 }
 
 bool SensorManager::loadPlugin(const QString& name)
@@ -251,14 +234,15 @@ int SensorManager::requestSensor(const QString& id)
     }
 
     int sessionId = createNewSessionId();
-    if ( entryIt.value().sessions_.size() == 0 )
+    if(entryIt.value().sessions_.empty())
     {
-        AbstractSensorChannel* sensor = addSensor(id, sessionId);
+        AbstractSensorChannel* sensor = addSensor(id);
         if ( sensor == NULL )
         {
             return INVALID_SESSION;
         }
     }
+    entryIt.value().sessions_.append(sessionId);
 
     return sessionId;
 }
@@ -288,19 +272,13 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     }
 
     bool returnValue = false;
-    // TODO: simplify this condition
- 
-    // sessionId does not correspond to a request
-    if ( entryIt.value().sessions_.contains( sessionId ) )
+
+    if(entryIt.value().sessions_.removeAll( sessionId ))
     {
-        // sessionId does correspond to a request
-        entryIt.value().sessions_.removeAll( sessionId );
-        
         if ( entryIt.value().sessions_.empty() )
         {
             removeSensor(id);
         }
-        
         returnValue = true;
     }
     else
@@ -309,7 +287,6 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
         setError( SmNotInstantiated, tr("invalid sessionId, no session to release") );
     }
 
-    // TODO: Release the socket, bind to single place
     socketHandler_->removeSession(sessionId);
 
     return returnValue;
@@ -435,10 +412,8 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
             Q_ASSERT( entryIt.value().adaptor_ );
 
             entryIt.value().cnt_--;
-            //sensordLogD() << __PRETTY_FUNCTION__ << "new ref count" << entryIt.value().cnt_;
             if ( entryIt.value().cnt_ == 0 )
             {
-                //sensordLogD() << __PRETTY_FUNCTION__ << "instance deleted";
                 Q_ASSERT( entryIt.value().adaptor_ );
 
                 entryIt.value().adaptor_->stopAdaptor();
@@ -493,6 +468,7 @@ void SensorManager::lostClient(int sessionId)
             return;
         }
     }
+    sensordLogW() << "[SensorManager]: Lost session " << sessionId << " detected, but not found from session list";
 }
 
 void SensorManager::displayStateChanged(const bool displayState)
@@ -549,7 +525,7 @@ void SensorManager::printStatus(QStringList& output) const
 
     output.append("  Logical sensors:\n");
     for (QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it) {
- 
+
         QString str;
         str.append(QString("    %1 [").arg(it.value().type_));
         if(it.value().sessions_.size())

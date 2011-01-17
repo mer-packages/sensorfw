@@ -32,10 +32,10 @@
 #include <QTimer>
 #include <QList>
 #include <QMutex>
+#include <QLocalSocket>
 #include <sys/time.h>
 
 class QLocalServer;
-class QLocalSocket;
 
 class SessionData : public QObject
 {
@@ -112,6 +112,7 @@ private slots:
     void newConnection();
     void socketReadable();
     void socketDisconnected();
+    void socketError(QLocalSocket::LocalSocketError socketError);
 
 private:
 
