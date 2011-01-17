@@ -57,6 +57,7 @@ class AbstractSensorChannelInterface: public QDBusAbstractInterface
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(unsigned int bufferInterval READ bufferInterval WRITE setBufferInterval)
     Q_PROPERTY(unsigned int bufferSize READ bufferSize WRITE setBufferSize)
+    Q_PROPERTY(bool hwBuffering READ hwBuffering)
 
 public:
     virtual ~AbstractSensorChannelInterface();
@@ -138,6 +139,9 @@ private:
     AbstractSensorChannelInterfaceImpl* pimpl_;
 
     SocketReader& getSocketReader() const;
+
+public:
+    bool hwBuffering();
 };
 
 template<typename T>

@@ -47,6 +47,7 @@ class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
     Q_PROPERTY(unsigned int bufferSize READ bufferSize)
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    Q_PROPERTY(bool hwBuffering READ hwBuffering)
     // Q_PROPERTY(SensorState state READ state) //TODO: put state back
 
 public:
@@ -93,6 +94,9 @@ public Q_SLOTS: // METHODS
 
 Q_SIGNALS: // SIGNALS
     void propertyChanged(const QString& name);
+
+public:
+    bool hwBuffering() const;
 };
 
 #endif // ABSTRACTSENSORADAPTOR_H

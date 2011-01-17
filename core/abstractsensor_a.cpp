@@ -77,6 +77,13 @@ unsigned int AbstractSensorChannelAdaptor::bufferSize() const
     return node()->bufferSize();
 }
 
+bool AbstractSensorChannelAdaptor::hwBuffering() const
+{
+    bool hwBuffering = false;
+    node()->getAvailableBufferSizes(hwBuffering);
+    return hwBuffering;
+}
+
 /*
 SensorState AbstractSensorChannelAdaptor::state() const
 {

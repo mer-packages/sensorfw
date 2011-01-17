@@ -226,6 +226,12 @@ IntegerRangeList AbstractSensorChannelInterface::getAvailableBufferSizes()
     return ret.value();
 }
 
+bool AbstractSensorChannelInterface::hwBuffering()
+{
+    QDBusReply<bool> ret = call(QDBus::Block, QLatin1String("hwBuffering"));
+    return ret.value();
+}
+
 int AbstractSensorChannelInterface::sessionId() const
 {
     return pimpl_->sessionId_;
@@ -261,7 +267,9 @@ QString AbstractSensorChannelInterface::id() const
 
 int AbstractSensorChannelInterface::interval() const
 {
-    return qvariant_cast<int>(internalPropGet("interval"));
+    if (pimpl_->running_)
+        return qvariant_cast<int>(internalPropGet("interval"));
+    return pimpl_->interval_;
 }
 
 void AbstractSensorChannelInterface::setInterval(int value)
@@ -273,7 +281,9 @@ void AbstractSensorChannelInterface::setInterval(int value)
 
 unsigned int AbstractSensorChannelInterface::bufferInterval() const
 {
-    return qvariant_cast<unsigned int>(internalPropGet("bufferInterval"));
+    if (pimpl_->running_)
+        return qvariant_cast<unsigned int>(internalPropGet("bufferInterval"));
+    return pimpl_->bufferInterval_;
 }
 
 void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
@@ -285,7 +295,9 @@ void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
 
 unsigned int AbstractSensorChannelInterface::bufferSize() const
 {
-    return qvariant_cast<unsigned int>(internalPropGet("bufferSize"));
+    if (pimpl_->running_)
+        return qvariant_cast<unsigned int>(internalPropGet("bufferSize"));
+    return pimpl_->bufferSize_;
 }
 
 void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
@@ -297,7 +309,9 @@ void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
 
 bool AbstractSensorChannelInterface::standbyOverride() const
 {
-    return pimpl_->standbyOverride_ || qvariant_cast<bool>(internalPropGet("standbyOverride"));
+    if (pimpl_->running_)
+        return qvariant_cast<bool>(internalPropGet("standbyOverride"));
+    return pimpl_->standbyOverride_;
 }
 
 bool AbstractSensorChannelInterface::setStandbyOverride(bool override)
