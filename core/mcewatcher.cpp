@@ -37,7 +37,7 @@ MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
     dbusIfc->connection().connect(dbusIfc->service(),
                                   dbusIfc->path(),
                                   dbusIfc->interface(),
-                                  MCE_PSM_MODE_SIG,
+                                  MCE_PSM_STATE_SIG,
                                   this,
                                   SLOT(slotPSMStateChanged(const bool)));
 
