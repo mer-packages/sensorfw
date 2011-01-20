@@ -51,27 +51,33 @@ class Orientation(unittest.TestCase):
         # Normal
         os.system("echo -en '\x94' >" + self.fpath) # 148
         self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:false'))
+        time.sleep(0.5)
 
         # Dark
         os.system("echo -en '\x09' >" + self.fpath) # 9
         self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:true'))
+        time.sleep(0.5)
 
         # Bright
         os.system("echo -en '\x33\x01' >" + self.fpath) # 307
         self.assert_(self.context_client_dark.expect('Environment.IsDark = bool:false'))
+        time.sleep(0.5)
 
     def testIsBright(self):
         # Normal
         os.system("echo -en '\x94' >" + self.fpath) # 148
         self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:false'))
+        time.sleep(0.5)
 
         # Bright
         os.system("echo -en '\x33\x01' >" + self.fpath) # 307
         self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:true'))
+        time.sleep(0.5)
 
         # Dark
         os.system("echo -en '\x09' >" + self.fpath) # 9
         self.assert_(self.context_client_bright.expect('Environment.IsBright = bool:false'))
+        time.sleep(0.5)
 
 if __name__ == '__main__':
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
