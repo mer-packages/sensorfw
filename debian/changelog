@@ -5,7 +5,7 @@ sensord (0.6.35) unstable; urgency=low
 
   [Shenghua Liu]
   * Seperate the old sensord fold to core and new sensord folders.
-  * Fixes: NB#219695
+  * Fixed randomly failing contextfw tests. Fixes: NB#219695
 
   [Antti Virtanen]
   * SocketHandler doesn't anymore delegate the work through QTimer if the data must be sent immediately. Small refactoring also done.
@@ -20,7 +20,6 @@ sensord (0.6.35) unstable; urgency=low
     Fixes: NB#218971.
   * Optimized some foreach-statements.
   * Compatible with mce-dev-1.10.24. Fixes: NB#219223.
-  * 
 
  -- shenghua <ext-shenghua.1.liu@nokia.com>  Thu, 20 Jan 2011 09:58:21 +0200
 
