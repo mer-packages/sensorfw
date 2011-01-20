@@ -108,29 +108,26 @@ private:
 template<typename T>
 bool SocketReader::read(QVector<T>& values)
 {
+    if (!socket_) {
+        return false;
+    }
+
     unsigned int count;
     if(!read((void*)&count, sizeof(unsigned int)))
         return false;
-
     if(count > 1000)
     {
         qWarning() << "Too many samples waiting in socket. Flushing it to empty";
         socket_->readAll();
         return false;
     }
-    values.reserve(values.size() + count);
-    for(unsigned int i = 0; i < count; ++i)
+    values.resize(values.size() + count);
+    if(!read((void*)values.data(), sizeof(T) * count))
     {
-        T value;
-        if(!read((void*)&value, sizeof(T)))
-        {
-            qDebug() << "Error occured while reading data index " << i << " from socket: " << socket_->errorString();
-            socket_->readAll();
-            return false;
-        }
-        values.push_back(value);
+        qWarning() << "Error occured while reading data from socket: " << socket_->errorString();
+        socket_->readAll();
+        return false;
     }
-
     return true;
 }
 

@@ -65,22 +65,19 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::interf
 void AccelerometerSensorChannelInterface::dataReceived()
 {
     QVector<AccelerationData> values;
-    while (read<AccelerationData>(values))
+    read<AccelerationData>(values);
+    if(!frameAvailableConnected || values.size() == 1)
     {
-        if(!frameAvailableConnected || values.size() == 1)
-        {
-            foreach(const AccelerationData& data, values)
-                emit dataAvailable(XYZ(data));
-        }
-        else
-        {
-            QVector<XYZ> realValues;
-            realValues.reserve(values.size());
-            foreach(const AccelerationData& data, values)
-                realValues.push_back(XYZ(data));
-            emit frameAvailable(realValues);
-        }
-        values.clear();
+        foreach(const AccelerationData& data, values)
+            emit dataAvailable(XYZ(data));
+    }
+    else
+    {
+        QVector<XYZ> realValues;
+        realValues.reserve(values.size());
+        foreach(const AccelerationData& data, values)
+            realValues.push_back(XYZ(data));
+        emit frameAvailable(realValues);
     }
 }
 

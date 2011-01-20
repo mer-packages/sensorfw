@@ -60,6 +60,7 @@ bool SocketReader::initiateConnection(int sessionId)
         qDebug() << "[SOCKETREADER]: SessionId write failed: " << socket_->errorString();
     }
     socket_->flush();
+    readSocketTag();
 
     return true;
 }
@@ -87,39 +88,34 @@ QLocalSocket* SocketReader::socket()
 
 bool SocketReader::readSocketTag()
 {
-    if (!isConnected()) {
-        qDebug() << "Not connected";
-        return false;
-    }
-
-    QString idString(channelIDString);
-    char tmpBuffer[idString.size() + 1];
-
-    memset(tmpBuffer, 0x0, idString.size() + 1);
-    if (idString.size() + 1 > socket_->read(tmpBuffer, idString.size() + 1)) {
-        return false;
-    }
-    tagRead_ = true;
-
+    char foo;
+    socket_->waitForReadyRead();
+    tagRead_ = read(&foo, 1);
     return true;
 }
 
 bool SocketReader::read(void* buffer, int size)
 {
-    if (!socket_) {
-        return false;
-    }
-
-    // TODO: Why must this be done here? Why does it not get the data
-    //       if placed to AbstractSensorChannel::start() after sensor
-    //       start..?
-    if (!tagRead_) {
-        if (!readSocketTag()) {
-            // set error on failed tag read
+    int bytesRead = 0;
+    int retry = 100;
+    while(bytesRead < size)
+    {
+        int bytes = socket_->read((char *)buffer + bytesRead, size);
+        if(bytes == 0)
+        {
+            if(!retry)
+                return false;
+            struct timespec ts;
+            ts.tv_sec = 0;
+            ts.tv_nsec = 100000000;
+            nanosleep( &ts, NULL );
+            --retry;
+            continue;
         }
+        if(bytes < 1)
+            return false;
+        bytesRead += bytes;
     }
-
-    int bytesRead = socket_->read((char *)buffer, size);
     return (bytesRead > 0);
 }
 

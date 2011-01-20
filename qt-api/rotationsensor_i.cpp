@@ -65,22 +65,19 @@ RotationSensorChannelInterface* RotationSensorChannelInterface::interface(const 
 void RotationSensorChannelInterface::dataReceived()
 {
     QVector<TimedXyzData> values;
-    while (read<TimedXyzData>(values))
+    read<TimedXyzData>(values);
+    if(!frameAvailableConnected || values.size() == 1)
     {
-        if(!frameAvailableConnected || values.size() == 1)
-        {
-            foreach(const TimedXyzData& data, values)
-                emit dataAvailable(XYZ(data));
-        }
-        else
-        {
-            QVector<XYZ> realValues;
-            realValues.reserve(values.size());
-            foreach(const TimedXyzData& data, values)
-                realValues.push_back(XYZ(data));
-            emit frameAvailable(realValues);
-        }
-        values.clear();
+        foreach(const TimedXyzData& data, values)
+            emit dataAvailable(XYZ(data));
+    }
+    else
+    {
+        QVector<XYZ> realValues;
+        realValues.reserve(values.size());
+        foreach(const TimedXyzData& data, values)
+            realValues.push_back(XYZ(data));
+        emit frameAvailable(realValues);
     }
 }
 

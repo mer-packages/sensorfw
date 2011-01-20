@@ -279,12 +279,9 @@ void SocketHandler::newConnection()
         connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
         connect(socket, SIGNAL(error(QLocalSocket::LocalSocketError)), this, SLOT(socketError(QLocalSocket::LocalSocketError)));
 
-        /// Do an initial write to instantiate the QObject child (why
-        /// this happens in the write operation and not above is a
-        /// mystery to me). This chunk provide info about datatype..
-        // TODO: Might not need this now that we first receive a write from the other end.
-        socket->write("_SENSORCHANNEL_", 16);
-        socket->flush();
+        // Initialize socket
+        socket->write("\n", 1);
+        socket->waitForBytesWritten();
     }
 }
 
