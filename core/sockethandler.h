@@ -60,6 +60,7 @@ public:
 private:
     long sinceLastWrite() const;
     bool write(void* source, int size, unsigned int count);
+    bool delayedWrite();
 
     QLocalSocket* socket;
     int interval;
@@ -73,7 +74,7 @@ private:
     QMutex mutex;
 
 private slots:
-    bool delayedWrite();
+    void timerTimeout();
 };
 
 /**

@@ -499,17 +499,20 @@ void ClientApiTest::testBufferingInterval()
     qDebug() << "Magnetometer sensor started, waiting for 4500ms.";
     QTest::qWait(4500);
 
-    QVERIFY(client.getDataCount() < 10); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
+    QVERIFY(client.getDataCount() < 4); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
     QVERIFY(client.getFrameCount() == 1);
     QVERIFY(client.getFrameDataCount() == 40);
 
+    magnetometer->stop();
     magnetometer->setBufferInterval(2000);
+    magnetometer->setBufferSize(40);
+    magnetometer->start();
 
     qDebug() << "Magnetometer sensor started, waiting for 2500ms.";
     QTest::qWait(2500);
 
-    QVERIFY(client.getDataCount() < 20); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-    QVERIFY(client.getFrameCount() == 1);
+    QVERIFY(client.getDataCount() < 8); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
+    QVERIFY(client.getFrameCount() == 2);
     QVERIFY(client.getFrameDataCount() < 80);
 
     magnetometer->stop();

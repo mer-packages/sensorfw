@@ -114,7 +114,10 @@ bool SocketReader::read(QVector<T>& values)
 
     unsigned int count;
     if(!read((void*)&count, sizeof(unsigned int)))
+    {
+        socket_->readAll();
         return false;
+    }
     if(count > 1000)
     {
         qWarning() << "Too many samples waiting in socket. Flushing it to empty";

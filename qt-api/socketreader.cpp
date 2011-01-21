@@ -73,6 +73,8 @@ bool SocketReader::dropConnection()
     }
 
     socket_->disconnectFromServer();
+    if(socket_->state() != QLocalSocket::UnconnectedState)
+        socket_->waitForDisconnected();
     delete socket_;
     socket_ = NULL;
 

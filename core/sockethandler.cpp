@@ -46,7 +46,8 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
-    connect(&timer, SIGNAL(timeout()), this, SLOT(delayedWrite()));
+    timer.setSingleShot(true);
+    connect(&timer, SIGNAL(timeout()), this, SLOT(timerTimeout()));
 }
 
 SessionData::~SessionData()
@@ -54,6 +55,11 @@ SessionData::~SessionData()
     timer.stop();
     delete socket;
     delete[] buffer;
+}
+
+void SessionData::timerTimeout()
+{
+    delayedWrite();
 }
 
 long SessionData::sinceLastWrite() const
@@ -126,7 +132,7 @@ bool SessionData::write(const void* source, int size)
             sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
             timer.start(bufferInterval);
         }
-        else if((interval - since) > 0)
+        else if(!bufferSize && (interval - since) > 0)
         {
             sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
             timer.start(interval - since);

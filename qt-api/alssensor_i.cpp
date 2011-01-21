@@ -66,12 +66,10 @@ ALSSensorChannelInterface* ALSSensorChannelInterface::interface(const QString& i
 void ALSSensorChannelInterface::dataReceived()
 {
     QVector<TimedUnsigned> values;
-    while (read<TimedUnsigned>(values))
-    {
-        foreach(const TimedUnsigned& data, values)
-            emit ALSChanged(data);
-        values.clear();
-    }
+    if(!read<TimedUnsigned>(values))
+        return;
+    foreach(const TimedUnsigned& data, values)
+        emit ALSChanged(data);
 }
 
 Unsigned ALSSensorChannelInterface::lux() const

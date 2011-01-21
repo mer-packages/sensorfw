@@ -65,7 +65,8 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::interf
 void AccelerometerSensorChannelInterface::dataReceived()
 {
     QVector<AccelerationData> values;
-    read<AccelerationData>(values);
+    if(!read<AccelerationData>(values))
+        return;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const AccelerationData& data, values)

@@ -66,7 +66,8 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::interfac
 void MagnetometerSensorChannelInterface::dataReceived()
 {
     QVector<CalibratedMagneticFieldData> values;
-    read<CalibratedMagneticFieldData>(values);
+    if(!read<CalibratedMagneticFieldData>(values))
+        return;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const CalibratedMagneticFieldData& data, values)

@@ -64,12 +64,10 @@ CompassSensorChannelInterface* CompassSensorChannelInterface::interface(const QS
 void CompassSensorChannelInterface::dataReceived()
 {
     QVector<CompassData> values;
-    while (read<CompassData>(values))
-    {
-        foreach(const CompassData& data, values)
-            emit dataAvailable(data);
-        values.clear();
-    }
+    if(!read<CompassData>(values))
+        return;
+    foreach(const CompassData& data, values)
+        emit dataAvailable(data);
 }
 
 Compass CompassSensorChannelInterface::get() const
