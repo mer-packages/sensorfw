@@ -162,7 +162,21 @@ public Q_SLOTS:
      */
     unsigned int getInterval() const;
 
+    /**
+     * Returns list of available buffer sizes. The list is ordered by
+     * efficiency of the size.
+     *
+     * @param hwSupported Is the buffering supported by driver.
+     * @return The list of supported buffer sizes ordered by efficiency.
+     */
     virtual IntegerRangeList getAvailableBufferSizes(bool& hwSupported) const;
+
+    /**
+     * Returns list of available buffer intervals.
+     *
+     * @param hwSupported Is the buffering supported by driver.
+     * @return The list of supported buffer intervals.
+     */
     virtual IntegerRangeList getAvailableBufferIntervals(bool& hwSupported) const;
 
     virtual unsigned int bufferSize() const { return 0; };

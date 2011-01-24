@@ -82,10 +82,23 @@ public:
 
     unsigned int bufferInterval() const;
     void setBufferInterval(unsigned int value);
+
+    /**
+     * Returns list of available buffer intervals.
+     *
+     * @return The list of supported buffer intervals.
+     */
     IntegerRangeList getAvailableBufferIntervals();
 
     unsigned int bufferSize() const;
     void setBufferSize(unsigned int value);
+
+    /**
+     * Returns list of available buffer sizes. The list is ordered by
+     * efficiency of the size.
+     *
+     * @return The list of supported buffer sizes ordered by efficiency.
+     */
     IntegerRangeList getAvailableBufferSizes();
 
     QString type() const;
@@ -141,6 +154,11 @@ private:
     SocketReader& getSocketReader() const;
 
 public:
+    /**
+     * Does the sensor driver support buffering or not.
+     *
+     * @return Does the sensor driver support buffering or not.
+     */
     bool hwBuffering();
 };
 
