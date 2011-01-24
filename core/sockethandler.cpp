@@ -314,7 +314,7 @@ void SocketHandler::socketDisconnected()
     QLocalSocket* socket = (QLocalSocket*)sender();
 
     int sessionId = -1;
-    for(QMap<int, SessionData*>::const_iterator it = m_idMap.begin(); it != m_idMap.end(); ++it)
+    for(QMap<int, SessionData*>::const_iterator it = m_idMap.constBegin(); it != m_idMap.constEnd(); ++it)
     {
         if(it.value()->getSocket() == socket)
             sessionId = it.key();

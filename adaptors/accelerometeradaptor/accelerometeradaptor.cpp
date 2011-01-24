@@ -117,12 +117,11 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
     }
 
     // Get the smallest positive request, 0 is reserved for HW wakeup
-    QMap<int, unsigned int>::const_iterator it;
-    it = m_intervalMap.begin();
+    QMap<int, unsigned int>::const_iterator it = m_intervalMap.constBegin();
     highestValue = it.value();
     winningSessionId = it.key();
 
-    for (++it; it != m_intervalMap.end(); ++it)
+    for (++it; it != m_intervalMap.constEnd(); ++it)
     {
         if ((it.value() < highestValue) && (it.value() > 0)) {
             highestValue = it.value();

@@ -349,12 +349,11 @@ unsigned int NodeBase::evaluateIntervalRequests(int& sessionId) const
     }
 
     // Get the winning request
-    QMap<int, unsigned int>::const_iterator it;
-    it = m_intervalMap.begin();
+    QMap<int, unsigned int>::const_iterator it = m_intervalMap.constBegin();
     highestValue = it.value();
     winningSessionId = it.key();
 
-    for (++it; it != m_intervalMap.end(); ++it)
+    for (++it; it != m_intervalMap.constEnd(); ++it)
     {
         if (it.value() < highestValue) {
             highestValue = it.value();
@@ -532,7 +531,7 @@ bool NodeBase::updateBufferSize()
 {
     int key = 0;
     int value = 0;
-    for(QMap<int, unsigned int>::const_iterator it = m_bufferSizeMap.begin(); it != m_bufferSizeMap.end(); ++it)
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferSizeMap.constBegin(); it != m_bufferSizeMap.constEnd(); ++it)
     {
         if(it.key() >= key)
         {
@@ -568,7 +567,7 @@ bool NodeBase::updateBufferInterval()
 {
     int key = 0;
     int value = 0;
-    for(QMap<int, unsigned int>::const_iterator it = m_bufferIntervalMap.begin(); it != m_bufferIntervalMap.end(); ++it)
+    for(QMap<int, unsigned int>::const_iterator it = m_bufferIntervalMap.constBegin(); it != m_bufferIntervalMap.constEnd(); ++it)
     {
         if(it.key() >= key)
         {

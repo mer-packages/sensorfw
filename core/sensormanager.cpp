@@ -514,17 +514,17 @@ void SensorManager::devicePSMStateChanged(const bool psmState)
 void SensorManager::printStatus(QStringList& output) const
 {
     output.append("  Adaptors:\n");
-    for (QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.begin(); it != deviceAdaptorInstanceMap_.end(); ++it) {
+    for (QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.constBegin(); it != deviceAdaptorInstanceMap_.constEnd(); ++it) {
         output.append(QString("    %1 [%2 listener(s)]\n").arg(it.value().type_).arg(it.value().cnt_));
     }
 
     output.append("  Chains:\n");
-    for (QMap<QString, ChainInstanceEntry>::const_iterator it = chainInstanceMap_.begin(); it != chainInstanceMap_.end(); ++it) {
+    for (QMap<QString, ChainInstanceEntry>::const_iterator it = chainInstanceMap_.constBegin(); it != chainInstanceMap_.constEnd(); ++it) {
         output.append(QString("    %1 [%2 listener(s)]. %3\n").arg(it.value().type_).arg(it.value().cnt_).arg((it.value().chain_ && it.value().chain_->running()) ? "Running" : "Stopped"));
     }
 
     output.append("  Logical sensors:\n");
-    for (QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it) {
+    for (QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.constBegin(); it != sensorInstanceMap_.constEnd(); ++it) {
 
         QString str;
         str.append(QString("    %1 [").arg(it.value().type_));
