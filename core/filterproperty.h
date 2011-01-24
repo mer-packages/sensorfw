@@ -55,7 +55,7 @@ public:
      * is monitoring.
      * @param property Pointer to the calling FilterPropertyBase.
      */
-    virtual void trackWrite(FilterPropertyBase* property) {}
+    virtual void trackWrite(FilterPropertyBase* property) { Q_UNUSED(property); }
 };
 
 

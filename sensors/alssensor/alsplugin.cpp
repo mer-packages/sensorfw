@@ -38,6 +38,7 @@ void ALSPlugin::Register(class Loader&)
 
 void ALSPlugin::Init(class Loader& l)
 {
+    Q_UNUSED(l);
     SensorManager::instance().requestSensor("alssensor");
 }
 
