@@ -132,27 +132,28 @@ void OrientationInterpreter::processTopEdge()
     PoseData newTopEdge = PoseData::Undefined;
 
     // Portrait check
-    rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+    rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
 
-    if (abs(rotation) > angleThresholdPortrait) {
-        newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
+    if (abs(rotation) > angleThresholdLandscape) {
+
+        newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
 
         // Some threshold to switching between portrait modes
-        if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
-            if (abs(rotation) < SAME_AXIS_LIMIT){
+        if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
+            if (abs(rotation) < SAME_AXIS_LIMIT) {
                 newTopEdge.orientation_ = topEdge.orientation_;
             }
         }
 
     } else {
         // Landscape check
-        rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
-        if (abs(rotation) > angleThresholdLandscape) {
-            newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
+        rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
 
+        if (abs(rotation) > angleThresholdPortrait) {
+            newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
             // Some threshold to switching between landscape modes
-            if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
-                if (abs(rotation) < SAME_AXIS_LIMIT) {
+            if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
+                if (abs(rotation) < SAME_AXIS_LIMIT){
                     newTopEdge.orientation_ = topEdge.orientation_;
                 }
             }
