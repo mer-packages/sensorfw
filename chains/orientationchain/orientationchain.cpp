@@ -35,11 +35,7 @@ OrientationChain::OrientationChain(const QString& id) :
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
     Q_ASSERT( accelerometerChain_ );
-    if (!accelerometerChain_->isValid()) {
-        isValid_ = false;
-    } else {
-        isValid_ = true;
-    }
+    setValid(accelerometerChain_->isValid());
 
     accelerometerReader_ = new BufferReader<AccelerationData>(128);
 

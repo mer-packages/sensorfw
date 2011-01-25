@@ -9,6 +9,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,17 +33,13 @@ DeviceAdaptor::~DeviceAdaptor()
 {
     foreach(AdaptedSensorEntry* entry, sensors_)
     {
-        if (entry) {
-            delete entry;
-        } else {
-            sensordLogC() << "Entry is not valid!";
-        }
+        delete entry;
     }
 }
 
 void DeviceAdaptor::addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer)
 {
-    sensors_.insert(name, new AdaptedSensorEntry(name, description, buffer));
+    addAdaptedSensor(name, new AdaptedSensorEntry(name, description, buffer));
 }
 
 void DeviceAdaptor::addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor)
@@ -54,7 +51,6 @@ AdaptedSensorEntry* DeviceAdaptor::findAdaptedSensor(const QString& sensorId) co
 {
     if ( !sensors_.contains(sensorId) )
         return NULL;
-
     return sensors_[sensorId];
 }
 
@@ -65,8 +61,27 @@ QList<QString> DeviceAdaptor::findAdaptedSensors() const
 
 RingBufferBase* DeviceAdaptor::findBuffer(const QString& name) const
 {
-    if ( !sensors_.contains(name) )
+    AdaptedSensorEntry* entry = findAdaptedSensor(name);
+    if ( !entry )
         return NULL;
+    return entry->buffer();
+}
 
-    return sensors_.value(name)->buffer();
+bool DeviceAdaptor::setStandbyOverride(bool override)
+{
+    standbyOverride_ = override;
+
+    if (screenBlanked)
+    {
+        if(override)
+        {
+            resume();
+        }
+        else
+        {
+            standby();
+        }
+    }
+    sensordLogD() << "standbyOverride changed: id = " << id() << ", value = " <<  standbyOverride_;
+    return true;
 }

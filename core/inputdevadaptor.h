@@ -50,7 +50,7 @@ public:
      * @param maxDeviceCount Maximum number of devices that can be associated with this adaptor
      */
     InputDevAdaptor(const QString& id, int maxDeviceCount = 1);
-    ~InputDevAdaptor();
+    virtual ~InputDevAdaptor();
 
     int getDeviceCount() { return deviceCount_; }
 
@@ -77,7 +77,7 @@ protected:
      * @param strictChecks whether to perform more extensive checks for the input device.
      * @return True if yes, false if not.
      */
-    virtual bool checkInputDevice(QString path, QString matchString, bool strictChecks = true);
+    virtual bool checkInputDevice(const QString& path, const QString& matchString, bool strictChecks = true);
 
     /**
      * Interpret a read event and store the received value.
@@ -97,10 +97,8 @@ protected:
      * @param matchString String to match in device name fields.
      *
      * @return Number of devices detected.
-     *
-     * @todo Redesign to provide proper listing of matched devices.
      */
-    int getInputDevices(QString matchString = "");
+    int getInputDevices(const QString& matchString);
 
     /**
      * Read and process data. Run when sysfsadaptor has detected new available

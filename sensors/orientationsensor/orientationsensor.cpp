@@ -39,7 +39,7 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
 
     orientationChain_ = sm.requestChain("orientationchain");
     Q_ASSERT( orientationChain_ );
-    isValid_ = orientationChain_->isValid();
+    setValid(orientationChain_->isValid());
 
     orientationReader_ = new BufferReader<PoseData>(128);
 

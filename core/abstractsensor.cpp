@@ -36,11 +36,10 @@
 
 #include "abstractsensor.h"
 
-AbstractSensorChannel::AbstractSensorChannel(const QString& id)
-    : //, state_(STOPPED),
-    errorCode_(SNoError)
-    , isValid_(false)
-    , cnt_(0)
+AbstractSensorChannel::AbstractSensorChannel(const QString& id) :
+    errorCode_(SNoError),
+    isValid_(false),
+    cnt_(0)
 {
     id_ = getCleanId(id);
 }
@@ -67,19 +66,12 @@ bool AbstractSensorChannel::start(int sessionId) {
 
 bool AbstractSensorChannel::start()
 {
-    //Q_ASSERT( interval_ > 0 );
-
-    //setState( STARTED );
-    // TODO
-
-    // TODO: Use active list as run refcount().
-
-    // return true only on change from 0->1
     if (++cnt_ == 1) return true;
     return false;
 }
 
-bool AbstractSensorChannel::stop(int sessionId) {
+bool AbstractSensorChannel::stop(int sessionId)
+{
     activeSessions_.removeAll(sessionId);
 
     if(stop())
@@ -92,12 +84,6 @@ bool AbstractSensorChannel::stop(int sessionId) {
 
 bool AbstractSensorChannel::stop()
 {
-    //setState( STOPPED );
-    // TODO
-
-    // TODO: Use active list as run refcount().
-
-    // Return true only on change from 1->0
     if (--cnt_ == 0) return true;
     if (cnt_ < 0) cnt_ = 0;
     return false;

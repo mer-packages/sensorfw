@@ -65,7 +65,7 @@ GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
     addStandbyOverrideSource(gyroscopeAdaptor_);
     setIntervalSource(gyroscopeAdaptor_);
 
-    isValid_ = true;
+    setValid(true);
 }
 
 GyroscopeSensorChannel::~GyroscopeSensorChannel()

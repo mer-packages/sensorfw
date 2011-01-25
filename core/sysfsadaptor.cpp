@@ -57,10 +57,14 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     pipeDescriptors_[1] = -1;
 }
 
+SysfsAdaptor::~SysfsAdaptor()
+{
+    stopAdaptor();
+}
+
 bool SysfsAdaptor::addPath(const QString& path, const int id)
 {
     if (!QFile::exists(path)) {
-        // TODO: set error
         return false;
     }
 
@@ -70,10 +74,10 @@ bool SysfsAdaptor::addPath(const QString& path, const int id)
     return true;
 }
 
-bool SysfsAdaptor::isRunning(){
+bool SysfsAdaptor::isRunning()
+{
     return running_;
 }
-
 
 bool SysfsAdaptor::startAdaptor()
 {
@@ -89,16 +93,12 @@ bool SysfsAdaptor::startAdaptor()
 
 void SysfsAdaptor::stopAdaptor()
 {
+    if(initNotDone)
+        return;
     initNotDone = true;
     disconnect(&reader_, SIGNAL(readyRead(int,int)), this, SLOT(dataAvailable(int,int)));
 
-    foreach (AdaptedSensorEntry* entry, sensors_) {
-
-        if (! entry ) {
-            sensordLogC() << "Entry is not valid.";
-            return;
-        }
-
+    foreach (AdaptedSensorEntry* entry, sensors()) {
         if ( entry->isRunning() ) {
             //TODO: Drop refcount, so that we will definitely stop.
             stopSensor(entry->name());
@@ -111,7 +111,7 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {
-        sensordLogW() << "Sensor not found" << sensorId;
+        sensordLogW() << "Sensor not found " << sensorId;
         return false;
     }
 
@@ -126,7 +126,7 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     shouldBeRunning_ = true;
 
     // Do not open if in standby mode.
-    if (inStandbyMode_ && !standbyOverride_) {
+    if (inStandbyMode_ && !deviceStandbyOverride()) {
         return true;
     }
 
@@ -134,7 +134,7 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     inStandbyMode_ = false;
 
     if (!startReaderThread()) {
-        sensordLogW() << "Failed to start adaptor" << sensorId;
+        sensordLogW() << "Failed to start adaptor " << sensorId;
         entry->removeReference();
         entry->setIsRunning(false);
         running_ = false;
@@ -153,7 +153,6 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {
-        // TODO: set error
         sensordLogW() << "Sensor not found" << sensorId;
         return;
     }
@@ -176,17 +175,17 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
 
 bool SysfsAdaptor::standby()
 {
-    if (standbyOverride_ || inStandbyMode_) {
+    if (deviceStandbyOverride() || inStandbyMode_) {
         return true;
     }
     inStandbyMode_ = true;
 
     if (!isRunning()) {
-        sensordLogD() << id_ << "not going to standby: not running";
+        sensordLogD() << id() << " not going to standby: not running";
         return true;
     }
 
-    sensordLogD() << id_ << "going to standby";
+    sensordLogD() << id() << " going to standby";
     stopReaderThread();
     closeAllFds();
 
@@ -205,14 +204,14 @@ bool SysfsAdaptor::resume()
     inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
-        sensordLogD() << id_ << "not resuming from standby: not running";
+        sensordLogD() << id() << " not resuming from standby: not running";
         return true;
     }
 
-    sensordLogD() << id_ << "resuming from standby";
+    sensordLogD() << id() << " resuming from standby";
 
     if (!startReaderThread()) {
-        sensordLogW() << "Failed to resume" << id_ << "from standby!";
+        sensordLogW() << "Failed to resume " << id() << " from standby!";
         return false;
     }
 
@@ -222,13 +221,12 @@ bool SysfsAdaptor::resume()
 
 bool SysfsAdaptor::openFds()
 {
-    QMutexLocker locker(&(mutex_));
+    QMutexLocker locker(&mutex_);
 
     int fd;
     for (int i = 0; i < paths_.size(); i++) {
         if ((fd = open(paths_.at(i).toAscii().constData(), O_RDONLY)) == -1) {
-            // TODO: set error
-            sensordLogW() << "open():" << strerror(errno);
+            sensordLogW() << "open(): " << strerror(errno);
             return false;
         }
         sysfsDescriptors_.append(fd);
@@ -238,18 +236,18 @@ bool SysfsAdaptor::openFds()
     if (mode_ == SelectMode) {
 
         if (pipe(pipeDescriptors_) == -1 ) {
-            sensordLogW() << "pipe():" << strerror(errno);
+            sensordLogW() << "pipe(): " << strerror(errno);
             return false;
         }
 
         if (fcntl(pipeDescriptors_[0], F_SETFD, FD_CLOEXEC) == -1) {
-            sensordLogW() << "fcntl():" << strerror(errno);
+            sensordLogW() << "fcntl(): " << strerror(errno);
             return false;
         }
 
         // Set up epoll fd
-        if ((epollDescriptor_ = epoll_create(sysfsDescriptors_.size()+1)) == -1) {
-            sensordLogW() << "epoll_create():" << strerror(errno);
+        if ((epollDescriptor_ = epoll_create(sysfsDescriptors_.size() + 1)) == -1) {
+            sensordLogW() << "epoll_create(): " << strerror(errno);
             return false;
         }
 
@@ -258,10 +256,10 @@ bool SysfsAdaptor::openFds()
         ev.events  = EPOLLIN;
 
         // Set up epolling for the list
-        for (int i = 0; i < sysfsDescriptors_.size(); i++) {
+        for (int i = 0; i < sysfsDescriptors_.size(); ++i) {
             ev.data.fd = sysfsDescriptors_.at(i);
             if (epoll_ctl(epollDescriptor_, EPOLL_CTL_ADD, sysfsDescriptors_.at(i), &ev) == -1) {
-                sensordLogW() << "epoll_ctl():" << strerror(errno);
+                sensordLogW() << "epoll_ctl(): " << strerror(errno);
                 return false;
             }
         }
@@ -269,7 +267,7 @@ bool SysfsAdaptor::openFds()
         // Add control pipe to poll list
         ev.data.fd = pipeDescriptors_[0];
         if (epoll_ctl(epollDescriptor_, EPOLL_CTL_ADD, pipeDescriptors_[0], &ev) == -1) {
-            sensordLogW() << "epoll_ctl():" << strerror(errno);
+            sensordLogW() << "epoll_ctl(): " << strerror(errno);
             return false;
         }
     }
@@ -279,7 +277,7 @@ bool SysfsAdaptor::openFds()
 
 void SysfsAdaptor::closeAllFds()
 {
-    QMutexLocker locker(&(mutex_));
+    QMutexLocker locker(&mutex_);
 
     /* Epoll */
     if (epollDescriptor_ != -1) {
@@ -288,7 +286,7 @@ void SysfsAdaptor::closeAllFds()
     }
 
     /* Pipe */
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 2; ++i) {
         if (pipeDescriptors_[i] != -1) {
             close(pipeDescriptors_[i]);
             pipeDescriptors_[i] = -1;
@@ -351,40 +349,37 @@ bool SysfsAdaptor::writeToFile(QString path, QString content)
     return true;
 }
 
-// TODO: Figure out whether this could be done more simply and thread safely.
 void SysfsAdaptor::dataAvailable(int pathId, int fd)
 {
     processSample(pathId, fd);
 }
 
-unsigned int SysfsAdaptor::interval() const
+bool SysfsAdaptor::checkIntervalUsage() const
 {
     if (mode_ == SysfsAdaptor::SelectMode)
     {
-        QList<DataRange> list = getAvailableIntervals();
+        const QList<DataRange>& list = getAvailableIntervals();
         if (list.size() > 1 || (list.first().min != list.first().max))
         {
             sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
-            return 0;
+            return false;
         }
     }
+    return true;
+}
+
+unsigned int SysfsAdaptor::interval() const
+{
+    if(!checkIntervalUsage())
+        return 0;
     return interval_;
 }
 
 bool SysfsAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
     Q_UNUSED(sessionId);
-
-    if (mode_ == SysfsAdaptor::SelectMode)
-    {
-        QList<DataRange> list = getAvailableIntervals();
-        if (list.size() > 1 || (list.first().min != list.first().max))
-        {
-            sensordLogW() << "Attempting to use PollMode setInterval() function for adaptor in SelectMode. Must reimplement!";
-            return false;
-        }
-    }
-
+    if(!checkIntervalUsage())
+        return false;
     interval_ = value;
     return true;
 }
@@ -437,7 +432,7 @@ void SysfsAdaptorReader::run()
         } else { //IntervalMode
 
             // Read through all fds.
-            for (int i = 0; i < parent_->sysfsDescriptors_.size(); i++) {
+            for (int i = 0; i < parent_->sysfsDescriptors_.size(); ++i) {
 
                 parent_->processSample(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
 

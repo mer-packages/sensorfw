@@ -73,7 +73,6 @@ private slots:
 
     void testAvailableRanges();
     void testGetCurrentRange();
-    void testConcurrentRangeRequests();
 
     void testAvailableIntervals();
     void testAvailableBufferIntervals();

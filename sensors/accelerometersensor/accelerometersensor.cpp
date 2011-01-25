@@ -39,7 +39,7 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
     Q_ASSERT( accelerometerChain_ );
-    isValid_ = accelerometerChain_->isValid();
+    setValid(accelerometerChain_->isValid());
 
     accelerometerReader_ = new BufferReader<AccelerationData>(128);
 

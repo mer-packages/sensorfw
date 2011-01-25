@@ -60,7 +60,7 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    isValid_ = true;
+    setValid(true);
 
     setDescription("whether an object is close to device screen");
     setRangeSource(proximityAdaptor_);

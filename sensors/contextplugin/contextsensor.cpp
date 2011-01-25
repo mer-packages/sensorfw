@@ -43,7 +43,7 @@ ContextSensorChannel::ContextSensorChannel(const QString& id) :
         compassBin = new CompassBin(service, false);
     }
 
-    isValid_ = true;
+    setValid(true);
 }
 
 ContextSensorChannel::~ContextSensorChannel()

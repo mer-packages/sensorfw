@@ -129,7 +129,7 @@ DataRangeList AbstractSensorChannelAdaptor::getAvailableDataRanges()
 
 DataRange AbstractSensorChannelAdaptor::getCurrentDataRange()
 {
-    return node()->getCurrentDataRange().range_;
+    return node()->getCurrentDataRange().range;
 }
 
 void AbstractSensorChannelAdaptor::requestDataRange(int sessionId, DataRange range)

@@ -10,6 +10,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -70,7 +71,7 @@ public:
     int addReference() { count_ += 1; return count_; }
     int removeReference() { count_ -= 1; return count_; }
 
-protected:
+private:
     QString         name_; // note that name is also stored as key of the QHash entry
     QString         description_;
 
@@ -98,28 +99,14 @@ public:
 
     void setScreenBlanked(bool status)
     {
-        screenBlanked = status; 
+        screenBlanked = status;
     }
 
     virtual bool isValid() const {return isValid_;}
 
-    virtual bool setStandbyOverride(const bool override)
-    {
-        standbyOverride_ = override;
-        
-        if (screenBlanked)
-        {  
-            if(override)
-            {
-                resume();
-            }
-            else{
-                standby();
-            }
-        }               
-        sensordLogD() << "standbyOverride Changed:" << id_ << standbyOverride_;
-        return standbyOverride_;
-    }
+    virtual bool setStandbyOverride(bool override);
+
+    bool deviceStandbyOverride() const { return standbyOverride_; };
 
     const QString& id() const { return id_; }
 
@@ -138,16 +125,19 @@ public:
     virtual bool resume() { return false; }
 
 protected:
-    void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
     void addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
 
-    QString                             id_;
-    QHash<QString, AdaptedSensorEntry*> sensors_;
+    const QHash<QString, AdaptedSensorEntry*>& sensors() const { return sensors_; }
 
-    bool isValid_;
-    bool standbyOverride_;
+    virtual void setValid(bool valid) { isValid_ = valid; };
 
 private:
+    void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
+
+    const QString id_;
+    bool isValid_;
+    bool standbyOverride_;
+    QHash<QString, AdaptedSensorEntry*> sensors_;
     bool screenBlanked;
 };
 

@@ -68,9 +68,6 @@ private:
  *
  * Simultaneous monitoring of several files is supported. Currently files are indexed
  * only by their adding order. First added path is index 0, second index 1, etc.
- *
- * @todo Add resonable error handling
- * @todo Convert activity handling to use function pointers instead in indices.
  */
 class SysfsAdaptor : public DeviceAdaptor, public PropertyTracker
 {
@@ -91,6 +88,8 @@ public:
      * @param pathId   Identifier for the path (used as parameter to processSample).
      */
     SysfsAdaptor(const QString& id, PollMode mode = SelectMode, bool seek = true, const QString& path = "", const int pathId = 0);
+
+    virtual ~SysfsAdaptor();
 
     /**
      * Add a new file device for monitoring. Adaptor must be restarted to
@@ -179,9 +178,6 @@ protected:
      */
     virtual bool setInterval(const unsigned int value, const int sessionId);
 
-    QList<int> sysfsDescriptors_; /**< List of open file descriptors. */
-    QMutex mutex_;
-
 private:
     /**
      * Opens all file descriptors required by the adaptor.
@@ -193,11 +189,10 @@ private:
      */
     void closeAllFds();
 
-    /**
-     *
-     */
     void stopReaderThread();
     bool startReaderThread();
+
+    bool checkIntervalUsage() const;
 
     SysfsAdaptorReader  reader_;
 
@@ -216,6 +211,9 @@ private:
     bool running_;
     bool shouldBeRunning_;
     bool doSeek_;
+
+    QList<int> sysfsDescriptors_; /**< List of open file descriptors. */
+    QMutex mutex_;
 
     friend class SysfsAdaptorReader;
 };

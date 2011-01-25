@@ -47,7 +47,6 @@ class MagnetometerSensorChannel :
 {
     Q_OBJECT;
     Q_PROPERTY(MagneticField magneticField READ magneticField);
-    Q_PROPERTY(int resetCalibration WRITE reset_);
 
 public:
     /**
@@ -61,6 +60,8 @@ public:
 
         return sc;
     }
+
+    Q_INVOKABLE void resetCalibration();
 
     MagneticField magneticField() const
     {
@@ -93,11 +94,9 @@ private:
     BufferReader<CalibratedMagneticFieldData>* magnetometerReader_;
     RingBuffer<CalibratedMagneticFieldData>*   outputBuffer_;
     CalibratedMagneticFieldData                prevMeasurement_;
-    int                                        prevRangeRequestId_;
     int                                        scaleCoefficient_;
 
     void emitToDbus(const CalibratedMagneticFieldData& value);
-    void reset_(int dummy);
 };
 
 #endif // MAGNETOMETER_SENSOR_CHANNEL_H

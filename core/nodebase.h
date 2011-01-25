@@ -39,8 +39,6 @@ class RingBufferBase;
 /**
  * Base class for all nodes in sensord framework filtering chain.
  * Provides common functions for handling node metadata.
- *
- * @todo Improve handling of local vs. source originated data.
  */
 class NodeBase : public QObject
 {
@@ -51,7 +49,7 @@ class NodeBase : public QObject
     Q_PROPERTY(unsigned int interval READ getInterval);
 
 protected:
-    NodeBase(QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0) {}
+    NodeBase(QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0), DEFAULT_DATA_RANGE_REQUEST(-1) {}
     virtual ~NodeBase() {}
 
 public Q_SLOTS:
@@ -60,7 +58,7 @@ public Q_SLOTS:
      * Get the description for this node.
      * @return Descriptive string.
      */
-    QString description() const;
+    const QString& description() const;
 
     /**
      * Remove a range request.
@@ -72,7 +70,7 @@ public Q_SLOTS:
      * Get list of available data ranges for this node.
      * @return QList of available data ranges for this sensor.
      */
-    QList<DataRange> getAvailableDataRanges() const;
+    const QList<DataRange>& getAvailableDataRanges() const;
 
     /**
      * Get the currently active DataRange for this node.
@@ -131,16 +129,10 @@ public Q_SLOTS:
      *
      * @return List of possible intervals for this sensor.
      */
-    QList<DataRange> getAvailableIntervals() const;
+    const QList<DataRange>& getAvailableIntervals() const;
 
-    /**
-     *
-     */
     bool setIntervalRequest(int sessionId, unsigned int value);
 
-    /**
-     *
-     */
     bool requestDefaultInterval(int sessionId);
 
     /**
@@ -216,7 +208,7 @@ protected:
      * Set the description for the node.
      * @param str The description string to set.
      */
-    void setDescription(const QString str);
+    void setDescription(const QString& str);
 
     /**
      * Introduce a new available range. Locally defined range will
@@ -374,6 +366,8 @@ private:
     //Oldest session wins for these:
     QMap<int, unsigned int> m_bufferSizeMap;
     QMap<int, unsigned int> m_bufferIntervalMap;
+
+    const DataRangeRequest  DEFAULT_DATA_RANGE_REQUEST;
 };
 
 #endif
