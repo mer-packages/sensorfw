@@ -88,7 +88,7 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
     addStandbyOverrideSource(alsAdaptor_);
     setIntervalSource(alsAdaptor_);
 
-    isValid_ = true;
+    setValid(true);
 }
 
 ALSSensorChannel::~ALSSensorChannel()

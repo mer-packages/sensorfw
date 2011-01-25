@@ -32,22 +32,17 @@ bool NodeBase::isMetadataValid() const
 {
     if (!hasLocalRange())
     {
-        if (m_dataRangeSource == NULL)
-        {
-            return false;
-        } else {
-            return m_dataRangeSource->isMetadataValid();
-        }
+        return m_dataRangeSource->isMetadataValid();
     }
     return true;
 }
 
-QString NodeBase::description() const
+const QString& NodeBase::description() const
 {
     return m_description;
 }
 
-void NodeBase::setDescription(const QString str)
+void NodeBase::setDescription(const QString& str)
 {
     m_description = str;
 }
@@ -60,37 +55,28 @@ void NodeBase::introduceAvailableDataRange(const DataRange& range)
     }
 }
 
-QList<DataRange> NodeBase::getAvailableDataRanges() const
+const QList<DataRange>& NodeBase::getAvailableDataRanges() const
 {
     if (hasLocalRange())
     {
         return m_dataRangeList;
-    } else if (m_dataRangeSource != NULL)
+    }
+    else
     {
         return m_dataRangeSource->getAvailableDataRanges();
     }
-    // TODO: Set error
-    return QList<DataRange>();
 }
 
 DataRangeRequest NodeBase::getCurrentDataRange() const
 {
-    if (hasLocalRange())
-    {
+    if (hasLocalRange()) {
         if (m_dataRangeQueue.empty()) {
-            DataRangeRequest rangeRequest;
-            rangeRequest.id_ = -1;
-            rangeRequest.range_ = m_dataRangeList.at(0);
-            return rangeRequest;
+            return DataRangeRequest(-1, m_dataRangeList.at(0));
         }
-
         return m_dataRangeQueue.at(0);
-    } else if (m_dataRangeSource != NULL)
-    {
+    } else {
         return m_dataRangeSource->getCurrentDataRange();
     }
-    // TODO: Set error
-    return DataRangeRequest();
 }
 
 void NodeBase::requestDataRange(int sessionId, const DataRange& range)
@@ -112,7 +98,7 @@ void NodeBase::requestDataRange(int sessionId, const DataRange& range)
                 rangeChanged = true;
             }
         } else {
-            if (m_dataRangeQueue.at(0).id_ == sessionId && !(m_dataRangeQueue.at(0).range_ == range)) {
+            if (m_dataRangeQueue.at(0).id == sessionId && !(m_dataRangeQueue.at(0).range == range)) {
                 rangeChanged = true;
             }
         }
@@ -120,28 +106,27 @@ void NodeBase::requestDataRange(int sessionId, const DataRange& range)
         // If an earlier request exists by same id, replace.
         bool hadPreviousRequest = false;
         for (int i = 0; i < m_dataRangeQueue.size() && hadPreviousRequest == false; ++i) {
-            if (m_dataRangeQueue.at(i).id_ == sessionId) {
-                m_dataRangeQueue[i].range_ = range;
+            if (m_dataRangeQueue.at(i).id == sessionId) {
+                m_dataRangeQueue[i].range = range;
                 hadPreviousRequest = true;
             }
         }
 
         if (!hadPreviousRequest) {
-            DataRangeRequest request = { sessionId, range };
+            DataRangeRequest request(sessionId, range);
             m_dataRangeQueue.append(request);
         }
 
         if (rangeChanged)
         {
             DataRangeRequest currentRequest = getCurrentDataRange();
-            if (!setDataRange(currentRequest.range_, currentRequest.id_))
+            if (!setDataRange(currentRequest.range, currentRequest.id))
             {
                 sensordLogW() << "Failed to set DataRange.";
             }
             emit propertyChanged("datarange");
         }
-    } else if (m_dataRangeSource != NULL)
-    {
+    } else {
         m_dataRangeSource->requestDataRange(sessionId, range);
     }
 }
@@ -152,7 +137,7 @@ void NodeBase::removeDataRangeRequest(int sessionId)
     {
         int index = -1;
         for (int i = 0; i < m_dataRangeQueue.size() && index == -1; ++i) {
-            if (m_dataRangeQueue.at(i).id_ == sessionId) {
+            if (m_dataRangeQueue.at(i).id == sessionId) {
                 index = i;
             }
         }
@@ -168,8 +153,8 @@ void NodeBase::removeDataRangeRequest(int sessionId)
 
         if (index == 0)
         {
-            if (((m_dataRangeQueue.size() > 0) && !(m_dataRangeQueue.at(0).range_ == request.range_)) ||
-                !(m_dataRangeList.at(0) == request.range_))
+            if (((m_dataRangeQueue.size() > 0) && !(m_dataRangeQueue.at(0).range == request.range)) ||
+                !(m_dataRangeList.at(0) == request.range))
             {
                 rangeChanged = true;
             }
@@ -178,14 +163,13 @@ void NodeBase::removeDataRangeRequest(int sessionId)
         if (rangeChanged)
         {
             DataRangeRequest currentRequest = getCurrentDataRange();
-            if (!setDataRange(currentRequest.range_, currentRequest.id_))
+            if (!setDataRange(currentRequest.range, currentRequest.id))
             {
                 sensordLogW() << "Failed to set DataRange.";
             }
             emit propertyChanged("datarange");
         }
-    } else if (m_dataRangeSource != NULL)
-    {
+    } else {
         m_dataRangeSource->removeDataRangeRequest(sessionId);
     }
 }
@@ -201,13 +185,12 @@ bool NodeBase::hasLocalRange() const
     return (m_dataRangeSource == NULL);
 }
 
-QList<DataRange> NodeBase::getAvailableIntervals() const
+const QList<DataRange>& NodeBase::getAvailableIntervals() const
 {
     if (!hasLocalInterval())
     {
         return m_intervalSource->getAvailableIntervals();
     }
-
     return m_intervalList;
 }
 
@@ -225,7 +208,6 @@ unsigned int NodeBase::getInterval() const
     {
         return m_intervalSource->getInterval();
     }
-
     return interval();
 }
 
@@ -259,8 +241,6 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     }
 
     // Signal listeners about change
-    // TODO: Signals should be connected correctly for custom int. handling
-    //       make a wrapper for registering custom targets.
     if (previousInterval != interval())
     {
         emit propertyChanged("interval");
@@ -339,19 +319,16 @@ void NodeBase::setIntervalSource(NodeBase* node)
 
 unsigned int NodeBase::evaluateIntervalRequests(int& sessionId) const
 {
-    unsigned int highestValue = 0;
-    int winningSessionId = -1;
-
     if (m_intervalMap.size() == 0)
     {
-        sessionId = winningSessionId;
+        sessionId = -1;
         return defaultInterval();
     }
 
     // Get the winning request
     QMap<int, unsigned int>::const_iterator it = m_intervalMap.constBegin();
-    highestValue = it.value();
-    winningSessionId = it.key();
+    unsigned int highestValue = it.value();
+    int winningSessionId = it.key();
 
     for (++it; it != m_intervalMap.constEnd(); ++it)
     {
@@ -474,8 +451,9 @@ bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName,
 
 bool NodeBase::isValidIntervalRequest(const unsigned int value) const
 {
-    for (int i = 0; i < m_intervalList.size(); i++) {
-        if (m_intervalList.at(i).min <= value && m_intervalList.at(i).max >= value)
+    for(QList<DataRange>::const_iterator it = m_intervalList.constBegin(); it != m_intervalList.constEnd(); ++it)
+    {
+        if (it->min <= value && it->max >= value)
         {
             return true;
         }

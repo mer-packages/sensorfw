@@ -36,7 +36,7 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
 {
     QString path = Config::configuration()->value("gyroscope_sysfs_path").toString();
     if ( !addPath(path, 0) ) {
-        isValid_ = false;
+        setValid(false);
     }
 
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<AngularVelocityData>(32);

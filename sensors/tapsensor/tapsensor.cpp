@@ -59,7 +59,7 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
 
     outputBuffer_->join(this);
 
-    isValid_ = true;
+    setValid(true);
 
     setDescription("either single or double device taps, and tap axis");
     setRangeSource(tapAdaptor_);

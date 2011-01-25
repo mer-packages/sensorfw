@@ -67,21 +67,20 @@ void InputDevAdaptor::stopSensor(const QString& sensorId)
     SysfsAdaptor::stopSensor(sensorId);
 }
 
-int InputDevAdaptor::getInputDevices(QString matchString)
+int InputDevAdaptor::getInputDevices(const QString& matchString)
 {
     int deviceNumber = 0;
-    QString deviceName;
     deviceCount_ = 0;
     deviceString_ = matchString;
 
     // Check if this device name is defined in configuration
     QString configKey = QString("dev_%1").arg(matchString);
-    deviceName = Config::configuration()->value(configKey, "DEV_NOT_FOUND").toString();
+    QString deviceName = Config::configuration()->value(configKey, "DEV_NOT_FOUND").toString();
 
     // Do not perform strict checks for the input device
     if (deviceName != "DEV_NOT_FOUND" && checkInputDevice(deviceName, matchString, false)) {
         addPath(deviceName, deviceCount_);
-        deviceCount_++;
+        ++deviceCount_;
         deviceNumber_ = deviceNumber;
     }
     else
@@ -93,10 +92,10 @@ int InputDevAdaptor::getInputDevices(QString matchString)
             deviceName = deviceSysPathString_.arg(deviceNumber);
             if (checkInputDevice(deviceName, matchString)) {
                 addPath(deviceName, deviceCount_);
-                deviceCount_++;
+                ++deviceCount_;
                 deviceNumber_ = deviceNumber;
             }
-            deviceNumber++;
+            ++deviceNumber;
         }
     }
 
@@ -109,7 +108,7 @@ int InputDevAdaptor::getInputDevices(QString matchString)
 
     if (deviceCount_ == 0) {
         sensordLogW() << "Cannot find any device for: " << matchString;
-        isValid_ = false;
+        setValid(false);
     }
 
     return deviceCount_;
@@ -145,13 +144,12 @@ void InputDevAdaptor::processSample(int pathId, int fd)
     }
 }
 
-bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool strictChecks)
+bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& matchString, bool strictChecks)
 {
-    int fd;
     char deviceName[256] = {0,};
     bool check = true;
 
-    fd = open(path.toLocal8Bit().constData(), O_RDONLY);
+    int fd = open(path.toLocal8Bit().constData(), O_RDONLY);
     if (fd == -1) {
         return false;
     }
@@ -163,7 +161,7 @@ bool InputDevAdaptor::checkInputDevice(QString path, QString matchString, bool s
            check = false;
         } else
         if (QString(deviceName).contains(matchString, Qt::CaseInsensitive)) {
-            sensordLogT() << "\"" << matchString << "\"" << "matched in device name: " << deviceName;
+            sensordLogT() << "\"" << matchString << "\"" << " matched in device name: " << deviceName;
             check = true;
         } else {
             check = false;

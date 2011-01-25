@@ -35,14 +35,13 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DbusEmitter<CalibratedMagneticFieldData>(10),
         scaleFilter_(NULL),
-        prevMeasurement_(),
-        prevRangeRequestId_(-1)
+        prevMeasurement_()
 {
     SensorManager& sm = SensorManager::instance();
 
     compassChain_ = sm.requestChain("magcalibrationchain");
     Q_ASSERT( compassChain_ );
-    isValid_ = compassChain_->isValid();
+    setValid(compassChain_->isValid());
 
     magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(128);
 
@@ -144,37 +143,25 @@ bool MagnetometerSensorChannel::stop()
 
 void MagnetometerSensorChannel::emitToDbus(const CalibratedMagneticFieldData& value)
 {
-    prevMeasurement_ = value; // TODO: Does this need locking?
+    prevMeasurement_ = value;
     writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));
     emit internalData(value);
 }
 
-void MagnetometerSensorChannel::reset_(int dummy)
+void MagnetometerSensorChannel::resetCalibration()
 {
-    Q_UNUSED(dummy);
-
-    if (!isValid_)
+    if (!compassChain_)
         return;
-
-    QObject *cc = dynamic_cast<QObject*>(compassChain_);
-    Q_UNUSED(cc); // Cleanup or document why this is done like this
     compassChain_->setProperty("resetCalibration",0);
 }
 
 bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int sessionId)
 {
-    if (sessionId < 0)
-    {
-        compassChain_->removeDataRangeRequest(prevRangeRequestId_);
-        prevRangeRequestId_ = -1;
-    } else {
-        DataRange request;
-        request.min = range.min*scaleCoefficient_;
-        request.max = range.max*scaleCoefficient_;
-        request.resolution = range.resolution*scaleCoefficient_;
+    DataRange request;
+    request.min = range.min * scaleCoefficient_;
+    request.max = range.max * scaleCoefficient_;
+    request.resolution = range.resolution * scaleCoefficient_;
 
-        compassChain_->requestDataRange(sessionId, request);
-        prevRangeRequestId_ = sessionId;
-    }
+    compassChain_->requestDataRange(sessionId, request);
     return true;
 }

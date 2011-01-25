@@ -43,14 +43,10 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
 {
     SensorManager& sm = SensorManager::instance();
-    
+
     accelerometerAdaptor_ = sm.requestDeviceAdaptor("accelerometeradaptor");
     Q_ASSERT( accelerometerAdaptor_ );
-    if (!accelerometerAdaptor_->isValid()) {
-        isValid_ = false;
-    } else {
-        isValid_ = true;
-    }
+    setValid(accelerometerAdaptor_->isValid());
 
     accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
@@ -88,7 +84,6 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     // Join datasources to the chain
     connectToSource(accelerometerAdaptor_, "accelerometer", accelerometerReader_);
 
-
     setDescription("Coordinate transformations");
     setRangeSource(accelerometerAdaptor_);
     addStandbyOverrideSource(accelerometerAdaptor_);
@@ -109,7 +104,6 @@ AccelerometerChain::~AccelerometerChain()
     delete filterBin_;
 }
 
-// TODO: Solve thread safety for start...
 bool AccelerometerChain::start()
 {
     if (AbstractSensorChannel::start()) {
@@ -130,7 +124,7 @@ bool AccelerometerChain::stop()
     return true;
 }
 
-bool AccelerometerChain::setMatrixFromString(const QString str)
+bool AccelerometerChain::setMatrixFromString(const QString& str)
 {
     QStringList strList = str.split(',');
     if (strList.size() != 9) {

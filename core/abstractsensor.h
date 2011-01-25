@@ -40,9 +40,6 @@
 class AbstractSensorChannel : public NodeBase {
     Q_OBJECT
 
-    // Note: Q_ENUMS makes enumerator names available for QObject::setProperty()
-    //Q_ENUMS(SensorState)
-
     Q_PROPERTY(bool isValid READ isValid)
     Q_PROPERTY(SensorError errorCode READ errorCode)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
@@ -53,8 +50,6 @@ class AbstractSensorChannel : public NodeBase {
 
     /** Type of the sensor channel */
     Q_PROPERTY(QString type READ type)
-
-    //Q_PROPERTY(SensorState state READ state)
 
     /** Whether sensor is running or not */
     Q_PROPERTY(bool running READ running);
@@ -70,8 +65,6 @@ public:
 
     const QString& id() const { return id_; }
     const QString type() const { return metaObject()->className(); }
-
-    //SensorState state() const { qDebug() << __PRETTY_FUNCTION__; return state_; }
 
     bool running() { return (bool)(cnt_ > 0); }
 
@@ -112,7 +105,6 @@ public Q_SLOTS:
     bool stop(int sessionId);
 
 Q_SIGNALS:
-    //void stateChanged(SensorState state);
     void errorSignal(int error);
 
 protected:
@@ -128,20 +120,11 @@ protected:
         emit propertyChanged(name);
     }
 
-    /*
-    void setState(SensorState state)
-    {
-        if ( state_ != state )
-        {
-            state_ = state;
-            emit stateChanged( state_ );
-        }
-    }
-    */
+    virtual void setValid(bool valid) { isValid_ = valid; };
 
+private:
     QString             id_;
     QString             name_;
-    //SensorState         state_;
 
     SensorError         errorCode_;
     QString             errorString_;
@@ -151,7 +134,7 @@ protected:
 
     QList<int>          activeSessions_;
 
-    QList<DataRange>        intervalList_;
+    QList<DataRange>    intervalList_;
 };
 
 typedef AbstractSensorChannel* (*SensorChannelFactoryMethod)(const QString& id);

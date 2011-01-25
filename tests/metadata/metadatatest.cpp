@@ -158,11 +158,6 @@ void MetaDataTest::testGetCurrentRange()
     delete sensorIfc;
 }
 
-void MetaDataTest::testConcurrentRangeRequests()
-{
-    // Test behavior of two different sessions making concurrent requests
-}
-
 void MetaDataTest::testChangeNotifications()
 {
     DummyHelper dummy;

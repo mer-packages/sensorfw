@@ -173,12 +173,19 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList 
  */
 class DataRangeRequest {
 public:
-    int       id_;
-    DataRange range_;
+    int       id;
+    DataRange range;
+
+    DataRangeRequest(int newId) :
+        id(newId) {};
+
+    DataRangeRequest(int newId, const DataRange& newRange) :
+        id(newId),
+        range(newRange) {};
 
     bool operator==(const DataRangeRequest& right) const
     {
-        return (id_ == right.id_ && range_ == right.range_);
+        return (id == right.id && range == right.range);
     }
 };
 
@@ -187,12 +194,16 @@ public:
  */
 class IntervalRequest {
 public:
-    int      id_;
-    unsigned value_;
+    int      id;
+    unsigned value;
+
+    IntervalRequest(int newId, unsigned newValue) :
+        id(newId),
+        value(newValue) {};
 
     bool operator==(const IntervalRequest& right) const
     {
-        return (id_ == right.id_ && value_ == right.value_);
+        return (id == right.id && value == right.value);
     }
 };
 
