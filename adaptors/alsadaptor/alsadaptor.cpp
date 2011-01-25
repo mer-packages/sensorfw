@@ -75,10 +75,7 @@ ALSAdaptor::ALSAdaptor(const QString& id):
     {
         device = RM680;
         addPath(RM680_ALS);
-    }
-
-
-    if (QFile::exists(rm696_als))
+    } else if (QFile::exists(rm696_als))
     {
         device = RM696;
         addPath(rm696_als);
@@ -100,6 +97,7 @@ ALSAdaptor::ALSAdaptor(const QString& id):
     introduceAvailableDataRange(DataRange(0, 65535, 1));
     introduceAvailableInterval(DataRange(0, 0, 0));
     setDefaultInterval(0);
+
 }
 
 
@@ -111,6 +109,7 @@ ALSAdaptor::~ALSAdaptor()
 
 void ALSAdaptor::processSample(int pathId, int fd)
 {
+    //QMutexLocker locker(&mutex);
     Q_UNUSED(pathId);
 
     if(device == RM680)
@@ -120,11 +119,13 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
+        sensordLogW() << "adaptor Running the thread  " << QThread::currentThreadId();
+
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read():" << strerror(errno) << " " << QThread::currentThreadId();
             return;
         }
-        sensordLogT() << "Ambient light value: " << als_data.lux;
+        sensordLogW() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
@@ -137,19 +138,26 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
         als_data.lux = 0;
 
+        sensordLogW() << "adaptor Running the thread  " << QThread::currentThreadId();
+
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read():" << strerror(errno) << " " << QThread::currentThreadId();
             return;
         }
-        sensordLogT() << "Ambient light value: " << als_data.lux;
+        sensordLogW() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
         lux->timestamp_ = Utils::getTimeStamp();
     }
 
+
+
+
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
+
+    sensordLogW() << "end the thread  " << QThread::currentThreadId();
 }
