@@ -78,9 +78,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     {
         device = RM680;
         addPath(RM680_PS);
-    }
-
-    if (QFile::exists(rm696_ps))
+    } else if (QFile::exists(rm696_ps))
     {
         device = RM696;
         addPath(rm696_ps);

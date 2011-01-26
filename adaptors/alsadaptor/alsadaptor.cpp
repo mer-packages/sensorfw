@@ -109,7 +109,6 @@ ALSAdaptor::~ALSAdaptor()
 
 void ALSAdaptor::processSample(int pathId, int fd)
 {
-    //QMutexLocker locker(&mutex);
     Q_UNUSED(pathId);
 
     if(device == RM680)
@@ -118,7 +117,6 @@ void ALSAdaptor::processSample(int pathId, int fd)
         als_data.lux = 0;
 
         int bytesRead = read(fd, &als_data, sizeof(als_data));
-
 
         if (bytesRead <= 0) {
             sensordLogW() << "read():" << strerror(errno);
@@ -137,7 +135,6 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
         als_data.lux = 0;
 
-
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
@@ -150,9 +147,6 @@ void ALSAdaptor::processSample(int pathId, int fd)
         lux->value_ = als_data.lux;
         lux->timestamp_ = Utils::getTimeStamp();
     }
-
-
-
 
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
