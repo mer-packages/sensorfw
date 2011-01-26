@@ -1,5 +1,6 @@
 sensord (0.6.37) unstable; urgency=low
 
+  [ Antti Virtanen ]
   [Antti Virtanen]
   * Optimized Qt container loops to use constBegin() and constEnd().
   * Optimized some funcs to return and take params as const refs when possible.
@@ -8,7 +9,11 @@ sensord (0.6.37) unstable; urgency=low
   * SysfsAdaptor destructor implemented.
   * Fixed few compiler warnings.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 24 Jan 2011 14:39:12 +0200
+  [ shenghua ]
+  * Part fixing the random failure problem for contestfw002 test
+  * Fix the screen rotation problem
+
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 26 Jan 2011 11:54:32 +0200
 
 sensord (0.6.36) unstable; urgency=low
 
