@@ -1,6 +1,5 @@
 sensord (0.6.37) unstable; urgency=low
 
-  [ Antti Virtanen ]
   [Antti Virtanen]
   * Optimized Qt container loops to use constBegin() and constEnd().
   * Optimized some funcs to return and take params as const refs when possible.
