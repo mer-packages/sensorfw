@@ -119,13 +119,12 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
-        sensordLogW() << "adaptor Running the thread  " << QThread::currentThreadId();
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno) << " " << QThread::currentThreadId();
+            sensordLogW() << "read():" << strerror(errno);
             return;
         }
-        sensordLogW() << "Ambient light value: " << als_data.lux;
+        sensordLogT() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
@@ -138,15 +137,14 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
         als_data.lux = 0;
 
-        sensordLogW() << "adaptor Running the thread  " << QThread::currentThreadId();
 
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno) << " " << QThread::currentThreadId();
+            sensordLogW() << "read():" << strerror(errno);
             return;
         }
-        sensordLogW() << "Ambient light value: " << als_data.lux;
+        sensordLogT() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
@@ -159,5 +157,4 @@ void ALSAdaptor::processSample(int pathId, int fd)
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
 
-    sensordLogW() << "end the thread  " << QThread::currentThreadId();
 }
