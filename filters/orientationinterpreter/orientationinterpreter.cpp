@@ -134,7 +134,11 @@ void OrientationInterpreter::processTopEdge()
     // Portrait check
     rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
 
-    if (abs(rotation) > angleThresholdLandscape) {
+    sensordLogW() << "rotation value " << rotation << " " << data.x_ << " " << data.y_ << " " << data.z_;
+
+    if (abs(rotation) > angleThresholdPortrait) {
+
+        sensordLogW() << "rotation value in portrait mode " << rotation << " " << data.x_ << " " << data.y_ << " " << data.z_;
 
         newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
 
@@ -146,11 +150,16 @@ void OrientationInterpreter::processTopEdge()
         }
 
     } else {
-        // Landscape check
+
         rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
 
-        if (abs(rotation) > angleThresholdPortrait) {
+        sensordLogW() << "rotation value in landscape " << rotation << " " << data.x_ << " " << data.y_ << " " << data.z_;
+
+        if (abs(rotation) > angleThresholdLandscape) {
             newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
+
+            sensordLogW() << "rotation value in landscape mode " << rotation << " " << data.x_ << " " << data.y_ << " " << data.z_;
+
             // Some threshold to switching between landscape modes
             if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
                 if (abs(rotation) < SAME_AXIS_LIMIT){

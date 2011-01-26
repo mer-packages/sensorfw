@@ -61,7 +61,7 @@ class Orientation(unittest.TestCase):
         dataSet_left = []
 
         # TopEdge = top (U, U, T, U, T), starting from Unknown
-        for angle in [0, landscape_angle-1, landscape_angle+1, landscape_angle-1, 90]:
+        for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
             dataSet_top.append([0, int(1000*math.cos(math.radians(90-angle))), int(1000*math.cos(math.radians(angle)))])
         self.dataSet += dataSet_top
 
@@ -72,7 +72,7 @@ class Orientation(unittest.TestCase):
         self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge = left (U, U, L, U, L)
-        for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
+        for angle in [0, landscape_angle-1, landscape_angle+1, landscape_angle-1, 90]:
             dataSet_left.append([-int(1000*math.cos(math.radians(90-angle))), 0, int(1000*math.cos(math.radians(angle)))])
         self.dataSet += dataSet_left
 
@@ -107,7 +107,7 @@ class Orientation(unittest.TestCase):
         self.expectSet.append('Position.IsFlat = bool:false')
 
         # TopEdge: left -> top -> left (should represent bottom and right well enough)
-        for angle in [0, portrait_angle-1, portrait_angle+1, portrait_angle-1, 90]:
+        for angle in [0, (90 - portrait_angle)-1, (90 - portrait_angle)+1, (90 - portrait_angle) -1, 90]:
             self.dataSet.append([-int(1000*math.cos(math.radians(90-angle))), int(1000*math.cos(math.radians(angle))), 0])
 
         self.expectSet.append('Screen.TopEdge = QString:"top"')
