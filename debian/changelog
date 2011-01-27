@@ -10,10 +10,10 @@ sensord (0.6.37) unstable; urgency=low
   * SocketReader didn't read buffer to empty if it contained more items buffered. Fixed: NB#222132.
 
   [Shenghua Liu]
-  * Part fixing the random failure problem for contestfw002 test
+  * Partly fixing the random failure problem for contestfw002 test
   * Fix the screen rotation problem, Fixes: NB#219958
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Thu, 27 Jan 2011 12:13:21 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 27 Jan 2011 16:08:45 +0200
 
 sensord (0.6.36) unstable; urgency=low
 
