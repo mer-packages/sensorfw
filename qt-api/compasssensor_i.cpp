@@ -61,13 +61,14 @@ CompassSensorChannelInterface* CompassSensorChannelInterface::interface(const QS
     return dynamic_cast<CompassSensorChannelInterface*>(sm.interface(id));
 }
 
-void CompassSensorChannelInterface::dataReceived()
+bool CompassSensorChannelInterface::dataReceivedImpl()
 {
     QVector<CompassData> values;
     if(!read<CompassData>(values))
-        return;
+        return false;
     foreach(const CompassData& data, values)
         emit dataAvailable(data);
+    return true;
 }
 
 Compass CompassSensorChannelInterface::get() const

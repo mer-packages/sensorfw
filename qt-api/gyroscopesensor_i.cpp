@@ -64,11 +64,11 @@ GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::interface(cons
     return dynamic_cast<GyroscopeSensorChannelInterface*>(sm.interface(id));
 }
 
-void GyroscopeSensorChannelInterface::dataReceived()
+bool GyroscopeSensorChannelInterface::dataReceivedImpl()
 {
     QVector<AngularVelocityData> values;
     if(!read<AngularVelocityData>(values))
-        return;
+        return false;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const AngularVelocityData& data, values)
@@ -82,8 +82,8 @@ void GyroscopeSensorChannelInterface::dataReceived()
             realValues.push_back(XYZ(data));
         emit frameAvailable(realValues);
     }
+    return true;
 }
-
 
 void GyroscopeSensorChannelInterface::connectNotify(const char* signal)
 {

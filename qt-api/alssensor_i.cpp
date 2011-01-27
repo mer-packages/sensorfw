@@ -63,13 +63,14 @@ ALSSensorChannelInterface* ALSSensorChannelInterface::interface(const QString& i
     return dynamic_cast<ALSSensorChannelInterface*>(sm.interface(id));
 }
 
-void ALSSensorChannelInterface::dataReceived()
+bool ALSSensorChannelInterface::dataReceivedImpl()
 {
     QVector<TimedUnsigned> values;
     if(!read<TimedUnsigned>(values))
-        return;
+        return false;
     foreach(const TimedUnsigned& data, values)
         emit ALSChanged(data);
+    return true;
 }
 
 Unsigned ALSSensorChannelInterface::lux() const

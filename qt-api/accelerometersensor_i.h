@@ -90,12 +90,10 @@ public:
 
 protected:
     virtual void connectNotify(const char* signal);
+    virtual bool dataReceivedImpl();
 
 private:
     bool frameAvailableConnected;
-
-public Q_SLOTS: // METHODS
-    void dataReceived();
 
 Q_SIGNALS: // SIGNALS
     /**

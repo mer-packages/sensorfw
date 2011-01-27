@@ -62,11 +62,11 @@ RotationSensorChannelInterface* RotationSensorChannelInterface::interface(const 
     return dynamic_cast<RotationSensorChannelInterface*>(sm.interface(id));
 }
 
-void RotationSensorChannelInterface::dataReceived()
+bool RotationSensorChannelInterface::dataReceivedImpl()
 {
     QVector<TimedXyzData> values;
     if(!read<TimedXyzData>(values))
-        return;
+        return false;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const TimedXyzData& data, values)
@@ -80,6 +80,7 @@ void RotationSensorChannelInterface::dataReceived()
             realValues.push_back(XYZ(data));
         emit frameAvailable(realValues);
     }
+    return true;
 }
 
 XYZ RotationSensorChannelInterface::rotation() const

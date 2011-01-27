@@ -338,6 +338,11 @@ void AbstractSensorChannelInterface::clearError()
 
 void AbstractSensorChannelInterface::dataReceived()
 {
+    do
+    {
+        if(!dataReceivedImpl())
+            return;
+    } while(pimpl_->socketReader_.socket()->bytesAvailable());
 }
 
 bool AbstractSensorChannelInterface::read(void* buffer, int size)

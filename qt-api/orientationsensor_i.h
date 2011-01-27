@@ -82,9 +82,8 @@ public:
      */
     static OrientationSensorChannelInterface* interface(const QString& id);
 
-
-public Q_SLOTS: // METHODS
-    void dataReceived();
+protected:
+    virtual bool dataReceivedImpl();
 
 Q_SIGNALS: // SIGNALS
     /**

@@ -62,11 +62,11 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::interf
     return dynamic_cast<AccelerometerSensorChannelInterface*>(sm.interface(id));
 }
 
-void AccelerometerSensorChannelInterface::dataReceived()
+bool AccelerometerSensorChannelInterface::dataReceivedImpl()
 {
     QVector<AccelerationData> values;
     if(!read<AccelerationData>(values))
-        return;
+        return false;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const AccelerationData& data, values)
@@ -80,6 +80,7 @@ void AccelerometerSensorChannelInterface::dataReceived()
             realValues.push_back(XYZ(data));
         emit frameAvailable(realValues);
     }
+    return true;
 }
 
 XYZ AccelerometerSensorChannelInterface::get() const

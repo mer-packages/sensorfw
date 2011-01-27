@@ -79,9 +79,10 @@ public:
      */
     static TapSensorChannelInterface* interface(const QString& id);
 
+protected:
+    virtual bool dataReceivedImpl();
 
-private Q_SLOTS: // METHODS
-    void dataReceived();
+private:
     void output();
 
 Q_SIGNALS: // SIGNALS

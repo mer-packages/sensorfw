@@ -133,7 +133,7 @@ private Q_SLOTS: // METHODS
     QDBusReply<void> start(int sessionId);
     QDBusReply<void> stop(int sessionId);
 
-    virtual void dataReceived();
+    void dataReceived();
 
 Q_SIGNALS: // SIGNALS
     void propertyChanged(const QString& name);
@@ -145,6 +145,8 @@ protected:
 
     template<typename T>
     bool read(QVector<T>& values);
+
+    virtual bool dataReceivedImpl() = 0;
 
 private:
     struct AbstractSensorChannelInterfaceImpl;

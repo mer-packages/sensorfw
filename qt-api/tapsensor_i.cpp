@@ -65,11 +65,11 @@ TapSensorChannelInterface* TapSensorChannelInterface::interface(const QString& i
     return dynamic_cast<TapSensorChannelInterface*>(sm.interface(id));
 }
 
-void TapSensorChannelInterface::dataReceived()
+bool TapSensorChannelInterface::dataReceivedImpl()
 {
     QVector<TapData> values;
     if(!read<TapData>(values))
-        return;
+        return false;
     foreach(TapData value, values) {
         if (type_ == Single) {
             emit dataAvailable(Tap(value));
@@ -90,6 +90,7 @@ void TapSensorChannelInterface::dataReceived()
             timer->start(doubleClickInteval);
         }
     }
+    return true;
 }
 
 void TapSensorChannelInterface::setTapType(TapSelection type)

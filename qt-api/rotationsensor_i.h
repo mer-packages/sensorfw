@@ -85,8 +85,8 @@ protected:
 private:
     bool frameAvailableConnected;
 
-public Q_SLOTS: // METHODS
-    void dataReceived();
+protected:
+    virtual bool dataReceivedImpl();
 
 Q_SIGNALS: // SIGNALS
     /**

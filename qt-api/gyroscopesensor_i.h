@@ -91,12 +91,12 @@ public:
 
 protected:
     virtual void connectNotify(const char* signal);
+    virtual bool dataReceivedImpl();
 
 private:
     bool frameAvailableConnected;
 
 public Q_SLOTS: // METHODS
-    void dataReceived();
     QDBusReply<void> reset();
 
 Q_SIGNALS: // SIGNALS

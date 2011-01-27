@@ -63,13 +63,14 @@ ProximitySensorChannelInterface* ProximitySensorChannelInterface::interface(cons
     return dynamic_cast<ProximitySensorChannelInterface*>(sm.interface(id));
 }
 
-void ProximitySensorChannelInterface::dataReceived()
+bool ProximitySensorChannelInterface::dataReceivedImpl()
 {
     QVector<TimedUnsigned> values;
     if(!read<TimedUnsigned>(values))
-        return;
+        return false;
     foreach(const TimedUnsigned& data, values)
         emit dataAvailable(data);
+    return true;
 }
 
 Unsigned ProximitySensorChannelInterface::proximity() const

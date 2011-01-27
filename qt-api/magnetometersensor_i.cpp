@@ -63,11 +63,11 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::interfac
     return dynamic_cast<MagnetometerSensorChannelInterface*>(sm.interface(id));
 }
 
-void MagnetometerSensorChannelInterface::dataReceived()
+bool MagnetometerSensorChannelInterface::dataReceivedImpl()
 {
     QVector<CalibratedMagneticFieldData> values;
     if(!read<CalibratedMagneticFieldData>(values))
-        return;
+        return false;
     if(!frameAvailableConnected || values.size() == 1)
     {
         foreach(const CalibratedMagneticFieldData& data, values)
@@ -81,6 +81,7 @@ void MagnetometerSensorChannelInterface::dataReceived()
             realValues.push_back(MagneticField(data));
         emit frameAvailable(realValues);
     }
+    return true;
 }
 
 void MagnetometerSensorChannelInterface::connectNotify(const char* signal)

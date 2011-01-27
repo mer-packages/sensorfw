@@ -7,8 +7,9 @@ sensord (0.6.37) unstable; urgency=low
   * AbstractSensorChannel, DeviceAdaptor and SysfsAdaptor now hides internal data.
   * SysfsAdaptor destructor implemented.
   * Fixed few compiler warnings.
+  * SocketReader didn't read buffer to empty if it contained more items buffered. Fixed: NB#222132.
 
-  [ Shenghua ]
+  [Shenghua Liu]
   * Part fixing the random failure problem for contestfw002 test
   * Fix the screen rotation problem, Fixes: NB#219958
 

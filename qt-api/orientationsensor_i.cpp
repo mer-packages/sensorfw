@@ -61,13 +61,14 @@ OrientationSensorChannelInterface* OrientationSensorChannelInterface::interface(
     return dynamic_cast<OrientationSensorChannelInterface*>(sm.interface(id));
 }
 
-void OrientationSensorChannelInterface::dataReceived()
+bool OrientationSensorChannelInterface::dataReceivedImpl()
 {
     QVector<TimedUnsigned> values;
     if(!read<TimedUnsigned>(values))
-        return;
+        return false;
     foreach(const TimedUnsigned& data, values)
         emit orientationChanged(data);
+    return true;
 }
 
 Unsigned OrientationSensorChannelInterface::orientation() const
