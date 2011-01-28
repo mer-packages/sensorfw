@@ -82,7 +82,7 @@ public:
 protected:
     virtual bool dataReceivedImpl();
 
-private:
+private Q_SLOTS:
     void output();
 
 Q_SIGNALS: // SIGNALS
