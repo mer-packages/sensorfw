@@ -37,5 +37,5 @@ MagneticField MagnetometerSensorChannelAdaptor::magneticField() const
 
 void MagnetometerSensorChannelAdaptor::reset()
 {
-    parent()->setProperty("resetCalibration", 0);
+    QMetaObject::invokeMethod(parent(), "resetCalibration", Qt::DirectConnection);
 }

@@ -94,7 +94,7 @@ void MagnetometerSensorChannelInterface::connectNotify(const char* signal)
 QDBusReply<void> MagnetometerSensorChannelInterface::reset()
 {
     QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("resetCalibration"), argumentList);
+    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
 }
 
 MagneticField MagnetometerSensorChannelInterface::magneticField() const
