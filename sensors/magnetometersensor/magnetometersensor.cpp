@@ -152,7 +152,7 @@ void MagnetometerSensorChannel::resetCalibration()
 {
     if (!compassChain_)
         return;
-    compassChain_->setProperty("resetCalibration",0);
+    QMetaObject::invokeMethod(compassChain_, "resetCalibration", Qt::DirectConnection);
 }
 
 bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int sessionId)
