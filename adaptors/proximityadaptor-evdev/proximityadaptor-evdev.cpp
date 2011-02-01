@@ -93,13 +93,13 @@ void ProximityAdaptorEvdev::interpretEvent(int src, struct input_event *ev)
     }
 }
 
-void ProximityAdaptorEvdev::interpretSync(int src)
+void ProximityAdaptorEvdev::interpretSync(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
-    commitOutput();
+    commitOutput(ev);
 }
 
-void ProximityAdaptorEvdev::commitOutput()
+void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
 {
     static ProximityState oldState = ProximityStateUnknown;
     
@@ -108,7 +108,7 @@ void ProximityAdaptorEvdev::commitOutput()
 
         TimedUnsigned *proximityData = proximityBuffer_->nextSlot();
 
-        proximityData->timestamp_ = Utils::getTimeStamp();
+        proximityData->timestamp_ = Utils::getTimeStamp(&(ev->time));
         proximityData->value_ = currentState_;
         
         oldState = currentState_;

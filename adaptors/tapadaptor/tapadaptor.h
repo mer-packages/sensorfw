@@ -67,7 +67,7 @@ private:
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */
 
     void interpretEvent(int src, struct input_event *ev);
-    void interpretSync(int src);
+    void interpretSync(int src, struct input_event *ev);
     void commitOutput(const TapData& data);
 };
 

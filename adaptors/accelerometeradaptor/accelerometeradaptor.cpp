@@ -86,17 +86,17 @@ void AccelerometerAdaptor::interpretEvent(int src, struct input_event *ev)
     }
 }
 
-void AccelerometerAdaptor::interpretSync(int src)
+void AccelerometerAdaptor::interpretSync(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
-    commitOutput();
+    commitOutput(ev);
 }
 
-void AccelerometerAdaptor::commitOutput()
+void AccelerometerAdaptor::commitOutput(struct input_event *ev)
 {
     OrientationData* d = accelerometerBuffer_->nextSlot();
 
-    d->timestamp_ = Utils::getTimeStamp();
+    d->timestamp_ = Utils::getTimeStamp(&(ev->time));
     d->x_ = orientationValue_.x_;
     d->y_ = orientationValue_.y_;
     d->z_ = orientationValue_.z_;

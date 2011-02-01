@@ -74,8 +74,8 @@ private:
     OrientationData orientationValue_;
 
     void interpretEvent(int src, struct input_event *ev);
-    void commitOutput();
-    void interpretSync(int src);
+    void commitOutput(struct input_event *ev);
+    void interpretSync(int src, struct input_event *ev);
 };
 
 #endif
