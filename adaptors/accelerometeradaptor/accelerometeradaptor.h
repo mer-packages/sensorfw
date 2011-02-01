@@ -72,7 +72,6 @@ protected:
 private:
     DeviceAdaptorRingBuffer<OrientationData>* accelerometerBuffer_;
     OrientationData orientationValue_;
-    QTime time;
 
     void interpretEvent(int src, struct input_event *ev);
     void commitOutput();
