@@ -89,8 +89,8 @@ private:
 
     PoseData rotateToLandscape(int);
     PoseData rotateToPortrait(int);
-    int orientationCheck(const AccelerationData, OrientationMode) const;
-    PoseData orientationRotation(const AccelerationData, OrientationMode, PoseData (OrientationInterpreter::*)(int));
+    int orientationCheck(const AccelerationData&, OrientationMode) const;
+    PoseData orientationRotation(const AccelerationData&, OrientationMode, PoseData (OrientationInterpreter::*)(int));
 
     static const int DEFAULT_THRESHOLD;
     static const float RADIANS_TO_DEGREES;

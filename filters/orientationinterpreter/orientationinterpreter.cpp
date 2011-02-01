@@ -128,7 +128,7 @@ bool OrientationInterpreter::overFlowCheck()
     return !((gVector >= minlimit) && (gVector <=maxlimit));
 }
 
-int OrientationInterpreter::orientationCheck(const AccelerationData data,  OrientationMode mode) const
+int OrientationInterpreter::orientationCheck(const AccelerationData &data,  OrientationMode mode) const
 {
     if (mode == OrientationInterpreter::Landscape)
         return round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
@@ -172,7 +172,7 @@ PoseData OrientationInterpreter::rotateToLandscape(int rotation)
 
 }
 
-PoseData OrientationInterpreter::orientationRotation (const AccelerationData data, OrientationMode mode, PoseData (OrientationInterpreter::*ptrFUN)(int))
+PoseData OrientationInterpreter::orientationRotation (const AccelerationData &data, OrientationMode mode, PoseData (OrientationInterpreter::*ptrFUN)(int))
 {
     int rotation = orientationCheck(data, mode);
     int threshold = (mode == OrientationInterpreter::Portrait) ? angleThresholdPortrait : angleThresholdLandscape;
