@@ -8,6 +8,7 @@
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -40,6 +41,7 @@
  * #AccelerometerChain is used.
  *
  */
+
 class OrientationInterpreter : public QObject, public PropertyTracker, public FilterBase
 {
     Q_OBJECT;
@@ -79,6 +81,16 @@ private:
     unsigned long discardTime;
 
     PoseData o_;
+    enum OrientationMode
+    {
+        Portrait = 0, /**< Orientation mode is portrait. */
+        Landscape     /**< Orientation mode is landscape */
+    };
+
+    PoseData rotateToLandscape(int);
+    PoseData rotateToPortrait(int);
+    int orientationCheck(const AccelerationData, OrientationMode) const;
+    PoseData orientationRotation(const AccelerationData, OrientationMode, PoseData (OrientationInterpreter::*)(int));
 
     static const int DEFAULT_THRESHOLD;
     static const float RADIANS_TO_DEGREES;

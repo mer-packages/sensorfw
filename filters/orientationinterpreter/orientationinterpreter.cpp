@@ -8,6 +8,7 @@
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -41,6 +42,7 @@ const int OrientationInterpreter::THRESHOLD_LANDSCAPE = 25;
 const int OrientationInterpreter::THRESHOLD_PORTRAIT = 20;
 const int OrientationInterpreter::DISCARD_TIME = 750000;
 const int OrientationInterpreter::AVG_BUFFER_MAX_SIZE = 10;
+typedef PoseData (OrientationInterpreter::*ptrFUN)(int);
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
@@ -126,44 +128,86 @@ bool OrientationInterpreter::overFlowCheck()
     return !((gVector >= minlimit) && (gVector <=maxlimit));
 }
 
-void OrientationInterpreter::processTopEdge()
+int OrientationInterpreter::orientationCheck(const AccelerationData data,  OrientationMode mode) const
 {
-    int rotation;
+    if (mode == OrientationInterpreter::Landscape)
+        return round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+    else
+        return round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+}
+
+
+PoseData OrientationInterpreter::rotateToPortrait(int rotation)
+{
     PoseData newTopEdge = PoseData::Undefined;
+    newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
 
-    // Portrait check
-    rotation = round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
-
-    if (abs(rotation) > angleThresholdPortrait) {
-
-        newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
-
-        // Some threshold to switching between portrait modes
-        if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown) {
-            if (abs(rotation) < SAME_AXIS_LIMIT) {
-                newTopEdge.orientation_ = topEdge.orientation_;
-            }
-        }
-
-    } else {
-
-        rotation = round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
-
-        if (abs(rotation) > angleThresholdLandscape) {
-            newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
-
-            // Some threshold to switching between landscape modes
-            if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp) {
-                if (abs(rotation) < SAME_AXIS_LIMIT){
-                    newTopEdge.orientation_ = topEdge.orientation_;
-                }
-            }
+    // Some threshold to switching between portrait modes
+    if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown)
+    {
+        if (abs(rotation) < SAME_AXIS_LIMIT)
+        {
+            newTopEdge.orientation_ = topEdge.orientation_;
         }
     }
 
-    // Propagate if changed
-    if (topEdge.orientation_ != newTopEdge.orientation_) {
+    return newTopEdge;
+}
 
+PoseData OrientationInterpreter::rotateToLandscape(int rotation)
+{
+
+    PoseData newTopEdge = PoseData::Undefined;
+    newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
+    // Some threshold to switching between landscape modes
+    if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp)
+    {
+        if (abs(rotation) < SAME_AXIS_LIMIT)
+        {
+            newTopEdge.orientation_ = topEdge.orientation_;
+        }
+    }
+
+    return newTopEdge;
+
+}
+
+PoseData OrientationInterpreter::orientationRotation (const AccelerationData data, OrientationMode mode, PoseData (OrientationInterpreter::*ptrFUN)(int))
+{
+    int rotation = orientationCheck(data, mode);
+    int threshold = (mode == OrientationInterpreter::Portrait) ? angleThresholdPortrait : angleThresholdLandscape;
+    //if rotation is bigger than the threshold, then rotate using the function passed
+    PoseData newTopEdge = (abs(rotation) > threshold) ? (this->*ptrFUN)(rotation) : PoseData::Undefined;
+    return newTopEdge;
+}
+
+void OrientationInterpreter::processTopEdge()
+{
+    PoseData newTopEdge = PoseData::Undefined;
+    ptrFUN rotator;
+    OrientationMode mode;
+
+    if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown)
+    {
+        mode = OrientationInterpreter::Portrait;
+        rotator = &OrientationInterpreter::rotateToPortrait;
+    } else {
+        mode = OrientationInterpreter::Landscape;
+        rotator = &OrientationInterpreter::rotateToLandscape;
+    }
+
+    newTopEdge = orientationRotation(data, mode, rotator);
+
+    if (newTopEdge.orientation_ == PoseData::Undefined) //not rotate yet, then check for the other threshold
+    {
+        mode = (mode == OrientationInterpreter::Portrait) ? (OrientationInterpreter::Landscape) : (OrientationInterpreter::Portrait);
+        rotator = (rotator == (&OrientationInterpreter::rotateToPortrait)) ? (&OrientationInterpreter::rotateToLandscape) : (&OrientationInterpreter::rotateToPortrait);
+        newTopEdge = orientationRotation(data, mode, rotator);
+    }
+
+    // Propagate if changed
+    if (topEdge.orientation_ != newTopEdge.orientation_)
+    {
         topEdge.orientation_ = newTopEdge.orientation_;
         sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;
