@@ -108,11 +108,11 @@ class Orientation(unittest.TestCase):
 
         # TopEdge: left -> top -> left (should represent bottom and right well enough)
         for angle in [90, portrait_angle-1, portrait_angle+1, 90-portrait_angle, 0]:
-            self.dataSet.append([-int(1000*math.cos(math.radians(angle))), int(1000*math.cos(math.radians(90-angle)
+            self.dataSet.append([-int(1000*math.cos(math.radians(angle))), int(1000*math.cos(math.radians(90-angle))), 0])
 
         self.expectSet.append('Screen.TopEdge = QString:"top"')
         self.expectSet.append('Screen.TopEdge = QString:"left"')
-        self.expectSet.append('')
+	self.expectSet.append('')
         self.expectSet.append('Screen.TopEdge = QString:"top"')
         self.expectSet.append('Screen.TopEdge = QString:"left"')
 
