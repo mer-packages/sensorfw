@@ -84,7 +84,7 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
         }
         TapData tapValue;
         tapValue.direction_ = dir;
-        tapValue.timestamp_ = Utils::getTimeStamp();
+        tapValue.timestamp_ = Utils::getTimeStamp(&(ev->time));
         tapValue.type_ = TapData::SingleTap;
 
         commitOutput(tapValue);
