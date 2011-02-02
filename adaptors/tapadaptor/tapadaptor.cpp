@@ -92,9 +92,10 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
 }
 
 
-void TapAdaptor::interpretSync(int src)
+void TapAdaptor::interpretSync(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
+    Q_UNUSED(ev);
 }
 
 void TapAdaptor::commitOutput(const TapData& data)

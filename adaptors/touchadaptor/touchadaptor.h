@@ -108,9 +108,9 @@ private:
      * Pushes recorded events into filterchain.
      * @param src Event source.
      */
-    void commitOutput(int src);
+    void commitOutput(int src, struct input_event *ev);
 
-    void interpretSync(int src);
+    void interpretSync(int src, struct input_event *ev);
 
     DeviceAdaptorRingBuffer<TouchData>* outputBuffer_;
     TouchValues touchValues_[5];

@@ -89,7 +89,7 @@ protected:
     /**
      * Interpret a a synchronization event from the device.
      */
-    virtual void interpretSync(int src) = 0;
+    virtual void interpretSync(int src, struct input_event *ev) = 0;
 
     /**
      * Scans through the /dev/input/event* device handles and registers the

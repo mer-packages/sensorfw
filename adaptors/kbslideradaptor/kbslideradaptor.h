@@ -78,7 +78,7 @@ private:
 
     void interpretEvent(int src, struct input_event *ev);
     void commitOutput();
-    void interpretSync(int src);
+    void interpretSync(int src, struct input_event *ev);
 };
 
 #endif

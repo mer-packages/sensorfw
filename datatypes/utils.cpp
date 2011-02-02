@@ -67,3 +67,11 @@ quint64 Utils::getTimeStamp()
     data = stamp.tv_nsec / 1000 + data;
     return data;
 }
+
+quint64 Utils::getTimeStamp(const struct timeval *tp)
+{
+    quint64 data = tp->tv_sec;
+    data = data * 1000000;
+    data = tp->tv_usec + data;
+    return data;
+}

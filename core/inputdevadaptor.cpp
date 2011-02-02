@@ -135,7 +135,7 @@ void InputDevAdaptor::processSample(int pathId, int fd)
     for (int i = 0; i < numEvents; ++i) {
         switch (evlist_[i].type) {
             case EV_SYN:
-                interpretSync(pathId);
+                interpretSync(pathId, &(evlist_[i]));
                 break;
             default:
                 interpretEvent(pathId, &(evlist_[i]));

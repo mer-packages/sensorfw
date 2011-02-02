@@ -93,9 +93,10 @@ void KeyboardSliderAdaptor::interpretEvent(int src, struct input_event *ev)
     }
 }
 
-void KeyboardSliderAdaptor::interpretSync(int src)
+void KeyboardSliderAdaptor::interpretSync(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
+    Q_UNUSED(ev);
     commitOutput();
 }
 

@@ -124,7 +124,7 @@ void TouchAdaptor::interpretEvent(int src, struct input_event *ev)
     switch (ev->type) {
 
         case EV_SYN:
-            commitOutput(src);
+            commitOutput(src, ev);
             break;
 
         case EV_ABS:
@@ -170,16 +170,16 @@ void TouchAdaptor::interpretEvent(int src, struct input_event *ev)
     }
 }
 
-void TouchAdaptor::interpretSync(int src)
+void TouchAdaptor::interpretSync(int src, struct input_event *ev)
 {
-    commitOutput(src);
+    commitOutput(src, ev);
 }
 
-void TouchAdaptor::commitOutput(int src)
+void TouchAdaptor::commitOutput(int src, struct input_event *ev)
 {
     TouchData* d = outputBuffer_->nextSlot();
 
-    d->timestamp_ = Utils::getTimeStamp();
+    d->timestamp_ = Utils::getTimeStamp(&(ev->time));
     d->x_ = touchValues_[src].x;
     d->y_ = touchValues_[src].y;
     d->z_ = touchValues_[src].z;

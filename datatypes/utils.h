@@ -26,11 +26,13 @@
 
 #ifndef UTILS_H
 #define UTILS_H
+#include <sys/time.h>
 
 class Utils
 {
 public:
     static quint64 getTimeStamp();
+    static quint64 getTimeStamp(const struct timeval*);
 };
 
 #endif // UTILS_H
