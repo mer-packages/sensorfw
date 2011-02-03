@@ -34,7 +34,7 @@ FakeAdaptor::FakeAdaptor(const QString& id) : DeviceAdaptor(id), interval_(1)
     t = new FakeAdaptorThread(this);
 
     buffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
-    addAdaptedSensor("als", "Internal ambient light sensor lux values", buffer_);
+    setAdaptedSensor("als", "Internal ambient light sensor lux values", buffer_);
 }
 
 bool FakeAdaptor::startAdaptor()
@@ -60,10 +60,8 @@ void FakeAdaptor::stopAdaptor()
 {
 }
 
-bool FakeAdaptor::startSensor(const QString& sensorId)
+bool FakeAdaptor::startSensor()
 {
-    Q_UNUSED(sensorId);
-
     qDebug() << "Pushing fake ALS data with" << interval_ << " msec interval";
     // Start pushing data
     t->running = true;
@@ -71,10 +69,8 @@ bool FakeAdaptor::startSensor(const QString& sensorId)
     return true;
 }
 
-void FakeAdaptor::stopSensor(const QString& sensorId)
+void FakeAdaptor::stopSensor()
 {
-    Q_UNUSED(sensorId);
-
     // Stop pushing data
     t->running = false;
     t->wait();

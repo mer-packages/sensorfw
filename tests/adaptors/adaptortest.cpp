@@ -60,9 +60,9 @@ void AdaptorTest::testAccelerometerAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -73,9 +73,9 @@ void AdaptorTest::testMagnetometerAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -87,9 +87,9 @@ void AdaptorTest::testALSAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -100,9 +100,9 @@ void AdaptorTest::testTapAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -111,11 +111,11 @@ void AdaptorTest::testTouchAdaptor()
     QString sensorName("touch");
     TouchAdaptor* adaptor = dynamic_cast<TouchAdaptor*>(TouchAdaptor::factoryMethod("touchadaptor"));
     QVERIFY( adaptor );
- 
-    QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
 
-    adaptor->stopSensor(sensorName);
+    QVERIFY(adaptor->startAdaptor());
+    QVERIFY(adaptor->startSensor());
+
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -126,9 +126,9 @@ void AdaptorTest::testKeyboardSliderAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 
@@ -139,9 +139,9 @@ void AdaptorTest::testProximityAdaptor()
     QVERIFY( adaptor );
 
     QVERIFY(adaptor->startAdaptor());
-    QVERIFY(adaptor->startSensor(sensorName));
+    QVERIFY(adaptor->startSensor());
 
-    adaptor->stopSensor(sensorName);
+    adaptor->stopSensor();
     adaptor->stopAdaptor();
 }
 

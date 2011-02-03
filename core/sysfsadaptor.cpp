@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,6 +33,7 @@
 #include <sys/epoll.h>
 #include <QFile>
 #include "logging.h"
+#include "config.h"
 
 SysfsAdaptor::SysfsAdaptor(const QString& id,
                            PollMode mode,
@@ -98,20 +100,18 @@ void SysfsAdaptor::stopAdaptor()
     initNotDone = true;
     disconnect(&reader_, SIGNAL(readyRead(int,int)), this, SLOT(dataAvailable(int,int)));
 
-    foreach (AdaptedSensorEntry* entry, sensors()) {
-        if ( entry->isRunning() ) {
-            //TODO: Drop refcount, so that we will definitely stop.
-            stopSensor(entry->name());
-        }
+    if ( getAdaptedSensor()->isRunning() ) {
+        //TODO: Drop refcount, so that we will definitely stop.
+        stopSensor();
     }
 }
 
-bool SysfsAdaptor::startSensor(const QString& sensorId)
+bool SysfsAdaptor::startSensor()
 {
-    AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
+    AdaptedSensorEntry *entry = getAdaptedSensor();
 
     if (entry == NULL) {
-        sensordLogW() << "Sensor not found " << sensorId;
+        sensordLogW() << "Sensor not found: " << name();
         return false;
     }
 
@@ -134,7 +134,7 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     inStandbyMode_ = false;
 
     if (!startReaderThread()) {
-        sensordLogW() << "Failed to start adaptor " << sensorId;
+        sensordLogW() << "Failed to start adaptor " << name();
         entry->removeReference();
         entry->setIsRunning(false);
         running_ = false;
@@ -148,12 +148,12 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
     return true;
 }
 
-void SysfsAdaptor::stopSensor(const QString& sensorId)
+void SysfsAdaptor::stopSensor()
 {
-    AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
+    AdaptedSensorEntry *entry = getAdaptedSensor();
 
     if (entry == NULL) {
-        sensordLogW() << "Sensor not found" << sensorId;
+        sensordLogW() << "Sensor not found " << name();
         return;
     }
 
@@ -450,4 +450,21 @@ void SysfsAdaptorReader::run()
             QThread::msleep(parent_->interval());
         }
     }
+}
+
+void SysfsAdaptor::init()
+{
+    QString path = Config::configuration()->value(name() + "/path").toString();
+    if(!path.isEmpty())
+    {
+        addPath(path);
+    }
+    else
+    {
+        sensordLogW() << "Failed to locate path for " << name();
+    }
+
+    introduceAvailableDataRanges(name());
+    introduceAvailableIntervals(name());
+    setDefaultInterval(Config::configuration()->value(name() + "/default_interval", "0").toInt());
 }

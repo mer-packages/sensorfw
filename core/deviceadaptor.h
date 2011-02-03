@@ -33,6 +33,7 @@
 
 #include <QString>
 #include <QHash>
+#include <QPair>
 #include "logging.h"
 #include "nodebase.h"
 
@@ -83,7 +84,7 @@ private:
 };
 
 /**
- * Device adaptor class. Can contain any number of adapted sensors.
+ * Device adaptor class. Represents single sensor
  */
 class DeviceAdaptor : public NodeBase
 {
@@ -110,34 +111,36 @@ public:
 
     const QString& id() const { return id_; }
 
-    AdaptedSensorEntry* findAdaptedSensor(const QString& sensorId) const;
-    QList<QString> findAdaptedSensors() const;
+    AdaptedSensorEntry* getAdaptedSensor() const;
     virtual RingBufferBase* findBuffer(const QString& name) const;
+
+    virtual bool startSensor() = 0;
+    virtual void stopSensor() = 0;
 
     virtual bool startAdaptor() = 0;
     virtual void stopAdaptor() = 0;
 
-    // in case of a single sensor per adaptor, these need not need to be implemented
-    virtual bool startSensor(const QString& /*sensorId*/) { return false; }
-    virtual void stopSensor(const QString& /*sensorId*/) {}
+    virtual void init() = 0;
 
     virtual bool standby() { return false; }
     virtual bool resume() { return false; }
 
-protected:
-    void addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
+    const QString& name() { return sensor_.first; }
 
-    const QHash<QString, AdaptedSensorEntry*>& sensors() const { return sensors_; }
+protected:
+    void setAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer);
+
+    const QPair<QString, AdaptedSensorEntry*>& sensor() const { return sensor_; }
 
     virtual void setValid(bool valid) { isValid_ = valid; };
 
 private:
-    void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
+    void setAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
 
     const QString id_;
     bool isValid_;
     bool standbyOverride_;
-    QHash<QString, AdaptedSensorEntry*> sensors_;
+    QPair<QString, AdaptedSensorEntry*> sensor_;
     bool screenBlanked;
 };
 

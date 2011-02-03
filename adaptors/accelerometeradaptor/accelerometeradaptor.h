@@ -9,6 +9,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    Sensord is free software; you can redistribute it and/or modify
    it under the terms of the GNU Lesser General Public License
@@ -30,12 +31,11 @@
 #include "inputdevadaptor.h"
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
-#include <QTime>
 
 /**
  * @brief Adaptor for internal accelerometer.
  *
- * Adaptor for internal accelerometer. Uses SysFs driver interface in interval 
+ * Adaptor for internal accelerometer. Uses SysFs driver interface in interval
  * polling mode, i.e. values are read with given constant interval.
  *
  * Driver interface is located in @e /sys/class/i2c-adapter/i2c-3/3-001d/ .

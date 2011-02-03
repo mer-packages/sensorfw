@@ -109,7 +109,7 @@ bool AccelerometerChain::start()
     if (AbstractSensorChannel::start()) {
         sensordLogD() << "Starting AccelerometerChain";
         filterBin_->start();
-        accelerometerAdaptor_->startSensor("accelerometer");
+        accelerometerAdaptor_->startSensor();
     }
     return true;
 }
@@ -118,7 +118,7 @@ bool AccelerometerChain::stop()
 {
     if (AbstractSensorChannel::stop()) {
         sensordLogD() << "Stopping AccelerometerChain";
-        accelerometerAdaptor_->stopSensor("accelerometer");
+        accelerometerAdaptor_->stopSensor();
         filterBin_->stop();
     }
     return true;

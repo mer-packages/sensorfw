@@ -97,8 +97,7 @@ void StabilityBin::startRun()
     isStableProperty.unsetValue();
     isShakyProperty.unsetValue();
     start();
-    accelerometerAdaptor->startSensor("accelerometer");
-
+    accelerometerAdaptor->startSensor();
     accelerometerAdaptor->setStandbyOverrideRequest(sessionId, true);
 }
 
@@ -108,8 +107,7 @@ void StabilityBin::stopRun()
     if (accelerometerAdaptor)
     {
         accelerometerAdaptor->setStandbyOverrideRequest(sessionId, false);
-        accelerometerAdaptor->stopSensor("accelerometer");
-
+        accelerometerAdaptor->stopSensor();
         RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
         if (rb)
         {

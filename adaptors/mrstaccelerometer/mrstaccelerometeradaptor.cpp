@@ -1,3 +1,27 @@
+/**
+   @file mrstaccelerometeradaptor.cpp
+   @brief Contains MRSTAccelerometerAdaptor.
+
+   <p>
+   Copyright (C) 2010 Nokia Corporation
+   Copyright (C) 2010 Intel Corporation
+
+   This file is part of Sensord.
+
+   Sensord is free software; you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License
+   version 2.1 as published by the Free Software Foundation.
+
+   Sensord is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   Lesser General Public License for more details.
+
+   You should have received a copy of the GNU Lesser General Public
+   License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
+   </p>
+*/
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
@@ -11,50 +35,18 @@
 MRSTAccelAdaptor::MRSTAccelAdaptor (const QString& id) :
     SysfsAdaptor (id, SysfsAdaptor::IntervalMode)
 {
-    struct stat st;
-
-    devPath = Config::configuration ()->value ("device_sys_path").toString ();
-    if ( lstat (devPath.toAscii().constData(), &st) < 0 ) {
-        sensordLogW () << devPath << "no found";
-        return;
-    }
-
-    devId = 0;
-    addPath (devPath, devId);
     buffer = new DeviceAdaptorRingBuffer<OrientationData>(128);
-    addAdaptedSensor("accelerometer", "MRST accelerometer", buffer);
-
+    setAdaptedSensor("accelerometer", "MRST accelerometer", buffer);
     setDescription("MRST accelerometer");
-    introduceAvailableDataRange(DataRange(0, 0, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
 }
 
 MRSTAccelAdaptor::~MRSTAccelAdaptor () {
     delete buffer;
 }
 
-bool MRSTAccelAdaptor::startSensor (const QString& sensorid) {
-    if ( !(SysfsAdaptor::startSensor (sensorid)) )
-        return false;
-
-    sensordLogD() << "MRSTAccelAdaptor start\n";
-    return true;
-}
-
-void MRSTAccelAdaptor::stopSensor (const QString& sensorid) {
-    SysfsAdaptor::stopSensor(sensorid);
-    sensordLogD() << "MRSTAccelAdaptor stop\n";
-}
-
 void MRSTAccelAdaptor::processSample (int pathId, int fd) {
     char buf[32];
     int x, y, z;
-
-    if ( pathId != devId ) {
-        sensordLogW () << "Wrong pathId" << pathId;
-        return;
-    }
 
     lseek (fd, 0, SEEK_SET);
     if ( read (fd, buf, sizeof(buf)) < 0 ) {

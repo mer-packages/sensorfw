@@ -89,7 +89,7 @@ bool GyroscopeSensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        gyroscopeAdaptor_->startSensor("gyroscope");
+        gyroscopeAdaptor_->startSensor();
     }
     return true;
 }
@@ -99,7 +99,7 @@ bool GyroscopeSensorChannel::stop()
     sensordLogD() << "Stopping GyroscopeSensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        gyroscopeAdaptor_->stopSensor("gyroscope");
+        gyroscopeAdaptor_->stopSensor();
         filterBin_->stop();
         marshallingBin_->stop();
     }

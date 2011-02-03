@@ -368,6 +368,7 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
                 sensordLogD() << __PRETTY_FUNCTION__ << "new instance created:" << id;
                 da = deviceAdaptorFactoryMap_[type](id);
                 Q_ASSERT( da );
+                da->init();
 
                 ParameterParser::applyPropertyMap(da, entryIt.value().propertyMap_);
 
