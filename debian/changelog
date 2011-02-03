@@ -2,9 +2,9 @@ sensord (0.6.38) unstable; urgency=low
 
   [Shenghua Liu]
   * Orientation rotation improvement. Fixes: NB#223261
-  * Fixes: NB:223772 
+  * Fixes: NB#223772
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 02 Feb 2011 13:28:56 +0200
+ -- shenghua <shenghua@shenghua-ThinkPad-T43>  Thu, 03 Feb 2011 11:05:18 +0200
 
 sensord (0.6.37) unstable; urgency=low
 
