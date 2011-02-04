@@ -5,6 +5,8 @@ sensord (0.7.0) unstable; urgency=low
   * DeviceAdaptor::init() added. Subclasses can implement this to initialize themselves.
   * SysfsAdaptor and InputDevAdaptor init() implemented. They try to find adaptor configuration from section which is named after the adaptor type.
   * Removed hardcoded metadata definitions from adaptors. This will now come from config file.
+  * Renamed all configuration file entries.
+  * Removed logic from Loader to handle deviceId based hierarchy. This is replaced by having different config file for each device type.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 03 Feb 2011 18:46:11 +0200
 

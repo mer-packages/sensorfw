@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Semi Malinen <semi.malinen@nokia.com
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,18 +28,11 @@
 
 #include "loader.h"
 #include "plugin.h"
-#include <QDir>
-#include <QLibrary>
-#include <QPluginLoader>
-#include <QHash>
-#include <QCoreApplication>
-
 #include "logging.h"
 #include "config.h"
-
-//namespace {
-//    QHash<QString, Loader::FilterFactory> filterTypes;
-//}
+#include <QLibrary>
+#include <QPluginLoader>
+#include <QCoreApplication>
 
 Loader::Loader()
 {
@@ -54,16 +48,11 @@ Loader& Loader::instance()
 bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const
 {
     bool    loaded = true;
-    QDir    dir; // TODO
 
     sensordLogT() << "Loading plugin:" << name;
 
-    // TODO: perhaps use QCoreApplication::addLibraryPath();
-    // TODO: put the path definition to some reasonable place
     QCoreApplication::addLibraryPath("/usr/lib/sensord/");
     QLibrary ql(name);
-    //QLibrary ql(dir.absoluteFilePath(name));
-    // TODO: this means RTLD_GLOBAL to dlopen(); think twice before using:
     ql.setLoadHints(QLibrary::ExportExternalSymbolsHint);
     if (!ql.load()) {
         *errorString = ql.errorString();
@@ -151,15 +140,11 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
 
 QString Loader::resolveRealPluginName(const QString& pluginName) const
 {
-    QString deviceId = Config::configuration()->value("deviceId", "default").toString();
-    QString key = QString("%1/%2").arg(deviceId).arg(pluginName);
-
+    QString key = QString("plugins/%1").arg(pluginName);
     QString nameFromConfig = Config::configuration()->value(key).toString();
-
-    if (nameFromConfig == "") {
+    if (nameFromConfig.isEmpty()) {
         sensordLogT() << "Plugin setting for " << pluginName << " not found from configuration. Using key as value.";
         return pluginName;
     }
-
     return nameFromConfig;
 }
