@@ -85,6 +85,12 @@ void Parser::parsingCommandLine(QStringList arguments)
             configFile_ = true;
             configFilePath_ = data.at(1);
         }
+        else if (opt.startsWith("--config-dir"))
+        {
+            data = opt.split("=");
+            configDir_ = true;
+            configDirPath_ = data.at(1);
+        }
         else if (opt.startsWith("--no-context-info"))
             contextInfo_ = false;
         else if (opt.startsWith("--no-magnetometer-bg-calibration"))
@@ -121,6 +127,16 @@ bool Parser::configFileInput() const
 const QString& Parser::configFilePath() const
 {
     return configFilePath_;
+}
+
+bool Parser::configDirInput() const
+{
+    return configDir_;
+}
+
+const QString& Parser::configDirPath() const
+{
+    return configDirPath_;
 }
 
 bool Parser::contextInfo() const

@@ -43,6 +43,8 @@ public:
 
     bool configFileInput() const;
     const QString& configFilePath() const;
+    bool configDirInput() const;
+    const QString& configDirPath() const;
 
     bool contextInfo() const;
     bool magnetometerCalibration() const;
@@ -57,10 +59,12 @@ private:
     bool contextInfo_;
     bool changeLogLevel_;
     bool configFile_;
+    bool configDir_;
     bool daemon_;
     bool magnetometerCalibration_;
 
     QString configFilePath_;
+    QString configDirPath_;
     SensordLogLevel logLevel_;
     int logTarget_; //TODO: add some enum about log targets
     QString logFilePath_;

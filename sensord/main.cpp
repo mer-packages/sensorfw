@@ -74,9 +74,6 @@ void signalINT(int param)
 
 int main(int argc, char *argv[])
 {
-    const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
-    const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
-
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
@@ -95,25 +92,25 @@ int main(int argc, char *argv[])
         SensordLogger::setOutputLevel(parser.getLogLevel());
     }
 
-    if (parser.configFileInput())
-    {
-        QString defConfigFile = parser.configFilePath();
-        QFile file(defConfigFile);
-        if (Config::loadConfig(defConfigFile, CONFIG_DIR_PATH))
-            sensordLogT() << "Config file is loading successfully.";
-        else
-        {
-            sensordLogW() << "Config file error! Load using default path.";
-            Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
-        }
-    } else {
-        Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
-    }
+    const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
+    const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
 
-    if (Config::configuration() == NULL)
+    QString defConfigFile = CONFIG_FILE_PATH;
+    if(parser.configFileInput())
+        defConfigFile = parser.configFilePath();
+    QString defConfigDir = CONFIG_DIR_PATH;
+    if(parser.configDirInput())
+        defConfigDir = parser.configDirPath();
+    if (Config::loadConfig(defConfigFile, defConfigDir))
+        sensordLogT() << "Config file is loading successfully.";
+    else
     {
-        sensordLogC() << "Failed to load configuration. Aborting.";
-        exit(EXIT_FAILURE);
+        sensordLogC() << "Config file error! Load using default paths.";
+        if (!Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH))
+        {
+            sensordLogC() << "Which also failed. Bailing out";
+            return 1;
+        }
     }
 
     signal(SIGUSR1, signalUSR1);
