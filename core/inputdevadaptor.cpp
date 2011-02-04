@@ -46,8 +46,8 @@ InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     deviceNumber_(-1),
     originalPollingInterval_(0)
 {
-    deviceSysPathString_ = Config::configuration()->value("device_sys_path").toString();
-    devicePollFilePath_ = Config::configuration()->value("device_poll_file_path").toString();
+    deviceSysPathString_ = Config::configuration()->value("global/device_sys_path").toString();
+    devicePollFilePath_ = Config::configuration()->value("global/device_poll_file_path").toString();
 }
 
 InputDevAdaptor::~InputDevAdaptor()
