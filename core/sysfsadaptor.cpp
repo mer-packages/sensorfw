@@ -38,16 +38,16 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
                            bool seek,
                            const QString& path,
                            const int pathId) :
-    DeviceAdaptor(id),
-    reader_(this),
-    mode_(mode),
-    epollDescriptor_(-1),
-    interval_(0),
-    initNotDone(true),
-    inStandbyMode_(false),
-    running_(false),
-    shouldBeRunning_(false),
-    doSeek_(seek)
+DeviceAdaptor(id),
+reader_(this),
+mode_(mode),
+epollDescriptor_(-1),
+interval_(0),
+initNotDone(true),
+inStandbyMode_(false),
+running_(false),
+shouldBeRunning_(false),
+doSeek_(seek)
 {
     if (!path.isEmpty()) {
         addPath(path, pathId);
@@ -359,10 +359,11 @@ bool SysfsAdaptor::checkIntervalUsage() const
     if (mode_ == SysfsAdaptor::SelectMode)
     {
         const QList<DataRange>& list = getAvailableIntervals();
-        if (list.size() > 1 || (list.first().min != list.first().max))
-        {
-            sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
-            return false;
+        if (list.size() > 1){
+            if (list.first().min != list.first().max){
+                sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
+                return false;
+            }
         }
     }
     return true;
@@ -423,7 +424,7 @@ void SysfsAdaptorReader::run()
                             }
                         }
                     } else if (events[i].data.fd == parent_->pipeDescriptors_[0]) {
-                            running_ = false;
+                        running_ = false;
                     }
                 }
                 if (errorInInput)
