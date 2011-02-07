@@ -8,6 +8,9 @@ sensord (0.7.0) unstable; urgency=low
   * Renamed all configuration file entries.
   * Removed logic from Loader to handle deviceId based hierarchy. This is replaced by having different config file for each device type.
   * New option added: --config-dir.
+  * Added upstart job definition.
+  * Changed init script to use correct config for ncdk.
+  * Fixed makefiles to copy correct config files.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 03 Feb 2011 18:46:11 +0200
 
