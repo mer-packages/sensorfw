@@ -89,6 +89,10 @@ void FakeAdaptor::pushNewData(int& data)
     buffer_->wakeUpReaders();
 }
 
+void FakeAdaptor::init()
+{
+}
+
 FakeAdaptorThread::FakeAdaptorThread(FakeAdaptor *parent) : running(false), parent_(parent)
 {
     qDebug() << "Data pusher for ALS";

@@ -11,6 +11,7 @@ sensord (0.7.0) unstable; urgency=low
   * Added upstart job definition.
   * Changed init script to use correct config for ncdk.
   * Fixed makefiles to copy correct config files.
+  * Modified unit tests to use different configs in different deployments.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 03 Feb 2011 18:46:11 +0200
 
