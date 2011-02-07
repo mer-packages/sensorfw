@@ -190,7 +190,7 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
     Q_UNUSED(sessionId);
 
-    sensordLogD() << "Setting poll interval for" << deviceString_ << " to " << value;
+    sensordLogD() << "Setting poll interval for " << deviceString_ << " to " << value;
 
     QFile pollFile;
     if(!openPollFile(pollFile, QIODevice::WriteOnly))

@@ -351,7 +351,7 @@ private:
     bool updateBufferSize();
     bool updateBufferInterval();
 
-    DataRangeList parseDataRangeList(const QString& input) const;
+    DataRangeList parseDataRangeList(const QString& input, int defaultResolution) const;
 
     QString                 m_description;
 

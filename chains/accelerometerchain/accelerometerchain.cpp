@@ -58,8 +58,6 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
         {
             sensordLogW() << "Failed to parse 'transformation_matrix' configuration key. Coordinate alignment may be invalid";
         }
-    } else {
-        sensordLogT() << "Key 'acc_trans_matrix' not found from configuration.";
     }
 
     accCoordinateAlignFilter_ = sm.instantiateFilter("coordinatealignfilter");

@@ -32,6 +32,7 @@ Parser::Parser(QStringList arguments) :
     contextInfo_(true),
     changeLogLevel_(false),
     configFile_(false),
+    configDir_(false),
     daemon_(false),
     magnetometerCalibration_(true),
     configFilePath_(""),

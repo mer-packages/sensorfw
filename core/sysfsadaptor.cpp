@@ -461,7 +461,7 @@ void SysfsAdaptor::init()
     }
     else
     {
-        sensordLogW() << "Failed to locate path for " << name();
+        sensordLogW() << "No sysfs path defined for: " << name();
     }
 
     introduceAvailableDataRanges(name());

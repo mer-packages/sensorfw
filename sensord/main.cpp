@@ -102,7 +102,7 @@ int main(int argc, char *argv[])
     if(parser.configDirInput())
         defConfigDir = parser.configDirPath();
     if (Config::loadConfig(defConfigFile, defConfigDir))
-        sensordLogT() << "Config file is loading successfully.";
+        sensordLogT() << "Config file is loaded successfully.";
     else
     {
         sensordLogC() << "Config file error! Load using default paths.";
@@ -164,15 +164,15 @@ void printUsage()
 {
     qDebug() << "Usage: sensord [OPTIONS]";
     qDebug() << " -d, --daemon                     Detach from terminal and run as daemon.\n";
-    qDebug() << " -l=N, --log-level=N              Use logging level N. Messages are logged for";
+    qDebug() << " -l=N, --log-level=<level>        Use given logging level. Messages are logged for";
     qDebug() << "                                  the given and higher priority levels. Level";
     qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
-    qDebug() << " --log-target=N                   logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
-    qDebug() << " --log-file-path=P                Log file path\n";
-    qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
-    qDebug() << "                                  /etc/sensord.conf is used.\n";
+    qDebug() << " --log-target=<target>            Logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
+    qDebug() << " --log-file-path=<path>           Log file path\n";
+    qDebug() << " -c=P, --config-file=<path>       Load configuration from given path. By default";
+    qDebug() << "                                  /etc/sensorfw/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";
     qDebug() << "                                  framework.\n";
     qDebug() << " --no-magnetometer-bg-calibration Do not start calibration of magnetometer in";

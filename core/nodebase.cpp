@@ -52,6 +52,7 @@ void NodeBase::introduceAvailableDataRange(const DataRange& range)
 {
     if (!m_dataRangeList.contains(range))
     {
+        sensordLogD() << "Introduced new data range: " << range.min << "-" << range.max << ", " << range.resolution;
         m_dataRangeList.append(range);
     }
 }
@@ -61,7 +62,7 @@ void NodeBase::introduceAvailableDataRanges(const QString& typeName)
     QVariant ranges = Config::configuration()->value(typeName + "/dataranges");
     if(ranges.isValid())
     {
-        DataRangeList list(parseDataRangeList(ranges.toString()));
+        DataRangeList list(parseDataRangeList(ranges.toString(), 1));
         foreach(const DataRange& range, list)
         {
             introduceAvailableDataRange(range);
@@ -199,14 +200,15 @@ bool NodeBase::hasLocalRange() const
     return (m_dataRangeSource == NULL);
 }
 
-DataRangeList NodeBase::parseDataRangeList(const QString& input) const
+DataRangeList NodeBase::parseDataRangeList(const QString& input, int defaultResolution) const
 {
     DataRangeList list;
     foreach(const QString& fragment, input.split(",", QString::SkipEmptyParts))
     {
-        QStringList pair(fragment.split("->"));
+        QStringList pair(fragment.split("=>"));
         QStringList pair2(fragment.split(":"));
         DataRange range;
+        range.resolution = defaultResolution;
         if(pair.size() == 1)
         {
             QVariant value(fragment);
@@ -243,6 +245,7 @@ void NodeBase::introduceAvailableInterval(const DataRange& interval)
 {
     if (!m_intervalList.contains(interval))
     {
+        sensordLogD() << "Introduced new interval: " << interval.min << "-" << interval.max;
         m_intervalList.append(interval);
     }
 }
@@ -252,7 +255,7 @@ void NodeBase::introduceAvailableIntervals(const QString& typeName)
     QVariant ranges = Config::configuration()->value(typeName + "/intervals");
     if(ranges.isValid())
     {
-        DataRangeList list(parseDataRangeList(ranges.toString()));
+        DataRangeList list(parseDataRangeList(ranges.toString(), 0));
         foreach(const DataRange& range, list)
         {
             introduceAvailableInterval(range);
@@ -409,7 +412,7 @@ bool NodeBase::setDefaultInterval(const unsigned int value)
 {
     if (!isValidIntervalRequest(value))
     {
-        sensordLogW() << "Attempting to define invalid default data rate.";
+        sensordLogW() << "Attempting to define invalid default data rate: " << value;
         return false;
     }
     m_defaultInterval = value;
