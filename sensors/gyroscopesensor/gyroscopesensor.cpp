@@ -32,17 +32,17 @@
 
 GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<AngularVelocityData>(10),
-        previousSample_(0,0,0,0)
+        DbusEmitter<XYZ>(10),
+        previousSample_()
 {
     SensorManager& sm = SensorManager::instance();
 
     gyroscopeAdaptor_ = sm.requestDeviceAdaptor("gyroscopeadaptor");
     Q_ASSERT( gyroscopeAdaptor_ );
 
-    gyroscopeReader_ = new BufferReader<AngularVelocityData>(128);
+    gyroscopeReader_ = new BufferReader<TimedXyzData>(128);
 
-    outputBuffer_ = new RingBuffer<AngularVelocityData>(128);
+    outputBuffer_ = new RingBuffer<TimedXyzData>(128);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
@@ -106,8 +106,8 @@ bool GyroscopeSensorChannel::stop()
     return true;
 }
 
-void GyroscopeSensorChannel::emitToDbus(const AngularVelocityData& value)
+void GyroscopeSensorChannel::emitToDbus(const XYZ& value)
 {
     previousSample_ = value;
-    writeToClients((const void*)(&value), sizeof(AngularVelocityData));
+    writeToClients((const void*)(&value), sizeof(XYZ));
 }

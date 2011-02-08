@@ -42,7 +42,7 @@ class FilterBase;
 
 class GyroscopeSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<AngularVelocityData>
+        public DbusEmitter<XYZ>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ value READ get);
@@ -67,7 +67,7 @@ public Q_SLOTS:
     bool stop();
 
 signals:
-    void dataAvailable(const AngularVelocityData& data);
+    void dataAvailable(const TimedXyzData& data);
 
 protected:
     GyroscopeSensorChannel(const QString& id);
@@ -78,12 +78,12 @@ private:
     Bin*                         marshallingBin_;
 
     DeviceAdaptor*                     gyroscopeAdaptor_;
-    BufferReader<AngularVelocityData>* gyroscopeReader_;
-    RingBuffer<AngularVelocityData>*   outputBuffer_;
+    BufferReader<TimedXyzData>* gyroscopeReader_;
+    RingBuffer<TimedXyzData>*   outputBuffer_;
 
-    AngularVelocityData                previousSample_;
+    XYZ                previousSample_;
 
-    void emitToDbus(const AngularVelocityData& value);
+    void emitToDbus(const XYZ& value);
 };
 
 #endif // GYROSCOPE_SENSOR_CHANNEL_H

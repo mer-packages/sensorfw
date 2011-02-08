@@ -45,6 +45,7 @@ private slots:
 
     // Sensors
     void testAccelerometerSensor();
+    void testGyroscopeSensor();
     void testOrientationSensor();
     void testRotationSensor();
     void testTapSensor();

@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Pia Niemelä <pia.s.niemela@nokia.com>
 
    This file is part of Sensord.
 
@@ -64,21 +65,22 @@ GyroscopeSensorChannelInterface* GyroscopeSensorChannelInterface::interface(cons
     return dynamic_cast<GyroscopeSensorChannelInterface*>(sm.interface(id));
 }
 
+
 bool GyroscopeSensorChannelInterface::dataReceivedImpl()
 {
-    QVector<AngularVelocityData> values;
-    if(!read<AngularVelocityData>(values))
+    QVector<TimedXyzData> values;
+    if(!read<TimedXyzData>(values))
         return false;
     if(!frameAvailableConnected || values.size() == 1)
     {
-        foreach(const AngularVelocityData& data, values)
+        foreach(const TimedXyzData& data, values)
             emit dataAvailable(XYZ(data));
     }
     else
     {
         QVector<XYZ> realValues;
         realValues.reserve(values.size());
-        foreach(const AngularVelocityData& data, values)
+        foreach(const TimedXyzData& data, values)
             realValues.push_back(XYZ(data));
         emit frameAvailable(realValues);
     }

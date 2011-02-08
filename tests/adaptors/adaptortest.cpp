@@ -40,6 +40,7 @@
 #include "adaptors/tapadaptor/tapadaptor.h"
 #include "adaptors/kbslideradaptor/kbslideradaptor.h"
 #include "adaptors/proximityadaptor/proximityadaptor.h"
+#include "adaptors/gyroscopeadaptor/gyroscopeadaptor.h"
 
 #include "config.h"
 
@@ -144,5 +145,19 @@ void AdaptorTest::testProximityAdaptor()
     adaptor->stopSensor(sensorName);
     adaptor->stopAdaptor();
 }
+
+void AdaptorTest::testGyroscopeAdaptor()
+{
+    QString sensorName("gyroscope");
+    GyroscopeAdaptor* adaptor = dynamic_cast<GyroscopeAdaptor*>(GyroscopeAdaptor::factoryMethod("gyroscopeadaptor"));
+    QVERIFY( adaptor );
+
+    QVERIFY(adaptor->startAdaptor());
+    QVERIFY(adaptor->startSensor(sensorName));
+
+    adaptor->stopSensor(sensorName);
+    adaptor->stopAdaptor();
+}
+
 
 QTEST_MAIN(AdaptorTest)

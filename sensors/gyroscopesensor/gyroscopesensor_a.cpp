@@ -31,7 +31,7 @@ GyroscopeSensorChannelAdaptor::GyroscopeSensorChannelAdaptor(QObject* parent) :
 {
 }
 
-AngularVelocityData GyroscopeSensorChannelAdaptor::get() const
+XYZ GyroscopeSensorChannelAdaptor::get() const
 {
-    return qvariant_cast<AngularVelocityData>(parent()->property("value"));
+    return qvariant_cast<XYZ>(parent()->property("value"));
 }

@@ -39,11 +39,15 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
         setValid(false);
     }
 
-    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<AngularVelocityData>(32);
+    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(32);
 
     addAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
 
     introduceAvailableDataRange(DataRange(-250000, 250000, 1));
+    introduceAvailableInterval(DataRange(1.25, 1000, 0)); // -> [1,800] Hz
+    setDefaultInterval(25);
+    setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
+
 }
 
 GyroscopeAdaptor::~GyroscopeAdaptor()
@@ -65,7 +69,7 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
 
     sscanf(buf, "%hd %hd %hd\n", &x, &y, &z);
 
-    AngularVelocityData* pos = gyroscopeBuffer_->nextSlot();
+    TimedXyzData* pos = gyroscopeBuffer_->nextSlot();
     pos->x_ = x;
     pos->y_ = y;
     pos->z_ = z;

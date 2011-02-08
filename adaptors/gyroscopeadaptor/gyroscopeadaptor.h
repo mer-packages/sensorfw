@@ -81,7 +81,7 @@ private:
      */
     void processSample(int pathId, int fd);
 
-    DeviceAdaptorRingBuffer<AngularVelocityData>* gyroscopeBuffer_;
+    DeviceAdaptorRingBuffer<TimedXyzData>* gyroscopeBuffer_;
 };
 
 #endif

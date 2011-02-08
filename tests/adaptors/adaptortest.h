@@ -56,6 +56,7 @@ private slots:
     void testKeyboardSliderAdaptor();
     void testProximityAdaptor();
     void testTouchAdaptor();
+    void testGyroscopeAdaptor();
 
 };
 

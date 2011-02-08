@@ -31,6 +31,7 @@
 
 #include "abstractsensor_a.h"
 #include "datatypes/orientationdata.h"
+#include "datatypes/xyz.h"
 
 class GyroscopeSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
@@ -38,13 +39,13 @@ class GyroscopeSensorChannelAdaptor : public AbstractSensorChannelAdaptor
     Q_CLASSINFO("D-Bus Interface", "local.GyroscopeSensor")
 
 public:
-    Q_PROPERTY(AngularVelocityData value READ get);
-    AngularVelocityData get() const;
+    Q_PROPERTY(XYZ value READ get);
+    XYZ get() const;
 
     GyroscopeSensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:
-    void dataAvailable(const AngularVelocityData& data);
+    void dataAvailable(const XYZ& data);
 };
 
 #endif

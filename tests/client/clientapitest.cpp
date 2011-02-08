@@ -34,6 +34,7 @@
 #include "qt-api/proximitysensor_i.h"
 #include "qt-api/rotationsensor_i.h"
 #include "qt-api/magnetometersensor_i.h"
+#include "qt-api/gyroscopesensor_i.h"
 
 #include "clientapitest.h"
 
@@ -51,6 +52,7 @@ void ClientApiTest::initTestCase()
     remoteSensorManager.loadPlugin("proximitysensor");
     remoteSensorManager.loadPlugin("rotationsensor");
     remoteSensorManager.loadPlugin("magnetometersensor");
+    remoteSensorManager.loadPlugin("gyroscopesensor");
 
     // Register interfaces (can this be done inside the plugins?
     remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>("orientationsensor");
@@ -61,6 +63,7 @@ void ClientApiTest::initTestCase()
     remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>("proximitysensor");
     remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>("rotationsensor");
     remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>("magnetometersensor");
+    remoteSensorManager.registerSensorInterface<GyroscopeSensorChannelInterface>("gyroscopesensor");
 }
 
 void ClientApiTest::init()
@@ -138,6 +141,42 @@ void ClientApiTest::testAccelerometerSensor()
 
     delete sensorIfc;
 }
+
+void ClientApiTest::testGyroscopeSensor()
+{
+    QString sensorName("gyroscopesensor");
+    SensorManagerInterface& sm = SensorManagerInterface::instance();
+    QVERIFY( sm.isValid() );
+
+    // Get session
+    GyroscopeSensorChannelInterface* sensorIfc = GyroscopeSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
+
+    // Attempt to get another session
+    GyroscopeSensorChannelInterface* sensorIfc2 = GyroscopeSensorChannelInterface::interface(sensorName);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+    delete sensorIfc2;
+
+    // Test properties
+    sensorIfc->setInterval(100);
+
+    // test start
+    QDBusReply<void> reply = sensorIfc->start();
+    QVERIFY(reply.isValid());
+
+    // test stop
+    reply = sensorIfc->stop();
+    QVERIFY(reply.isValid());
+
+    XYZ sample1 = sensorIfc->get();
+    XYZ sample2 = qvariant_cast<XYZ>(sensorIfc->property("value"));
+    QVERIFY(sample1 == sample2);
+
+    delete sensorIfc;
+}
+
+
+
 
 void ClientApiTest::testMagnetometerSensor()
 {

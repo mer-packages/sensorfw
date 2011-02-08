@@ -1,3 +1,5 @@
+
+
 /**
    @file main.cpp
    @brief Sensord initiation point
@@ -128,6 +130,9 @@ int main(int argc, char *argv[])
     }
 #endif
 
+    sensordLogW() << "Loading GyroscopeSensor " << sm.loadPlugin("gyroscopesensor");
+
+    
     if (parser.createDaemon())
     {
         int pid = fork();
