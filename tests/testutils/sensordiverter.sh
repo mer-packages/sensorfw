@@ -23,11 +23,18 @@
 
 ### configuration
 
-TESTCONFIGSOURCE=/usr/share/sensord-tests/00-automatic-testing.conf
+TESTCONFIGSOURCE_RM680=/usr/share/sensord-tests/00-automatic-testing-rm680.conf
+TESTCONFIGSOURCE_RM696=/usr/share/sensord-tests/00-automatic-testing-rm696.conf
 TESTCONFIGTARGET=/etc/sensorfw/sensord.conf.d/00-automatic-testing.conf
 DIVERTPATH=/tmp/fakedsensors
 FIFODIVERTS="accelerometer als"
 POLLDIVERTS="accelerometer"
+
+PRODUCT=`sysinfo-tool -g /component/product`
+TESTCONFIGSOURCE=$TESTCONFIGSOURCE_RM680
+if [ "$PRODUCT" = "RM-696" ]; then
+    CONFIG=$TESTCONFIGSOURCE_RM696
+fi
 
 ### main code
 

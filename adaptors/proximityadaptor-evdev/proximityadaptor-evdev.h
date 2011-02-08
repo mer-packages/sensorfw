@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Markus Lehtonen <markus.lehtonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,7 +32,6 @@
 #include "inputdevadaptor.h"
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
-#include <QTime>
 
 /**
  * @brief Adaptor for proximity sensor.
@@ -81,4 +81,3 @@ private:
 };
 
 #endif
-

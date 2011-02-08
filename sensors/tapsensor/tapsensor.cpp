@@ -89,7 +89,7 @@ bool TapSensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        tapAdaptor_->startSensor("tap");
+        tapAdaptor_->startSensor();
     }
     return true;
 }
@@ -99,7 +99,7 @@ bool TapSensorChannel::stop()
     sensordLogD() << "Stopping TapSensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        tapAdaptor_->stopSensor("tap");
+        tapAdaptor_->stopSensor();
         filterBin_->stop();
         marshallingBin_->stop();
     }

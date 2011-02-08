@@ -76,9 +76,6 @@ void signalINT(int param)
 
 int main(int argc, char *argv[])
 {
-    const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
-    const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
-
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
@@ -97,25 +94,29 @@ int main(int argc, char *argv[])
         SensordLogger::setOutputLevel(parser.getLogLevel());
     }
 
-    if (parser.configFileInput())
+    const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
+    const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
+
+    QString defConfigFile = CONFIG_FILE_PATH;
+    if(parser.configFileInput())
     {
-        QString defConfigFile = parser.configFilePath();
-        QFile file(defConfigFile);
-        if (Config::loadConfig(defConfigFile, CONFIG_DIR_PATH))
-            sensordLogT() << "Config file is loading successfully.";
-        else
-        {
-            sensordLogW() << "Config file error! Load using default path.";
-            Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
-        }
-    } else {
-        Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
+        defConfigFile = parser.configFilePath();
     }
 
-    if (Config::configuration() == NULL)
+    QString defConfigDir = CONFIG_DIR_PATH;
+    if(parser.configDirInput())
     {
-        sensordLogC() << "Failed to load configuration. Aborting.";
-        exit(EXIT_FAILURE);
+        defConfigDir = parser.configDirPath();
+    }
+
+    if (!Config::loadConfig(defConfigFile, defConfigDir))
+    {
+        sensordLogC() << "Config file error! Load using default paths.";
+        if (!Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH))
+        {
+            sensordLogC() << "Which also failed. Bailing out";
+            return 1;
+        }
     }
 
     signal(SIGUSR1, signalUSR1);
@@ -172,15 +173,15 @@ void printUsage()
 {
     qDebug() << "Usage: sensord [OPTIONS]";
     qDebug() << " -d, --daemon                     Detach from terminal and run as daemon.\n";
-    qDebug() << " -l=N, --log-level=N              Use logging level N. Messages are logged for";
+    qDebug() << " -l=N, --log-level=<level>        Use given logging level. Messages are logged for";
     qDebug() << "                                  the given and higher priority levels. Level";
     qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
-    qDebug() << " --log-target=N                   logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
-    qDebug() << " --log-file-path=P                Log file path\n";
-    qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
-    qDebug() << "                                  /etc/sensord.conf is used.\n";
+    qDebug() << " --log-target=<target>            Logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
+    qDebug() << " --log-file-path=<path>           Log file path\n";
+    qDebug() << " -c=P, --config-file=<path>       Load configuration from given path. By default";
+    qDebug() << "                                  /etc/sensorfw/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";
     qDebug() << "                                  framework.\n";
     qDebug() << " --no-magnetometer-bg-calibration Do not start calibration of magnetometer in";

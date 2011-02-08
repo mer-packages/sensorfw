@@ -9,6 +9,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,26 +36,12 @@
 
 #include <errno.h>
 
-#define DEVICE_MATCH_STRING "accelerometer"
-
 TapAdaptor::TapAdaptor(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices(DEVICE_MATCH_STRING)) {
-        sensordLogW() << "Input device not found.";
-    }
-
     tapBuffer_ = new DeviceAdaptorRingBuffer<TapData>(128);
-    addAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
-
+    setAdaptedSensor("tap", "Internal accelerometer tap events", tapBuffer_);
     setDescription("Device tap events (lis302d)");
-    introduceAvailableDataRange(DataRange(0, 2, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
 }
 
 TapAdaptor::~TapAdaptor()
@@ -90,7 +77,6 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
         commitOutput(tapValue);
     }
 }
-
 
 void TapAdaptor::interpretSync(int src, struct input_event *ev)
 {

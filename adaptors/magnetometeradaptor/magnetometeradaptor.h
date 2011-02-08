@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,7 +31,6 @@
 #include "sysfsadaptor.h"
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/genericdata.h"
-#include <QTime>
 #include <QString>
 
 /**
@@ -38,7 +38,6 @@
  *
  * Uses Input Device system as driver interface. Measures values from the magnetometer
  * with sysfsadaptor IntervalMode.
- *
  */
 class MagnetometerAdaptor : public SysfsAdaptor
 {
@@ -62,7 +61,6 @@ protected:
     MagnetometerAdaptor(const QString& id);
     ~MagnetometerAdaptor();
 
-
     bool setInterval(const unsigned int value, const int sessionId);
 
 private:
@@ -76,18 +74,8 @@ private:
      */
     void processSample(int pathId, int fd);
 
-    /**
-     * Locate the magnetometer driver and return path to it.
-     *
-     * @return Location of magnetometer driver handle.
-     */
-    QString getDriverHandle();
-
-    QTime time;
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
-    int originalPollingRate_;
-    QString driverHandle_;
+    int intervalCompensation_;
 };
 
 #endif
-

@@ -42,51 +42,17 @@ struct ak8974_data {
 }; //__attribute__((packed)); <-- documentation states that this is a nogo for c++
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false),
-    originalPollingRate_(1000)
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
-
-    driverHandle_ = getDriverHandle();
-    if (driverHandle_.size() == 0) {
-        sensordLogW() << "Input device not found.";
-    } else {
-        sensordLogD() << "Detected magnetometer driver at " << driverHandle_;
-        addPath(driverHandle_, 0);
-        magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
-        addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
-    }
-
-    // Pick correct datarange based on chip...
-    if (driverHandle_.contains("8975"))
-    {
-        introduceAvailableDataRange(DataRange(-4096, 4096, 1));
-    } else {
-        introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    }
-
+    intervalCompensation_ = Config::configuration()->value("magnetometer/interval_compensation", "0").toInt();
+    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
+    setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Input device Magnetometer adaptor (ak897x)");
-    introduceAvailableInterval(DataRange(25, 1000, 0)); // -> [1,40] Hz
-    setDefaultInterval(1000);
 }
 
 MagnetometerAdaptor::~MagnetometerAdaptor()
 {
     delete magnetometerBuffer_;
-}
-
-QString MagnetometerAdaptor::getDriverHandle()
-{
-    QString magFile = Config::configuration()->value("mag_ak8974_dev_path").toString();
-    if (magFile.size() > 0 && QFile::exists(magFile)) {
-        return magFile;
-    }
-
-    magFile = Config::configuration()->value("mag_ak8975_dev_path").toString();
-    if (magFile.size() > 0 && QFile::exists(magFile)) {
-        return magFile;
-    }
-
-    return "";
 }
 
 void MagnetometerAdaptor::processSample(int pathId, int fd)
@@ -98,7 +64,7 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
     unsigned int bytesRead = read(fd, &mag_data, sizeof(mag_data));
 
     if (bytesRead < sizeof(mag_data)) {
-        sensordLogW() << "read" << bytesRead  << "bytes out of expected" << sizeof(mag_data) << "bytes. Previous error:" << strerror(errno);
+        sensordLogW() << "read " << bytesRead  << " bytes out of expected " << sizeof(mag_data) << " bytes. Previous error: " << strerror(errno);
         //return;
     }
 
@@ -107,7 +73,7 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
         sensordLogD() << "Invalid sample received from magnetometer";
     }
 
-    sensordLogT() << "Magnetometer Reading:" << mag_data.x << mag_data.y << mag_data.z;
+    sensordLogT() << "Magnetometer Reading: " << mag_data.x << ", " << mag_data.y << ", " << mag_data.z;
 
     TimedXyzData* sample = magnetometerBuffer_->nextSlot();
 
@@ -118,16 +84,13 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
 
     magnetometerBuffer_->commit();
     magnetometerBuffer_->wakeUpReaders();
-
 }
 
 bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
-    if(driverHandle_.contains("8975"))
+    if(intervalCompensation_)
     {
-        // Driver spends approximately 16ms between starting the read to returning
-        // Compensating here.
-        return SysfsAdaptor::setInterval(value>16 ? value-16 : 0, sessionId);
+        return SysfsAdaptor::setInterval(value > intervalCompensation_ ? value - intervalCompensation_ : 0, sessionId);
     }
     return SysfsAdaptor::setInterval(value, sessionId);
 }

@@ -38,7 +38,7 @@ StabilityFilter::StabilityFilter(Property* stableProperty, Property* unstablePro
       unstableProperty(unstableProperty)
 {
     connect(&timer, SIGNAL(timeout()), this, SLOT(timeoutTriggered()));
-    timeout = Config::configuration()->value("stability_timeout", QVariant(defaultTimeout)).toInt() * 1000;
+    timeout = Config::configuration()->value("context/stability_timeout", QVariant(defaultTimeout)).toInt() * 1000;
 }
 
 void StabilityFilter::interpret(unsigned, const QPair<double, double>* data)

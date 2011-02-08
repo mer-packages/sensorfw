@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -91,6 +92,8 @@ public:
 
     virtual ~SysfsAdaptor();
 
+    virtual void init();
+
     /**
      * Add a new file device for monitoring. Adaptor must be restarted to
      * get the newly added path into monitoring list.
@@ -117,8 +120,8 @@ public:
      */
     void stopAdaptor();
 
-    virtual bool startSensor(const QString& sensorId);
-    virtual void stopSensor(const QString& sensorId);
+    virtual bool startSensor();
+    virtual void stopSensor();
 
     /**
      * See #DeviceAdaptor::standby()

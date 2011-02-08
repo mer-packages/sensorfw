@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Markus Lehtonen <markus.lehtonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,7 +26,6 @@
    </p>
 */
 
-#include <QtDebug>
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
@@ -40,23 +40,11 @@
 #define SELFDEF_EV_FRONT_PROXIMITY 11
 
 ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
-    InputDevAdaptor(id, 1), currentState_(ProximityStateUnknown)
+    InputDevAdaptor(id, 1),
+    currentState_(ProximityStateUnknown)
 {
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices(Config::configuration()->value("proximity-evdev_match_name").toString())) {
-        sensordLogW() << "Input device not found.";
-    }
-
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(3);
-    addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
-
-    introduceAvailableDataRange(DataRange(-1, 1, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
+    setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 }
 
 ProximityAdaptorEvdev::~ProximityAdaptorEvdev()
@@ -102,7 +90,7 @@ void ProximityAdaptorEvdev::interpretSync(int src, struct input_event *ev)
 void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
 {
     static ProximityState oldState = ProximityStateUnknown;
-    
+
     if (currentState_ != oldState) {
         sensordLogD() << "Proximity state change detected: " << currentState_;
 
@@ -110,7 +98,7 @@ void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
 
         proximityData->timestamp_ = Utils::getTimeStamp(&(ev->time));
         proximityData->value_ = currentState_;
-        
+
         oldState = currentState_;
 
         proximityBuffer_->commit();

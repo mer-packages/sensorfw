@@ -8,6 +8,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -86,19 +87,11 @@ private:
      */
     void processSample(int pathId, int fd);
 
-    /**
-     * Reads and returns the correct threshold value for proximity off.
-     * Any values below threshold should be considered off values for
-     * proximity.
-     *
-     * @return Threshold value for proximity. \c 0 on error.
-     */
-    int readThreshold();
-    int m_threshold;
-    ProximityAdaptor::DeviceType device;
+    int threshold_;
+    ProximityAdaptor::DeviceType deviceType_;
 
 #ifdef SENSORFW_MCE_WATCHER
-    QDBusInterface *dbusIfc;
+    QDBusInterface *dbusIfc_;
 #endif
 
 };

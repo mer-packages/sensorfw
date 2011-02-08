@@ -51,15 +51,13 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     accelerometerReader_ = new BufferReader<AccelerationData>(128);
 
     // Get the transformation matrix from config file
-    QString aconvString = Config::configuration()->value("acc_trans_matrix", "").toString();
+    QString aconvString = Config::configuration()->value("accelerometer/transformation_matrix", "").toString();
     if (aconvString.size() > 0)
     {
         if (!setMatrixFromString(aconvString))
         {
-            sensordLogW() << "Failed to parse 'acc_trans_matrix' configuration key. Coordinate alignment may be invalid";
+            sensordLogW() << "Failed to parse 'transformation_matrix' configuration key. Coordinate alignment may be invalid";
         }
-    } else {
-        sensordLogT() << "Key 'acc_trans_matrix' not found from configuration.";
     }
 
     accCoordinateAlignFilter_ = sm.instantiateFilter("coordinatealignfilter");
@@ -109,7 +107,7 @@ bool AccelerometerChain::start()
     if (AbstractSensorChannel::start()) {
         sensordLogD() << "Starting AccelerometerChain";
         filterBin_->start();
-        accelerometerAdaptor_->startSensor("accelerometer");
+        accelerometerAdaptor_->startSensor();
     }
     return true;
 }
@@ -118,7 +116,7 @@ bool AccelerometerChain::stop()
 {
     if (AbstractSensorChannel::stop()) {
         sensordLogD() << "Stopping AccelerometerChain";
-        accelerometerAdaptor_->stopSensor("accelerometer");
+        accelerometerAdaptor_->stopSensor();
         filterBin_->stop();
     }
     return true;

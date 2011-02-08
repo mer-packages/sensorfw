@@ -39,8 +39,8 @@ CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
 {
     m_timer.setSingleShot(true);
 
-    calibration_rate = Config::configuration()->value("calibration_rate",  QVariant(100)).toInt();
-    calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(60000)).toInt();
+    calibration_rate = Config::configuration()->value("magnetometer/calibration_rate",  QVariant(100)).toInt();
+    calib_timeout = Config::configuration()->value("magnetometer/calibration_timeout", QVariant(60000)).toInt();
 }
 
 CalibrationHandler::~CalibrationHandler()

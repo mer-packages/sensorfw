@@ -28,7 +28,7 @@ QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
 DBUSCONFIGFILES.files = sensorfw.conf
 DBUSCONFIGFILES.path = /etc/dbus-1/system.d
 
-SENSORDCONFIGFILE.files = config/sensord.conf
+SENSORDCONFIGFILE.files = config/sensor*.conf
 SENSORDCONFIGFILE.path = /etc/sensorfw
 
 SENSORDCONFIGFILES.files = config/90-sensord-default.conf

@@ -10,6 +10,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Markus Lehtonen <markus.lehtonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -38,12 +39,8 @@
 ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, true, Config::configuration()->value("als-sysfs_path").toString())
 {
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1024);
-    addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
-
-    introduceAvailableDataRange(DataRange(0, 65535, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 }
 
 ALSAdaptorSysfs::~ALSAdaptorSysfs()

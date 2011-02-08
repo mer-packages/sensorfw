@@ -1,3 +1,23 @@
+sensord (0.7.0) unstable; urgency=low
+
+  [Antti Virtanen]
+  * Removed possibility of having multiple sensors inside single DeviceAdaptor. This feature was never used.
+  * DeviceAdaptor::init() added. Subclasses can implement this to initialize themselves.
+  * SysfsAdaptor and InputDevAdaptor init() implemented. They try to find adaptor configuration from section which is named after the adaptor type.
+  * Removed hardcoded metadata definitions from adaptors. This will now come from config file.
+  * Renamed all configuration file entries.
+  * Removed logic from Loader to handle deviceId based hierarchy. This is replaced by having different config file for each device type.
+  * New option added: --config-dir.
+  * Added upstart job definition.
+  * Changed init script to use correct config for ncdk.
+  * Fixed makefiles to copy correct config files.
+  * Modified unit tests to use different configs in different deployments.
+
+  [Timo Rongas]
+  * Prevent reading values from empty list in SysfsAdaptor
+
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 03 Feb 2011 18:46:11 +0200
+
 sensord (0.6.38) unstable; urgency=low
 
   [Shenghua Liu]

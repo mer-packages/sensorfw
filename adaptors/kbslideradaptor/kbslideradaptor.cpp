@@ -33,29 +33,15 @@
 
 #include "kbslideradaptor.h"
 
-#define DEVICE_MATCH_STRING "gpio-keys"
 #define SELFDEF_EV_KB 5
 #define SELFDEF_EV_KBSLIDE 10
 
 KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
     InputDevAdaptor(id, 1), newKbEventRecorded_(false), currentState_(KeyboardSliderStateUnknown)
 {
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices(DEVICE_MATCH_STRING)) {
-        sensordLogW() << "Input device not found.";
-    }
-
     kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(3);
-    addAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
-
+    setAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
     setDescription("Keyboard slider events (via input device)");
-    introduceAvailableDataRange(DataRange(0, 2, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
 }
 
 KeyboardSliderAdaptor::~KeyboardSliderAdaptor()

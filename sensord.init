@@ -22,7 +22,8 @@ RETVAL=0
 
 start() {
     echo -n "Starting sensord: "
-    exec $sbindir/$processname &> /dev/null &
+    CONFIG="/etc/sensorfw/sensord-ncdk.conf"
+    exec $sbindir/$processname -c "$CONFIG" &> /dev/null &
     RETVAL=$?
     [ $RETVAL -eq 0 ] && touch /var/lock/subsys/$servicename
     success

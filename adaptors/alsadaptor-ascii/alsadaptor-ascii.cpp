@@ -11,6 +11,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -42,37 +43,9 @@
 
 ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
-    const unsigned int DEFAULT_RANGE = 65535;
-
-    int range = DEFAULT_RANGE;
-    QFile sysFile(Config::configuration()->value("als-ascii_range_sysfs_path").toString());
-
-    if (!(sysFile.open(QIODevice::ReadOnly))) {
-        sensordLogW() << "Unable to config ALS range from sysfs, using default value: " << DEFAULT_RANGE;
-    } else {
-        sysFile.readLine(buf, sizeof(buf));
-        range = QString(buf).toInt();
-    }
-
-    sensordLogT() << "Ambient light range: " << range;
-
-    // Locate the actual handle
-    QString devPath = Config::configuration()->value("als-ascii_sysfs_path").toString();
-
-    if (devPath.isEmpty())
-    {
-        sensordLogW() << "No driver handle found for ALS. Data not available.";
-        return;
-    }
-
-    addPath(devPath);
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
-    addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
-
+    setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
-    introduceAvailableDataRange(DataRange(0, range, 1));
-    introduceAvailableInterval(DataRange(50, 2000, 0));
-    setDefaultInterval(1000);
 }
 
 ALSAdaptorAscii::~ALSAdaptorAscii()

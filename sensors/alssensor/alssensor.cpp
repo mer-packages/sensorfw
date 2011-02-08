@@ -112,7 +112,7 @@ bool ALSSensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        alsAdaptor_->startSensor("als");
+        alsAdaptor_->startSensor();
     }
     return true;
 }
@@ -122,7 +122,7 @@ bool ALSSensorChannel::stop()
     sensordLogD() << "Stopping ALSSensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        alsAdaptor_->stopSensor("als");
+        alsAdaptor_->stopSensor();
         filterBin_->stop();
         marshallingBin_->stop();
     }
