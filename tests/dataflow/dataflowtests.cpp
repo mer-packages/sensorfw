@@ -81,14 +81,14 @@ void DataFlowTest::testAdaptorSharing()
     QVERIFY2(adaptorA == adaptorB, "Adaptors are not the same instance");
 
     // start A
-    QVERIFY(adaptorA->startSensor(sensorName));
+    QVERIFY(adaptorA->startSensor());
 
     // Check that A runs, is not running unless sensor is started
     SysfsAdaptor* sysfsAdaptorA = dynamic_cast<SysfsAdaptor*>(adaptorA);
     QVERIFY2(sysfsAdaptorA->isRunning(), "AdaptorA is not running after start");
 
     // start B
-    QVERIFY(adaptorB->startSensor(sensorName));
+    QVERIFY(adaptorB->startSensor());
 
     // Check that B runs, is not running unless sensor is started
 
@@ -96,7 +96,7 @@ void DataFlowTest::testAdaptorSharing()
     QVERIFY2(sysfsAdaptorB->isRunning(), "AdaptorB is not running after start");
 
     // Stop B
-    adaptorB->stopSensor(sensorName);
+    adaptorB->stopSensor();
 
     // Check that A still runs
     QVERIFY2(sysfsAdaptorA->isRunning(), "AdaptorA is not running after stopping adaptor B");
@@ -105,7 +105,7 @@ void DataFlowTest::testAdaptorSharing()
     //       is likely to be empty).
 
     // Stop A
-    adaptorA->stopSensor(sensorName);
+    adaptorA->stopSensor();
 
     // check that A stopped
     QVERIFY2(!(sysfsAdaptorA->isRunning()), "AdaptorA is still running after stopping both adaptor A and B");

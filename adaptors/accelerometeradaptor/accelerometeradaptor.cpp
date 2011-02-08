@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,31 +33,16 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include <QMap>
+#include "config.h"
 
 #include "datatypes/utils.h"
-
-#define DEVICE_MATCH_STRING "accelerometer"
 
 AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices(DEVICE_MATCH_STRING)) {
-        sensordLogW() << "Input device not found.";
-    }
-
     accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(128);
-    addAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
-
-    // Set Metadata
+    setAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
     setDescription("Input device accelerometer adaptor (lis302d)");
-    introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    introduceAvailableInterval(DataRange(10, 1000, 0)); // -> [1,100] Hz
-    setDefaultInterval(0);
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()

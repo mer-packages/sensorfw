@@ -31,37 +31,27 @@
 
 DeviceAdaptor::~DeviceAdaptor()
 {
-    foreach(AdaptedSensorEntry* entry, sensors_)
-    {
-        delete entry;
-    }
+    delete sensor_.second;
 }
 
-void DeviceAdaptor::addAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer)
+void DeviceAdaptor::setAdaptedSensor(const QString& name, const QString& description, RingBufferBase* buffer)
 {
-    addAdaptedSensor(name, new AdaptedSensorEntry(name, description, buffer));
+    setAdaptedSensor(name, new AdaptedSensorEntry(name, description, buffer));
 }
 
-void DeviceAdaptor::addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor)
+void DeviceAdaptor::setAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor)
 {
-    sensors_.insert(name, newAdaptedSensor);
+    sensor_ = qMakePair(name, newAdaptedSensor);
 }
 
-AdaptedSensorEntry* DeviceAdaptor::findAdaptedSensor(const QString& sensorId) const
+AdaptedSensorEntry* DeviceAdaptor::getAdaptedSensor() const
 {
-    if ( !sensors_.contains(sensorId) )
-        return NULL;
-    return sensors_[sensorId];
-}
-
-QList<QString> DeviceAdaptor::findAdaptedSensors() const
-{
-    return sensors_.keys();
+    return sensor_.second;
 }
 
 RingBufferBase* DeviceAdaptor::findBuffer(const QString& name) const
 {
-    AdaptedSensorEntry* entry = findAdaptedSensor(name);
+    AdaptedSensorEntry* entry = getAdaptedSensor();
     if ( !entry )
         return NULL;
     return entry->buffer();

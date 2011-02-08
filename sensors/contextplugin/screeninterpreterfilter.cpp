@@ -5,7 +5,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Marja Hassinen <ext-marja.2.hassinen@nokia.com>
-   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
 
    This file is part of Sensord.
 
@@ -47,7 +47,7 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     topEdge("top")
 {
     // Get offset from config
-    offset = Config::configuration()->value("orientation_offset", QVariant(0)).toInt();
+    offset = Config::configuration()->value("context/orientation_offset", QVariant(0)).toInt();
 }
 
 void ScreenInterpreterFilter::interpret(unsigned, const PoseData* data)

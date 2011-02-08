@@ -11,6 +11,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -34,20 +35,11 @@
 #include "magnetometeradaptor-ascii.h"
 #include "datatypes/utils.h"
 
-#define SYSFS_MAGNET_PATH "/sys/bus/i2c/devices/5-000f/ak8974/curr_pos"
-
 MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
-    devId(0)
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
-    if (access(SYSFS_MAGNET_PATH, R_OK) < 0) {
-        sensordLogW() << SYSFS_MAGNET_PATH << ": "<< strerror(errno);
-        return;
-    }
-    introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    addPath(SYSFS_MAGNET_PATH, devId);
     magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(16);
-    addAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);
+    setAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);
 }
 
 MagnetometerAdaptorAscii::~MagnetometerAdaptorAscii()
@@ -59,13 +51,9 @@ void MagnetometerAdaptorAscii::processSample(int pathId, int fd)
 {
     unsigned short x, y, z;
 
-    if (pathId != devId) {
-        sensordLogW() << "pathId != devId";
-        return;
-    }
     lseek(fd, 0, SEEK_SET);
     if (read(fd, buf, sizeof(buf)) <= 0) {
-        sensordLogW() << "read():" << strerror(errno);
+        sensordLogW() << "read(): " << strerror(errno);
         return;
     }
     sensordLogT() << "Magnetometer output value: " << buf;

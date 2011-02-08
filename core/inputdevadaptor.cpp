@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,40 +46,25 @@ InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     deviceNumber_(-1),
     originalPollingInterval_(0)
 {
-    deviceSysPathString_ = Config::configuration()->value("device_sys_path").toString();
-    devicePollFilePath_ = Config::configuration()->value("device_poll_file_path").toString();
+    deviceSysPathString_ = Config::configuration()->value("global/device_sys_path").toString();
+    devicePollFilePath_ = Config::configuration()->value("global/device_poll_file_path").toString();
 }
 
 InputDevAdaptor::~InputDevAdaptor()
 {
 }
 
-bool InputDevAdaptor::startSensor(const QString& sensorId)
-{
-    if (!(SysfsAdaptor::startSensor(sensorId))) {
-        return false;
-    }
-
-    return true;
-}
-
-void InputDevAdaptor::stopSensor(const QString& sensorId)
-{
-    SysfsAdaptor::stopSensor(sensorId);
-}
-
-int InputDevAdaptor::getInputDevices(const QString& matchString)
+int InputDevAdaptor::getInputDevices(const QString& typeName)
 {
     int deviceNumber = 0;
     deviceCount_ = 0;
-    deviceString_ = matchString;
+    deviceString_ = typeName;
 
     // Check if this device name is defined in configuration
-    QString configKey = QString("dev_%1").arg(matchString);
-    QString deviceName = Config::configuration()->value(configKey, "DEV_NOT_FOUND").toString();
+    QString deviceName = Config::configuration()->value(typeName + "/device", "DEV_NOT_FOUND").toString();
 
     // Do not perform strict checks for the input device
-    if (deviceName != "DEV_NOT_FOUND" && checkInputDevice(deviceName, matchString, false)) {
+    if (deviceName != "DEV_NOT_FOUND" && checkInputDevice(deviceName, typeName, false)) {
         addPath(deviceName, deviceCount_);
         ++deviceCount_;
         deviceNumber_ = deviceNumber;
@@ -90,7 +76,7 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
         // No configuration for this device, try find the device from the device system path
         while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
             deviceName = deviceSysPathString_.arg(deviceNumber);
-            if (checkInputDevice(deviceName, matchString)) {
+            if (checkInputDevice(deviceName, typeName)) {
                 addPath(deviceName, deviceCount_);
                 ++deviceCount_;
                 deviceNumber_ = deviceNumber;
@@ -99,7 +85,7 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
         }
     }
 
-    QString pollConfigKey = QString("dev_poll_%1").arg(deviceString_);
+    QString pollConfigKey = QString(typeName + "/poll_file");
     if (Config::configuration()->value(pollConfigKey, "").toString().size() > 0) {
         usedDevicePollFilePath_ = Config::configuration()->value(pollConfigKey, "").toString();
     } else {
@@ -107,7 +93,7 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
     }
 
     if (deviceCount_ == 0) {
-        sensordLogW() << "Cannot find any device for: " << matchString;
+        sensordLogW() << "Cannot find any device for: " << typeName;
         setValid(false);
     }
 
@@ -204,7 +190,7 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
     Q_UNUSED(sessionId);
 
-    sensordLogD() << "Setting poll interval for" << deviceString_ << " to " << value;
+    sensordLogD() << "Setting poll interval for " << deviceString_ << " to " << value;
 
     QFile pollFile;
     if(!openPollFile(pollFile, QIODevice::WriteOnly))
@@ -217,4 +203,12 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
         return false;
     }
     return true;
+}
+
+void InputDevAdaptor::init()
+{
+    if (!getInputDevices(Config::configuration()->value(name() + "/input_match", name()).toString())) {
+        sensordLogW() << "Input device not found.";
+    }
+    SysfsAdaptor::init();
 }

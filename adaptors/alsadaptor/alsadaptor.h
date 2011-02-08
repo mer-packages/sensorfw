@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -48,7 +49,6 @@ class ALSAdaptor : public SysfsAdaptor
 {
     Q_OBJECT;
 public:
-
     enum DeviceType
     {
         DeviceUnknown = 0,
@@ -95,9 +95,7 @@ private:
     void processSample(int pathId, int fd);
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
-    ALSAdaptor::DeviceType device;
-
+    DeviceType deviceType_;
 };
 
 #endif
-

@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -52,21 +53,9 @@ public:
     InputDevAdaptor(const QString& id, int maxDeviceCount = 1);
     virtual ~InputDevAdaptor();
 
+    virtual void init();
+
     int getDeviceCount() { return deviceCount_; }
-
-    /**
-     * See SysfsAdaptor::startSensor()
-     *
-     * Extended to allow polling rate adjustment.
-     */
-    virtual bool startSensor(const QString& sensorId);
-
-    /**
-     * See SysfsAdaptor::startSensor()
-     *
-     * Extended to allow polling rate adjustment.
-     */
-    virtual void stopSensor(const QString& sensorId);
 
 protected:
     /**
@@ -94,11 +83,11 @@ protected:
     /**
      * Scans through the /dev/input/event* device handles and registers the
      * ones that pass the test with the #checkInputDevice method.
-     * @param matchString String to match in device name fields.
+     * @param typeName device type name
      *
      * @return Number of devices detected.
      */
-    int getInputDevices(const QString& matchString);
+    int getInputDevices(const QString& typeName);
 
     /**
      * Read and process data. Run when sysfsadaptor has detected new available

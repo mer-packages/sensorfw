@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -34,16 +35,8 @@
 GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
-    QString path = Config::configuration()->value("gyroscope_sysfs_path").toString();
-    if ( !addPath(path, 0) ) {
-        setValid(false);
-    }
-
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<AngularVelocityData>(32);
-
-    addAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
-
-    introduceAvailableDataRange(DataRange(-250000, 250000, 1));
+    setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
 }
 
 GyroscopeAdaptor::~GyroscopeAdaptor()

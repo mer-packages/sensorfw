@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,7 +25,6 @@
    </p>
  */
 
-#include <QtDebug>
 #include "touchadaptor.h"
 #include "datatypes/utils.h"
 #include <errno.h>
@@ -36,21 +36,9 @@ const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS), rangeInfo_(*this)
 {
     rangeInfo_((RangeInfo){0, 0, 0, 0});
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
-    if (!getInputDevices("touchscreen")) {
-        sensordLogW() << "Input device not found.";
-    }
     outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(128);
-    addAdaptedSensor("touch", "Touch screen input", outputBuffer_);
-
+    setAdaptedSensor("touch", "Touch screen input", outputBuffer_);
     setDescription("Touch screen events");
-    introduceAvailableDataRange(DataRange(0, 0, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    setDefaultInterval(0);
 }
 
 TouchAdaptor::~TouchAdaptor()

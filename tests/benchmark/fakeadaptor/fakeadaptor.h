@@ -37,7 +37,7 @@ class FakeAdaptor;
 class FakeAdaptorThread : public QThread
 {
     Q_OBJECT;
-public: 
+public:
     FakeAdaptorThread(FakeAdaptor *parent);
     void run();
     bool running;
@@ -61,13 +61,15 @@ public:
     bool startAdaptor();
     void stopAdaptor();
 
-    bool startSensor(const QString& sensorId);
-    void stopSensor(const QString& sensorId);
+    bool startSensor();
+    void stopSensor();
 
     void pushNewData(int& data);
 
+    void init();
+
     unsigned int interval_;
-    
+
 protected:
     FakeAdaptor(const QString& id);
 
@@ -77,4 +79,3 @@ private:
 };
 
 #endif
-

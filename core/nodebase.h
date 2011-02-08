@@ -222,6 +222,8 @@ protected:
      */
     void introduceAvailableDataRange(const DataRange& range);
 
+    void introduceAvailableDataRanges(const QString& typeName);
+
     /**
      * Sets the node to request range information from in case local
      * values have not been set.
@@ -270,6 +272,8 @@ protected:
      * Add a new interval to list of locally provided ones
      */
     void introduceAvailableInterval(const DataRange& interval);
+
+    void introduceAvailableIntervals(const QString& typeName);
 
     /**
      * Return the locally valid interval (reimplement when required)
@@ -346,6 +350,8 @@ private:
     bool hasLocalRange() const;
     bool updateBufferSize();
     bool updateBufferInterval();
+
+    DataRangeList parseDataRangeList(const QString& input, int defaultResolution) const;
 
     QString                 m_description;
 

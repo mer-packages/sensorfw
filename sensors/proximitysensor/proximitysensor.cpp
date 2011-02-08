@@ -89,7 +89,7 @@ bool ProximitySensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        proximityAdaptor_->startSensor("proximity");
+        proximityAdaptor_->startSensor();
     }
     return true;
 }
@@ -99,7 +99,7 @@ bool ProximitySensorChannel::stop()
     sensordLogD() << "Stopping ProximitySensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        proximityAdaptor_->stopSensor("proximity");
+        proximityAdaptor_->stopSensor();
         filterBin_->stop();
         marshallingBin_->stop();
     }
@@ -109,7 +109,7 @@ bool ProximitySensorChannel::stop()
 void ProximitySensorChannel::emitToDbus(const TimedUnsigned& value)
 {
     previousValue_.timestamp_ = value.timestamp_;
-    
+
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;
         writeToClients((const void *)&value, sizeof(TimedUnsigned));
