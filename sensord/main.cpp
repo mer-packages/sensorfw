@@ -97,10 +97,16 @@ int main(int argc, char *argv[])
 
     QString defConfigFile = CONFIG_FILE_PATH;
     if(parser.configFileInput())
+    {
         defConfigFile = parser.configFilePath();
+    }
+
     QString defConfigDir = CONFIG_DIR_PATH;
     if(parser.configDirInput())
+    {
         defConfigDir = parser.configDirPath();
+    }
+
     if (!Config::loadConfig(defConfigFile, defConfigDir))
     {
         sensordLogC() << "Config file error! Load using default paths.";
