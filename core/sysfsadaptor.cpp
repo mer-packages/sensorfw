@@ -359,11 +359,10 @@ bool SysfsAdaptor::checkIntervalUsage() const
     if (mode_ == SysfsAdaptor::SelectMode)
     {
         const QList<DataRange>& list = getAvailableIntervals();
-        if (list.size() > 1){
-            if (list.first().min != list.first().max){
-                sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
-                return false;
-            }
+        if (list.size() > 1 || (list.size() == 1 && list.first().min != list.first().max))
+        {
+            sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
+            return false;
         }
     }
     return true;
