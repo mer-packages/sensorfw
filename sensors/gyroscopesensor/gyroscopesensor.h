@@ -42,7 +42,7 @@ class FilterBase;
 
 class GyroscopeSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<XYZ>
+        public DbusEmitter<TimedXyzData>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ value READ get);
@@ -67,7 +67,7 @@ public Q_SLOTS:
     bool stop();
 
 signals:
-    void dataAvailable(const TimedXyzData& data);
+    void dataAvailable(const XYZ& data);
 
 protected:
     GyroscopeSensorChannel(const QString& id);
@@ -81,9 +81,9 @@ private:
     BufferReader<TimedXyzData>* gyroscopeReader_;
     RingBuffer<TimedXyzData>*   outputBuffer_;
 
-    XYZ                previousSample_;
+    TimedXyzData                previousSample_;
 
-    void emitToDbus(const XYZ& value);
+    void emitToDbus(const TimedXyzData& value);
 };
 
 #endif // GYROSCOPE_SENSOR_CHANNEL_H

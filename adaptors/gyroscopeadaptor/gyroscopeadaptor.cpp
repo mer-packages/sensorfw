@@ -44,11 +44,9 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(32);
     setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
 
-
     introduceAvailableDataRange(DataRange(-250000, 250000, 1));
-    introduceAvailableInterval(DataRange(1.25, 1000, 0)); // -> [1,800] Hz
-    setDefaultInterval(25);
     setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
+
 
 }
 

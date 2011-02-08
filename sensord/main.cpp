@@ -131,8 +131,6 @@ int main(int argc, char *argv[])
     }
 #endif
 
-    sensordLogW() << "Loading GyroscopeSensor " << sm.loadPlugin("gyroscopesensor");
-
     
     if (parser.createDaemon())
     {
