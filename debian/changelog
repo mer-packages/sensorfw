@@ -1,3 +1,10 @@
+sensord (0.6.39) unstable; urgency=low
+
+  [Timo Rongas]
+  * Prevent reading values from empty list in SysfsAdaptor
+
+ -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 08 Feb 2011 13:35:32 +0200
+
 sensord (0.6.38) unstable; urgency=low
 
   [Shenghua Liu]
