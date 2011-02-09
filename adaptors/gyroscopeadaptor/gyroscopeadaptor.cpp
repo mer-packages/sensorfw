@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Pia Niemelä <pia.s.niemela@nokia.com>
 
    This file is part of Sensord.
 
@@ -47,6 +48,8 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     introduceAvailableDataRange(DataRange(-250000, 250000, 1));
     setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
 
+    introduceAvailableInterval(DataRange(1.25, 1000, 1));  // [1,800] Hz
+    setDefaultInterval(10); // 100 Hz
 
 }
 
@@ -78,3 +81,16 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
     gyroscopeBuffer_->commit();
     gyroscopeBuffer_->wakeUpReaders();
 }
+
+
+bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
+{
+    return SysfsAdaptor::setInterval(value, sessionId);
+}
+
+unsigned int GyroscopeAdaptor::interval() const{
+    return SysfsAdaptor::interval();
+}
+
+
+
