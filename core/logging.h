@@ -61,6 +61,13 @@ public:
         return *this;
     }
 
+    SensordLogger& operator<<(const QByteArray& item)
+    {
+        if(initialized && isLoggable(currentLevel))
+            *oss << item.constData();
+        return *this;
+    }
+
     template <typename T>
     SensordLogger& operator<<(const T& item)
     {
