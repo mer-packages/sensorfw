@@ -48,7 +48,12 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     introduceAvailableDataRange(DataRange(-250000, 250000, 1));
     setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
 
-    introduceAvailableInterval(DataRange(1.25, 1000, 1));  // [1,800] Hz
+    introduceAvailableInterval(DataRange(100, 100, 1));     // 10 Hz
+    introduceAvailableInterval(DataRange(25, 25, 1));       // 40 Hz
+    introduceAvailableInterval(DataRange(10, 10, 1));       // 100 Hz
+    introduceAvailableInterval(DataRange(5, 5, 1));         // 200 Hz
+    introduceAvailableInterval(DataRange(2.5, 2.5, 1));     // 400 Hz
+    introduceAvailableInterval(DataRange(1.25, 1.25, 1));   // 800 Hz
     setDefaultInterval(10); // 100 Hz
 
 }
@@ -85,7 +90,7 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
 
 bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
-    return SysfsAdaptor::setInterval(value, sessionId);
+    return SysfsAdaptor::setInterval(value>10?10:value, sessionId);
 }
 
 unsigned int GyroscopeAdaptor::interval() const{
