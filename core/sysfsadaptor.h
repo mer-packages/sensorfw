@@ -161,6 +161,16 @@ public:
      */
     static QByteArray readFromFile(const QByteArray& path);
 
+    /**
+     * Utility function for openning  sysfs entries.
+     *
+     * @param path    Path of the file to read from
+     * @return Content of the file
+     */
+
+    static bool openPollFile(QFile& pollFile, QIODevice::OpenMode mode);
+
+
 protected slots:
     void dataAvailable(int pathId, int fd);
 
@@ -173,17 +183,6 @@ protected:
      */
     virtual unsigned int interval() const;
 
-    /**
-         * Utility function for reading data from files.
-         * parameters
-         *
-         * @param path    Path of the file to read from
-         * @param buf     Buffer for data read
-         * @return        resultant read data string.
-         */
-     QString readFromFile(QString path, char* buf);
-
-     QString openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const;
 
     /**
      * Sets the interval for the adaptor. This function is valid for

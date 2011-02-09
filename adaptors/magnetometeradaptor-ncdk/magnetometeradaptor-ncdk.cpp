@@ -3,11 +3,8 @@
    @brief MagnetometerAdaptor for ncdk
 
    <p>
-   Copyright (C) 2009-2010 Nokia Corporation
+   Copyright (C) 2010-2011 Nokia Corporation
 
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
-   @author Antti Virtanen <antti.i.virtanen@nokia.com>
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
@@ -30,7 +27,6 @@
 #include "config.h"
 #include <errno.h>
 #include <fcntl.h>
-#include <linux/input.h>
 #include "datatypes/utils.h"
 #include "logging.h"
 
@@ -39,21 +35,14 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
 {
 
     intervalCompensation_ = Config::configuration()->value("magnetometer/interval_compensation", "0").toInt();
-    powerStateFilePath_ = Config::configuration()->value("magnetometer/path_power_state", "").toString();
-    sensAdjFilePath_ = Config::configuration()->value("magnetometer/path_sens_adjust", "").toString();
+    powerStateFilePath_ = Config::configuration()->value("magnetometer/path_power_state", "").toByteArray();
+    sensAdjFilePath_ = Config::configuration()->value("magnetometer/path_sens_adjust", "").toByteArray();
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
-    setDescription("Input device Magnetometer adaptor (ak897x)");
+    setDescription("Magnetometer adaptor (ak8975) for NCDK");
 
     //get sensitivity adjustment
-    sensAdj = sensAdjust();
-    QStringList str_adj = sensAdj.split(":");
-    if (str_adj.size() == 3)
-    {
-        x_adj = ((QString)str_adj.at(0)).toInt();
-        y_adj = ((QString)str_adj.at(1)).toInt();
-        z_adj = ((QString)str_adj.at(2)).toInt();
-    }
+    readSensitivityAdjustment(x_adj, y_adj, z_adj);
 
 }
 
@@ -63,22 +52,25 @@ void MagnetometerAdaptorNCDK::processSample(int pathId, int fd)
 
     char buf[32];
     int x, y, z;
-    QStringList str;
+    QList<QByteArray> strList;
+    QByteArray byteArray = QByteArray();
     bool isOK = read(fd, &buf, sizeof(buf)) > 0;
 
     switch (isOK)
     {
     case true:
-        str = QString(buf).split(":");
-        if (str.size() == 3)
+        byteArray.append(buf,sizeof(buf));
+        strList = byteArray.split(':');
+        if (strList.size() == 3)
         {
-            x = adjustPos(((QString)str.at(0)).toInt(), x_adj);
-            y = adjustPos(((QString)str.at(1)).toInt(), y_adj);
-            z = adjustPos(((QString)str.at(2)).toInt(), z_adj);
+            x = adjustPos(strList.at(0).toInt(), x_adj);
+            y = adjustPos(strList.at(1).toInt(), y_adj);
+            z = adjustPos(strList.at(2).toInt(), z_adj);
             break;
         }
     case false:
         sensordLogW() << "Reading magnetometer error: " << strerror(errno);
+        return;
     }
 
     sensordLogT() << "Magnetometer Reading: " << x << ", " << y << ", " << z;
@@ -94,18 +86,17 @@ void MagnetometerAdaptorNCDK::processSample(int pathId, int fd)
     magnetometerBuffer_->wakeUpReaders();
 }
 
-int MagnetometerAdaptorNCDK::PoserState()
+int MagnetometerAdaptorNCDK::powerState() const
 {
-    char buf[16];
-    QString str = SysfsAdaptor::readFromFile(powerStateFilePath_, buf);
-    return str.isEmpty() ? 0 : str.toUInt();
+    QByteArray byteArray = SysfsAdaptor::readFromFile(powerStateFilePath_);
+    return byteArray.isEmpty() ? 0 : byteArray.toUInt();
 }
 
-bool MagnetometerAdaptorNCDK::setPowerState(const int value)
+bool MagnetometerAdaptorNCDK::setPowerState(const int value) const
 {
     sensordLogD() << "Setting power state for compass driver" << " to " << value;
 
-    QString powerStateStr = QString(value);
+    QByteArray powerStateStr = QByteArray::number(value);
 
     if (!writeToFile(powerStateFilePath_, powerStateStr))
     {
@@ -116,10 +107,18 @@ bool MagnetometerAdaptorNCDK::setPowerState(const int value)
     return true;
 }
 
-QString MagnetometerAdaptorNCDK::sensAdjust()
+void MagnetometerAdaptorNCDK::readSensitivityAdjustment(int &x, int &y, int &z) const
 {
-    char buf[32];
-    return readFromFile(sensAdjFilePath_, buf);
+    QByteArray byteArray = readFromFile(sensAdjFilePath_);
+
+    QList<QByteArray> strList = byteArray.split(':');
+    if (strList.size() == 3)
+    {
+        x = strList.at(0).toInt();
+        y = strList.at(1).toInt();
+        z = strList.at(2).toInt();
+    }
+
 }
 
 int MagnetometerAdaptorNCDK::adjustPos(const int value, const int adj) const

@@ -166,9 +166,8 @@ unsigned int InputDevAdaptor::interval() const
         return -1;
     }
 
-    char buf[16];
-    QString str = readFromFile(usedDevicePollFilePath_, buf);
-    return str.isEmpty() ? 0 : str.toUInt();
+    QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toAscii());
+    return byteArray.size() > 0 ? byteArray.toInt() : 0;
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)

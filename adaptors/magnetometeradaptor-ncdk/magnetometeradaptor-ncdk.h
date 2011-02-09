@@ -3,11 +3,8 @@
    @brief MagnetometerAdaptor for ncdk
 
    <p>
-   Copyright (C) 2009-2010 Nokia Corporation
+   Copyright (C) 2010-2011 Nokia Corporation
 
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
-   @author Antti Virtanen <antti.i.virtanen@nokia.com>
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
@@ -71,15 +68,15 @@ private:
      */
     void processSample(int pathId, int fd);
 
-    QString powerStateFilePath_;
-    QString sensAdjFilePath_;
-    QString sensAdj;
+    QByteArray powerStateFilePath_;
+    QByteArray sensAdjFilePath_;
+
     int x_adj, y_adj, z_adj;
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
 
-    int PoserState() ;
-    bool setPowerState(const int value);
-    QString sensAdjust();
+    int powerState() const;
+    bool setPowerState(const int value) const;
+    void readSensitivityAdjustment(int &x, int &y, int &z) const;
     int adjustPos(const int value, const int adj) const;
     int intervalCompensation_;
 };
