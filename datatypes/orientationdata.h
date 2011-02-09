@@ -38,8 +38,6 @@
 
 typedef TimedXyzData AccelerationData;
 typedef TimedXyzData MagneticFieldData;
-typedef TimedXyzData AngularVelocityData;
-
 typedef TimedXyzData OrientationData;
 typedef TimedXyzData MagnetometerData;
 
