@@ -339,7 +339,7 @@ bool SysfsAdaptor::writeToFile(QString path, QString content)
         return false;
     }
 
-    if (write(fd, content.toLocal8Bit().constData(), path.size()*sizeof(char)) == -1) {
+    if (write(fd, content.toLocal8Bit().constData(), content.toLocal8Bit().size() * sizeof(char)) == -1) {
         close(fd);
         return false;
     }
