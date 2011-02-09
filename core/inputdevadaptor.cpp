@@ -159,15 +159,6 @@ bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& match
     return check;
 }
 
-bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const
-{
-    pollFile.setFileName(usedDevicePollFilePath_);
-    if (!(pollFile.exists() && pollFile.open(mode))) {
-        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
-        return false;
-    }
-    return true;
-}
 
 unsigned int InputDevAdaptor::interval() const
 {
@@ -175,15 +166,9 @@ unsigned int InputDevAdaptor::interval() const
         return -1;
     }
 
-    QFile pollFile;
-    if(!openPollFile(pollFile, QIODevice::ReadOnly))
-        return 0;
-
     char buf[16];
-    if (pollFile.readLine(buf, sizeof(buf)) > 0) {
-        return QString(buf).toUInt();
-    }
-    return 0;
+    QString str = readFromFile(usedDevicePollFilePath_, buf);
+    return str.isEmpty() ? 0 : str.toUInt();
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
@@ -203,6 +188,7 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
         return false;
     }
     return true;
+
 }
 
 void InputDevAdaptor::init()

@@ -349,6 +349,28 @@ bool SysfsAdaptor::writeToFile(QString path, QString content)
     return true;
 }
 
+bool SysfsAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const
+{
+    if (!(pollFile.exists() && pollFile.open(mode)))
+    {
+        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
+        return false;
+    }
+    return true;
+}
+
+QString SysfsAdaptor::readFromFile(QString path, char* buf)
+{
+    QFile pollFile;
+    pollFile.setFileName(path);
+    if(!openPollFile(pollFile, QIODevice::ReadOnly) && pollFile.readLine(buf, sizeof(buf)) > 0)
+    {
+        return QString(buf);
+    }
+
+    return QString();
+}
+
 void SysfsAdaptor::dataAvailable(int pathId, int fd)
 {
     processSample(pathId, fd);
