@@ -1,5 +1,6 @@
 sensord (0.7.0) unstable; urgency=low
 
+  [ Antti Virtanen ]
   [Antti Virtanen]
   * Removed possibility of having multiple sensors inside single DeviceAdaptor. This feature was never used.
   * DeviceAdaptor::init() added. Subclasses can implement this to initialize themselves.
@@ -19,7 +20,10 @@ sensord (0.7.0) unstable; urgency=low
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 03 Feb 2011 18:46:11 +0200
+  [Shenghua Liu]
+  * Add new magnetometer adaptor and plugin for ncdk
+
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Feb 2011 18:48:50 +0200
 
 sensord (0.6.38) unstable; urgency=low
 
