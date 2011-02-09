@@ -60,6 +60,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 
     deviceType_ = (DeviceType)Config::configuration()->value("proximity/driver_type", "0").toInt();
     threshold_ = Config::configuration()->value("proximity/threshold", "35").toInt();
+    powerStatePath_ = Config::configuration()->value("proximity/powerstate_path").toByteArray();
     if (deviceType_ == RM696)
     {
 #ifdef SENSORFW_MCE_WATCHER
@@ -83,17 +84,36 @@ ProximityAdaptor::~ProximityAdaptor()
     delete proximityBuffer_;
 }
 
+bool ProximityAdaptor::startSensor()
+{
+    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    {
+        writeToFile(powerStatePath_, "1");
+    }
+    return SysfsAdaptor::startSensor();
+}
+
+void ProximityAdaptor::stopSensor()
+{
+    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    {
+        writeToFile(powerStatePath_, "0");
+    }
+    SysfsAdaptor::stopSensor();
+}
+
 void ProximityAdaptor::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
 
-    static char buffer[100];
-    int ret = 0;
+    char buffer[100];
+    memset(buffer, 0, sizeof(buffer));
+    int value = 0;
 
     if (deviceType_ == RM680)
     {
         bh1770glc_ps ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer)-1);
+        int bytesRead = read(fd, buffer, sizeof(buffer) - 1);
 
         if (bytesRead > 0) {
             memcpy(&ps_data, buffer, sizeof(ps_data));
@@ -104,11 +124,13 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         }
 
         if ( ps_data.led1 > threshold_ ) {
-            ret = 1;
+            value = 1;
         }
-    } else if(deviceType_ == RM696) {
+    }
+    else if(deviceType_ == RM696)
+    {
         apds990x_data ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer)-1);
+        int bytesRead = read(fd, buffer, sizeof(buffer) - 1);
 
         if (bytesRead > 0) {
             memcpy(&ps_data, buffer, sizeof(ps_data));
@@ -119,17 +141,35 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         }
 
         if ( ps_data.ps > threshold_ ) {
-            ret = 1;
+            value = 1;
         }
-    } else {
-        sensordLogW() << "Other HW except RM680 and RM696";
+    }
+    else if(deviceType_ == NCDK)
+    {
+        int bytesRead = read(fd, &buffer, sizeof(buffer));
+        if (bytesRead <= 0) {
+            sensordLogW() << "read(): " << strerror(errno);
+            return;
+        }
+        QVariant variant(buffer);
+        bool ok;
+        value = variant.toInt(&ok);
+        if(!ok) {
+            sensordLogW() << "read(): failed to parse int from: " << buffer;
+            return;
+        }
+        sensordLogT() << "Proximity value: " << value;
+    }
+    else
+    {
+        sensordLogW() << "Not known device type: " << deviceType_;
         return;
     }
 
     TimedUnsigned* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
-    proximityData->value_ = ret;
+    proximityData->value_ = value;
 
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();

@@ -143,7 +143,10 @@ void ALSAdaptor::processSample(int pathId, int fd)
         sensordLogT() << "Ambient light value: " << lux->value_;
     }
     else
+    {
+        sensordLogW() << "Not known device type: " << deviceType_;
         return;
+    }
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
 }

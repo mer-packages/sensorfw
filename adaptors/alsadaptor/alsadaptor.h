@@ -66,6 +66,10 @@ public:
         return new ALSAdaptor(id);
     }
 
+    virtual bool startSensor();
+
+    virtual void stopSensor();
+
 protected:
     /**
      * Constructor.
@@ -84,10 +88,6 @@ protected:
      * @return Always false.
      */
     virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
-
-    virtual bool startSensor();
-
-    virtual void stopSensor();
 
 private:
 
