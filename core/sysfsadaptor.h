@@ -35,6 +35,7 @@
 #include <QThread>
 #include "filterproperty.h"
 #include <QMutex>
+#include <QFile>
 
 class SysfsAdaptor;
 
@@ -160,6 +161,16 @@ public:
      */
     static QByteArray readFromFile(const QByteArray& path);
 
+    /**
+     * Utility function for openning  sysfs entries.
+     *
+     * @param path    Path of the file to read from
+     * @return Content of the file
+     */
+
+    static bool openPollFile(QFile& pollFile, QIODevice::OpenMode mode);
+
+
 protected slots:
     void dataAvailable(int pathId, int fd);
 
@@ -171,6 +182,7 @@ protected:
      * @return Currently used interval for adaptor.
      */
     virtual unsigned int interval() const;
+
 
     /**
      * Sets the interval for the adaptor. This function is valid for

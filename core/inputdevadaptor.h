@@ -32,7 +32,6 @@
 #include "sysfsadaptor.h"
 #include <QString>
 #include <QStringList>
-#include <QFile>
 #include <linux/input.h>
 #include "filterproperty.h"
 
@@ -110,8 +109,6 @@ private:
      * @return Number of read events.
      */
     int getEvents(int fd);
-
-    bool openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const;
 
     QString deviceSysPathString_;
     QString devicePollFilePath_;

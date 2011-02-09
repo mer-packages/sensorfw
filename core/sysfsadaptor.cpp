@@ -358,15 +358,27 @@ bool SysfsAdaptor::writeToFile(const QByteArray& path, const QByteArray& content
 QByteArray SysfsAdaptor::readFromFile(const QByteArray& path)
 {
     QFile file(path);
-    if (!file.exists(path))
+    if (!file.exists(path) || !openPollFile(file, QIODevice::ReadOnly))
     {
-        sensordLogW() << "Path does not exists: " << path;
+        sensordLogW() << "Path does not exists or open file failed: " << path;
         return QByteArray();
     }
+
     QByteArray data(file.readAll());
     sensordLogT() << "Read from '" << path << ": " << data;
     return data;
 }
+
+bool SysfsAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode)
+{
+    if (!(pollFile.exists() && pollFile.open(mode)))
+    {
+        sensordLogW() << "Unable to locate poll interval setting";
+        return false;
+    }
+    return true;
+}
+
 
 void SysfsAdaptor::dataAvailable(int pathId, int fd)
 {
