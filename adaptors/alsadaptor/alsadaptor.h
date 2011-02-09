@@ -53,7 +53,8 @@ public:
     {
         DeviceUnknown = 0,
         RM680,
-        RM696
+        RM696,
+        NCDK
     };
 
     /**
@@ -83,6 +84,11 @@ protected:
      * @return Always false.
      */
     virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
+
+    virtual bool startSensor();
+
+    virtual void stopSensor();
+
 private:
 
     /**
@@ -96,6 +102,7 @@ private:
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
     DeviceType deviceType_;
+    QByteArray powerStatePath_;
 };
 
 #endif

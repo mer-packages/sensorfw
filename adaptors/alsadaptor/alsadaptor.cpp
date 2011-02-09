@@ -38,11 +38,11 @@
 
 /* Device name: /dev/apds990x0 */
 struct apds990x_data {
-        __u32 lux; /* 10x scale */
-        __u32 lux_raw; /* 10x scale */
-        __u16 ps;
-        __u16 ps_raw;
-        __u16 status;
+    __u32 lux; /* 10x scale */
+    __u32 lux_raw; /* 10x scale */
+    __u16 ps;
+    __u16 ps_raw;
+    __u16 status;
 } __attribute__((packed));
 
 struct bh1770glc_als {
@@ -57,11 +57,30 @@ ALSAdaptor::ALSAdaptor(const QString& id):
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
     deviceType_ = (DeviceType)Config::configuration()->value("als/driver_type", "0").toInt();
+    powerStatePath_ = Config::configuration()->value("als/powerstate_path").toByteArray();
 }
 
 ALSAdaptor::~ALSAdaptor()
 {
     delete alsBuffer_;
+}
+
+bool ALSAdaptor::startSensor()
+{
+    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    {
+        writeToFile(powerStatePath_, "1");
+    }
+    return SysfsAdaptor::startSensor();
+}
+
+void ALSAdaptor::stopSensor()
+{
+    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    {
+        writeToFile(powerStatePath_, "0");
+    }
+    SysfsAdaptor::stopSensor();
 }
 
 void ALSAdaptor::processSample(int pathId, int fd)
@@ -76,7 +95,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
@@ -93,7 +112,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
@@ -102,6 +121,29 @@ void ALSAdaptor::processSample(int pathId, int fd)
         lux->value_ = als_data.lux;
         lux->timestamp_ = Utils::getTimeStamp();
     }
+    else if (deviceType_ == NCDK)
+    {
+        char buffer[32];
+        memset(buffer, 0, sizeof(buffer));
+        int bytesRead = read(fd, &buffer, sizeof(buffer));
+        if (bytesRead <= 0) {
+            sensordLogW() << "read(): " << strerror(errno);
+            return;
+        }
+        QVariant value(buffer);
+        bool ok;
+        double fValue(value.toDouble(&ok));
+        if(!ok) {
+            sensordLogW() << "read(): failed to parse float from: " << buffer;
+            return;
+        }
+        TimedUnsigned* lux = alsBuffer_->nextSlot();
+        lux->value_ = fValue * 10;
+        lux->timestamp_ = Utils::getTimeStamp();
+        sensordLogT() << "Ambient light value: " << lux->value_;
+    }
+    else
+        return;
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
 }
