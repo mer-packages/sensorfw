@@ -71,11 +71,11 @@ private:
     QByteArray powerStateFilePath_;
     QByteArray sensAdjFilePath_;
 
-    int x_adj, y_adj, z_adj, powerState;
+    int x_adj, y_adj, z_adj;
+    bool powerState_;
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
 
-    int getPowerState() const;
-    bool setPowerState(const int value) const;
+    bool setPowerState(bool value) const;
     void getSensitivityAdjustment(int &x, int &y, int &z) const;
     int adjustPos(const int value, const int adj) const;
     int intervalCompensation_;

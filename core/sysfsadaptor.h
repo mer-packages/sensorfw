@@ -161,16 +161,6 @@ public:
      */
     static QByteArray readFromFile(const QByteArray& path);
 
-    /**
-     * Utility function for openning  sysfs entries.
-     *
-     * @param path    Path of the file to read from
-     * @return Content of the file
-     */
-
-    static bool openPollFile(QFile& pollFile, QIODevice::OpenMode mode);
-
-
 protected slots:
     void dataAvailable(int pathId, int fd);
 
