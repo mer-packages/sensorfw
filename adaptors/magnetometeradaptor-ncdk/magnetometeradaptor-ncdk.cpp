@@ -42,7 +42,7 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     setDescription("Magnetometer adaptor (ak8975) for NCDK");
 
     //get sensitivity adjustment
-    readSensitivityAdjustment(x_adj, y_adj, z_adj);
+    getSensitivityAdjustment(x_adj, y_adj, z_adj);
 
 }
 
@@ -50,17 +50,23 @@ void MagnetometerAdaptorNCDK::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
 
+    if (powerState != 1)
+    {
+        sensordLogW() << "Magnetometer is not on power ";
+        return;
+    }
+
     char buf[32];
-    int x, y, z;
+    int x = 0, y = 0, z = 0;
+
     QList<QByteArray> strList;
-    QByteArray byteArray = QByteArray();
-    bool isOK = read(fd, &buf, sizeof(buf)) > 0;
+    int byteRead = 0;
+    bool isOK = (byteRead = read(fd, &buf, sizeof(buf))) > 0;
 
     switch (isOK)
     {
     case true:
-        byteArray.append(buf,sizeof(buf));
-        strList = byteArray.split(':');
+        strList = QByteArray(buf, byteRead).split(':');
         if (strList.size() == 3)
         {
             x = adjustPos(strList.at(0).toInt(), x_adj);
@@ -86,7 +92,7 @@ void MagnetometerAdaptorNCDK::processSample(int pathId, int fd)
     magnetometerBuffer_->wakeUpReaders();
 }
 
-int MagnetometerAdaptorNCDK::powerState() const
+int MagnetometerAdaptorNCDK::getPowerState() const
 {
     QByteArray byteArray = SysfsAdaptor::readFromFile(powerStateFilePath_);
     return byteArray.isEmpty() ? 0 : byteArray.toUInt();
@@ -107,7 +113,7 @@ bool MagnetometerAdaptorNCDK::setPowerState(const int value) const
     return true;
 }
 
-void MagnetometerAdaptorNCDK::readSensitivityAdjustment(int &x, int &y, int &z) const
+void MagnetometerAdaptorNCDK::getSensitivityAdjustment(int &x, int &y, int &z) const
 {
     QByteArray byteArray = readFromFile(sensAdjFilePath_);
 
@@ -129,12 +135,22 @@ int MagnetometerAdaptorNCDK::adjustPos(const int value, const int adj) const
 bool MagnetometerAdaptorNCDK::startSensor()
 {
     setPowerState(1);
+    if ((powerState = getPowerState()) == 0)
+    {
+          sensordLogW() << "Unable to set power on for compass driver";
+    }
+
     return SysfsAdaptor::startSensor();
 }
 
 void MagnetometerAdaptorNCDK::stopSensor()
 {
     setPowerState(0);
+    if ((powerState = getPowerState()) == 1)
+    {
+          sensordLogW() << "Unable to set power off for compass driver";
+    }
+
     SysfsAdaptor::stopSensor();
 }
 
