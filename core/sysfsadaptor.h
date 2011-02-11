@@ -35,6 +35,7 @@
 #include <QThread>
 #include "filterproperty.h"
 #include <QMutex>
+#include <QFile>
 
 class SysfsAdaptor;
 
@@ -143,20 +144,27 @@ public:
      */
     virtual void processSample(int pathId, int fd) = 0;
 
-protected slots:
-    void dataAvailable(int pathId, int fd);
-
-protected:
     /**
-     * Utility function for writing to files. Can be used to control sensor driver
-     * parameters (setting to powersave mode etc.)
+     * Utility function for writing to sysfs entries.
      *
      * @param path    Path of the file to write to
      * @param content What to write
      * @return True on success, false on failure.
      */
-    bool writeToFile(QString path, QString content);
+    static bool writeToFile(const QByteArray& path, const QByteArray& content);
 
+    /**
+     * Utility function for reading from sysfs entries.
+     *
+     * @param path    Path of the file to read from
+     * @return Content of the file
+     */
+    static QByteArray readFromFile(const QByteArray& path);
+
+protected slots:
+    void dataAvailable(int pathId, int fd);
+
+protected:
     /**
      * Returns the current interval (see setInterval()). Valid for PollMode.
      * Reimplementation for adaptors using SelectMode is a must.
@@ -164,6 +172,7 @@ protected:
      * @return Currently used interval for adaptor.
      */
     virtual unsigned int interval() const;
+
 
     /**
      * Sets the interval for the adaptor. This function is valid for

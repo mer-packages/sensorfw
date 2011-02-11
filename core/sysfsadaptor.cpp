@@ -40,16 +40,16 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
                            bool seek,
                            const QString& path,
                            const int pathId) :
-DeviceAdaptor(id),
-reader_(this),
-mode_(mode),
-epollDescriptor_(-1),
-interval_(0),
-initNotDone(true),
-inStandbyMode_(false),
-running_(false),
-shouldBeRunning_(false),
-doSeek_(seek)
+    DeviceAdaptor(id),
+    reader_(this),
+    mode_(mode),
+    epollDescriptor_(-1),
+    interval_(0),
+    initNotDone(true),
+    inStandbyMode_(false),
+    running_(false),
+    shouldBeRunning_(false),
+    doSeek_(seek)
 {
     if (!path.isEmpty()) {
         addPath(path, pathId);
@@ -328,25 +328,45 @@ bool SysfsAdaptor::startReaderThread()
     return true;
 }
 
-bool SysfsAdaptor::writeToFile(QString path, QString content)
+bool SysfsAdaptor::writeToFile(const QByteArray& path, const QByteArray& content)
 {
-    if (!QFile::exists(path)) {
+    sensordLogT() << "Writing to '" << path << ": " << content;
+    if (!QFile::exists(path))
+    {
+        sensordLogW() << "Path does not exists: " << path;
         return false;
     }
-
-    int fd = open(path.toLocal8Bit().constData(), O_WRONLY);
-    if (fd == -1) {
+    int fd = open(path.constData(), O_WRONLY);
+    if (fd == -1)
+    {
+        sensordLogW() << "Failed to open '" << path << "': " << strerror(errno);
         return false;
     }
-
-    if (write(fd, content.toLocal8Bit().constData(), path.size()*sizeof(char)) == -1) {
-        close(fd);
-        return false;
+    bool ret = false;
+    if (write(fd, content.constData(), content.size() * sizeof(char)) == -1)
+    {
+        sensordLogW() << "Failed to write to '" << path << "': " << strerror(errno);
     }
-
+    else
+    {
+        ret = true;
+    }
     close(fd);
+    return ret;
+}
 
-    return true;
+QByteArray SysfsAdaptor::readFromFile(const QByteArray& path)
+{
+    QFile file(path);
+    if (!file.exists(path) || !(file.open(QIODevice::ReadOnly)))
+    {
+        sensordLogW() << "Path does not exists or open file failed: " << path;
+        return QByteArray();
+    }
+
+    QByteArray data(file.readAll());
+    sensordLogT() << "Read from '" << path << ": " << data;
+    return data;
 }
 
 void SysfsAdaptor::dataAvailable(int pathId, int fd)
@@ -361,7 +381,7 @@ bool SysfsAdaptor::checkIntervalUsage() const
         const QList<DataRange>& list = getAvailableIntervals();
         if (list.size() > 1 || (list.size() == 1 && list.first().min != list.first().max))
         {
-            sensordLogW() << "Attempting to use PollMode interval() function for adaptor in SelectMode. Must reimplement!";
+            sensordLogW() << "Attempting to use IntervalMode interval() function for adaptor in SelectMode. Must reimplement!";
             return false;
         }
     }
@@ -463,6 +483,8 @@ void SysfsAdaptor::init()
     {
         sensordLogW() << "No sysfs path defined for: " << name();
     }
+    mode_ = (PollMode)Config::configuration()->value(name() + "/mode", mode_).toInt();
+    doSeek_ = Config::configuration()->value(name() + "/seek", doSeek_).toBool();
 
     introduceAvailableDataRanges(name());
     introduceAvailableIntervals(name());

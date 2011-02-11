@@ -1,14 +1,11 @@
 /**
-   @file proximityadaptor.h
-   @brief ProximityAdaptor
+   @file magnetometeradaptor-ncdk.h
+   @brief MagnetometerAdaptor for ncdk
 
    <p>
-   Copyright (C) 2009-2010 Nokia Corporation
+   Copyright (C) 2010-2011 Nokia Corporation
 
-   @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Lihan Guo <lihan.guo@digia.com>
-   @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,63 +22,42 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
 */
+#ifndef MAGNETOMETERADAPTOR_NCDK_H
+#define MAGNETOMETERADAPTOR_NCDK_H
 
-#ifndef PROXIMITYADAPTOR_H
-#define PROXIMITYADAPTOR_H
-
-#include <QDBusInterface>
 #include "sysfsadaptor.h"
 #include "deviceadaptorringbuffer.h"
-#include "datatypes/timedunsigned.h"
+#include "datatypes/genericdata.h"
+#include <QString>
 
-#ifdef SENSORFW_MCE_WATCHER
-#include <mce/mode-names.h>
-#include <mce/dbus-names.h>
-#endif
 
-/**
- * @brief Adaptor for proximity sensor.
- *
- * Adaptor for proximity. Uses SysFs driver interface in interval
- * polling mode, i.e. values are read with given constant interval.
- *
- */
-class ProximityAdaptor : public SysfsAdaptor
+class MagnetometerAdaptorNCDK : public SysfsAdaptor
 {
-    Q_OBJECT;
 public:
 
-    enum DeviceType
-    {
-        DeviceUnknown = 0,
-        RM680,
-        RM696,
-        NCDK
-    };
-
     /**
-     * Factory method for gaining a new instance of ProximityAdaptor class.
+     * Factory method for gaining a new instance of MagnetometerAdaptor class.
      * @param id Identifier for the adaptor.
      */
     static DeviceAdaptor* factoryMethod(const QString& id)
     {
-        return new ProximityAdaptor(id);
+        return new MagnetometerAdaptorNCDK(id);
     }
 
-    virtual bool startSensor();
-
-    virtual void stopSensor();
+    bool startSensor();
+    void stopSensor();
 
 protected:
     /**
      * Constructor.
      * @param id Identifier for the adaptor.
      */
-    ProximityAdaptor(const QString& id);
-    ~ProximityAdaptor();
+    MagnetometerAdaptorNCDK(const QString& id);
+    ~MagnetometerAdaptorNCDK();
+
+    bool setInterval(const unsigned int value, const int sessionId);
 
 private:
-    DeviceAdaptorRingBuffer<TimedUnsigned>* proximityBuffer_;
 
     /**
      * Read and process data. Run when sysfsadaptor has detected new available
@@ -92,14 +68,17 @@ private:
      */
     void processSample(int pathId, int fd);
 
-    int threshold_;
-    ProximityAdaptor::DeviceType deviceType_;
-    QByteArray powerStatePath_;
+    QByteArray powerStateFilePath_;
+    QByteArray sensAdjFilePath_;
 
-#ifdef SENSORFW_MCE_WATCHER
-    QDBusInterface *dbusIfc_;
-#endif
+    int x_adj, y_adj, z_adj;
+    bool powerState_;
+    DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
 
+    bool setPowerState(bool value) const;
+    void getSensitivityAdjustment(int &x, int &y, int &z) const;
+    int adjustPos(const int value, const int adj) const;
+    int intervalCompensation_;
 };
 
-#endif
+#endif // MAGNETOMETERADAPTOR_NCDK_H

@@ -9,6 +9,7 @@ SUBDIRS = alsadaptor \
           accelerometeradaptor \
           magnetometeradaptor \
           magnetometeradaptor-ascii \
+          magnetometeradaptor-ncdk \
           touchadaptor \
           kbslideradaptor \
           proximityadaptor \

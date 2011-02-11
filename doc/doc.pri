@@ -7,6 +7,9 @@ for( folder, DOC_FOLDERS ) {
 
 # Documentation build target
 doctarget.target = docs
+contains(MAKE_DOCS,no): {
+doctarget.commands = echo \"*** skip building docs ***\"
+} else {
 doctarget.commands = INPUT=\"$${_PRO_FILE_PWD_}/adaptors \
                      $${_PRO_FILE_PWD_}/adaptors/arianeadaptor \
                      $${_PRO_FILE_PWD_}/datatypes \
@@ -20,7 +23,7 @@ doctarget.commands = INPUT=\"$${_PRO_FILE_PWD_}/adaptors \
                      $${_PRO_FILE_PWD_}/doc/mainpage.h\" \
                      STRIP_FROM_PATH=\"$${_PRO_FILE_PWD_}\" \
                      doxygen $$system(pwd)/Doxyfile
-
+}
 QMAKE_EXTRA_TARGETS += doctarget
 
 # Add documentation cleaning to clean target

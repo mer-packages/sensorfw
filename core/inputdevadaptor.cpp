@@ -159,31 +159,14 @@ bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& match
     return check;
 }
 
-bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) const
-{
-    pollFile.setFileName(usedDevicePollFilePath_);
-    if (!(pollFile.exists() && pollFile.open(mode))) {
-        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
-        return false;
-    }
-    return true;
-}
-
 unsigned int InputDevAdaptor::interval() const
 {
     if (deviceNumber_ < 0) {
         return -1;
     }
 
-    QFile pollFile;
-    if(!openPollFile(pollFile, QIODevice::ReadOnly))
-        return 0;
-
-    char buf[16];
-    if (pollFile.readLine(buf, sizeof(buf)) > 0) {
-        return QString(buf).toUInt();
-    }
-    return 0;
+    QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toAscii());
+    return byteArray.size() > 0 ? byteArray.toInt() : 0;
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
@@ -191,18 +174,8 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
     Q_UNUSED(sessionId);
 
     sensordLogD() << "Setting poll interval for " << deviceString_ << " to " << value;
-
-    QFile pollFile;
-    if(!openPollFile(pollFile, QIODevice::WriteOnly))
-        return false;
-
-    QString frequencyString = QString("%1\n").arg(value);
-
-    if (pollFile.write(frequencyString.toAscii().constData(), frequencyString.length()) < 0) {
-        sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ":" << pollFile.error();
-        return false;
-    }
-    return true;
+    QByteArray frequencyString(QString("%1\n").arg(value).toLocal8Bit());
+    return writeToFile(usedDevicePollFilePath_.toLocal8Bit(), frequencyString);
 }
 
 void InputDevAdaptor::init()
