@@ -8,7 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
-   @author Pia Niemel√§ <pia.s.niemela@nokia.com>
+   @author Pia Niemel‰ <pia.s.niemela@nokia.com>
 
    This file is part of Sensord.
 
@@ -36,26 +36,9 @@
 GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
-
-    QString path = Config::configuration()->value("gyroscope_sysfs_path").toString();
-    if ( !addPath(path, 0) ) {
-        setValid(false);
-    }
-
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(32);
     setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
-
-    introduceAvailableDataRange(DataRange(-250000, 250000, 1));
     setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
-
-    introduceAvailableInterval(DataRange(100, 100, 1));     // 10 Hz
-    introduceAvailableInterval(DataRange(25, 25, 1));       // 40 Hz
-    introduceAvailableInterval(DataRange(10, 10, 1));       // 100 Hz
-    introduceAvailableInterval(DataRange(5, 5, 1));         // 200 Hz
-    introduceAvailableInterval(DataRange(2.5, 2.5, 1));     // 400 Hz
-    introduceAvailableInterval(DataRange(1.25, 1.25, 1));   // 800 Hz
-    setDefaultInterval(10); // 100 Hz
-
 }
 
 GyroscopeAdaptor::~GyroscopeAdaptor()
@@ -87,15 +70,11 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
     gyroscopeBuffer_->wakeUpReaders();
 }
 
-
 bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
-    return SysfsAdaptor::setInterval(value>10?10:value, sessionId);
+    return SysfsAdaptor::setInterval((value > 10 ? 10 : value), sessionId);
 }
 
 unsigned int GyroscopeAdaptor::interval() const{
     return SysfsAdaptor::interval();
 }
-
-
-
