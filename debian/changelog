@@ -2,6 +2,7 @@ sensord (0.6.39) unstable; urgency=low
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
+  * Added nodocs parameter to prevent doc building. Fixes: NB#227047
 
   [Antti Virtanen]
   * Fixed bug from SysfsAdaptor::writeToFile(): it used wrong method to get size of the buffer.
