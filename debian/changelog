@@ -19,6 +19,7 @@ sensord (0.7.0) unstable; urgency=low
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
+  * Added nodocs parameter to prevent doc building
 
   [Shenghua Liu]
   * Add new magnetometer adaptor and plugin for ncdk

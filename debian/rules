@@ -48,6 +48,13 @@ ifneq (,$(findstring parallel=,$(DEB_BUILD_OPTIONS)))
     MAKE_PARALLEL_PARAMS := -j$(subst parallel=,$(empty),$(filter parallel=%,$(PROPER_DEB_BUILD_OPTIONS)))
 endif
 
+# check for build docs
+export MAKE_DOCS := yes
+ifneq (,$(findstring nodocs,$(DEB_BUILD_OPTIONS)))
+    export MAKE_DOCS = no
+endif
+
+
 builddir:
 	mkdir -p $(BUILD_DIR)
 
@@ -56,7 +63,7 @@ configure-stamp: builddir
 	dh_testdir
 
 	# Add here commands to configure the package.
-	cd $(BUILD_DIR) && qmake $(QMAKECONFIG) "QMAKE_CXXFLAGS=$(CFLAGS)" ../$(PROJECT_NAME).pro
+	cd $(BUILD_DIR) && qmake $(QMAKECONFIG) "QMAKE_CXXFLAGS=$(CFLAGS)" "MAKE_DOCS=$(MAKE_DOCS)" ../$(PROJECT_NAME).pro
 	export LD_RUN_PATH=/usr/lib/sensord/
 
 	touch configure-stamp
