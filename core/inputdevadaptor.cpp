@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -47,6 +48,10 @@ InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
 {
     deviceSysPathString_ = Config::configuration()->value("device_sys_path").toString();
     devicePollFilePath_ = Config::configuration()->value("device_poll_file_path").toString();
+
+    for (int i = 0; i < 64; i++) { 
+        evlist_[i] = {{0, 0}, 0, 0, 0};
+    }
 }
 
 InputDevAdaptor::~InputDevAdaptor()

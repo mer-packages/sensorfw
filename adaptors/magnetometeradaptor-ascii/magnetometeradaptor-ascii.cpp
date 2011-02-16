@@ -11,6 +11,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,6 +30,7 @@
 */
 
 #include <errno.h>
+#include <string.h>
 #include "logging.h"
 #include "config.h"
 #include "magnetometeradaptor-ascii.h"
@@ -40,6 +42,7 @@ MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
     devId(0)
 {
+    memset(buf, 0x0, 32);
     if (access(SYSFS_MAGNET_PATH, R_OK) < 0) {
         sensordLogW() << SYSFS_MAGNET_PATH << ": "<< strerror(errno);
         return;

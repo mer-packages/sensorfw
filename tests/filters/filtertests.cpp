@@ -495,6 +495,7 @@ void FilterApiTest::testDeclinationFilter()
     };
 
     FilterBase* declinationFilter = DeclinationFilter::factoryMethod();
+    QVERIFY(declinationFilter);
     int key = qvariant_cast<int>(dynamic_cast<DeclinationFilter*>(declinationFilter)->property("declinationCorrection"));
 
     // Expected output data

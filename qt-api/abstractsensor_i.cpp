@@ -8,6 +8,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -44,6 +45,8 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl
 };
 
 AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId) :
+    errorCode_(SNoError),
+    errorString_(""),
     sessionId_(sessionId),
     interval_(0),
     bufferInterval_(0),

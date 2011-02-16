@@ -1,5 +1,8 @@
 sensord (0.6.39) unstable; urgency=low
 
+  [Lihan Guo]
+  * Fixed coverity defects.
+
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
   * Added nodocs parameter to prevent doc building. Fixes: NB#227047
