@@ -97,7 +97,6 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     }
 
     setDescription("magnetic flux density in nT");
-    setRangeSource(compassChain_);
     addStandbyOverrideSource(compassChain_);
     setIntervalSource(compassChain_);
 }
