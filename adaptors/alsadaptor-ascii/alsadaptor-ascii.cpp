@@ -12,6 +12,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,6 +33,7 @@
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <errno.h>
+#include <string.h>
 #include <QFile>
 
 #include "logging.h"
@@ -43,6 +45,7 @@
 
 ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
+    memset(buf, 0x0, 16);
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");

@@ -6,6 +6,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Pia Niemela <pia.s.niemela@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -85,14 +86,16 @@ void DataFlowTest::testAdaptorSharing()
 
     // Check that A runs, is not running unless sensor is started
     SysfsAdaptor* sysfsAdaptorA = dynamic_cast<SysfsAdaptor*>(adaptorA);
+    QVERIFY(sysfsAdaptorA);
     QVERIFY2(sysfsAdaptorA->isRunning(), "AdaptorA is not running after start");
-
+    
     // start B
     QVERIFY(adaptorB->startSensor());
 
     // Check that B runs, is not running unless sensor is started
 
     SysfsAdaptor* sysfsAdaptorB = dynamic_cast<SysfsAdaptor*>(adaptorB);
+    QVERIFY(sysfsAdaptorB);
     QVERIFY2(sysfsAdaptorB->isRunning(), "AdaptorB is not running after start");
 
     // Stop B

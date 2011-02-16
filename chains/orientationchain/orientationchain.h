@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -71,8 +72,11 @@ public:
     TimedUnsigned orientation() const
     {
         QObject *filter = dynamic_cast<QObject*>(orientationInterpreterFilter_);
-        PoseData pose = qvariant_cast< PoseData >(filter->property("orientation"));
-        return TimedUnsigned(pose.timestamp_, pose.orientation_);
+        if (filter != NULL) {
+            PoseData pose = qvariant_cast< PoseData >(filter->property("orientation"));
+            return TimedUnsigned(pose.timestamp_, pose.orientation_);
+        }
+        return TimedUnsigned();
     }
 
 
