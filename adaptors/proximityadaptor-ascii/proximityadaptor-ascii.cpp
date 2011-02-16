@@ -40,7 +40,7 @@
 ProximityAdaptorAscii::ProximityAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
-    memset(buf, ' ', 16);
+    memset(buf, 0x0, 16);
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     setAdaptedSensor("proximity", "apds9802ps ascii", proximityBuffer_);
 }

@@ -41,7 +41,7 @@
 MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
-    memset(buf, ' ', 32);
+    memset(buf, 0x0, 32);
     magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(16);
     setAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);
 }
