@@ -349,3 +349,13 @@ bool AbstractSensorChannelInterface::read(void* buffer, int size)
 {
     return pimpl_->socketReader_.read(buffer, size);
 }
+
+bool AbstractSensorChannelInterface::setDataRangeIndex(int dataRangeIndex)
+{
+    clearError();
+    call(QDBus::Block, QLatin1String("setDataRangeIndex"), qVariantFromValue(pimpl_->sessionId_), qVariantFromValue(dataRangeIndex));
+
+    DataRangeList ranges = getAvailableDataRanges();
+    DataRange range = getCurrentDataRange();
+    return ranges.at(dataRangeIndex)==range;
+}

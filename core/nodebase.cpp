@@ -560,3 +560,11 @@ bool NodeBase::updateBufferInterval()
     }
     return false;
 }
+
+void NodeBase::setDataRangeIndex(int sessionId, const int rangeIndex)
+{
+    if (rangeIndex<0) return;
+    if (rangeIndex>m_dataRangeList.size()-1) return;
+    requestDataRange(sessionId, m_dataRangeList.at(rangeIndex));
+}
+

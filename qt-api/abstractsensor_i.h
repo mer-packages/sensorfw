@@ -117,7 +117,7 @@ public:
     DataRange getCurrentDataRange();
     void requestDataRange(DataRange range);
     void removeDataRangeRequest();
-
+    bool setDataRangeIndex(int dataRangeIndex);
 private:
     int errorCodeInt() const;
     void setError(SensorError errorCode, const QString& errorString);

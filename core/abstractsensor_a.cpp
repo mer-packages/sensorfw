@@ -205,3 +205,9 @@ AbstractSensorChannel* AbstractSensorChannelAdaptor::node() const
 {
     return dynamic_cast<AbstractSensorChannel*>(parent());
 }
+
+
+void AbstractSensorChannelAdaptor::setDataRangeIndex(int sessionId, int rangeIndex)
+{
+    node()->setDataRangeIndex(sessionId, rangeIndex);
+}

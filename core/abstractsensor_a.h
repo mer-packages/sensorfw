@@ -91,6 +91,7 @@ public Q_SLOTS: // METHODS
     DataRange getCurrentDataRange();
     void requestDataRange(int sessionId, DataRange range);
     void removeDataRangeRequest(int sessionId);
+    void setDataRangeIndex(int sessionId, int rangeIndex);
 
 Q_SIGNALS: // SIGNALS
     void propertyChanged(const QString& name);
