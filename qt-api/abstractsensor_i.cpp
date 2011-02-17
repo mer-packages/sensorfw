@@ -356,9 +356,8 @@ bool AbstractSensorChannelInterface::read(void* buffer, int size)
 bool AbstractSensorChannelInterface::setDataRangeIndex(int dataRangeIndex)
 {
     clearError();
-    call(QDBus::Block, QLatin1String("setDataRangeIndex"), qVariantFromValue(pimpl_->sessionId_), qVariantFromValue(dataRangeIndex));
-
-    DataRangeList ranges = getAvailableDataRanges();
-    DataRange range = getCurrentDataRange();
-    return ranges.at(dataRangeIndex)==range;
+    QDBusReply<bool> dbusReply = call(QLatin1String("setDataRangeIndex"),
+                                                     qVariantFromValue(pimpl_->sessionId_), qVariantFromValue(dataRangeIndex));
+    if (dbusReply.isValid()) return dbusReply.value();
+    return false;
 }

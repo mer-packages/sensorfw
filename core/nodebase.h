@@ -101,7 +101,7 @@ public Q_SLOTS:
      * @param sessionId session ID for the client making the request.
      * @param range The requested data range index
      */
-    void setDataRangeIndex(int sessionId, const int rangeIndex);
+     bool setDataRangeIndex(int sessionId, const int rangeIndex);
 
     /**
      * Tells whether the node is in standbyOverride mode. If \c true, the

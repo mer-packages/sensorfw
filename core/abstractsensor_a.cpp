@@ -207,7 +207,7 @@ AbstractSensorChannel* AbstractSensorChannelAdaptor::node() const
 }
 
 
-void AbstractSensorChannelAdaptor::setDataRangeIndex(int sessionId, int rangeIndex)
+bool AbstractSensorChannelAdaptor::setDataRangeIndex(int sessionId, int rangeIndex)
 {
     node()->setDataRangeIndex(sessionId, rangeIndex);
 }
