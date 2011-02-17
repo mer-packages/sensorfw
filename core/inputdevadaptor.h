@@ -33,7 +33,6 @@
 #include <QStringList>
 #include <QFile>
 #include <linux/input.h>
-#include "filterproperty.h"
 
 /**
  * @brief Base class for adaptors accessing device drivers through Linux Input

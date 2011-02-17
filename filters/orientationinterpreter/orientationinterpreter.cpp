@@ -9,6 +9,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -46,7 +47,7 @@ typedef PoseData (OrientationInterpreter::*ptrFUN)(int);
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
-        threshold_(*this),
+        threshold_(DEFAULT_THRESHOLD),
         topEdge(PoseData::Undefined),
         face(PoseData::Undefined),
         previousFace(PoseData::Undefined),
@@ -57,8 +58,6 @@ OrientationInterpreter::OrientationInterpreter() :
     addSource(&topEdgeSource, "topedge");
     addSource(&faceSource, "face");
     addSource(&orientationSource, "orientation");
-
-    threshold_(DEFAULT_THRESHOLD);
 
     minlimit = Config::configuration()->value("orientation_overflow_min",QVariant(OVERFLOW_MIN)).toInt();
     maxlimit = Config::configuration()->value("orientation_overflow_max",QVariant(OVERFLOW_MAX)).toInt();

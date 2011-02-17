@@ -4,7 +4,6 @@
 #include <QString>
 #include <QStringList>
 #include <linux/input.h>
-#include <filterproperty.h>
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
 #include <QTime>

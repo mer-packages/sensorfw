@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -71,7 +72,7 @@ private:
 
     bool setMatrixFromString(const QString& str);
 
-    static double                    aconv_[3][3];
+    double                           aconv_[3][3];
     Bin*                             filterBin_;
 
     DeviceAdaptor*                   accelerometerAdaptor_;

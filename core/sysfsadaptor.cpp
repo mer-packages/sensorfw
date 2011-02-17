@@ -38,16 +38,16 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
                            bool seek,
                            const QString& path,
                            const int pathId) :
-DeviceAdaptor(id),
-reader_(this),
-mode_(mode),
-epollDescriptor_(-1),
-interval_(0),
-initNotDone(true),
-inStandbyMode_(false),
-running_(false),
-shouldBeRunning_(false),
-doSeek_(seek)
+    DeviceAdaptor(id),
+    reader_(this),
+    mode_(mode),
+    epollDescriptor_(-1),
+    interval_(0),
+    initNotDone(true),
+    inStandbyMode_(false),
+    running_(false),
+    shouldBeRunning_(false),
+    doSeek_(seek)
 {
     if (!path.isEmpty()) {
         addPath(path, pathId);

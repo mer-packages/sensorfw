@@ -32,7 +32,6 @@
 #include <QString>
 #include <QStringList>
 #include <QThread>
-#include "filterproperty.h"
 #include <QMutex>
 
 class SysfsAdaptor;
@@ -69,7 +68,7 @@ private:
  * Simultaneous monitoring of several files is supported. Currently files are indexed
  * only by their adding order. First added path is index 0, second index 1, etc.
  */
-class SysfsAdaptor : public DeviceAdaptor, public PropertyTracker
+class SysfsAdaptor : public DeviceAdaptor
 {
     Q_OBJECT;
 

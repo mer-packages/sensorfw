@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,10 +32,8 @@ const char* DeclinationFilter::declinationKey = "/system/osso/location/settings/
 
 DeclinationFilter::DeclinationFilter() :
         Filter<CompassData, DeclinationFilter, CompassData>(this, &DeclinationFilter::correct),
-        declinationCorrection_(*this)
+        declinationCorrection_(0)
 {
-    declinationCorrection_(0);
-
     g_type_init();
 
     loadSettings();
@@ -43,7 +42,7 @@ DeclinationFilter::DeclinationFilter() :
 void DeclinationFilter::correct(unsigned, const CompassData* data)
 {
     newOrientation = *data;
-    newOrientation.degrees_ += declinationCorrection_();
+    newOrientation.degrees_ += declinationCorrection_;
     orientation = newOrientation;
     source_.propagate(1, &orientation);
 }
@@ -68,7 +67,7 @@ void DeclinationFilter::loadSettings()
         g_error_free(error);
     }
 
-    declinationCorrection_(value);
+    declinationCorrection_ = value;
 
     g_object_unref(client);
 }

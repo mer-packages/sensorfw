@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,13 +36,12 @@
 
 #include "coordinatealignfilter/coordinatealignfilter.h"
 
-double AccelerometerChain::aconv_[3][3] = { { 1.0, 0.0, 0.0 },
-                                            { 0.0, 1.0, 0.0 },
-                                            { 0.0, 0.0, 1.0 } };
-
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
 {
+    aconv_ = { { 1.0, 0.0, 0.0 },
+               { 0.0, 1.0, 0.0 },
+               { 0.0, 0.0, 1.0 } };
     SensorManager& sm = SensorManager::instance();
 
     accelerometerAdaptor_ = sm.requestDeviceAdaptor("accelerometeradaptor");
@@ -64,8 +64,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
 
     accCoordinateAlignFilter_ = sm.instantiateFilter("coordinatealignfilter");
     Q_ASSERT(accCoordinateAlignFilter_);
-    qRegisterMetaType<TMatrix>("TMatrix");
-    ((CoordinateAlignFilter*)accCoordinateAlignFilter_)->setProperty("transMatrix", QVariant::fromValue(TMatrix(aconv_)));
+    ((CoordinateAlignFilter*)accCoordinateAlignFilter_)->setMatrix(TMatrix(aconv_));
 
     outputBuffer_ = new RingBuffer<AccelerationData>(128);
     nameOutputBuffer("accelerometer", outputBuffer_);
@@ -132,7 +131,7 @@ bool AccelerometerChain::setMatrixFromString(const QString& str)
         return false;
     }
 
-    for (int i = 0; i < 9; i++)
+    for (int i = 0; i < 9; ++i)
     {
         aconv_[i/3][i%3] = strList.at(i).toInt();
     }

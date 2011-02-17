@@ -9,6 +9,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,10 +30,10 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
+#include <QAtomicInt>
 #include "filter.h"
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
-#include "filterproperty.h"
 
 /**
  * @brief Filter for calculating device orientation.
@@ -42,12 +43,12 @@
  *
  */
 
-class OrientationInterpreter : public QObject, public PropertyTracker, public FilterBase
+class OrientationInterpreter : public QObject, public FilterBase
 {
     Q_OBJECT;
 
     Q_PROPERTY(PoseData orientation READ orientation);
-    Q_PROPERTY(int threshold READ threshold_ WRITE threshold_);
+    Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
 
 private:
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
@@ -64,7 +65,7 @@ private:
 
     OrientationInterpreter();
 
-    FilterProperty<int> threshold_;
+    QAtomicInt threshold_;
 
     PoseData topEdge;
     PoseData face;
@@ -119,6 +120,10 @@ public:
     PoseData orientation() const {
         return o_;
     }
+
+    int threshold() const { return threshold_; }
+
+    void setThreshold(int threshold) { threshold_ = threshold; }
 };
 
 #endif

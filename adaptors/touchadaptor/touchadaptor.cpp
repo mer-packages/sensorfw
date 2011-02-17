@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,9 +34,8 @@
 
 const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 
-TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS), rangeInfo_(*this)
+TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS)
 {
-    rangeInfo_((RangeInfo){0, 0, 0, 0});
 
     //This was previously in the base class, but it's not
     //possible call virtual methods from base class constructor.
@@ -65,7 +65,6 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     int fd;
     char deviceName[256];
     unsigned char evtype_bitmask[20+1];
-    RangeInfo rInfo;
 
     fd = open(path.toLocal8Bit().constData(), O_RDONLY);
     if (fd == -1) {
@@ -105,14 +104,12 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     // Make separate for each input device if necessary.
     struct input_absinfo info;
     ioctl(fd, EVIOCGABS(ABS_X), &info);
-    rInfo.xMin = info.minimum;
-    rInfo.xRange = info.maximum - info.minimum;
+    rangeInfo_.xMin = info.minimum;
+    rangeInfo_.xRange = info.maximum - info.minimum;
 
     ioctl(fd, EVIOCGABS(ABS_Y), &info);
-    rInfo.yMin = info.minimum;
-    rInfo.yRange = info.maximum - info.minimum;
-
-    rangeInfo_(rInfo);
+    rangeInfo_.yMin = info.minimum;
+    rangeInfo_.yRange = info.maximum - info.minimum;
 
     close(fd);
 
