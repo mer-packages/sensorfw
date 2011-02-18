@@ -50,9 +50,7 @@ InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     deviceSysPathString_ = Config::configuration()->value("global/device_sys_path").toString();
     devicePollFilePath_ = Config::configuration()->value("global/device_poll_file_path").toString();
 
-    for (int i = 0; i < 64; i++) { 
-        evlist_[i] = {{0, 0}, 0, 0, 0};
-    }
+    memset(evlist_, 0x0, sizeof(input_event)*64);
 }
 
 InputDevAdaptor::~InputDevAdaptor()
