@@ -32,7 +32,7 @@
 #include "abstractchain.h"
 
 // Include any used datatypes
-#include "datatypes/timedunsigned.h"
+#include "timedunsigned.h"
 
 // Definition tricks, included from .cpp
 class Bin;

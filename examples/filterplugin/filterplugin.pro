@@ -11,6 +11,7 @@ SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
                         .. \
                         ../../sensord \
+                        ../../core \
                         ../../datatypes
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
@@ -24,6 +25,4 @@ SOURCES += samplefilter.cpp \
 
 include(../../common-install.pri)
 publicheaders.files = $$HEADERS
-
 target.path = $$PLUGINPATH
-INSTALLS += target
