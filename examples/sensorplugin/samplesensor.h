@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,10 +32,10 @@
 
 // Include the dbus adaptor and dbusemitter base class
 #include "samplesensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dbusemitter.h"
 
 // Include required datatypes
-#include "datatypes/timedunsigned.h"
+#include "timedunsigned.h"
 
 // Included in .cpp, introduced here.
 class Bin;

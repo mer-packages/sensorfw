@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,10 +28,10 @@
 #define SAMPLEFILTER_H
 
 // Include base
-#include "sensord/filter.h"
+#include "filter.h"
 
 // Include datatypes for input and output.
-#include "datatypes/timedunsigned.h"
+#include "timedunsigned.h"
 
 // This is a simplest possible filter, with one input and one output.
 // In case you wish to create more complex filters, with several inputs
