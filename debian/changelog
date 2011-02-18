@@ -1,11 +1,12 @@
 sensord (0.6.39) unstable; urgency=low
 
-  [Pia Niemela] 
+  [Pia Niemela]
   * Added setDataRangeIndex utility for easier range swapping
   * Fixed MOBILITY-2535
 
   [Lihan Guo]
   * Fixed coverity defects.
+  * Improved sensorfw examples
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
