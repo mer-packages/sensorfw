@@ -8,6 +8,8 @@ sensord (0.6.39) unstable; urgency=low
   [Lihan Guo]
   * Fixed coverity defects.
   * Improved sensorfw examples
+  * Changed DbusEmitter to DataEmitter
+  * Changed emitToDbus to emitData
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor

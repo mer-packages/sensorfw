@@ -35,7 +35,7 @@
 #include "bin.h"
 #include "bufferreader.h"
 #include "filter.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
 #include "orientationinterpreter.h"
@@ -98,14 +98,14 @@ private:
 
 
 /**
- * DummyDbusEmitter is a DbusEmitter that can be used to capture output data of
+ * DummyDataEmitter is a DataEmitter that can be used to capture output data of
  * a filter for testing purposes. The expected output data is given through a
- * function, and is compared to actual received output  in \c emitToDbus() function.
+ * function, and is compared to actual received output  in \c emitData() function.
  */
 template <class TYPE>
-class DummyDbusEmitter : public DbusEmitter<TYPE> {
+class DummyDataEmitter : public DataEmitter<TYPE> {
 public:
-    DummyDbusEmitter() : DbusEmitter<TYPE>(10),
+    DummyDataEmitter() : DataEmitter<TYPE>(10),
                          samplesReceived_(0),
                          datacount_(0),
                          data_(NULL),
@@ -120,7 +120,7 @@ public:
     }
     int numSamplesReceived() { return samplesReceived_; }
 
-    void emitToDbus(const TYPE& data) {
+    void emitData(const TYPE& data) {
         index_++;
         samplesReceived_++;
 
@@ -243,9 +243,9 @@ void FilterApiTest::testCoordinateAlignFilter()
     filterBin.join("adapter", "source", "coordfilter", "sink");
     filterBin.join("coordfilter", "source", "buffer", "sink");
 
-    DummyDbusEmitter<TimedXyzData> dbusEmitter;
+    DummyDataEmitter<TimedXyzData> dbusEmitter;
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */
@@ -311,9 +311,9 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
     filterBin.join("adapter", "source", "filter", "accsink");
     filterBin.join("filter", "topedge", "buffer", "sink");
 
-    DummyDbusEmitter<PoseData> dbusEmitter;
+    DummyDataEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
@@ -377,9 +377,9 @@ void FilterApiTest::testFaceInterpretationFilter()
     filterBin.join("filter", "face", "buffer", "sink");
 
 
-    DummyDbusEmitter<PoseData> dbusEmitter;
+    DummyDataEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
@@ -450,9 +450,9 @@ void FilterApiTest::testOrientationInterpretationFilter()
     filterBin.join("adapter", "source", "orientationfilter", "accsink");
     filterBin.join("orientationfilter", "orientation", "buffer", "sink");
 
-    DummyDbusEmitter<PoseData> dbusEmitter;
+    DummyDataEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
@@ -527,9 +527,9 @@ void FilterApiTest::testDeclinationFilter()
     filterBin.join("adapter", "source", "declinationfilter", "sink");
     filterBin.join("declinationfilter", "source", "buffer", "sink");
 
-    DummyDbusEmitter<CompassData> dbusEmitter;
+    DummyDataEmitter<CompassData> dbusEmitter;
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */
@@ -609,7 +609,7 @@ void FilterApiTest::testRotationFilter()
     int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
 
     DummyAdaptor<TimedXyzData> dummyAdaptor;
-    DummyDbusEmitter<TimedXyzData> dbusEmitter;
+    DummyDataEmitter<TimedXyzData> dbusEmitter;
 
     FilterBase* rotationFilter = RotationFilter::factoryMethod();
     RingBuffer<TimedXyzData> outputBuffer(10);
@@ -623,7 +623,7 @@ void FilterApiTest::testRotationFilter()
     filterBin.join("rotationfilter", "source", "buffer", "sink");
 
     Bin marshallingBin;
-    marshallingBin.add(&dbusEmitter, "testdbusemitter");
+    marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */

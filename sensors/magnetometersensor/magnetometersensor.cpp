@@ -33,7 +33,7 @@
 
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<CalibratedMagneticFieldData>(10),
+        DataEmitter<CalibratedMagneticFieldData>(10),
         scaleFilter_(NULL),
         prevMeasurement_()
 {
@@ -140,7 +140,7 @@ bool MagnetometerSensorChannel::stop()
     return true;
 }
 
-void MagnetometerSensorChannel::emitToDbus(const CalibratedMagneticFieldData& value)
+void MagnetometerSensorChannel::emitData(const CalibratedMagneticFieldData& value)
 {
     prevMeasurement_ = value;
     writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));

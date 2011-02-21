@@ -32,7 +32,7 @@
 
 OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<PoseData>(10),
+        DataEmitter<PoseData>(10),
         prevOrientation(PoseData::Undefined)
 {
     SensorManager& sm = SensorManager::instance();
@@ -107,7 +107,7 @@ bool OrientationSensorChannel::stop()
     return true;
 }
 
-void OrientationSensorChannel::emitToDbus(const PoseData& value)
+void OrientationSensorChannel::emitData(const PoseData& value)
 {
     if ((value.orientation_ != prevOrientation.orientation_) &&
         (value.orientation_ != PoseData::Undefined) )  {

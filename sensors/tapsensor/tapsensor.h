@@ -30,7 +30,7 @@
 
 #include "abstractsensor.h"
 #include "tapsensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "datatypes/tapdata.h"
 #include "deviceadaptor.h"
 
@@ -50,7 +50,7 @@ class FilterBase;
  */
 class TapSensorChannel :
     public AbstractSensorChannel,
-    public DbusEmitter<TapData>
+    public DataEmitter<TapData>
 {
     Q_OBJECT;
 
@@ -89,7 +89,7 @@ private:
     BufferReader<TapData>* tapReader_;
     RingBuffer<TapData>*   outputBuffer_;
 
-    void emitToDbus(const TapData& tapData);
+    void emitData(const TapData& tapData);
 };
 
 #endif // TAP_SENSOR_CHANNEL_H
