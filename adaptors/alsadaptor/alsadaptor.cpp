@@ -47,11 +47,11 @@
 
 /* Device name: /dev/apds990x0 */
 struct apds990x_data {
-        __u32 lux; /* 10x scale */
-        __u32 lux_raw; /* 10x scale */
-        __u16 ps;
-        __u16 ps_raw;
-        __u16 status;
+    __u32 lux; /* 10x scale */
+    __u32 lux_raw; /* 10x scale */
+    __u16 ps;
+    __u16 ps_raw;
+    __u16 status;
 } __attribute__((packed));
 
 struct bh1770glc_als {
@@ -60,7 +60,7 @@ struct bh1770glc_als {
 
 
 ALSAdaptor::ALSAdaptor(const QString& id):
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
+        SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
 {
     device = DeviceUnknown;
 
@@ -105,6 +105,33 @@ ALSAdaptor::~ALSAdaptor()
 {
     delete alsBuffer_;
 }
+
+
+
+bool ALSAdaptor::startAdaptor()
+{
+    if (device == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_als_enable");
+#endif
+    }
+
+    return SysfsAdaptor::startAdaptor();
+}
+
+void ALSAdaptor::stopAdaptor()
+{
+    if (device == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_als_disable");
+        delete dbusIfc;
+#endif
+    }
+    SysfsAdaptor::stopAdaptor();
+}
+
 
 
 void ALSAdaptor::processSample(int pathId, int fd)

@@ -64,6 +64,15 @@ public:
     {
         return new ALSAdaptor(id);
     }
+    /**
+     * Start measuring loop. Opens file descriptors and set streaming mode
+     */
+    bool startAdaptor();
+
+    /**
+     * Stop measuring loop. Closes file descriptors and removes streaming mode
+     */
+    void stopAdaptor();
 
 protected:
     /**
@@ -72,6 +81,8 @@ protected:
      */
     ALSAdaptor(const QString& id);
     ~ALSAdaptor();
+
+
 
     /**
      * Reimplemented to prevent standbyOverride for this adaptor.
