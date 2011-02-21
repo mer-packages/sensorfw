@@ -134,7 +134,7 @@ bool CompassSensorChannel::stop()
     return true;
 }
 
-void CompassSensorChannel::emitToDbus(const CompassData& value)
+void CompassSensorChannel::emitData(const CompassData& value)
 {
     compassData.timestamp_ = value.timestamp_;
     compassData.level_ = value.level_;

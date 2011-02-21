@@ -90,7 +90,7 @@ private:
     RingBuffer<TimedUnsigned>*   outputBuffer_;
     TimedUnsigned                previousValue_;
 
-    void emitToDbus(const TimedUnsigned& value);
+    void emitData(const TimedUnsigned& value);
 };
 
 #endif // PROXIMITY_SENSOR_CHANNEL_H

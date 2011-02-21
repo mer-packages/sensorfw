@@ -100,7 +100,7 @@ private:
 /**
  * DummyDataEmitter is a DataEmitter that can be used to capture output data of
  * a filter for testing purposes. The expected output data is given through a
- * function, and is compared to actual received output  in \c emitToDbus() function.
+ * function, and is compared to actual received output  in \c emitData() function.
  */
 template <class TYPE>
 class DummyDataEmitter : public DataEmitter<TYPE> {
@@ -120,7 +120,7 @@ public:
     }
     int numSamplesReceived() { return samplesReceived_; }
 
-    void emitToDbus(const TYPE& data) {
+    void emitData(const TYPE& data) {
         index_++;
         samplesReceived_++;
 

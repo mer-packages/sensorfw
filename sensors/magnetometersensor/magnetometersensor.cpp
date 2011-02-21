@@ -141,7 +141,7 @@ bool MagnetometerSensorChannel::stop()
     return true;
 }
 
-void MagnetometerSensorChannel::emitToDbus(const CalibratedMagneticFieldData& value)
+void MagnetometerSensorChannel::emitData(const CalibratedMagneticFieldData& value)
 {
     prevMeasurement_ = value;
     writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));

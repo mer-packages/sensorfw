@@ -94,7 +94,7 @@ private:
     BufferReader<CompassData>* inputReader_;
     RingBuffer<CompassData>* outputBuffer_;
 
-    void emitToDbus(const CompassData& value);
+    void emitData(const CompassData& value);
 };
 
 #endif

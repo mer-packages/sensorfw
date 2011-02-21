@@ -99,7 +99,7 @@ private:
     TimedUnsigned                previousSample_;
 
     // Function that takes care of pushing the data to clients
-    void emitToDbus(const TimedUnsigned& value);
+    void emitData(const TimedUnsigned& value);
 };
 
 #endif

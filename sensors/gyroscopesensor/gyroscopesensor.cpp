@@ -106,7 +106,7 @@ bool GyroscopeSensorChannel::stop()
     return true;
 }
 
-void GyroscopeSensorChannel::emitToDbus(const TimedXyzData& value)
+void GyroscopeSensorChannel::emitData(const TimedXyzData& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(TimedXyzData));

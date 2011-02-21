@@ -100,7 +100,7 @@ private:
     TimedXyzData                 prevRotation_;
     bool                         hasZ_;
 
-    void emitToDbus(const TimedXyzData& value);
+    void emitData(const TimedXyzData& value);
 };
 
 #endif // ROTATION_SENSOR_CHANNEL_H

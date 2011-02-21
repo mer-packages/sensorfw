@@ -106,7 +106,7 @@ bool TapSensorChannel::stop()
     return true;
 }
 
-void TapSensorChannel::emitToDbus(const TapData& tapData)
+void TapSensorChannel::emitData(const TapData& tapData)
 {
     writeToClients((const void *)&tapData, sizeof(TapData));
 }

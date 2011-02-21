@@ -113,7 +113,7 @@ bool SampleSensorChannel::stop()
 // Store the previous value for use by the accessor function, and
 // push data towards clients (the data will be pushed to socket(s) by
 // sensormanager).
-void SampleSensorChannel::emitToDbus(const TimedUnsigned& value)
+void SampleSensorChannel::emitData(const TimedUnsigned& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(TimedUnsigned));

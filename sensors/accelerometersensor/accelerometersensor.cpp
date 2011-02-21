@@ -106,7 +106,7 @@ bool AccelerometerSensorChannel::stop()
     return true;
 }
 
-void AccelerometerSensorChannel::emitToDbus(const AccelerationData& value)
+void AccelerometerSensorChannel::emitData(const AccelerationData& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(AccelerationData));

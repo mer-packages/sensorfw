@@ -83,7 +83,7 @@ private:
 
     TimedXyzData                previousSample_;
 
-    void emitToDbus(const TimedXyzData& value);
+    void emitData(const TimedXyzData& value);
 };
 
 #endif // GYROSCOPE_SENSOR_CHANNEL_H
