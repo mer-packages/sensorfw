@@ -105,7 +105,7 @@ bool SampleChain::start()
         filterBin_->start();
 
         // Adaptors are started on buffer basis, thus the buffer name
-        sampleAdaptor_->startSensor();
+        sampleAdaptor_->startSensor("sample");
     }
     return true;
 }
@@ -115,7 +115,7 @@ bool SampleChain::stop()
 {
     if (AbstractSensorChannel::stop()) {
         sensordLogD() << "Stopping SampleChain";
-        sampleAdaptor_->stopSensor();
+        sampleAdaptor_->stopSensor("sample");
         filterBin_->stop();
     }
     return true;

@@ -51,7 +51,7 @@ SampleAdaptor::SampleAdaptor(const QString& id) :
     // Provide the output buffer with name and description. Name is used
     // to locate the buffer from the listening side, description is
     // currently unused.
-    setAdaptedSensor("sample", "Sample sensor, with dummy buffer", outputBuffer_);
+    addAdaptedSensor("sample", "Sample sensor, with dummy buffer", outputBuffer_);
 
     // Provide information on the data range this adaptor can output
     // (based on the adapted sensor naturally). Parameters of DataRange
