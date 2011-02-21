@@ -96,7 +96,7 @@ private:
     CalibratedMagneticFieldData                prevMeasurement_;
     int                                        scaleCoefficient_;
 
-    void emitToDbus(const CalibratedMagneticFieldData& value);
+    void emitData(const CalibratedMagneticFieldData& value);
 };
 
 #endif // MAGNETOMETER_SENSOR_CHANNEL_H

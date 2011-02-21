@@ -106,7 +106,7 @@ bool GyroscopeSensorChannel::stop()
     return true;
 }
 
-void GyroscopeSensorChannel::emitToDbus(const AngularVelocityData& value)
+void GyroscopeSensorChannel::emitData(const AngularVelocityData& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(AngularVelocityData));

@@ -106,7 +106,7 @@ bool ProximitySensorChannel::stop()
     return true;
 }
 
-void ProximitySensorChannel::emitToDbus(const TimedUnsigned& value)
+void ProximitySensorChannel::emitData(const TimedUnsigned& value)
 {
     previousValue_.timestamp_ = value.timestamp_;
     

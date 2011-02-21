@@ -90,7 +90,7 @@ private:
     RingBuffer<AccelerationData>*    outputBuffer_;
     AccelerationData                 previousSample_;
 
-    void emitToDbus(const AccelerationData& value);
+    void emitData(const AccelerationData& value);
 };
 
 #endif

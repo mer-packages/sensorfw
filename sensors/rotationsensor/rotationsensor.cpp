@@ -157,7 +157,7 @@ bool RotationSensorChannel::stop()
     return true;
 }
 
-void RotationSensorChannel::emitToDbus(const TimedXyzData& value)
+void RotationSensorChannel::emitData(const TimedXyzData& value)
 {
     prevRotation_ = value;
     writeToClients((const void*)(&value), sizeof(TimedXyzData));

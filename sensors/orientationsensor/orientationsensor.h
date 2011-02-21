@@ -107,7 +107,7 @@ private:
      * Emits new device orientation through DBus.
      * @param value Orientation value to emit.
      */
-    void emitToDbus(const PoseData& value);
+    void emitData(const PoseData& value);
 };
 
 #endif // ORIENTATION_SENSOR_CHANNEL_H

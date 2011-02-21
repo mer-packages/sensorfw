@@ -129,7 +129,7 @@ bool ALSSensorChannel::stop()
     return true;
 }
 
-void ALSSensorChannel::emitToDbus(const TimedUnsigned& value)
+void ALSSensorChannel::emitData(const TimedUnsigned& value)
 {
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;

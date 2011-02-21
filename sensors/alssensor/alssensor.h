@@ -98,7 +98,7 @@ private:
     BufferReader<TimedUnsigned>*  alsReader_;
     RingBuffer<TimedUnsigned>*    outputBuffer_;
 
-    void emitToDbus(const TimedUnsigned& value);
+    void emitData(const TimedUnsigned& value);
 
 #ifdef PROVIDE_CONTEXT_INFO
     ContextProvider::Service service;

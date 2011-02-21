@@ -53,13 +53,13 @@ public:
         unsigned n;
         while ((n = RingBufferReader<TYPE>::read(chunkSize_, chunk_))) {
             for (unsigned i = 0; i < n; ++i) {
-                emitToDbus(chunk_[i]);
+                emitData(chunk_[i]);
             }
         }
     }
 
 protected:
-    virtual void emitToDbus(const TYPE& value) = 0;
+    virtual void emitData(const TYPE& value) = 0;
 
 private:
     Source<TYPE> source_;

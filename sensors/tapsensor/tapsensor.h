@@ -89,7 +89,7 @@ private:
     BufferReader<TapData>* tapReader_;
     RingBuffer<TapData>*   outputBuffer_;
 
-    void emitToDbus(const TapData& tapData);
+    void emitData(const TapData& tapData);
 };
 
 #endif // TAP_SENSOR_CHANNEL_H

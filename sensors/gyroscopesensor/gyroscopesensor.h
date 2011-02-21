@@ -83,7 +83,7 @@ private:
 
     AngularVelocityData                previousSample_;
 
-    void emitToDbus(const AngularVelocityData& value);
+    void emitData(const AngularVelocityData& value);
 };
 
 #endif // GYROSCOPE_SENSOR_CHANNEL_H
