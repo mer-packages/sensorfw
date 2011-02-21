@@ -51,7 +51,7 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(3);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     introduceAvailableDataRange(DataRange(-1, 1, 1));

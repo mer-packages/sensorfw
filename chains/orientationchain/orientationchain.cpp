@@ -37,17 +37,17 @@ OrientationChain::OrientationChain(const QString& id) :
     Q_ASSERT( accelerometerChain_ );
     setValid(accelerometerChain_->isValid());
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(128);
+    accelerometerReader_ = new BufferReader<AccelerationData>(1);
 
     orientationInterpreterFilter_ = sm.instantiateFilter("orientationinterpreter");
 
-    topEdgeOutput_ = new RingBuffer<PoseData>(128);
+    topEdgeOutput_ = new RingBuffer<PoseData>(1);
     nameOutputBuffer("topedge", topEdgeOutput_);
 
-    faceOutput_ = new RingBuffer<PoseData>(128);
+    faceOutput_ = new RingBuffer<PoseData>(1);
     nameOutputBuffer("face", faceOutput_);
 
-    orientationOutput_ = new RingBuffer<PoseData>(128);
+    orientationOutput_ = new RingBuffer<PoseData>(1);
     nameOutputBuffer("orientation", orientationOutput_);
 
     // Create buffers for filter chain

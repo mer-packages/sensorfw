@@ -39,16 +39,16 @@
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
 {
-    aconv_ = { { 1.0, 0.0, 0.0 },
-               { 0.0, 1.0, 0.0 },
-               { 0.0, 0.0, 1.0 } };
+    setMatrixFromString("1.0,0.0,0.0,\
+                         0.0,1.0,0.0,\
+                         0.0,0.0,1.0");
     SensorManager& sm = SensorManager::instance();
 
     accelerometerAdaptor_ = sm.requestDeviceAdaptor("accelerometeradaptor");
     Q_ASSERT( accelerometerAdaptor_ );
     setValid(accelerometerAdaptor_->isValid());
 
-    accelerometerReader_ = new BufferReader<AccelerationData>(128);
+    accelerometerReader_ = new BufferReader<AccelerationData>(1);
 
     // Get the transformation matrix from config file
     QString aconvString = Config::configuration()->value("acc_trans_matrix", "").toString();
@@ -66,7 +66,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     Q_ASSERT(accCoordinateAlignFilter_);
     ((CoordinateAlignFilter*)accCoordinateAlignFilter_)->setMatrix(TMatrix(aconv_));
 
-    outputBuffer_ = new RingBuffer<AccelerationData>(128);
+    outputBuffer_ = new RingBuffer<AccelerationData>(1);
     nameOutputBuffer("accelerometer", outputBuffer_);
 
     // Create buffers for filter chain

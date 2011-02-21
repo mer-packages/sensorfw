@@ -100,7 +100,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 #endif
     }
 
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     m_threshold = readThreshold();

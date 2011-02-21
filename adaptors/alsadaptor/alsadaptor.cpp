@@ -90,7 +90,7 @@ ALSAdaptor::ALSAdaptor(const QString& id):
         sensordLogW() << "Other HW except RM680 and RM696";
     }
 
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(32);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 
     setDescription("Ambient light");

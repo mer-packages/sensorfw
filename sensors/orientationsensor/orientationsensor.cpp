@@ -41,9 +41,9 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     Q_ASSERT( orientationChain_ );
     setValid(orientationChain_->isValid());
 
-    orientationReader_ = new BufferReader<PoseData>(128);
+    orientationReader_ = new BufferReader<PoseData>(1);
 
-    outputBuffer_ = new RingBuffer<PoseData>(128);
+    outputBuffer_ = new RingBuffer<PoseData>(1);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
