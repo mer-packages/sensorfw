@@ -103,6 +103,12 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 
 ALSAdaptor::~ALSAdaptor()
 {
+    if (device == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        delete dbusIfc;
+#endif
+    }
     delete alsBuffer_;
 }
 
@@ -126,7 +132,6 @@ void ALSAdaptor::stopAdaptor()
     {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_als_disable");
-        delete dbusIfc;
 #endif
     }
     SysfsAdaptor::stopAdaptor();
