@@ -31,7 +31,7 @@
 #include "deviceadaptor.h"
 
 #include "gyroscopesensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 
 #include "datatypes/orientationdata.h"
 #include "datatypes/xyz.h"

@@ -31,7 +31,7 @@
 
 SampleSensorChannel::SampleSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedUnsigned>(10),
+        DataEmitter<TimedUnsigned>(10),
         previousSample_(0, 0)
 {
     SensorManager& sm = SensorManager::instance();

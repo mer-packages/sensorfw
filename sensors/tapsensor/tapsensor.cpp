@@ -32,7 +32,7 @@
 
 TapSensorChannel::TapSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TapData>(10)
+        DataEmitter<TapData>(10)
 {
     SensorManager& sm = SensorManager::instance();
 

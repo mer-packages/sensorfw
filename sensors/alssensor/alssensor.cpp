@@ -36,7 +36,7 @@
 
 ALSSensorChannel::ALSSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedUnsigned>(10),
+        DataEmitter<TimedUnsigned>(10),
         previousValue_(0,0)
 #ifdef PROVIDE_CONTEXT_INFO
         ,service(QDBusConnection::systemBus()),

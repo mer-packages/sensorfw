@@ -32,7 +32,7 @@
 
 CompassSensorChannel::CompassSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<CompassData>(10),
+        DataEmitter<CompassData>(10),
         declinationCorrection_(false),
         declinationAngle_(0),
         compassData(0, -1, -1)

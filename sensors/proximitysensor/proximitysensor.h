@@ -29,7 +29,7 @@
 
 #include "abstractsensor.h"
 #include "proximitysensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "deviceadaptor.h"
 #include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
@@ -44,7 +44,7 @@ template <class TYPE> class BufferReader;
  */
 class ProximitySensorChannel :
     public AbstractSensorChannel,
-    public DbusEmitter<TimedUnsigned>
+    public DataEmitter<TimedUnsigned>
 {
     Q_OBJECT;
     Q_PROPERTY(Unsigned proximity READ proximity);
