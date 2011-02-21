@@ -39,7 +39,7 @@ GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
         setValid(false);
     }
 
-    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<AngularVelocityData>(32);
+    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<AngularVelocityData>(1);
 
     addAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
 

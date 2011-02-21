@@ -43,7 +43,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     Q_ASSERT( compassChain_ );
     setValid(compassChain_->isValid());
 
-    magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(128);
+    magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(1);
 
     scaleCoefficient_ = Config::configuration()->value("magnetometer_scale_coefficient", QVariant(300)).toInt();
 
@@ -56,7 +56,7 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         }
     }
 
-    outputBuffer_ = new RingBuffer<CalibratedMagneticFieldData>(128);
+    outputBuffer_ = new RingBuffer<CalibratedMagneticFieldData>(1);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;

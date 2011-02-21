@@ -49,7 +49,7 @@ MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
     }
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
     addPath(SYSFS_MAGNET_PATH, devId);
-    magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(16);
+    magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     addAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);
 }
 

@@ -52,7 +52,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     } else {
         sensordLogD() << "Detected magnetometer driver at " << driverHandle_;
         addPath(driverHandle_, 0);
-        magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
+        magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
         addAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     }
 

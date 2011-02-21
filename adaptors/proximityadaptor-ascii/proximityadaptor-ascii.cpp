@@ -49,7 +49,7 @@ ProximityAdaptorAscii::ProximityAdaptorAscii(const QString& id) :
     introduceAvailableDataRange(DataRange(0, 4096, 1));
     devId = 0;
     addPath(SYSFS_PROXIMITY_PATH, devId);
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("proximity", "apds9802ps ascii", proximityBuffer_);
 }
 

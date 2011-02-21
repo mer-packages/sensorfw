@@ -49,7 +49,7 @@ KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(3);
+    kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(1);
     addAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
 
     setDescription("Keyboard slider events (via input device)");

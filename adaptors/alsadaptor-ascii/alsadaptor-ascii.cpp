@@ -69,7 +69,7 @@ ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdap
     }
 
     addPath(devPath);
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 
     setDescription("Ambient light");

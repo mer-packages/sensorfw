@@ -48,7 +48,7 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(128);
+    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1);
     addAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
 
     // Set Metadata

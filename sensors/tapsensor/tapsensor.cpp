@@ -39,9 +39,9 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     tapAdaptor_ = sm.requestDeviceAdaptor("tapadaptor");
     Q_ASSERT( tapAdaptor_ );
 
-    tapReader_ = new BufferReader<TapData>(128);
+    tapReader_ = new BufferReader<TapData>(1);
 
-    outputBuffer_ = new RingBuffer<TapData>(128);
+    outputBuffer_ = new RingBuffer<TapData>(1);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
