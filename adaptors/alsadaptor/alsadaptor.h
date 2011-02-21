@@ -32,6 +32,8 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 #include <QTime>
+#include <QDBusInterface>
+
 
 /**
  * @brief Adaptor for internal ambient light sensor.
@@ -107,6 +109,11 @@ private:
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
     ALSAdaptor::DeviceType device;
+
+#ifdef SENSORFW_MCE_WATCHER
+    QDBusInterface *dbusIfc;
+#endif
+
 
 };
 
