@@ -64,6 +64,12 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 {
     device = DeviceUnknown;
 
+#ifdef SENSORFW_MCE_WATCHER
+    dbusIfc = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
+                                                 QDBusConnection::systemBus(), this);
+#endif
+
+
     QString rm680_als = Config::configuration()->value("als_dev_path_rm680").toString();
     QString rm696_als = Config::configuration()->value("als_dev_path_rm696").toString();
 

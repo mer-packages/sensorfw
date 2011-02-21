@@ -34,6 +34,11 @@
 #include <QTime>
 #include <QDBusInterface>
 
+#ifdef SENSORFW_MCE_WATCHER
+    #include <mce/mode-names.h>
+    #include <mce/dbus-names.h>
+#endif
+
 
 /**
  * @brief Adaptor for internal ambient light sensor.
