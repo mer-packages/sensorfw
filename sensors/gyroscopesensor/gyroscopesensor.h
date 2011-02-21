@@ -31,7 +31,7 @@
 #include "deviceadaptor.h"
 
 #include "gyroscopesensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 
 #include "datatypes/orientationdata.h"
 #include "datatypes/xyz.h"
@@ -42,7 +42,7 @@ class FilterBase;
 
 class GyroscopeSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<TimedXyzData>
+        public DataEmitter<TimedXyzData>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ value READ get);

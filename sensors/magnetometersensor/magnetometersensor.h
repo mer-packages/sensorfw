@@ -30,7 +30,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "magnetometersensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "deviceadaptor.h"
 #include "datatypes/orientationdata.h"
 
@@ -43,7 +43,7 @@ class FilterBase;
  */
 class MagnetometerSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<CalibratedMagneticFieldData>
+        public DataEmitter<CalibratedMagneticFieldData>
 {
     Q_OBJECT;
     Q_PROPERTY(MagneticField magneticField READ magneticField);

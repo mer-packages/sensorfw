@@ -32,7 +32,7 @@
 
 RotationSensorChannel::RotationSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedXyzData>(10),
+        DataEmitter<TimedXyzData>(10),
         prevRotation_(0,0,0,0),
         hasZ_(false)
 {

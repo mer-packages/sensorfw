@@ -30,9 +30,9 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 
-// Include the dbus adaptor and dbusemitter base class
+// Include the dbus adaptor and dataemitter base class
 #include "samplesensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 
 // Include required datatypes
 #include "timedunsigned.h"
@@ -42,10 +42,10 @@ class Bin;
 template <class TYPE> class BufferReader;
 class FilterBase;
 
-// Sensors inherit also DbusEmitter
+// Sensors inherit also DataEmitter
 class SampleSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<TimedUnsigned>
+        public DataEmitter<TimedUnsigned>
 {
     Q_OBJECT;
 

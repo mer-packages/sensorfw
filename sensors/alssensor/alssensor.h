@@ -31,7 +31,7 @@
 #include "deviceadaptor.h"
 #include "abstractsensor.h"
 #include "alssensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "datatypes/timedunsigned.h"
 #include "datatypes/unsigned.h"
 
@@ -51,7 +51,7 @@ class FilterBase;
  */
 class ALSSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<TimedUnsigned>
+        public DataEmitter<TimedUnsigned>
 {
     Q_OBJECT;
     Q_PROPERTY(Unsigned lux READ lux);

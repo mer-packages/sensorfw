@@ -33,7 +33,7 @@
 
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<CalibratedMagneticFieldData>(10),
+        DataEmitter<CalibratedMagneticFieldData>(10),
         scaleFilter_(NULL),
         prevMeasurement_()
 {
