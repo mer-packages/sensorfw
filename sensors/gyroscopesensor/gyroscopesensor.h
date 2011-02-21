@@ -42,7 +42,7 @@ class FilterBase;
 
 class GyroscopeSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<AngularVelocityData>
+        public DataEmitter<AngularVelocityData>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ value READ get);
