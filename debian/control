@@ -10,7 +10,7 @@ Package: sensord
 Section: misc
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-core (>=4.5), libgconf2-6
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-core (>=4.5), libgconf2-6, mce (>=1.10.94)
 Description: Sensor framework daemon
  Provides sensor framework daemon and required libraries
 
