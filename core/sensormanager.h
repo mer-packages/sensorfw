@@ -199,8 +199,9 @@ private Q_SLOTS:
 
     void displayStateChanged(const bool displayState);
     void devicePSMStateChanged(const bool deviceMode);
+    void sensorDataHandler(int);
 
-public Q_SLOTS:
+public:
     bool loadPlugin(const QString& name);
 
     int requestSensor(const QString& id);
@@ -253,6 +254,8 @@ private:
     QString                                        errorString_;
     bool                                           displayState_;
     bool                                           psmState_;
+    int pipefds_[2];
+    QSocketNotifier* pipeNotifier_;
 };
 
 #endif
