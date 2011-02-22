@@ -38,7 +38,6 @@
 #include "parameterparser.h"
 #include "logging.h"
 
-
 class QSocketNotifier;
 class SocketHandler;
 class MceWatcher;
@@ -95,89 +94,22 @@ public:
     bool getPSMState();
 
     template<class SENSOR_TYPE>
-    void registerSensor(const QString& sensorName)
-    {
-        if (sensorInstanceMap_.contains(sensorName)) {
-            sensordLogW() << QString("<%1> Sensor is already present!").arg(sensorName);
-            return;
-        }
-
-        QString typeName = SENSOR_TYPE::staticMetaObject.className();
-        sensorInstanceMap_.insert(sensorName, SensorInstanceEntry(typeName));
-
-        if ( !sensorFactoryMap_.contains(typeName) )
-        {
-            sensorFactoryMap_[typeName] = SENSOR_TYPE::factoryMethod;
-        }
-
-        if (sensorFactoryMap_[typeName] != SENSOR_TYPE::factoryMethod) {
-            sensordLogW() << "Sensor type doesn't match!";
-            return;
-        }
-    }
+    void registerSensor(const QString& sensorName);
 
     template<class CHAIN_TYPE>
-    void registerChain(const QString& chainName)
-    {
-        if (chainInstanceMap_.contains(chainName)) {
-            sensordLogW() << QString("<%1> Chain is already present!").arg(chainName);
-            return;
-        }
-
-        QString typeName = CHAIN_TYPE::staticMetaObject.className();
-        chainInstanceMap_.insert(chainName, ChainInstanceEntry(typeName));
-
-        if (!chainFactoryMap_.contains(typeName))
-        {
-            chainFactoryMap_[typeName] = CHAIN_TYPE::factoryMethod;
-        }
-
-        if (chainFactoryMap_[typeName] != CHAIN_TYPE::factoryMethod) {
-            sensordLogW() << "Chain type doesn't match!";
-            return;
-        }
-    }
+    void registerChain(const QString& chainName);
 
     AbstractChain* requestChain(const QString& id);
     void releaseChain(const QString& id);
 
     template<class DEVICE_ADAPTOR_TYPE>
-    void registerDeviceAdaptor(const QString& adaptorName)
-    {
-        QString cleanAdaptorName = getCleanId(adaptorName);
-
-        if (deviceAdaptorInstanceMap_.contains(cleanAdaptorName)) {
-            sensordLogW() << QString("<%1> Adaptor is already present!").arg(cleanAdaptorName);
-            return;
-        }
-
-        QString typeName = DEVICE_ADAPTOR_TYPE::staticMetaObject.className();
-        deviceAdaptorInstanceMap_.insert(cleanAdaptorName, DeviceAdaptorInstanceEntry(typeName, adaptorName));
-
-        if ( !deviceAdaptorFactoryMap_.contains(typeName) )
-        {
-            deviceAdaptorFactoryMap_[typeName] = DEVICE_ADAPTOR_TYPE::factoryMethod;
-        }
-
-        if (deviceAdaptorFactoryMap_[typeName] != DEVICE_ADAPTOR_TYPE::factoryMethod) {
-            sensordLogW() << "Device adaptor type doesn't match!";
-            return;
-        }
-    }
+    void registerDeviceAdaptor(const QString& adaptorName);
 
     DeviceAdaptor* requestDeviceAdaptor(const QString& id);
     void releaseDeviceAdaptor(const QString& id);
 
     template<class FILTER_TYPE>
-    void registerFilter(const QString& filterName)
-    {
-        if (filterFactoryMap_.contains(filterName)) {
-            sensordLogW() << QString("<%1> Filter is already present!").arg(filterName);
-            return;
-        }
-
-        filterFactoryMap_[filterName] = FILTER_TYPE::factoryMethod;
-    }
+    void registerFilter(const QString& filterName);
 
     /**
      * Provides an instance of the requested filter.
@@ -237,14 +169,13 @@ protected:
     QMap<QString, FilterFactoryMethod>             filterFactoryMap_;
 
 private:
-    int createNewSessionId() { sessionIdCount_++; Q_ASSERT(sessionIdCount_ > 0); return sessionIdCount_; } // wrap-around issue?
+    int createNewSessionId();
+    QString socketToPid(int id) const;
+    QString socketToPid(QList<int> ids) const;
 
     static SensorManager*                          instance_;
 
     SocketHandler*                                 socketHandler_;
-
-    QString socketToPid(int id) const;
-    QString socketToPid(QList<int> ids) const;
 
     static int                                     sessionIdCount_;
 
@@ -256,7 +187,85 @@ private:
     bool                                           psmState_;
     int                                            pipefds_[2];
     QSocketNotifier*                               pipeNotifier_;
-
 };
+
+template<class SENSOR_TYPE>
+void SensorManager::registerSensor(const QString& sensorName)
+{
+    if (sensorInstanceMap_.contains(sensorName)) {
+        sensordLogW() << QString("<%1> Sensor is already present!").arg(sensorName);
+        return;
+    }
+
+    QString typeName = SENSOR_TYPE::staticMetaObject.className();
+    sensorInstanceMap_.insert(sensorName, SensorInstanceEntry(typeName));
+
+    if ( !sensorFactoryMap_.contains(typeName) )
+    {
+        sensorFactoryMap_[typeName] = SENSOR_TYPE::factoryMethod;
+    }
+
+    if (sensorFactoryMap_[typeName] != SENSOR_TYPE::factoryMethod) {
+        sensordLogW() << "Sensor type doesn't match!";
+        return;
+    }
+}
+
+template<class CHAIN_TYPE>
+void SensorManager::registerChain(const QString& chainName)
+{
+    if (chainInstanceMap_.contains(chainName)) {
+        sensordLogW() << QString("<%1> Chain is already present!").arg(chainName);
+        return;
+    }
+
+    QString typeName = CHAIN_TYPE::staticMetaObject.className();
+    chainInstanceMap_.insert(chainName, ChainInstanceEntry(typeName));
+
+    if (!chainFactoryMap_.contains(typeName))
+    {
+        chainFactoryMap_[typeName] = CHAIN_TYPE::factoryMethod;
+    }
+
+    if (chainFactoryMap_[typeName] != CHAIN_TYPE::factoryMethod) {
+        sensordLogW() << "Chain type doesn't match!";
+        return;
+    }
+}
+
+template<class DEVICE_ADAPTOR_TYPE>
+void SensorManager::registerDeviceAdaptor(const QString& adaptorName)
+{
+    QString cleanAdaptorName = getCleanId(adaptorName);
+
+    if (deviceAdaptorInstanceMap_.contains(cleanAdaptorName)) {
+        sensordLogW() << QString("<%1> Adaptor is already present!").arg(cleanAdaptorName);
+        return;
+    }
+
+    QString typeName = DEVICE_ADAPTOR_TYPE::staticMetaObject.className();
+    deviceAdaptorInstanceMap_.insert(cleanAdaptorName, DeviceAdaptorInstanceEntry(typeName, adaptorName));
+
+    if ( !deviceAdaptorFactoryMap_.contains(typeName) )
+    {
+        deviceAdaptorFactoryMap_[typeName] = DEVICE_ADAPTOR_TYPE::factoryMethod;
+    }
+
+    if (deviceAdaptorFactoryMap_[typeName] != DEVICE_ADAPTOR_TYPE::factoryMethod) {
+        sensordLogW() << "Device adaptor type doesn't match!";
+        return;
+    }
+}
+
+template<class FILTER_TYPE>
+void SensorManager::registerFilter(const QString& filterName)
+{
+    if (filterFactoryMap_.contains(filterName)) {
+        sensordLogW() << QString("<%1> Filter is already present!").arg(filterName);
+        return;
+    }
+
+    filterFactoryMap_[filterName] = FILTER_TYPE::factoryMethod;
+}
 
 #endif

@@ -611,6 +611,10 @@ bool SensorManager::getPSMState()
     return psmState_;
 }
 
+int SensorManager::createNewSessionId()
+{
+    return ++sessionIdCount_;
+}
 
 #ifdef SM_PRINT
 void SensorManager::print() const
