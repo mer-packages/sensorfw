@@ -27,7 +27,6 @@
 
 #include <QLocalSocket>
 #include <QLocalServer>
-#include <QMutexLocker>
 #include <sys/socket.h>
 #include "logging.h"
 #include "sockethandler.h"
@@ -41,8 +40,7 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   size(0),
                                                                   count(0),
                                                                   bufferSize(1),
-                                                                  bufferInterval(0),
-                                                                  mutex(QMutex::Recursive)
+                                                                  bufferInterval(0)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -90,7 +88,6 @@ bool SessionData::write(void* source, int size, unsigned int count)
 
 bool SessionData::write(const void* source, int size)
 {
-    QMutexLocker locker(&mutex);
     long since = sinceLastWrite();
     int allocSize = bufferSize * size + sizeof(unsigned int);
     if(!buffer)
@@ -147,7 +144,6 @@ bool SessionData::write(const void* source, int size)
 
 bool SessionData::delayedWrite()
 {
-    QMutexLocker locker(&mutex);
     if(timer.isActive())
         timer.stop();
     gettimeofday(&lastWrite, 0);
@@ -165,7 +161,6 @@ QLocalSocket* SessionData::stealSocket()
 
 void SessionData::setInterval(int interval)
 {
-    QMutexLocker locker(&mutex);
     this->interval = interval;
 }
 
@@ -176,7 +171,6 @@ int SessionData::getInterval() const
 
 void SessionData::setBufferInterval(unsigned int interval)
 {
-    QMutexLocker locker(&mutex);
     bufferInterval = interval;
 }
 
@@ -189,7 +183,6 @@ void SessionData::setBufferSize(unsigned int size)
 {
     if(size != bufferSize)
     {
-        QMutexLocker locker(&mutex);
         if(timer.isActive())
             timer.stop();
         socket->waitForBytesWritten();

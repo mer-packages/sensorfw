@@ -22,6 +22,7 @@ sensord (0.6.39) unstable; urgency=low
   * Changed buffersizes to 1.
   * Removed ugly optimization from RingBuffer.
   * Merged back pipe to SensorManager to delegate socket writing to Qt eventloop thread.
+  * Since SocketHandler is used only by Qt eventloop unnecessary mutexes are removed.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Tue, 08 Feb 2011 13:35:32 +0200
 
