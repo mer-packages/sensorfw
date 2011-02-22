@@ -30,7 +30,6 @@ SOURCES += sensormanager.cpp \
     deviceadaptor.cpp \
     loader.cpp \
     plugin.cpp \
-    filterproperty.cpp \
     abstractsensor_a.cpp \
     abstractsensor.cpp \
     logging.cpp \
