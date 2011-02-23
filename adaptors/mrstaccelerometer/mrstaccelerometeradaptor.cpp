@@ -35,7 +35,7 @@
 MRSTAccelAdaptor::MRSTAccelAdaptor (const QString& id) :
     SysfsAdaptor (id, SysfsAdaptor::IntervalMode)
 {
-    buffer = new DeviceAdaptorRingBuffer<OrientationData>(128);
+    buffer = new DeviceAdaptorRingBuffer<OrientationData>(1);
     setAdaptedSensor("accelerometer", "MRST accelerometer", buffer);
     setDescription("MRST accelerometer");
 }

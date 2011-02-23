@@ -58,7 +58,6 @@ HEADERS += sensormanager.h \
     bufferreader.h \
     loader.h \
     plugin.h \
-    filterproperty.h \
     abstractsensor_a.h \
     abstractsensor.h \
     logging.h \

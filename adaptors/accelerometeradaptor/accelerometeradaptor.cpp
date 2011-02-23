@@ -40,7 +40,8 @@
 AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(128);
+
+    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1);
     setAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
     setDescription("Input device accelerometer adaptor (lis302d)");
 }

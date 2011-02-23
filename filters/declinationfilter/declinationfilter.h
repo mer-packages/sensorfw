@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,22 +28,22 @@
 #define DECLINATIONFILTER_H
 
 #include <QObject>
+#include <QAtomicInt>
 #include "orientationdata.h"
 #include "filter.h"
-#include "filterproperty.h"
 
 /**
  * @brief Filter for calculating declination correction for Compass data..
  *
  */
-class DeclinationFilter : public QObject, public Filter<CompassData, DeclinationFilter, CompassData>, public PropertyTracker
+class DeclinationFilter : public QObject, public Filter<CompassData, DeclinationFilter, CompassData>
 {
     Q_OBJECT;
     /**
      * Holds the declination correction amount applied in the calculation.
      * The value is read from GConf key \c /system/osso/location/settings/magneticvariation.
      */
-    Q_PROPERTY(int declinationCorrection READ declinationCorrection_);
+    Q_PROPERTY(int declinationCorrection READ declinationCorrection);
 
 public:
     /**
@@ -54,6 +55,8 @@ public:
         return new DeclinationFilter();
     }
 
+    int declinationCorrection() const { return declinationCorrection_; }
+
 private:
     DeclinationFilter();
 
@@ -61,7 +64,7 @@ private:
     void loadSettings();
     CompassData orientation;
     CompassData newOrientation;
-    FilterProperty<int> declinationCorrection_;
+    QAtomicInt declinationCorrection_;
 
     static const char* declinationKey;
 };

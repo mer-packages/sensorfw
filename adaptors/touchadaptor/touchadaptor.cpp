@@ -33,10 +33,9 @@
 
 const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 
-TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS), rangeInfo_(*this)
+TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS)
 {
-    rangeInfo_((RangeInfo){0, 0, 0, 0});
-    outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(128);
+    outputBuffer_ = new DeviceAdaptorRingBuffer<TouchData>(1);
     setAdaptedSensor("touch", "Touch screen input", outputBuffer_);
     setDescription("Touch screen events");
 }
@@ -53,7 +52,6 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     int fd;
     char deviceName[256];
     unsigned char evtype_bitmask[20+1];
-    RangeInfo rInfo;
 
     fd = open(path.toLocal8Bit().constData(), O_RDONLY);
     if (fd == -1) {
@@ -93,14 +91,12 @@ bool TouchAdaptor::checkInputDevice(QString path, QString matchString)
     // Make separate for each input device if necessary.
     struct input_absinfo info;
     ioctl(fd, EVIOCGABS(ABS_X), &info);
-    rInfo.xMin = info.minimum;
-    rInfo.xRange = info.maximum - info.minimum;
+    rangeInfo_.xMin = info.minimum;
+    rangeInfo_.xRange = info.maximum - info.minimum;
 
     ioctl(fd, EVIOCGABS(ABS_Y), &info);
-    rInfo.yMin = info.minimum;
-    rInfo.yRange = info.maximum - info.minimum;
-
-    rangeInfo_(rInfo);
+    rangeInfo_.yMin = info.minimum;
+    rangeInfo_.yRange = info.maximum - info.minimum;
 
     close(fd);
 

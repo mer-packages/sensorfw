@@ -11,7 +11,10 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
+<<<<<<< HEAD
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+=======
+>>>>>>> harmattan
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
@@ -42,11 +45,12 @@
 #include "datatypes/utils.h"
 #include <stdlib.h>
 #include <linux/types.h>
+#include <string.h>
 
 ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
     memset(buf, 0x0, 16);
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
 }

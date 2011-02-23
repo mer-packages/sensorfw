@@ -473,6 +473,7 @@ bool SensorManager::write(int id, const void* source, int size)
     pipeData.id = id;
     pipeData.size = size;
     pipeData.buffer = buffer;
+
     memcpy(buffer, source, size);
 
     if (::write(pipefds_[1], &pipeData, sizeof(pipeData)) < (int)sizeof(pipeData)) {
@@ -611,6 +612,10 @@ bool SensorManager::getPSMState()
     return psmState_;
 }
 
+int SensorManager::createNewSessionId()
+{
+    return ++sessionIdCount_;
+}
 
 #ifdef SM_PRINT
 void SensorManager::print() const

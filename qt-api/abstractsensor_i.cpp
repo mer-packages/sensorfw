@@ -352,3 +352,12 @@ bool AbstractSensorChannelInterface::read(void* buffer, int size)
 {
     return pimpl_->socketReader_.read(buffer, size);
 }
+
+bool AbstractSensorChannelInterface::setDataRangeIndex(int dataRangeIndex)
+{
+    clearError();
+    QDBusReply<bool> dbusReply = call(QLatin1String("setDataRangeIndex"),
+                                                     qVariantFromValue(pimpl_->sessionId_), qVariantFromValue(dataRangeIndex));
+    if (dbusReply.isValid()) return dbusReply.value();
+    return false;
+}

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,7 +29,6 @@
 
 #include "datatypes/orientationdata.h"
 #include "filter.h"
-#include "filterproperty.h"
 
 /**
  * TMatrix holds a transformation matrix.
@@ -72,10 +72,10 @@ Q_DECLARE_METATYPE(TMatrix);
  * \c TMatrix property. Matrix must be of size 3x3. Default TMatrix is
  * identity matrix.
  */
-class CoordinateAlignFilter : public QObject, public Filter<TimedXyzData, CoordinateAlignFilter, TimedXyzData>, public PropertyTracker
+class CoordinateAlignFilter : public QObject, public Filter<TimedXyzData, CoordinateAlignFilter, TimedXyzData>
 {
     Q_OBJECT;
-    Q_PROPERTY(TMatrix transMatrix READ transMatrix WRITE transMatrix);
+    Q_PROPERTY(TMatrix transMatrix READ matrix WRITE setMatrix);
 public:
 
     /**
@@ -86,7 +86,9 @@ public:
         return new CoordinateAlignFilter;
     }
 
-    FilterProperty<TMatrix> transMatrix;
+    const TMatrix& matrix() const { return matrix_; }
+
+    void setMatrix(const TMatrix& matrix) { matrix_ = matrix; }
 
 protected:
     /**
@@ -97,6 +99,7 @@ protected:
 private:
     void filter(unsigned, const TimedXyzData*);
 
+    TMatrix matrix_;
 };
 
 #endif // COORDINATEALIGNFILTER_H

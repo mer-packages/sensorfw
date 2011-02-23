@@ -45,7 +45,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
     intervalCompensation_ = Config::configuration()->value("magnetometer/interval_compensation", "0").toInt();
-    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
+    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Input device Magnetometer adaptor (ak897x)");
 }

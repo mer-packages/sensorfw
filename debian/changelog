@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 sensord (0.7.0) unstable; urgency=low
+
+  [Pia Niemela]
+  * Added setDataRangeIndex utility for easier range swapping
+  * Fixed MOBILITY-2535
+  * Fixed NB#223439
 
   [Lihan Guo]
   * Fixed coverity defects
@@ -21,6 +27,12 @@ sensord (0.7.0) unstable; urgency=low
   * Added support for NCDK driver to ALSAdaptor.
   * New helper functions to SysfsAdaptor for sysfs access.
   * Fix bug from SysfsAdaptor::writeToFile(): size for given buffer was wrong.
+  * Removed FilterProperty: it had possible memory leak and could return references to already deleted memory.
+  * AccelerometerChain transformation matrix is now instance specific.
+  * Changed buffersizes to 1.
+  * Removed ugly optimization from RingBuffer.
+  * Merged back pipe to SensorManager to delegate socket writing to Qt eventloop thread. Fixes: NB#227398, NB#227034, NB#229068.
+  * Since SocketHandler is used only by Qt eventloop unnecessary mutexes are removed.
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor

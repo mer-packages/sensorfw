@@ -71,7 +71,6 @@ private:
     QTimer timer;
     unsigned int bufferSize;
     unsigned int bufferInterval;
-    QMutex mutex;
 
 private slots:
     void timerTimeout();

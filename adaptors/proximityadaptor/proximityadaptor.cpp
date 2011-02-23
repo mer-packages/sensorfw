@@ -67,7 +67,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         dbusIfc_->call(QDBus::NoBlock, "req_proximity_sensor_enable");
 #endif
     }
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
     setDescription("Proximity sensor readings (Dipro sensor)");
 }

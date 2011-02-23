@@ -11,9 +11,13 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
+<<<<<<< HEAD
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
+=======
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+>>>>>>> harmattan
 
    This file is part of Sensord.
 
@@ -42,7 +46,7 @@ MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
     memset(buf, 0x0, 32);
-    magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(16);
+    magnetBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("magnetometer", "ak8974 ascii", magnetBuffer_);
 }
 

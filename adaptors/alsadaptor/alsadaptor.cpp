@@ -51,9 +51,9 @@ struct bh1770glc_als {
 
 
 ALSAdaptor::ALSAdaptor(const QString& id):
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
+        SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
 {
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(32);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
     deviceType_ = (DeviceType)Config::configuration()->value("als/driver_type", "0").toInt();
@@ -62,6 +62,12 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 
 ALSAdaptor::~ALSAdaptor()
 {
+    if (deviceType_ == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        delete dbusIfc;
+#endif
+    }
     delete alsBuffer_;
 }
 
@@ -82,6 +88,32 @@ void ALSAdaptor::stopSensor()
     }
     SysfsAdaptor::stopSensor();
 }
+
+
+bool ALSAdaptor::startAdaptor()
+{
+    if (deviceType_ == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_als_enable");
+#endif
+    }
+
+    return SysfsAdaptor::startAdaptor();
+}
+
+void ALSAdaptor::stopAdaptor()
+{
+    if (deviceType_ == RM696)
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        dbusIfc -> call(QDBus::NoBlock, "req_als_disable");
+#endif
+    }
+    SysfsAdaptor::stopAdaptor();
+}
+
+
 
 void ALSAdaptor::processSample(int pathId, int fd)
 {

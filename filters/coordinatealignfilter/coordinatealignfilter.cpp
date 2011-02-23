@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,8 +27,7 @@
 #include "coordinatealignfilter.h"
 
 CoordinateAlignFilter::CoordinateAlignFilter() :
-        Filter<TimedXyzData, CoordinateAlignFilter, TimedXyzData>(this, &CoordinateAlignFilter::filter),
-        transMatrix(*this)
+        Filter<TimedXyzData, CoordinateAlignFilter, TimedXyzData>(this, &CoordinateAlignFilter::filter)
 {
 }
 
@@ -36,10 +36,10 @@ void CoordinateAlignFilter::filter(unsigned, const TimedXyzData* data)
     TimedXyzData transformed;
 
     transformed.timestamp_ = data->timestamp_;
-        
-    transformed.x_ = transMatrix().get(0,0)*data->x_ + transMatrix().get(0,1)*data->y_ + transMatrix().get(0,2)*data->z_;
-    transformed.y_ = transMatrix().get(1,0)*data->x_ + transMatrix().get(1,1)*data->y_ + transMatrix().get(1,2)*data->z_;
-    transformed.z_ = transMatrix().get(2,0)*data->x_ + transMatrix().get(2,1)*data->y_ + transMatrix().get(2,2)*data->z_;
+
+    transformed.x_ = matrix_.get(0,0)*data->x_ + matrix_.get(0,1)*data->y_ + matrix_.get(0,2)*data->z_;
+    transformed.y_ = matrix_.get(1,0)*data->x_ + matrix_.get(1,1)*data->y_ + matrix_.get(1,2)*data->z_;
+    transformed.z_ = matrix_.get(2,0)*data->x_ + matrix_.get(2,1)*data->y_ + matrix_.get(2,2)*data->z_;
 
     source_.propagate(1, &transformed);
 }

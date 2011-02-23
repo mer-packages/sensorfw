@@ -39,7 +39,7 @@
 ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, true, Config::configuration()->value("als-sysfs_path").toString())
 {
-    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
+    alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
 }
 

@@ -39,7 +39,7 @@
 KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
     InputDevAdaptor(id, 1), newKbEventRecorded_(false), currentState_(KeyboardSliderStateUnknown)
 {
-    kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(3);
+    kbstateBuffer_ = new DeviceAdaptorRingBuffer<KeyboardSliderState>(1);
     setAdaptedSensor("keyboardslider", "Device keyboard slider state", kbstateBuffer_);
     setDescription("Keyboard slider events (via input device)");
 }

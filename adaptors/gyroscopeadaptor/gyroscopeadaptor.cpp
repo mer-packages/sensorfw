@@ -36,7 +36,7 @@
 GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
-    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(32);
+    gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
     setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
 }

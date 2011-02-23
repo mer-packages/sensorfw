@@ -342,17 +342,15 @@ bool SysfsAdaptor::writeToFile(const QByteArray& path, const QByteArray& content
         sensordLogW() << "Failed to open '" << path << "': " << strerror(errno);
         return false;
     }
-    bool ret = false;
-    if (write(fd, content.constData(), content.size() * sizeof(char)) == -1)
-    {
-        sensordLogW() << "Failed to write to '" << path << "': " << strerror(errno);
+
+    if (write(fd, content.constData(), content.size() * sizeof(char)) == -1) {
+        close(fd);
+        return false;
     }
-    else
-    {
-        ret = true;
-    }
+
     close(fd);
-    return ret;
+
+    return true;
 }
 
 QByteArray SysfsAdaptor::readFromFile(const QByteArray& path)

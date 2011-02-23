@@ -92,6 +92,18 @@ public Q_SLOTS:
     void requestDataRange(int sessionId, const DataRange& range);
 
     /**
+     * Places a request for the given data range by index into queue. The range
+     * will be activated once all earlier requests have been released.
+     *
+     * If the range is not valid, the request will be dropped
+     * immediately.
+     *
+     * @param sessionId session ID for the client making the request.
+     * @param range The requested data range index
+     */
+     bool setDataRangeIndex(int sessionId, const int rangeIndex);
+
+    /**
      * Tells whether the node is in standbyOverride mode. If \c true, the
      * dataflow from the sensor will continue even if the device display
      * goes blank. Any client making the request for a sensor will make

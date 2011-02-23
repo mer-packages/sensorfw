@@ -33,6 +33,13 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
 #include <QTime>
+#include <QDBusInterface>
+
+#ifdef SENSORFW_MCE_WATCHER
+    #include <mce/mode-names.h>
+    #include <mce/dbus-names.h>
+#endif
+
 
 /**
  * @brief Adaptor for internal ambient light sensor.
@@ -65,6 +72,15 @@ public:
     {
         return new ALSAdaptor(id);
     }
+    /**
+     * Start measuring loop. Opens file descriptors and set streaming mode
+     */
+    bool startAdaptor();
+
+    /**
+     * Stop measuring loop. Closes file descriptors and removes streaming mode
+     */
+    void stopAdaptor();
 
     virtual bool startSensor();
 
@@ -77,6 +93,8 @@ protected:
      */
     ALSAdaptor(const QString& id);
     ~ALSAdaptor();
+
+
 
     /**
      * Reimplemented to prevent standbyOverride for this adaptor.
@@ -103,6 +121,11 @@ private:
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
     DeviceType deviceType_;
     QByteArray powerStatePath_;
+
+#ifdef SENSORFW_MCE_WATCHER
+    QDBusInterface *dbusIfc;
+#endif
+
 };
 
 #endif

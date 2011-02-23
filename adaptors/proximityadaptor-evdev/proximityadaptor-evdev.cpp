@@ -43,7 +43,7 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
     InputDevAdaptor(id, 1),
     currentState_(ProximityStateUnknown)
 {
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(3);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 }
 

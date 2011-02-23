@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,7 +30,6 @@
 
 #include "inputdevadaptor.h"
 #include "deviceadaptorringbuffer.h"
-#include "filterproperty.h"
 #include <QObject>
 #include "touchdata.h"
 
@@ -44,7 +44,6 @@
 class TouchAdaptor : public InputDevAdaptor
 {
     Q_OBJECT;
-    Q_PROPERTY(TouchAdaptor::RangeInfo rangeinfo READ rangeInfo_)
 public:
     /**
      * Factory method for gaining a new instance of TouchAdaptor class.
@@ -70,7 +69,7 @@ private:
     /**
      * Holds values read from the driver.
      */
-    struct TouchValues_ {
+    struct TouchValues {
         int x;
         int y;
         int z;
@@ -78,18 +77,18 @@ private:
         int toolWidth;
         TouchData::FingerState fingerState;
     };
-    typedef struct TouchValues_ TouchValues;
 
     /**
      * Holds information related to screen properties.
      */
-    struct RangeInfo_ {
+    struct RangeInfo {
+        RangeInfo() : xMin(0), yMin(0), xRange(0), yRange(0) {};
+
         int xMin;   /**< Minimum value from the driver for X-axis */
         int yMin;   /**< Minimum value from the driver for Y-axis */
         int xRange; /**< Width of X-axis */
         int yRange; /**< Width of Y-axis */
     };
-    typedef struct RangeInfo_ RangeInfo;
 
     /**
      * Verify whether the input device handle on given path is a touchscreen device.
@@ -114,7 +113,7 @@ private:
 
     DeviceAdaptorRingBuffer<TouchData>* outputBuffer_;
     TouchValues touchValues_[5];
-    FilterProperty<RangeInfo> rangeInfo_;
+    RangeInfo rangeInfo_;
 };
 
 #endif

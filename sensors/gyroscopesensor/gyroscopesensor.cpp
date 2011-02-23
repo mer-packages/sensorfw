@@ -40,9 +40,9 @@ GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
     gyroscopeAdaptor_ = sm.requestDeviceAdaptor("gyroscopeadaptor");
     Q_ASSERT( gyroscopeAdaptor_ );
 
-    gyroscopeReader_ = new BufferReader<TimedXyzData>(128);
+    gyroscopeReader_ = new BufferReader<TimedXyzData>(1);
 
-    outputBuffer_ = new RingBuffer<TimedXyzData>(128);
+    outputBuffer_ = new RingBuffer<TimedXyzData>(1);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
