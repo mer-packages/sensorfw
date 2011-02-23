@@ -93,7 +93,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         sensordLogW() << "Other HW except RM680 and RM696";
     }
 
-    if (device == RM696 || device == RM680)
+    if (device == RM696)
     {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_enable");
@@ -118,7 +118,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 
 ProximityAdaptor::~ProximityAdaptor()
 {
-    if (device == RM696 || device == RM680)
+    if (device == RM696)
     {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_disable");
