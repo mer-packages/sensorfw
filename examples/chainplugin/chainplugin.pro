@@ -1,21 +1,25 @@
 TEMPLATE     = lib
 CONFIG      += plugin
 
-TARGET       = sampleadaptor
+QT          += dbus
 
-include(../../common-config.pri )
+TARGET       = samplechain
 
-HEADERS += sampleadaptor.h \
-           sampleadaptorplugin.h
+include( ../../common-config.pri )
 
-SOURCES += sampleadaptor.cpp \
-           sampleadaptorplugin.cpp
+HEADERS += samplechain.h   \
+           samplechainplugin.h
+
+SOURCES += samplechain.cpp   \
+           samplechainplugin.cpp
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
                         ../../sensord \
                         ../../datatypes \
-                        ../../filters
+                        ../../filters \
+                        ../../core \
+                        ../../adaptors
 
 DEPENDPATH  += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
@@ -23,5 +27,3 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 include(../../common-install.pri)
 publicheaders.files += $$HEADERS
 target.path = $$PLUGINPATH
-
-INSTALLS += target

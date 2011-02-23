@@ -36,7 +36,7 @@
 
 ALSSensorChannel::ALSSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedUnsigned>(10),
+        DataEmitter<TimedUnsigned>(10),
         previousValue_(0,0)
 #ifdef PROVIDE_CONTEXT_INFO
         ,service(QDBusConnection::systemBus()),
@@ -129,7 +129,7 @@ bool ALSSensorChannel::stop()
     return true;
 }
 
-void ALSSensorChannel::emitToDbus(const TimedUnsigned& value)
+void ALSSensorChannel::emitData(const TimedUnsigned& value)
 {
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;

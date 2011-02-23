@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,22 +30,22 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 
-// Include the dbus adaptor and dbusemitter base class
+// Include the dbus adaptor and dataemitter base class
 #include "samplesensor_a.h"
-#include "sensord/dbusemitter.h"
+#include "dataemitter.h"
 
 // Include required datatypes
-#include "datatypes/timedunsigned.h"
+#include "timedunsigned.h"
 
 // Included in .cpp, introduced here.
 class Bin;
 template <class TYPE> class BufferReader;
 class FilterBase;
 
-// Sensors inherit also DbusEmitter
+// Sensors inherit also DataEmitter
 class SampleSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<TimedUnsigned>
+        public DataEmitter<TimedUnsigned>
 {
     Q_OBJECT;
 
@@ -98,7 +99,7 @@ private:
     TimedUnsigned                previousSample_;
 
     // Function that takes care of pushing the data to clients
-    void emitToDbus(const TimedUnsigned& value);
+    void emitData(const TimedUnsigned& value);
 };
 
 #endif

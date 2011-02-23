@@ -30,7 +30,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "accelerometersensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "datatypes/orientationdata.h"
 
 class Bin;
@@ -46,7 +46,7 @@ class FilterBase;
  */
 class AccelerometerSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<AccelerationData>
+        public DataEmitter<AccelerationData>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ value READ get);
@@ -90,7 +90,7 @@ private:
     RingBuffer<AccelerationData>*    outputBuffer_;
     AccelerationData                 previousSample_;
 
-    void emitToDbus(const AccelerationData& value);
+    void emitData(const AccelerationData& value);
 };
 
 #endif

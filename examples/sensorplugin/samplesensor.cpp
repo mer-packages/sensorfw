@@ -25,13 +25,13 @@
 
 #include "samplesensor.h"
 
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
 
 SampleSensorChannel::SampleSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedUnsigned>(10),
+        DataEmitter<TimedUnsigned>(10),
         previousSample_(0, 0)
 {
     SensorManager& sm = SensorManager::instance();
@@ -113,7 +113,7 @@ bool SampleSensorChannel::stop()
 // Store the previous value for use by the accessor function, and
 // push data towards clients (the data will be pushed to socket(s) by
 // sensormanager).
-void SampleSensorChannel::emitToDbus(const TimedUnsigned& value)
+void SampleSensorChannel::emitData(const TimedUnsigned& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(TimedUnsigned));

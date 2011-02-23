@@ -8,7 +8,8 @@ SUBDIRS = datatypes \
           sensord \
           qt-api \
           chains \
-          tests
+          tests \
+          examples
 
 sensord.depends = datatypes adaptors sensors chains
 

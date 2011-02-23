@@ -29,7 +29,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "orientationsensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "datatypes/orientationdata.h"
 #include "datatypes/posedata.h"
 #include "datatypes/unsigned.h"
@@ -47,7 +47,7 @@ class FilterBase;
  */
 class OrientationSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<PoseData>
+        public DataEmitter<PoseData>
 {
     Q_OBJECT;
 
@@ -107,7 +107,7 @@ private:
      * Emits new device orientation through DBus.
      * @param value Orientation value to emit.
      */
-    void emitToDbus(const PoseData& value);
+    void emitData(const PoseData& value);
 };
 
 #endif // ORIENTATION_SENSOR_CHANNEL_H

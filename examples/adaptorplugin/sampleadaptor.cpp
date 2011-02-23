@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,11 +29,8 @@
 // Logging entries
 #include "logging.h"
 
-// Configuration file access
-#include "config.h"
-
 // Provides timestamp utility
-#include "datatypes/utils.h"
+#include "utils.h"
 
 // Constructor should initialise SysfsAdaptor parent.
 // id should be passed directly. See #SysfsAdaptor for details on
@@ -41,7 +39,7 @@
 // from configuration (like here). If locating the path needs processing
 // the path should be omitted here and set inside the constructor.
 SampleAdaptor::SampleAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode, Config::configuration()->value("sample_dev_path").toString())
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
     // One can use SysfsAdaptor::addPath() to add additional paths for
     // monitoring. The paths are indexed in the order they are
@@ -53,7 +51,7 @@ SampleAdaptor::SampleAdaptor(const QString& id) :
     // Provide the output buffer with name and description. Name is used
     // to locate the buffer from the listening side, description is
     // currently unused.
-    addAdaptedSensor("sample", "Sample sensor, with dummy buffer", outputBuffer_);
+    setAdaptedSensor("sample", "Sample sensor, with dummy buffer", outputBuffer_);
 
     // Provide information on the data range this adaptor can output
     // (based on the adapted sensor naturally). Parameters of DataRange

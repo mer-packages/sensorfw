@@ -32,7 +32,7 @@
 
 GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedXyzData>(10),
+        DataEmitter<TimedXyzData>(10),
         previousSample_()
 {
     SensorManager& sm = SensorManager::instance();
@@ -106,7 +106,7 @@ bool GyroscopeSensorChannel::stop()
     return true;
 }
 
-void GyroscopeSensorChannel::emitToDbus(const TimedXyzData& value)
+void GyroscopeSensorChannel::emitData(const TimedXyzData& value)
 {
     previousSample_ = value;
     writeToClients((const void*)(&value), sizeof(TimedXyzData));

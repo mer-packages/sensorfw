@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,12 +29,12 @@
 
 // Include any parent classes this adaptor is based on
 // (deviceadaptor really not necessary, as it's a parent of sysfs)
-#include "sensord/deviceadaptor.h"
-#include "sensord/sysfsadaptor.h"
+#include "deviceadaptor.h"
+#include "sysfsadaptor.h"
 
 // Include any datatypes this adaptor produces. For example, let's use
 // TimedUnsigned (unsigned int + timestamp)
-#include "datatypes/timedunsigned.h"
+#include "timedunsigned.h"
 
 /**
  * Adaptor description...

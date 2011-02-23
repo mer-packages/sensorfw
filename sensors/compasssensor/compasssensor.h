@@ -30,7 +30,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "compasssensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "orientationdata.h"
 #include "datatypes/compass.h"
 
@@ -47,7 +47,7 @@ class FilterBase;
  */
 class CompassSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<CompassData>
+        public DataEmitter<CompassData>
 {
     Q_OBJECT;
 
@@ -94,7 +94,7 @@ private:
     BufferReader<CompassData>* inputReader_;
     RingBuffer<CompassData>* outputBuffer_;
 
-    void emitToDbus(const CompassData& value);
+    void emitData(const CompassData& value);
 };
 
 #endif

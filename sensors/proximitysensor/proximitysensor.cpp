@@ -32,7 +32,7 @@
 
 ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<TimedUnsigned>(10),
+        DataEmitter<TimedUnsigned>(10),
         previousValue_(0, -1)
 {
     SensorManager& sm = SensorManager::instance();
@@ -106,7 +106,7 @@ bool ProximitySensorChannel::stop()
     return true;
 }
 
-void ProximitySensorChannel::emitToDbus(const TimedUnsigned& value)
+void ProximitySensorChannel::emitData(const TimedUnsigned& value)
 {
     previousValue_.timestamp_ = value.timestamp_;
 

@@ -29,7 +29,7 @@
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "rotationsensor_a.h"
-#include "dbusemitter.h"
+#include "dataemitter.h"
 #include "datatypes/orientationdata.h"
 
 class Bin;
@@ -41,7 +41,7 @@ class FilterBase;
  */
 class RotationSensorChannel :
         public AbstractSensorChannel,
-        public DbusEmitter<TimedXyzData>
+        public DataEmitter<TimedXyzData>
 {
     Q_OBJECT;
     Q_PROPERTY(XYZ rotation READ rotation);
@@ -100,7 +100,7 @@ private:
     TimedXyzData                 prevRotation_;
     bool                         hasZ_;
 
-    void emitToDbus(const TimedXyzData& value);
+    void emitData(const TimedXyzData& value);
 };
 
 #endif // ROTATION_SENSOR_CHANNEL_H

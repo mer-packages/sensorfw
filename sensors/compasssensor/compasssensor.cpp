@@ -32,7 +32,7 @@
 
 CompassSensorChannel::CompassSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DbusEmitter<CompassData>(10),
+        DataEmitter<CompassData>(10),
         declinationCorrection_(false),
         declinationAngle_(0),
         compassData(0, -1, -1)
@@ -134,7 +134,7 @@ bool CompassSensorChannel::stop()
     return true;
 }
 
-void CompassSensorChannel::emitToDbus(const CompassData& value)
+void CompassSensorChannel::emitData(const CompassData& value)
 {
     compassData.timestamp_ = value.timestamp_;
     compassData.level_ = value.level_;

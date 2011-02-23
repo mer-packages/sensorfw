@@ -1,6 +1,11 @@
 sensord (0.7.0) unstable; urgency=low
 
-  [ Antti Virtanen ]
+  [Lihan Guo]
+  * Fixed coverity defects
+  * Improved sensorfw examples
+  * Changed DbusEmitter to DataEmitter
+  * Changed emitToDbus to emitData
+
   [Antti Virtanen]
   * Removed possibility of having multiple sensors inside single DeviceAdaptor. This feature was never used.
   * DeviceAdaptor::init() added. Subclasses can implement this to initialize themselves.

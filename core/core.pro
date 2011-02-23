@@ -43,7 +43,7 @@ SOURCES += sensormanager.cpp \
 
 HEADERS += sensormanager.h \
     sensormanager_a.h \
-    dbusemitter.h \
+    dataemitter.h \
     pusher.h \
     ringbuffer.h \
     producer.h \

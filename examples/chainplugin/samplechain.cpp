@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,11 +25,11 @@
  */
 
 #include "samplechain.h"
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
-#include "sensord/config.h"
-#include "sensord/logging.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
+#include "config.h"
+#include "logging.h"
 
 SampleChain::SampleChain(const QString& id) :
     AbstractChain(id)
@@ -104,7 +105,7 @@ bool SampleChain::start()
         filterBin_->start();
 
         // Adaptors are started on buffer basis, thus the buffer name
-        sampleAdaptor_->startSensor("sample");
+        sampleAdaptor_->startSensor();
     }
     return true;
 }
@@ -114,7 +115,7 @@ bool SampleChain::stop()
 {
     if (AbstractSensorChannel::stop()) {
         sensordLogD() << "Stopping SampleChain";
-        sampleAdaptor_->stopSensor("sample");
+        sampleAdaptor_->stopSensor();
         filterBin_->stop();
     }
     return true;

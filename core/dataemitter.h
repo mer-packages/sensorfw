@@ -1,6 +1,6 @@
 /**
-   @file dbusemitter.h
-   @brief D-Bus emitter
+   @file dataemitter.h
+   @brief Data emitter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -24,8 +24,8 @@
    </p>
  */
 
-#ifndef DBUSEMITTER_H
-#define DBUSEMITTER_H
+#ifndef DATAEMITTER_H
+#define DATAEMITTER_H
 
 #include "pusher.h"
 #include "source.h"
@@ -33,17 +33,17 @@
 
 
 template <class TYPE>
-class DbusEmitter : public RingBufferReader<TYPE>
+class DataEmitter : public RingBufferReader<TYPE>
 {
 public:
-    DbusEmitter(unsigned chunkSize) :
+    DataEmitter(unsigned chunkSize) :
         chunkSize_(chunkSize),
         chunk_(new TYPE[chunkSize])
     {
         addSource(&source_, "source");
     }
 
-    virtual ~DbusEmitter()
+    virtual ~DataEmitter()
     {
         delete[] chunk_;
     }
@@ -53,13 +53,13 @@ public:
         unsigned n;
         while ((n = RingBufferReader<TYPE>::read(chunkSize_, chunk_))) {
             for (unsigned i = 0; i < n; ++i) {
-                emitToDbus(chunk_[i]);
+                emitData(chunk_[i]);
             }
         }
     }
 
 protected:
-    virtual void emitToDbus(const TYPE& value) = 0;
+    virtual void emitData(const TYPE& value) = 0;
 
 private:
     Source<TYPE> source_;

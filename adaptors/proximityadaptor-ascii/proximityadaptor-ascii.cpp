@@ -12,6 +12,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,6 +31,7 @@
 */
 
 #include <errno.h>
+#include <string.h>
 #include "logging.h"
 #include "config.h"
 #include "proximityadaptor-ascii.h"
@@ -38,6 +40,7 @@
 ProximityAdaptorAscii::ProximityAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
+    memset(buf, 0x0, 16);
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(16);
     setAdaptedSensor("proximity", "apds9802ps ascii", proximityBuffer_);
 }
