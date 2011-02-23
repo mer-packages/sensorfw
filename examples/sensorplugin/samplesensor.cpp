@@ -25,9 +25,9 @@
 
 #include "samplesensor.h"
 
-#include "sensord/sensormanager.h"
-#include "sensord/bin.h"
-#include "sensord/bufferreader.h"
+#include "sensormanager.h"
+#include "bin.h"
+#include "bufferreader.h"
 
 SampleSensorChannel::SampleSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
