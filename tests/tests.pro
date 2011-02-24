@@ -6,6 +6,7 @@ SUBDIRS = filters\
           chains \
           contextfw \
           client \
+          createsensor \
           dataflow \
           benchmark \
           testutils \

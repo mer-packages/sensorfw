@@ -10,6 +10,7 @@ sensord (0.7.0) unstable; urgency=low
   * Improved sensorfw examples
   * Changed DbusEmitter to DataEmitter
   * Changed emitToDbus to emitData
+  * Added test application to create multiple sensors.
 
   [Antti Virtanen]
   * Removed possibility of having multiple sensors inside single DeviceAdaptor. This feature was never used.
