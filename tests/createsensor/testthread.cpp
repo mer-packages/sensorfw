@@ -47,8 +47,8 @@ Testthread::Testthread(QString sensorName, QObject *parent) :
     } else if (sensorName == "magnetometersensor")
     {
         sensorChannelInterface = MagnetometerSensorChannelInterface::interface("magnetometersensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(XYZ&)), this, SLOT(receivedData(XYZ&)));
-        connect(sensorChannelInterface, SIGNAL(frameAvailable(QVector<MagneticField>&)), this, SLOT(receivedFrame(QVector<MagneticField>&)));
+        connect(sensorChannelInterface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(receivedData(const MagneticField&)));
+        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(receivedFrame(QVector<const MagneticField>&)));
 
     } else if (sensorName ==  "orientationsensor")
     {
@@ -76,6 +76,7 @@ Testthread::Testthread(QString sensorName, QObject *parent) :
         bufferinterval = Config::configuration()->value(sensorName+"/bufferinterval", "0").toInt();
         standbyoverride = Config::configuration()->value(sensorName+"/standbyoverride", "false").toBool();
         buffersize = Config::configuration()->value(sensorName+"/buffersize", "0").toInt();
+
     }
 
 }
@@ -91,14 +92,14 @@ void Testthread::setBufferInterval(int value)
     bufferinterval = value;
 }
 
-void Testthread::receivedData(MagneticField& data)
+void Testthread::receivedData(const MagneticField& data)
 {
     dataCount ++;
     qDebug() << this->objectName() <<" received the " << dataCount << "data :" 
              << data.x() << " " <<   data.y() << " " <<   data.z();
 }
 
-void Testthread::receivedFrame(QVector<MagneticField>& frame)
+void Testthread::receivedFrame(const QVector<MagneticField>& frame)
 {
     frameCount ++;
     qDebug() << this->objectName() << " received the " << frameCount << "frame :"; 
