@@ -9,6 +9,7 @@ sensord (0.6.39) unstable; urgency=low
   * Fixed coverity defects.
   * Improved sensorfw examples
   * Renamed DbusEmitter to DataEmitter and DbusEmitter::emitToDbus to DataEmitter::emitData.
+  * Added test application to create multiple sensors.
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
