@@ -27,16 +27,6 @@
 #include <QVector>
 #include <QDebug>
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
-
 #include "testthread.h"
 
 
@@ -46,21 +36,20 @@ void Testthread::setInterface(AbstractSensorChannelInterface* inf)
 }
 
 
-Testthread::Testthread(QObject *parent) :
-        QThread(parent)
-{
-
-}
-
 Testthread::Testthread(QString sensorName, QObject *parent) :
-    QThread(parent), sensorName(sensorName), interval(10), bufferinterval(0), dataCount(0), frameCount(0) 
+    QThread(parent), sensorName(sensorName), interval(100), bufferinterval(0), dataCount(0), frameCount(0), standbyoverride(false),
+    buffersize(0)
 {
     if (sensorName == "compasssensor")
     {
-        sensorChannelInterface = CompassSensorChannelInterface::interface("compasssensor");
+        sensorChannelInterface = CompassSensorChannelInterface::interface("compasssensor");       
+
     } else if (sensorName == "magnetometersensor")
     {
         sensorChannelInterface = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+        connect(sensorChannelInterface, SIGNAL(dataAvailable(XYZ&)), this, SLOT(receivedData(XYZ&)));
+        connect(sensorChannelInterface, SIGNAL(frameAvailable(QVector<MagneticField>&)), this, SLOT(receivedFrame(QVector<MagneticField>&)));
+
     } else if (sensorName ==  "orientationsensor")
     {
         sensorChannelInterface = OrientationSensorChannelInterface::interface("orientationsensor");
@@ -80,6 +69,15 @@ Testthread::Testthread(QString sensorName, QObject *parent) :
     {
         sensorChannelInterface = ProximitySensorChannelInterface::interface("proximitysensor");
     }
+
+    if (Config::configuration() != NULL)
+    {
+        interval = Config::configuration()->value(sensorName+"/interval", "100").toInt();
+        bufferinterval = Config::configuration()->value(sensorName+"/bufferinterval", "0").toInt();
+        standbyoverride = Config::configuration()->value(sensorName+"/standbyoverride", "false").toBool();
+        buffersize = Config::configuration()->value(sensorName+"/buffersize", "0").toInt();
+    }
+
 }
 
 
@@ -93,14 +91,14 @@ void Testthread::setBufferInterval(int value)
     bufferinterval = value;
 }
 
-void Testthread::receivedData(XYZ& data)
+void Testthread::receivedData(MagneticField& data)
 {
     dataCount ++;
     qDebug() << this->objectName() <<" received the " << dataCount << "data :" 
              << data.x() << " " <<   data.y() << " " <<   data.z();
 }
 
-void Testthread::receivedFrame(QVector<XYZ>& frame)
+void Testthread::receivedFrame(QVector<MagneticField>& frame)
 {
     frameCount ++;
     qDebug() << this->objectName() << " received the " << frameCount << "frame :"; 
@@ -112,9 +110,8 @@ void Testthread::run()
 {
     sensorChannelInterface->setInterval(interval);
     sensorChannelInterface->setBufferInterval(bufferinterval);
-    sensorChannelInterface->setStandbyOverride(true);
-    connect(sensorChannelInterface, SIGNAL(dataAvailable(XYZ&)), this, SLOT(receivedData(XYZ&)));
-    connect(sensorChannelInterface, SIGNAL(frameAvailable(QVector<XYZ>&)), this, SLOT(receivedFrame(QVector<XYZ>&)));
-    sensorChannelInterface->start();
+    sensorChannelInterface->setBufferSize(buffersize);
+    sensorChannelInterface->setStandbyOverride(standbyoverride);
+
     exec();
 }
