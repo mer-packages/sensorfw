@@ -60,8 +60,8 @@ public:
     void run();
 
 public Q_SLOTS:
-    void receivedData(MagneticField& data);
-    void receivedFrame(QVector<MagneticField>& frame);
+    void receivedData(const MagneticField& data);
+    void receivedFrame(const QVector<MagneticField>& frame);
 
 
 private:
