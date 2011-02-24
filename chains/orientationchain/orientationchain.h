@@ -5,11 +5,7 @@
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
-<<<<<<< HEAD
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
-=======
-   @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
->>>>>>> harmattan
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.

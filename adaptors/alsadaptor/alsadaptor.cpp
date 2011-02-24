@@ -58,6 +58,10 @@ ALSAdaptor::ALSAdaptor(const QString& id):
     setDescription("Ambient light");
     deviceType_ = (DeviceType)Config::configuration()->value("als/driver_type", "0").toInt();
     powerStatePath_ = Config::configuration()->value("als/powerstate_path").toByteArray();
+#ifdef SENSORFW_MCE_WATCHER
+    dbusIfc = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
+                                 QDBusConnection::systemBus(), this);
+#endif
 }
 
 ALSAdaptor::~ALSAdaptor()
