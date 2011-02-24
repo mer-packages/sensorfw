@@ -62,7 +62,7 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 
 ALSAdaptor::~ALSAdaptor()
 {
-    if (deviceType_ == RM696)
+    if (deviceType_ == RM696 || deviceType_ == RM680)
     {
 #ifdef SENSORFW_MCE_WATCHER
         delete dbusIfc;
@@ -92,7 +92,7 @@ void ALSAdaptor::stopSensor()
 
 bool ALSAdaptor::startAdaptor()
 {
-    if (deviceType_ == RM696)
+    if (deviceType_ == RM696 || deviceType_ == RM680)
     {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_als_enable");
@@ -104,7 +104,7 @@ bool ALSAdaptor::startAdaptor()
 
 void ALSAdaptor::stopAdaptor()
 {
-    if (deviceType_ == RM696)
+    if (deviceType_ == RM696 || deviceType_ == RM680)
     {
 #ifdef SENSORFW_MCE_WATCHER
         dbusIfc -> call(QDBus::NoBlock, "req_als_disable");

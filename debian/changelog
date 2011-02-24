@@ -40,7 +40,7 @@ sensord (0.7.0) unstable; urgency=low
   [Shenghua Liu]
   * Add new magnetometer adaptor and plugin for ncdk
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Feb 2011 18:48:50 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Wed, 23 Feb 2011 11:40:32 +0200
 
 sensord (0.6.38) unstable; urgency=low
 
