@@ -6,6 +6,7 @@
 
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -25,12 +26,8 @@
 
 #include <QCoreApplication>
 #include <QTest>
-#include <QVector>
-#include <QThread>
-#include <QMap>
-#include <math.h>
-#include <QMapIterator>
-#include <QDebug>
+#include <QList>
+#include <QString>
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -46,106 +43,80 @@
 #include "testthread.h"
 #include "parser.h"
 #include "config.h"
+#include "logging.h"
 
 int main(int argc, char *argv[])
 {
-
     QCoreApplication app(argc, argv);
     QMap<QString, int> sensorThread;
 
     const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/createsensors.conf";
 
     Parser parser(app.arguments());
-    sensorThread = parser.getSensorThread();
-    if (sensorThread.empty()){
-        return 0;
+
+    SensordLogger::init(parser.logTarget(), parser.logFilePath());
+
+    if (parser.changeLogLevel())
+    {
+        SensordLogger::setOutputLevel(parser.getLogLevel());
     }
 
-    Config::loadConfig(CONFIG_FILE_PATH, "");
+    if (parser.configFileInput())
+    {
+        QString defConfigFile = parser.configFilePath();
+        if (Config::loadConfig(defConfigFile, ""))
+            sensordLogT() << "Config file is loading successfully.";
+        else
+        {
+            sensordLogW() << "Config file error! Load using default path.";
+            Config::loadConfig(CONFIG_FILE_PATH, "");
+        }
+    } else {
+        Config::loadConfig(CONFIG_FILE_PATH, "");
+    }
+
+    if (Config::configuration() == NULL)
+    {
+        sensordLogC() << "Failed to load configuration. Aborting.";
+        exit(EXIT_FAILURE);
+    }
 
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
 
-    foreach (const QString& sensorName_, sensorThread.keys())
+    foreach (const QString& sensorName, Config::configuration()->groups())
     {
-        remoteSensorManager.loadPlugin(sensorName_);
-        
-        if (sensorName_ == "orientationsensor"){
-            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>("orientationsensor");
-        } else if (sensorName_ == "accelerometersensor"){
-            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>("accelerometersensor");
-        } else if (sensorName_ == "compasssensor"){
-            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>("compasssensor");
-        } else if (sensorName_ == "tapsensor"){
-            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>("tapsensor");
-        } else if (sensorName_ == "alssensor"){
-            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>("alssensor");
-        } else if (sensorName_ == "proximitysensor"){
-            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>("proximitysensor");
-        } else if (sensorName_ == "rotationsensor"){
-            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>("rotationsensor");
-        } else if (sensorName_ == "magnetometersensor"){
-            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>("magnetometersensor");
+        remoteSensorManager.loadPlugin(sensorName);
+
+        if (sensorName == "orientationsensor"){
+            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
+        } else if (sensorName == "accelerometersensor"){
+            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>(sensorName);
+        } else if (sensorName == "compasssensor"){
+            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>(sensorName);
+        } else if (sensorName == "tapsensor"){
+            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>(sensorName);
+        } else if (sensorName == "alssensor"){
+            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>(sensorName);
+        } else if (sensorName == "proximitysensor"){
+            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>(sensorName);
+        } else if (sensorName == "rotationsensor"){
+            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>(sensorName);
+        } else if (sensorName == "magnetometersensor"){
+            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
         }
     }
 
-  
-    QMapIterator<QString, int> iterator(sensorThread);
-
-    while (iterator.hasNext()) {
-
-        iterator.next();
-        if (iterator.key() == "orientationsensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("orientationsensor")) -> start();
-            }
-        } 
-
-        if (iterator.key() == "accelerometersensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("accelerometersensor")) -> start();
-            }
-        } 
-
-
-        if (iterator.key() == "compasssensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("compasssensor")) -> start();
-            }
+    QList<Testthread*> threads;
+    foreach (const QString& sensorName, Config::configuration()->groups())
+    {
+        int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
+        for(int i = 0; i < count; ++i)
+        {
+            Testthread* thread = new Testthread(sensorName);
+            thread->start();
+            threads << thread;
         }
-        if (iterator.key() == "tapsensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("tapsensor")) -> start();
-            }
-        } 
-
-        if (iterator.key() == "alssensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("alssensor")) -> start();
-            }
-        } 
-
-        if (iterator.key() == "proximitysensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("proximitysensor")) -> start();
-            }
-        } 
-
-        if (iterator.key() == "rotationsensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("rotationsensor")) -> start();
-            }
-        } 
-
-        if (iterator.key() == "magnetometersensor"){
-            for (int i = 0; i < iterator.value(); i++){
-                (new Testthread("magnetometersensor")) -> start();
-            }
-        } 
     }
-
-    qDebug() << "Threads are waiting.";        
+    sensordLogD() << "Threads are waiting.";
     return app.exec();
 }
-
-
-

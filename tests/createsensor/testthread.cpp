@@ -37,12 +37,19 @@ void Testthread::setInterface(AbstractSensorChannelInterface* inf)
 
 
 Testthread::Testthread(QString sensorName, QObject *parent) :
-    QThread(parent), sensorName(sensorName), interval(100), bufferinterval(0), dataCount(0), frameCount(0), standbyoverride(false),
-    buffersize(0)
+    QThread(parent),
+    sensorName(sensorName),
+    sensorChannelInterface(NULL),
+    interval(100),
+    bufferinterval(0),
+    standbyoverride(false),
+    buffersize(0),
+    dataCount(0),
+    frameCount(0)
 {
     if (sensorName == "compasssensor")
     {
-        sensorChannelInterface = CompassSensorChannelInterface::interface("compasssensor");       
+        sensorChannelInterface = CompassSensorChannelInterface::interface("compasssensor");
 
     } else if (sensorName == "magnetometersensor")
     {
@@ -95,14 +102,14 @@ void Testthread::setBufferInterval(int value)
 void Testthread::receivedData(const MagneticField& data)
 {
     dataCount ++;
-    qDebug() << this->objectName() <<" received the " << dataCount << "data :" 
+    qDebug() << this->objectName() <<" received the " << dataCount << "data :"
              << data.x() << " " <<   data.y() << " " <<   data.z();
 }
 
 void Testthread::receivedFrame(const QVector<MagneticField>& frame)
 {
     frameCount ++;
-    qDebug() << this->objectName() << " received the " << frameCount << "frame :"; 
+    qDebug() << this->objectName() << " received the " << frameCount << "frame :";
     for (int i = 0; i < frame.size(); i++)
         qDebug() << frame.at(i).x() << " " << frame.at(i).y() << " " << frame.at(i).z();
 }

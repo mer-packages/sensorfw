@@ -42,6 +42,7 @@ public:
     ~Config();
 
     QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QStringList groups() const;
 
     static Config *configuration();
     static Config *loadConfig(const QString &defConfigPath, const QString &configDPath);

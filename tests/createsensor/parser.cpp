@@ -4,54 +4,79 @@
 
 Parser::Parser(QStringList arguments)
 {
-    sensors << "orientationsensor" << "accelerometersensor"
-            << "compasssensor" << "tapsensor" << "alssensor"
-            << "proximitysensor" << "rotationsensor" << "magnetometersensor" ;
     parsingCommandLine(arguments);
 }
 
-void Parser::parsingCommandLine(QStringList args)
+void Parser::parsingCommandLine(QStringList arguments)
 {
-    if (args.size() == 1){
-        qDebug() << "Usage: sensorthread-test sensor1 num1 sensor2 num2 ....";
-        qDebug() <<  "sensors:";
-        qDebug() << "orientationsensor, " << "accelerometersensor";
-        qDebug()  << "compasssensor, " << "tapsensor, " << "alssensor";
-        qDebug()  << "proximitysensor, " << "rotationsensor ," << "magnetometersensor" ;
-
-        return;
-    }
-
-    QString sensorName = NULL;
-
-    args.removeFirst();
-
-    int i = 0;
-    int numberOfThread;
-
-    foreach (const QString& arg, args)
+    foreach (const QString& arg, arguments)
     {
-        switch(i)
+        QStringList data;
+        QString opt = arg.trimmed();
+
+        if (opt.startsWith("-l=") || opt.startsWith("--log-level"))
         {
-        case 0:
-            sensorName = arg.trimmed();
-            if (sensors.contains(sensorName)){
-                i++;
-            } else {
-                qDebug() << sensorName << " doesn't exist, skip it";
-            }
-            break;
-        case 1:
-            numberOfThread = arg.trimmed().toInt();
-            qDebug() << sensorName << ": " << numberOfThread << " threads to run";
-            sensorThread.insert(sensorName, numberOfThread);
-            i = 0;
-            break;
-         }
+            data = opt.split("=");
+            changeLogLevel_ = true;
+            QString logLevel = data.at(1);
+            if (logLevel == "test")
+                logLevel_ = SensordLogTest;
+            else if (logLevel == "debug")
+                logLevel_ = SensordLogDebug;
+            else if (logLevel == "warning")
+                logLevel_ = SensordLogWarning;
+            else if (logLevel == "critical")
+                logLevel_ = SensordLogCritical;
+            else
+                logLevel_ = SensordLogWarning;
+        }
+        else if (opt.startsWith("--log-target"))
+        {
+            data = opt.split("=");
+            logTarget_= data.at(1).toInt();
+        }
+        else if (opt.startsWith("--log-file-path"))
+        {
+            data = opt.split("=");
+            logFilePath_ = data.at(1);
+        }
+        else if (opt.startsWith("-c=") || opt.startsWith("--config-file"))
+        {
+            data = opt.split("=");
+            configFile_ = true;
+            configFilePath_ = data.at(1);
+        }
+        else if (opt.startsWith("-"))
+            std::cerr << "Unknown option: " << opt.toStdString() << std::endl;
     }
 }
 
-QMap<QString, int> Parser:: getSensorThread()
+bool Parser::changeLogLevel() const
 {
-    return sensorThread;
+    return changeLogLevel_;
+}
+
+SensordLogLevel Parser::getLogLevel() const
+{
+    return logLevel_;
+}
+
+bool Parser::configFileInput() const
+{
+    return configFile_;
+}
+
+const QString& Parser::configFilePath() const
+{
+    return configFilePath_;
+}
+
+int Parser::logTarget() const
+{
+    return logTarget_;
+}
+
+const QString& Parser::logFilePath() const
+{
+    return logFilePath_;
 }

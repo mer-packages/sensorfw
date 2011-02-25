@@ -1,19 +1,16 @@
 QT += core testlib dbus network
 QT -= gui
 
-
 CONFIG += debug
 TEMPLATE = app
 TARGET = createsensors-test
 
-
 HEADERS += testthread.h \
-    parser.h
+           parser.h
 
 SOURCES += main.cpp \
            testthread.cpp \
-    parser.cpp
-
+           parser.cpp
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
@@ -25,9 +22,8 @@ DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
-                      -L../../datatypes -lsensordatatypes
-
-LIBS += -L../core -lsensorfw
+                      -L../../datatypes -lsensordatatypes \
+                      -L../../core -lsensorfw
 
 testconf.path = /usr/share/sensord-tests/
 testconf.files = createsensors.conf
