@@ -28,13 +28,12 @@
 #include <QDebug>
 
 #include "testthread.h"
-
+#include "logging.h"
 
 void Testthread::setInterface(AbstractSensorChannelInterface* inf)
 {
     sensorChannelInterface = inf;
 }
-
 
 Testthread::Testthread(QString sensorName, QObject *parent) :
     QThread(parent),
@@ -85,9 +84,7 @@ Testthread::Testthread(QString sensorName, QObject *parent) :
         buffersize = Config::configuration()->value(sensorName+"/buffersize", "0").toInt();
 
     }
-
 }
-
 
 void Testthread::setInterval(int value)
 {
@@ -102,16 +99,16 @@ void Testthread::setBufferInterval(int value)
 void Testthread::receivedData(const MagneticField& data)
 {
     dataCount ++;
-    qDebug() << this->objectName() <<" received the " << dataCount << "data :"
-             << data.x() << " " <<   data.y() << " " <<   data.z();
+    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+                  << data.x() << " " << data.y() << " " <<   data.z();
 }
 
 void Testthread::receivedFrame(const QVector<MagneticField>& frame)
 {
     frameCount ++;
-    qDebug() << this->objectName() << " received the " << frameCount << "frame :";
+    sensordLogT() << this->objectName() << " frame " << frameCount << " size " << frame.size();
     for (int i = 0; i < frame.size(); i++)
-        qDebug() << frame.at(i).x() << " " << frame.at(i).y() << " " << frame.at(i).z();
+        sensordLogT() << frame.at(i).x() << " " << frame.at(i).y() << " " << frame.at(i).z();
 }
 
 void Testthread::run()
@@ -120,6 +117,6 @@ void Testthread::run()
     sensorChannelInterface->setBufferInterval(bufferinterval);
     sensorChannelInterface->setBufferSize(buffersize);
     sensorChannelInterface->setStandbyOverride(standbyoverride);
-
+    sensorChannelInterface->start();
     exec();
 }

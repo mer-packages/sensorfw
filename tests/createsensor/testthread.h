@@ -63,7 +63,6 @@ public Q_SLOTS:
     void receivedData(const MagneticField& data);
     void receivedFrame(const QVector<MagneticField>& frame);
 
-
 private:
     QString sensorName;
     AbstractSensorChannelInterface* sensorChannelInterface;
