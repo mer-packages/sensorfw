@@ -55,7 +55,7 @@ class AbstractSensorChannel : public NodeBase {
     Q_PROPERTY(bool running READ running);
 
 public:
-    virtual ~AbstractSensorChannel() {};
+    virtual ~AbstractSensorChannel() {}
 
     bool isValid() const { return isValid_; }
 
@@ -120,7 +120,7 @@ protected:
         emit propertyChanged(name);
     }
 
-    virtual void setValid(bool valid) { isValid_ = valid; };
+    virtual void setValid(bool valid) { isValid_ = valid; }
 
 private:
     QString             id_;

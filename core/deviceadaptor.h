@@ -106,7 +106,7 @@ public:
 
     virtual bool setStandbyOverride(bool override);
 
-    bool deviceStandbyOverride() const { return standbyOverride_; };
+    bool deviceStandbyOverride() const { return standbyOverride_; }
 
     const QString& id() const { return id_; }
 
@@ -129,7 +129,7 @@ protected:
 
     const QHash<QString, AdaptedSensorEntry*>& sensors() const { return sensors_; }
 
-    virtual void setValid(bool valid) { isValid_ = valid; };
+    virtual void setValid(bool valid) { isValid_ = valid; }
 
 private:
     void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);

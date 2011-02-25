@@ -55,10 +55,6 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    //~ int delay = -1;
-    //~ if (argc >=2) {
-        //~ delay = QString(argv[2]).toInt();
-    //~ }
 
     DataFaker dataFaker;
 

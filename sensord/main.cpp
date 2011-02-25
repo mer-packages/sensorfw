@@ -98,7 +98,6 @@ int main(int argc, char *argv[])
     if (parser.configFileInput())
     {
         QString defConfigFile = parser.configFilePath();
-        QFile file(defConfigFile);
         if (Config::loadConfig(defConfigFile, CONFIG_DIR_PATH))
             sensordLogT() << "Config file is loading successfully.";
         else

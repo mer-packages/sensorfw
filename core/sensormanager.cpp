@@ -195,7 +195,6 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
         return NULL;
     }
 
-    //sensordLogD() << "Creating sensor type:" << typeName << "id:" << id;
     AbstractSensorChannel* sensorChannel = sensorFactoryMap_[typeName](id);
     if ( !sensorChannel->isValid() )
     {
@@ -372,7 +371,6 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
         if ( entryIt.value().adaptor_ )
         {
             Q_ASSERT( entryIt.value().adaptor_ );
-            //sensordLogD() << __PRETTY_FUNCTION__ << "instance exists already";
             da = entryIt.value().adaptor_;
             entryIt.value().cnt_++;
         }

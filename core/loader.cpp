@@ -36,10 +36,6 @@
 #include "logging.h"
 #include "config.h"
 
-//namespace {
-//    QHash<QString, Loader::FilterFactory> filterTypes;
-//}
-
 Loader::Loader()
 {
 }

@@ -139,7 +139,7 @@ public:
     int requestSensor(const QString& id);
     bool releaseSensor(const QString& id, int sessionId);
     const SensorInstanceEntry getSensorInstance(const QString& id) const { return sensorInstanceMap_.value(id); }
-    SocketHandler& socketHandler() const { return *socketHandler_; };
+    SocketHandler& socketHandler() const { return *socketHandler_; }
 
 Q_SIGNALS:
     void errorSignal(int error);
