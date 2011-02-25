@@ -44,7 +44,7 @@ ScreenInterpreterFilter::ScreenInterpreterFilter(
     isCovered(false),
     isFlat(false),
     lastOrientation(PoseData::BottomDown),
-    topEdge("top")
+    topEdge("left")
 {
     // Get offset from config
     offset = Config::configuration()->value("context/orientation_offset", QVariant(0)).toInt();

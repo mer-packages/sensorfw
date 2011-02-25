@@ -36,12 +36,14 @@ sensord (0.7.0) unstable; urgency=low
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
-  * Added nodocs parameter to prevent doc building
+  * Added nodocs parameter to prevent doc building. Fixes: NB#227047
+  * Chaged Screen.TopEdge default state from "top" to "left"
 
   [Shenghua Liu]
   * Add new magnetometer adaptor and plugin for ncdk
+  * Code cleanup
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Wed, 23 Feb 2011 11:40:32 +0200
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Fri, 25 Feb 2011 10:50:28 +0200
 
 sensord (0.6.38) unstable; urgency=low
 

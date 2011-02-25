@@ -73,13 +73,13 @@ public:
     TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames);
     virtual ~TestClient();
 
-    int getDataCount() const { return dataCount; };
-    int getFrameCount() const { return frameCount; };
-    int getFrameDataCount() const { return frameDataCount; };
+    int getDataCount() const { return dataCount; }
+    int getFrameCount() const { return frameCount; }
+    int getFrameDataCount() const { return frameDataCount; }
 
 public Q_SLOTS:
-    void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"; ++dataCount; };
-    void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); };
+    void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"; ++dataCount; }
+    void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
 
 private:
     int dataCount;

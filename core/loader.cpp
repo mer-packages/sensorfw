@@ -34,6 +34,9 @@
 #include <QPluginLoader>
 #include <QCoreApplication>
 
+#include "logging.h"
+#include "config.h"
+
 Loader::Loader()
 {
 }

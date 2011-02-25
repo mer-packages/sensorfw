@@ -86,7 +86,6 @@ private:
     // TODO: make this a base class    
     friend QDBusArgument &operator<<(QDBusArgument &argument, const Tap& tap);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Tap& tap);
-    //friend class TapSensorChannel;
 };
 
 Q_DECLARE_METATYPE( Tap )

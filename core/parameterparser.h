@@ -28,6 +28,7 @@
 
 #include <QMap>
 #include <QString>
+#include <QVariant>
 
 class ParameterParser
 {

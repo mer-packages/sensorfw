@@ -183,8 +183,8 @@ public Q_SLOTS:
      */
     virtual IntegerRangeList getAvailableBufferIntervals(bool& hwSupported) const;
 
-    virtual unsigned int bufferSize() const { return 0; };
-    virtual unsigned int bufferInterval() const { return 0; };
+    virtual unsigned int bufferSize() const { return 0; }
+    virtual unsigned int bufferInterval() const { return 0; }
 
     bool setBufferSize(int sessionId, unsigned int value);
     bool clearBufferSize(int sessionId);
@@ -344,8 +344,8 @@ protected:
 
     virtual RingBufferBase* findBuffer(const QString& name) const { Q_UNUSED(name); return NULL; }
 
-    virtual bool setBufferSize(unsigned int value) { Q_UNUSED(value); return false; };
-    virtual bool setBufferInterval(unsigned int value) { Q_UNUSED(value); return false; };
+    virtual bool setBufferSize(unsigned int value) { Q_UNUSED(value); return false; }
+    virtual bool setBufferInterval(unsigned int value) { Q_UNUSED(value); return false; }
 
     QMap<int, unsigned int> m_intervalMap; ///< Active interval requests (session, value)
     unsigned int            m_bufferSize;

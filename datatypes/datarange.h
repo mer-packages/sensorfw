@@ -199,7 +199,7 @@ public:
 
     IntervalRequest(int newId, unsigned newValue) :
         id(newId),
-        value(newValue) {};
+        value(newValue) {}
 
     bool operator==(const IntervalRequest& right) const
     {

@@ -94,11 +94,8 @@ bool SessionData::write(const void* source, int size)
         buffer = new char[allocSize];
     else if(size != this->size)
     {
-        if(buffer)
-        {
-            socket->waitForBytesWritten();
-            delete[] buffer;
-        }
+        socket->waitForBytesWritten();
+        delete[] buffer;
         buffer = new char[allocSize];
     }
     this->size = size;
