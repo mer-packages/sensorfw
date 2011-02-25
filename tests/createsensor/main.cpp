@@ -44,55 +44,24 @@
 #include "datatypes/magneticfield.h"
 
 #include "testthread.h"
+#include "parser.h"
+#include "config.h"
 
 int main(int argc, char *argv[])
 {
 
     QCoreApplication app(argc, argv);
-    QStringList sensors;
-
-    sensors << "orientationsensor" << "accelerometersensor" 
-            << "compasssensor" << "tapsensor" << "alssensor"
-            << "proximitysensor" << "rotationsensor" << "magnetometersensor" ;
-
     QMap<QString, int> sensorThread;
 
-    QString sensorName = NULL;
-    int numberOfThread;
-    int i = 0;
+    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/createsensors.conf";
 
-    QStringList args = app.arguments();
-    if (args.size() == 1){
-        qDebug() << "Usage: sensorthread-test sensor1 num1 sensor2 num2 ....";
-        qDebug() <<  "sensors:";
-        qDebug() << "orientationsensor, " << "accelerometersensor"; 
-        qDebug()  << "compasssensor, " << "tapsensor, " << "alssensor";
-        qDebug()  << "proximitysensor, " << "rotationsensor ," << "magnetometersensor" ;
-        app.exit();
+    Parser parser(app.arguments());
+    sensorThread = parser.getSensorThread();
+    if (sensorThread.empty()){
         return 0;
     }
 
-    args.removeFirst();
-    foreach (const QString& arg, args)
-    { 
-        switch(i)
-        {    
-        case 0:
-            sensorName = arg.trimmed();
-            if (sensors.contains(sensorName)){
-                i++;
-            } else {
-                qDebug() << sensorName << " doesn't exist, skip it";    
-            }
-            break;
-        case 1:
-            numberOfThread = arg.trimmed().toInt();
-            qDebug() << sensorName << ": " << numberOfThread << " threads to run";
-            sensorThread.insert(sensorName, numberOfThread);
-            i = 0;
-            break;
-         }
-    }
+    Config::loadConfig(CONFIG_FILE_PATH, "");
 
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
 

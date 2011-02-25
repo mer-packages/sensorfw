@@ -31,6 +31,17 @@
 #include <QVector>
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
+#include "config.h"
+
+#include "qt-api/sensormanagerinterface.h"
+#include "qt-api/orientationsensor_i.h"
+#include "qt-api/accelerometersensor_i.h"
+#include "qt-api/compasssensor_i.h"
+#include "qt-api/tapsensor_i.h"
+#include "qt-api/alssensor_i.h"
+#include "qt-api/proximitysensor_i.h"
+#include "qt-api/rotationsensor_i.h"
+#include "qt-api/magnetometersensor_i.h"
 
 
 class Testthread : public QThread
@@ -39,24 +50,27 @@ class Testthread : public QThread
 public:
 
     Testthread(QString sensorName, QObject *parent = 0);
-    Testthread(QObject *parent = 0);
 
     void setInterface(AbstractSensorChannelInterface* inf);
     void setInterval(int value);
     void setBufferInterval(int value);
+    void setBufferSize(int value);
+    void setStandbyOverride(bool value);
 
     void run();
 
 public Q_SLOTS:
+    void receivedData(const MagneticField& data);
+    void receivedFrame(const QVector<MagneticField>& frame);
 
-    void receivedData(XYZ& data);
-    void receivedFrame(QVector<XYZ>& frame);
 
 private:
     QString sensorName;
     AbstractSensorChannelInterface* sensorChannelInterface;
     int interval;
     int bufferinterval;
+    bool standbyoverride;
+    int buffersize;
     int dataCount;
     int frameCount;
 };

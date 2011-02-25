@@ -7,20 +7,31 @@ TEMPLATE = app
 TARGET = createsensors-test
 
 
-HEADERS += testthread.h
+HEADERS += testthread.h \
+    parser.h
 
 SOURCES += main.cpp \
-           testthread.cpp
+           testthread.cpp \
+    parser.cpp
 
-include(../common-install.pri)
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
                         ../../filters \
-                        ../../datatypes
+                        ../../datatypes \
+                        ../../core
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../datatypes -lsensordatatypes
+
+LIBS += -L../core -lsensorfw
+
+testconf.path = /usr/share/sensord-tests/
+testconf.files = createsensors.conf
+
+target.path = /usr/bin
+
+INSTALLS += target testconf
