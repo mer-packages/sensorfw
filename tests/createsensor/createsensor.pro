@@ -5,11 +5,11 @@ CONFIG += debug
 TEMPLATE = app
 TARGET = createsensors-test
 
-HEADERS += testthread.h \
+HEADERS += sensorhandler.h \
            parser.h
 
 SOURCES += main.cpp \
-           testthread.cpp \
+           sensorhandler.cpp \
            parser.cpp
 
 SENSORFW_INCLUDEPATHS = ../.. \

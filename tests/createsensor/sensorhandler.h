@@ -7,6 +7,7 @@
 
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,10 +25,9 @@
    </p>
 */
 
-#ifndef TESTTHREAD_H
-#define TESTTHREAD_H
+#ifndef SENSORHANDLER_H
+#define SENSORHANDLER_H
 
-#include <QThread>
 #include <QVector>
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
@@ -44,14 +44,13 @@
 #include "qt-api/magnetometersensor_i.h"
 
 
-class Testthread : QObject
+class SensorHandler : QObject
 {
     Q_OBJECT
 public:
 
-    Testthread(const QString& sensorName, QObject *parent = 0);
+    SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    void setInterface(AbstractSensorChannelInterface* inf);
     void setInterval(int value);
     void setBufferInterval(int value);
     void setBufferSize(int value);
@@ -61,7 +60,12 @@ public:
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
+    void receivedData(const XYZ& data);
+    void receivedData(const Compass& value);
+    void receivedData(const Unsigned& data);
+    void receivedData(const Tap& data);
     void receivedFrame(const QVector<MagneticField>& frame);
+    void receivedFrame(const QVector<XYZ>& frame);
 
 private:
     QString sensorName;
@@ -74,4 +78,4 @@ private:
     int frameCount;
 };
 
-#endif // TESTTHREAD_H
+#endif // SENSORHANDLER_H

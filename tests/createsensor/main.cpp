@@ -40,7 +40,7 @@
 #include "qt-api/magnetometersensor_i.h"
 #include "datatypes/magneticfield.h"
 
-#include "testthread.h"
+#include "sensorhandler.h"
 #include "parser.h"
 #include "config.h"
 #include "logging.h"
@@ -106,13 +106,13 @@ int main(int argc, char *argv[])
         }
     }
 
-    QList<Testthread*> threads;
+    QList<SensorHandler*> threads;
     foreach (const QString& sensorName, Config::configuration()->groups())
     {
         int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
         for(int i = 0; i < count; ++i)
         {
-            Testthread* thread = new Testthread(sensorName);
+            SensorHandler* thread = new SensorHandler(sensorName);
             thread->start();
             threads << thread;
         }
