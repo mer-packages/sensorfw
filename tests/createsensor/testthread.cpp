@@ -35,8 +35,8 @@ void Testthread::setInterface(AbstractSensorChannelInterface* inf)
     sensorChannelInterface = inf;
 }
 
-Testthread::Testthread(QString sensorName, QObject *parent) :
-    QThread(parent),
+Testthread::Testthread(const QString& sensorName, QObject *parent) :
+    QObject(parent),
     sensorName(sensorName),
     sensorChannelInterface(NULL),
     interval(100),
@@ -111,12 +111,11 @@ void Testthread::receivedFrame(const QVector<MagneticField>& frame)
         sensordLogT() << frame.at(i).x() << " " << frame.at(i).y() << " " << frame.at(i).z();
 }
 
-void Testthread::run()
+void Testthread::start()
 {
     sensorChannelInterface->setInterval(interval);
     sensorChannelInterface->setBufferInterval(bufferinterval);
     sensorChannelInterface->setBufferSize(buffersize);
     sensorChannelInterface->setStandbyOverride(standbyoverride);
     sensorChannelInterface->start();
-    exec();
 }

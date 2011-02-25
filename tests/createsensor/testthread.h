@@ -44,12 +44,12 @@
 #include "qt-api/magnetometersensor_i.h"
 
 
-class Testthread : public QThread
+class Testthread : QObject
 {
     Q_OBJECT
 public:
 
-    Testthread(QString sensorName, QObject *parent = 0);
+    Testthread(const QString& sensorName, QObject *parent = 0);
 
     void setInterface(AbstractSensorChannelInterface* inf);
     void setInterval(int value);
@@ -57,7 +57,7 @@ public:
     void setBufferSize(int value);
     void setStandbyOverride(bool value);
 
-    void run();
+    void start();
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
