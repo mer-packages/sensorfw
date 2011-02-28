@@ -151,7 +151,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
             sensordLogW() << "read(): " << strerror(errno);
             return;
         }
-        sensordLogW() << "Ambient light value: " << als_data.lux;
+        sensordLogT() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
@@ -170,7 +170,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
         bool ok;
         double fValue(value.toDouble(&ok));
         if(!ok) {
-            sensordLogW() << "read(): failed to parse float from: " << buffer;
+            sensordLogT() << "read(): failed to parse float from: " << buffer;
             return;
         }
         TimedUnsigned* lux = alsBuffer_->nextSlot();

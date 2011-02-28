@@ -60,7 +60,8 @@ case "$1" in
   initctl stop sensord
   sleep 2
   killall sensord
-  initctl start sensord
+  #initctl start sensord
+  sensord -c=$TESTCONFIGTARGET &
 
   sleep 0.5
   echo "" >$DIVERTPATH/accelerometer & { sleep 0.5; eval 'kill $!' &> /dev/null; }
