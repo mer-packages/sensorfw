@@ -25,6 +25,8 @@ public:
     int logTarget() const;
     const QString& logFilePath() const;
 
+    int statInterval() const;
+
 private:
     bool printHelp_;
     bool changeLogLevel_;
@@ -35,6 +37,7 @@ private:
     SensordLogLevel logLevel_;
     int logTarget_;
     QString logFilePath_;
+    int statInterval_;
 };
 
 #endif // PARSER_H

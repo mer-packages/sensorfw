@@ -10,7 +10,8 @@ Parser::Parser(QStringList arguments) :
     logLevel_(SensordLogWarning),
     logTarget_(1),
     singleThread_(true),
-    logFilePath_("/var/log/sensors-testapp.log")
+    logFilePath_("/var/log/sensors-testapp.log"),
+    statInterval_(5000)
 {
     parsingCommandLine(arguments);
 }
@@ -37,6 +38,11 @@ void Parser::parsingCommandLine(QStringList arguments)
                 logLevel_ = SensordLogCritical;
             else
                 logLevel_ = SensordLogWarning;
+        }
+        else if (opt.startsWith("-i=") || opt.startsWith("--stat-interval"))
+        {
+            data = opt.split("=");
+            statInterval_ = data.at(1).toInt();
         }
         else if (opt.startsWith("--log-target"))
         {
@@ -107,4 +113,9 @@ const QString& Parser::logFilePath() const
 bool Parser::printHelp() const
 {
     return printHelp_;
+}
+
+int Parser::statInterval() const
+{
+    return statInterval_;
 }

@@ -24,144 +24,131 @@
    </p>
 */
 
-#include <QTest>
-#include <QVector>
-
 #include "sensorhandler.h"
 #include "logging.h"
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     QThread(parent),
-    sensorName(sensorName),
-    sensorChannelInterface(NULL),
-    interval(100),
-    bufferinterval(0),
-    standbyoverride(false),
-    buffersize(0),
-    dataCount(0),
-    frameCount(0)
+    sensorName_(sensorName),
+    sensorChannelInterface_(NULL),
+    interval_(100),
+    bufferinterval_(0),
+    standbyoverride_(false),
+    buffersize_(0),
+    dataCount_(0),
+    frameCount_(0)
 {
-    if (sensorName == "compasssensor")
+    if (sensorName_ == "compasssensor")
     {
-        sensorChannelInterface = CompassSensorChannelInterface::interface("compasssensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const Compass&)), this, SLOT(receivedData(const Compass&)));
+        sensorChannelInterface_ = CompassSensorChannelInterface::interface("compasssensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Compass&)), this, SLOT(receivedData(const Compass&)));
     }
-    else if (sensorName == "magnetometersensor")
+    else if (sensorName_ == "magnetometersensor")
     {
-        sensorChannelInterface = MagnetometerSensorChannelInterface::interface("magnetometersensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(receivedData(const MagneticField&)));
-        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(receivedFrame(const QVector<MagneticField>&)));
+        sensorChannelInterface_ = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(receivedData(const MagneticField&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(receivedFrame(const QVector<MagneticField>&)));
 
     }
-    else if (sensorName ==  "orientationsensor")
+    else if (sensorName_ ==  "orientationsensor")
     {
-        sensorChannelInterface = OrientationSensorChannelInterface::interface("orientationsensor");
-        connect(sensorChannelInterface, SIGNAL(orientationChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        sensorChannelInterface_ = OrientationSensorChannelInterface::interface("orientationsensor");
+        connect(sensorChannelInterface_, SIGNAL(orientationChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
-    else if (sensorName == "accelerometersensor")
+    else if (sensorName_ == "accelerometersensor")
     {
-        sensorChannelInterface = AccelerometerSensorChannelInterface::interface("accelerometersensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
-        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
+        sensorChannelInterface_ = AccelerometerSensorChannelInterface::interface("accelerometersensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
     }
-    else if (sensorName == "alssensor")
+    else if (sensorName_ == "alssensor")
     {
-        sensorChannelInterface = ALSSensorChannelInterface::interface("alssensor");
-        connect(sensorChannelInterface, SIGNAL(ALSChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        sensorChannelInterface_ = ALSSensorChannelInterface::interface("alssensor");
+        connect(sensorChannelInterface_, SIGNAL(ALSChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
-    else if (sensorName == "rotationsensor")
+    else if (sensorName_ == "rotationsensor")
     {
-        sensorChannelInterface = RotationSensorChannelInterface::interface("rotationsensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
-        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
+        sensorChannelInterface_ = RotationSensorChannelInterface::interface("rotationsensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
     }
-    else if (sensorName == "tapsensor")
+    else if (sensorName_ == "tapsensor")
     {
-        sensorChannelInterface = TapSensorChannelInterface::interface("tapsensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const Tap&)), this, SLOT(receivedData(const Tap&)));
+        sensorChannelInterface_ = TapSensorChannelInterface::interface("tapsensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Tap&)), this, SLOT(receivedData(const Tap&)));
     }
-    else if (sensorName == "proximitysensor")
+    else if (sensorName_ == "proximitysensor")
     {
-        sensorChannelInterface = ProximitySensorChannelInterface::interface("proximitysensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
 
     if (Config::configuration() != NULL)
     {
-        interval = Config::configuration()->value(sensorName+"/interval", "100").toInt();
-        bufferinterval = Config::configuration()->value(sensorName+"/bufferinterval", "0").toInt();
-        standbyoverride = Config::configuration()->value(sensorName+"/standbyoverride", "false").toBool();
-        buffersize = Config::configuration()->value(sensorName+"/buffersize", "0").toInt();
+        interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
+        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", "0").toInt();
+        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", "false").toBool();
+        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", "0").toInt();
 
     }
 }
 
-void SensorHandler::setInterval(int value)
-{
-    interval = value;
-}
-
-void SensorHandler::setBufferInterval(int value)
-{
-    bufferinterval = value;
-}
-
 void SensorHandler::receivedData(const MagneticField& data)
 {
-    dataCount ++;
-    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
                   << data.x() << " " << data.y() << " " <<   data.z();
 }
 
 void SensorHandler::receivedData(const XYZ& data)
 {
-    dataCount ++;
-    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
                   << data.x() << " " << data.y() << " " <<   data.z();
 }
 
 void SensorHandler::receivedData(const Compass& data)
 {
-    dataCount ++;
-    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
                   << data.degrees() << " " << data.level();
 }
 
 void SensorHandler::receivedData(const Unsigned& data)
 {
-    dataCount ++;
-    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
                   << data.x();
 }
 
 void SensorHandler::receivedData(const Tap& data)
 {
-    dataCount ++;
-    sensordLogT() << this->objectName() << " sample " << dataCount << ": "
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
                   << data.direction() << " " << data.type();
 }
 
 void SensorHandler::receivedFrame(const QVector<MagneticField>& frame)
 {
-    frameCount ++;
-    sensordLogT() << this->objectName() << " frame " << frameCount << " size " << frame.size();
+    frameCount_++;
+    sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
     foreach (const MagneticField& data, frame)
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
 }
 
 void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
 {
-    frameCount ++;
-    sensordLogT() << this->objectName() << " frame " << frameCount << " size " << frame.size();
+    frameCount_++;
+    sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
     foreach (const XYZ& data, frame)
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
 }
 
 void SensorHandler::startClient()
 {
-    sensorChannelInterface->setInterval(interval);
-    sensorChannelInterface->setBufferInterval(bufferinterval);
-    sensorChannelInterface->setBufferSize(buffersize);
-    sensorChannelInterface->setStandbyOverride(standbyoverride);
-    sensorChannelInterface->start();
+    sensorChannelInterface_->setInterval(interval_);
+    sensorChannelInterface_->setBufferInterval(bufferinterval_);
+    sensorChannelInterface_->setBufferSize(buffersize_);
+    sensorChannelInterface_->setStandbyOverride(standbyoverride_);
+    sensorChannelInterface_->start();
 }

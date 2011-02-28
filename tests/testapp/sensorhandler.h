@@ -1,5 +1,5 @@
 /**
-   @file testthread.h
+   @file sensorhandler.h
    @brief test application to create sensor
 
    <p>
@@ -44,7 +44,6 @@
 #include "qt-api/rotationsensor_i.h"
 #include "qt-api/magnetometersensor_i.h"
 
-
 class SensorHandler : public QThread
 {
     Q_OBJECT
@@ -52,12 +51,10 @@ public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    void setInterval(int value);
-    void setBufferInterval(int value);
-    void setBufferSize(int value);
-    void setStandbyOverride(bool value);
-
     void startClient();
+
+    int dataCount() const { return dataCount_; }
+    QString sensorName() const { return sensorName_; }
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
@@ -69,14 +66,14 @@ public Q_SLOTS:
     void receivedFrame(const QVector<XYZ>& frame);
 
 private:
-    QString sensorName;
-    AbstractSensorChannelInterface* sensorChannelInterface;
-    int interval;
-    int bufferinterval;
-    bool standbyoverride;
-    int buffersize;
-    int dataCount;
-    int frameCount;
+    QString sensorName_;
+    AbstractSensorChannelInterface* sensorChannelInterface_;
+    int interval_;
+    int bufferinterval_;
+    bool standbyoverride_;
+    int buffersize_;
+    int dataCount_;
+    int frameCount_;
 };
 
 #endif // SENSORHANDLER_H
