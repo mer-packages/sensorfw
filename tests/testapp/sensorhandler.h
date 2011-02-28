@@ -45,7 +45,7 @@
 #include "qt-api/magnetometersensor_i.h"
 
 
-class SensorHandler : QThread
+class SensorHandler : public QThread
 {
     Q_OBJECT
 public:
@@ -58,7 +58,6 @@ public:
     void setStandbyOverride(bool value);
 
     void startClient();
-
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);

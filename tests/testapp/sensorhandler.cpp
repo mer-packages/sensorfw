@@ -56,7 +56,7 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     else if (sensorName ==  "orientationsensor")
     {
         sensorChannelInterface = OrientationSensorChannelInterface::interface("orientationsensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        connect(sensorChannelInterface, SIGNAL(orientationChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
     else if (sensorName == "accelerometersensor")
     {
@@ -156,7 +156,6 @@ void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
     foreach (const XYZ& data, frame)
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
 }
-
 
 void SensorHandler::startClient()
 {

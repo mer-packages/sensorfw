@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         for(int i = 0; i < count; ++i)
         {
             SensorHandler* handler = new SensorHandler(sensorName);
-            handler->start();
+            handler->startClient();
             handlers << handler;
         }
     }
