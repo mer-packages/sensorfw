@@ -69,6 +69,9 @@ protected:
      */
     ~GyroscopeAdaptor();
 
+    bool setInterval(const unsigned int value, const int sessionId);
+    unsigned int interval() const;
+
 private:
 
     /**
@@ -82,6 +85,7 @@ private:
     void processSample(int pathId, int fd);
 
     DeviceAdaptorRingBuffer<TimedXyzData>* gyroscopeBuffer_;
+    QByteArray dataRatePath_;
 };
 
 #endif

@@ -8,7 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
-   @author Pia Niemelä <pia.s.niemela@nokia.com>
+   @author Pia Niemel <pia.s.niemela@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,12 +33,14 @@
 
 #include "gyroscopeadaptor.h"
 
+
 GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
-    setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");
+    setDescription("Sysfs Gyroscope adaptor (l3g4200dh)");   
+    dataRatePath_ = Config::configuration()->value("gyroscope/path_datarate").toByteArray();
 }
 
 GyroscopeAdaptor::~GyroscopeAdaptor()
@@ -68,4 +70,18 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
 
     gyroscopeBuffer_->commit();
     gyroscopeBuffer_->wakeUpReaders();
+}
+
+bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
+{
+    int rate = value==0?100:1000/value;
+    sensordLogD() << "Setting poll interval for " << dataRatePath_ << " to " << rate;
+    QByteArray dataRateString(QString("%1\n").arg(rate).toLocal8Bit());
+    return writeToFile(dataRatePath_, dataRateString);
+}
+
+unsigned int GyroscopeAdaptor::interval() const
+{
+    QByteArray byteArray = readFromFile(dataRatePath_);
+    return byteArray.size() > 0 ? byteArray.toInt() : 0;
 }
