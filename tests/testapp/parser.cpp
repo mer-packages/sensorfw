@@ -2,7 +2,14 @@
 #include <QDebug>
 #include <iostream>
 
-Parser::Parser(QStringList arguments)
+Parser::Parser(QStringList arguments) :
+    printHelp_(false),
+    changeLogLevel_(false),
+    configFile_(false),
+    configFilePath_(""),
+    logLevel_(SensordLogWarning),
+    logTarget_(1),
+    logFilePath_("/var/log/sensors-testapp.log")
 {
     parsingCommandLine(arguments);
 }
@@ -46,6 +53,8 @@ void Parser::parsingCommandLine(QStringList arguments)
             configFile_ = true;
             configFilePath_ = data.at(1);
         }
+        else if (opt.startsWith("-h") || opt.startsWith("--help"))
+            printHelp_ = true;
         else if (opt.startsWith("-"))
             std::cerr << "Unknown option: " << opt.toStdString() << std::endl;
     }
@@ -79,4 +88,9 @@ int Parser::logTarget() const
 const QString& Parser::logFilePath() const
 {
     return logFilePath_;
+}
+
+bool Parser::printHelp() const
+{
+    return printHelp_;
 }

@@ -3,7 +3,7 @@ QT -= gui
 
 CONFIG += debug
 TEMPLATE = app
-TARGET = createsensors-test
+TARGET = sensortestapp
 
 HEADERS += sensorhandler.h \
            parser.h
@@ -26,7 +26,7 @@ QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../core -lsensorfw
 
 testconf.path = /usr/share/sensord-tests/
-testconf.files = createsensors.conf
+testconf.files = testapp.conf
 
 target.path = /usr/bin
 

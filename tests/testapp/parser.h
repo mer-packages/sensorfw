@@ -2,8 +2,6 @@
 #define PARSER_H
 
 #include <QString>
-#include <QStringList>
-#include <QMap>
 #include "logging.h"
 
 class Parser
@@ -12,9 +10,9 @@ public:
 
     Parser(QStringList arguments);
 
-    QMap<QString, int> getSensorThread();
-
     void parsingCommandLine(QStringList args);
+
+    bool printHelp() const;
 
     bool changeLogLevel() const;
     SensordLogLevel getLogLevel() const;
@@ -26,15 +24,13 @@ public:
     const QString& logFilePath() const;
 
 private:
-    QMap<QString, int> sensorThread;
-    QStringList sensors;
-
-    bool configFile_;
+    bool printHelp_;
     bool changeLogLevel_;
+    bool configFile_;
 
     QString configFilePath_;
     SensordLogLevel logLevel_;
-    int logTarget_; //TODO: add some enum about log targets
+    int logTarget_;
     QString logFilePath_;
 };
 

@@ -62,12 +62,12 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     {
         sensorChannelInterface = AccelerometerSensorChannelInterface::interface("accelerometersensor");
         connect(sensorChannelInterface, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
-        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(QVector<const XYZ>&)));
+        connect(sensorChannelInterface, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
     }
     else if (sensorName == "alssensor")
     {
         sensorChannelInterface = ALSSensorChannelInterface::interface("alssensor");
-        connect(sensorChannelInterface, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        connect(sensorChannelInterface, SIGNAL(ALSChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
     else if (sensorName == "rotationsensor")
     {

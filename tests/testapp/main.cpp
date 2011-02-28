@@ -28,6 +28,7 @@
 #include <QTest>
 #include <QList>
 #include <QString>
+#include <QDebug>
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -38,21 +39,28 @@
 #include "qt-api/proximitysensor_i.h"
 #include "qt-api/rotationsensor_i.h"
 #include "qt-api/magnetometersensor_i.h"
-#include "datatypes/magneticfield.h"
 
 #include "sensorhandler.h"
 #include "parser.h"
 #include "config.h"
 #include "logging.h"
 
+void printUsage();
+
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    QMap<QString, int> sensorThread;
 
-    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/createsensors.conf";
+    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 
     Parser parser(app.arguments());
+
+    if (parser.printHelp())
+    {
+        printUsage();
+        app.exit(EXIT_SUCCESS);
+        return 0;
+    }
 
     SensordLogger::init(parser.logTarget(), parser.logFilePath());
 
@@ -106,17 +114,32 @@ int main(int argc, char *argv[])
         }
     }
 
-    QList<SensorHandler*> threads;
+    QList<SensorHandler*> handlers;
     foreach (const QString& sensorName, Config::configuration()->groups())
     {
         int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
         for(int i = 0; i < count; ++i)
         {
-            SensorHandler* thread = new SensorHandler(sensorName);
-            thread->start();
-            threads << thread;
+            SensorHandler* handler = new SensorHandler(sensorName);
+            handler->start();
+            handlers << handler;
         }
     }
     sensordLogD() << "Threads are waiting.";
     return app.exec();
+}
+
+void printUsage()
+{
+    qDebug() << "Usage: sensortestapp [OPTIONS]";
+    qDebug() << " -l=N, --log-level=N              Use logging level N. Messages are logged for";
+    qDebug() << "                                  the given and higher priority levels. Level";
+    qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
+    qDebug() << "                                  the process. Valid values for N are: 'test',";
+    qDebug() << "                                  'debug', 'warning', 'critical'.\n";
+    qDebug() << " --log-target=N                   logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
+    qDebug() << " --log-file-path=P                Log file path\n";
+    qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
+    qDebug() << "                                  /usr/share/sensord-tests/testapp.conf is used.\n";
+    qDebug() << " -h, --help                       Show usage info and exit.";
 }
