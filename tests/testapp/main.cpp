@@ -30,16 +30,6 @@
 #include <QString>
 #include <QDebug>
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
-
 #include "sensorhandler.h"
 #include "parser.h"
 #include "config.h"
@@ -90,30 +80,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
-
-    foreach (const QString& sensorName, Config::configuration()->groups())
-    {
-        remoteSensorManager.loadPlugin(sensorName);
-
-        if (sensorName == "orientationsensor"){
-            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "accelerometersensor"){
-            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>(sensorName);
-        } else if (sensorName == "compasssensor"){
-            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>(sensorName);
-        } else if (sensorName == "tapsensor"){
-            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>(sensorName);
-        } else if (sensorName == "alssensor"){
-            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>(sensorName);
-        } else if (sensorName == "proximitysensor"){
-            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>(sensorName);
-        } else if (sensorName == "rotationsensor"){
-            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "magnetometersensor"){
-            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
-        }
-    }
+    SensorHandler::init(Config::configuration()->groups());
 
     QList<SensorHandler*> handlers;
     foreach (const QString& sensorName, Config::configuration()->groups())

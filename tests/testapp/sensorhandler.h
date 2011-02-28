@@ -56,6 +56,8 @@ public:
     int dataCount() const { return dataCount_; }
     QString sensorName() const { return sensorName_; }
 
+    static void init(const QStringList& sensors);
+
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
     void receivedData(const XYZ& data);
