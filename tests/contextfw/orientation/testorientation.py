@@ -48,8 +48,8 @@ class Orientation(unittest.TestCase):
         self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
 
         # Get angle thresholds from config
-        landscape_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep orientation_threshold_landscape | head -n1 | cut -f2 -d=", "r").read())
-        portrait_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep orientation_threshold_portrait | head -n1 | cut -f2 -d=", "r").read())
+        landscape_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord-ncdk.conf` | grep threshold_landscape | head -n1 | cut -f2 -d=", "r").read())
+        portrait_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord-ncdk.conf` | grep threshold_portrait | head -n1 | cut -f2 -d=", "r").read())
 
         print("Using thresholds for orientation changes:\n  Landscape: " + str(landscape_angle) + "\n  Portrait: " + str(portrait_angle) + "\n")
 
