@@ -38,6 +38,7 @@ equals(TARGET_LIB,qt-api) {
 equals(TARGET_LIB,qmsystem2) {
     HEADERS += sensorhandler_qmsystem2.h
     SOURCES += sensorhandler_qmsystem2.cpp
+    INCLUDEPATH += /usr/include/qmsystem2
     LIBS += -lqmsystem2
 }
 equals(TARGET_LIB,qtmob) {

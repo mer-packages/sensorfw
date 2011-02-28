@@ -27,10 +27,17 @@
 #define SENSORHANDLER_H
 
 #include <QVector>
-#include "qt-api/abstractsensor_i.h"
-#include "datatypes/xyz.h"
-#include "config.h"
 #include <QThread>
+#include "qmsensor.h"
+#include "qmtap.h"
+#include "qmals.h"
+#include "qmaccelerometer.h"
+#include "qmmagnetometer.h"
+#include "qmcompass.h"
+#include "qmproximity.h"
+#include "qmorientation.h"
+#include "qmrotation.h"
+#include "config.h"
 
 class SensorHandler : public QThread
 {
@@ -46,7 +53,18 @@ public:
 
     static void init(const QStringList& sensors);
 
+public Q_SLOTS:
+    void receivedData(const MeeGo::QmAccelerometerReading& data);
+    void receivedALSData(const MeeGo::QmAlsReading data);
+    void receivedData(const MeeGo::QmCompassReading data);
+    void receivedData(const MeeGo::QmMagnetometerReading& data);
+    void receivedData(const MeeGo::QmOrientationReading data);
+    void receivedData(const MeeGo::QmProximityReading data);
+    void receivedData(const MeeGo::QmRotationReading& data);
+    void receivedData(const MeeGo::QmTapReading data);
+
 private:
+    MeeGo::QmSensor* sensor_;
     QString sensorName_;
     int interval_;
     int bufferinterval_;
