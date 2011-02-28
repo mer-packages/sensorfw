@@ -31,7 +31,7 @@
 #include "logging.h"
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
-    QObject(parent),
+    QThread(parent),
     sensorName(sensorName),
     sensorChannelInterface(NULL),
     interval(100),
@@ -158,7 +158,7 @@ void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
 }
 
 
-void SensorHandler::start()
+void SensorHandler::startClient()
 {
     sensorChannelInterface->setInterval(interval);
     sensorChannelInterface->setBufferInterval(bufferinterval);

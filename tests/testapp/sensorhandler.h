@@ -32,6 +32,7 @@
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
 #include "config.h"
+#include <QThread>
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -44,7 +45,7 @@
 #include "qt-api/magnetometersensor_i.h"
 
 
-class SensorHandler : QObject
+class SensorHandler : QThread
 {
     Q_OBJECT
 public:
@@ -56,7 +57,8 @@ public:
     void setBufferSize(int value);
     void setStandbyOverride(bool value);
 
-    void start();
+    void startClient();
+
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
