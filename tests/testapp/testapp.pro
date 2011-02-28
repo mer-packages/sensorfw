@@ -6,11 +6,13 @@ TEMPLATE = app
 TARGET = sensortestapp
 
 HEADERS += sensorhandler.h \
-           parser.h
+           parser.h \
+           statprinter.h
 
 SOURCES += main.cpp \
            sensorhandler.cpp \
-           parser.cpp
+           parser.cpp \
+           statprinter.cpp
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
