@@ -69,10 +69,6 @@ protected:
      */
     ~GyroscopeAdaptor();
 
-    virtual bool setInterval(const unsigned int value, const int sessionId);
-
-    virtual unsigned int interval() const;
-
 private:
 
     /**

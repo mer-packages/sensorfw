@@ -69,12 +69,3 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
     gyroscopeBuffer_->commit();
     gyroscopeBuffer_->wakeUpReaders();
 }
-
-bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
-{
-    return SysfsAdaptor::setInterval((value > 10 ? 10 : value), sessionId);
-}
-
-unsigned int GyroscopeAdaptor::interval() const{
-    return SysfsAdaptor::interval();
-}
