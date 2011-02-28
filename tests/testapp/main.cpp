@@ -48,9 +48,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
-    QMap<QString, int> sensorThread;
 
-    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/createsensors.conf";
+    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 
     Parser parser(app.arguments());
 
@@ -113,7 +112,7 @@ int main(int argc, char *argv[])
         for(int i = 0; i < count; ++i)
         {
             SensorHandler* thread = new SensorHandler(sensorName);
-            thread->start();
+            thread->startClient();
             threads << thread;
         }
     }

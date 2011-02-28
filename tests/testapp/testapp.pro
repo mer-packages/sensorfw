@@ -26,7 +26,7 @@ QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../core -lsensorfw
 
 testconf.path = /usr/share/sensord-tests/
-testconf.files = createsensors.conf
+testconf.files = testapp.conf
 
 target.path = /usr/bin
 
