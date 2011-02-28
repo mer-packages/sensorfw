@@ -9,6 +9,7 @@ Parser::Parser(QStringList arguments) :
     configFilePath_(""),
     logLevel_(SensordLogWarning),
     logTarget_(1),
+    singleThread_(true),
     logFilePath_("/var/log/sensors-testapp.log"),
     statInterval_(5000)
 {
@@ -58,6 +59,14 @@ void Parser::parsingCommandLine(QStringList arguments)
             data = opt.split("=");
             configFile_ = true;
             configFilePath_ = data.at(1);
+        } else if (opt.startsWith("-m="))
+        {
+            data = opt.split("=");
+            if (data.at(1).toInt() == 2)
+            {
+                singleThread_ = false ;
+            }
+
         }
         else if (opt.startsWith("-h") || opt.startsWith("--help"))
             printHelp_ = true;
@@ -84,6 +93,11 @@ bool Parser::configFileInput() const
 const QString& Parser::configFilePath() const
 {
     return configFilePath_;
+}
+
+bool Parser::singleThread() const
+{
+    return singleThread_;
 }
 
 int Parser::logTarget() const

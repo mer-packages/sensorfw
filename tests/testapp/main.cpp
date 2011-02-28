@@ -88,8 +88,9 @@ int main(int argc, char *argv[])
         int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
         for(int i = 0; i < count; ++i)
         {
+
             SensorHandler* handler = new SensorHandler(sensorName, &app);
-            handler->startClient();
+            parser.singleThread() ? handler->startClient() : handler->start();
             handlers << handler;
         }
     }
@@ -114,6 +115,7 @@ void printUsage()
     qDebug() << " --log-file-path=P                Log file path\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /usr/share/sensord-tests/testapp.conf is used.\n";
+    qDebug() << " -m=N  --model=N                  Start clients in single thread model or multithread mode. (1(default)=single thread, 2=multithread)\n";
     qDebug() << " -i=N, --stat-interval=N          Interval for statistics printing.\n";
     qDebug() << " -h, --help                       Show usage info and exit.";
 }
