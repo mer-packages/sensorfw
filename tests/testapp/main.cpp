@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
         for(int i = 0; i < count; ++i)
         {
             SensorHandler* handler = new SensorHandler(sensorName);
-            handler->startClient();
+            parser.singleThread() ? handler->startClient() : handler->start();
             handlers << handler;
         }
     }
@@ -141,5 +141,6 @@ void printUsage()
     qDebug() << " --log-file-path=P                Log file path\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /usr/share/sensord-tests/testapp.conf is used.\n";
+    qDebug() << " -m=N                             Start clients in single thread model or multithread mode. (1(default)=single thread, 2=multithread)";
     qDebug() << " -h, --help                       Show usage info and exit.";
 }
