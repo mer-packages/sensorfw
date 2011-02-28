@@ -55,11 +55,10 @@ public:
 
 public Q_SLOTS:
     void receivedData(const MeeGo::QmAccelerometerReading& data);
-    void receivedALSData(const MeeGo::QmAlsReading data);
+    void receivedData(const MeeGo::QmIntReading data);
     void receivedData(const MeeGo::QmCompassReading data);
     void receivedData(const MeeGo::QmMagnetometerReading& data);
     void receivedData(const MeeGo::QmOrientationReading data);
-    void receivedData(const MeeGo::QmProximityReading data);
     void receivedData(const MeeGo::QmRotationReading& data);
     void receivedData(const MeeGo::QmTapReading data);
 

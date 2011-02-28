@@ -59,7 +59,7 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     else if (sensorName_ == "alssensor")
     {
         sensor_ = new MeeGo::QmALS();
-        connect(sensor_, SIGNAL(ALSChanged(const MeeGo::QmAlsReading)), this, SLOT(receivedALSData(const MeeGo::QmALSReading)));
+        connect(sensor_, SIGNAL(ALSChanged(const MeeGo::QmAlsReading)), this, SLOT(receivedData(const MeeGo::QmIntReading)));
     }
     else if (sensorName_ == "rotationsensor")
     {
@@ -74,7 +74,7 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     else if (sensorName_ == "proximitysensor")
     {
         sensor_ = new MeeGo::QmProximity();
-        connect(sensor_, SIGNAL(ProximityChanged(const MeeGo::QmProximityReading)), this, SLOT(receivedData(const MeeGo::QmProximityReading)));
+        connect(sensor_, SIGNAL(ProximityChanged(const MeeGo::QmProximityReading)), this, SLOT(receivedData(const MeeGo::QmIntReading)));
     }
 
     if (Config::configuration() != NULL)
@@ -93,7 +93,7 @@ void SensorHandler::receivedData(const MeeGo::QmAccelerometerReading& data)
                   << data.x << " " << data.y << " " <<   data.z;
 }
 
-void SensorHandler::receivedALSData(const MeeGo::QmAlsReading data)
+void SensorHandler::receivedData(const MeeGo::QmIntReading data)
 {
     ++dataCount_;
     sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
@@ -117,13 +117,6 @@ void SensorHandler::receivedData(const MeeGo::QmMagnetometerReading& data)
 }
 
 void SensorHandler::receivedData(const MeeGo::QmOrientationReading data)
-{
-    ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
-                  << data.value;
-}
-
-void SensorHandler::receivedData(const MeeGo::QmProximityReading data)
 {
     ++dataCount_;
     sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
