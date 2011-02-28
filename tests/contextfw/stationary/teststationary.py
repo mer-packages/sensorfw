@@ -82,7 +82,8 @@ class Orientation(unittest.TestCase):
         self.assert_(self.context_client_stable.expect('Position.Stable = bool:false'))
 
         # Verify that timer works
-        timeout = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord.conf` | grep stability_timeout | head -n1 | cut -f2 -d=", "r").read())
+        #Todo: Here should find the configuration file according to device type
+        timeout = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord-ncdk.conf` | grep stability_timeout | head -n1 | cut -f2 -d=", "r").read())
         if (timeout <= 0):
             # Timeout not set in config, 60s is the default
             timeout = 60

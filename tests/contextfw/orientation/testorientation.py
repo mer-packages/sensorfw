@@ -48,6 +48,7 @@ class Orientation(unittest.TestCase):
         self.context_client_cover = CLTool("context-listen", "Screen.IsCovered")
 
         # Get angle thresholds from config
+        #Todo: Here should find the configuration file according to device type
         landscape_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord-ncdk.conf` | grep threshold_landscape | head -n1 | cut -f2 -d=", "r").read())
         portrait_angle = int(os.popen("cat `ls /etc/sensorfw/sensord.conf.d/* /etc/sensorfw/sensord-ncdk.conf` | grep threshold_portrait | head -n1 | cut -f2 -d=", "r").read())
 

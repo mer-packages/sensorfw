@@ -134,7 +134,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
             sensordLogW() << "read(): " << strerror(errno);
             return;
         }
-        sensordLogT() << "Ambient light value: " << als_data.lux;
+        sensordLogW() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
@@ -151,7 +151,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
             sensordLogW() << "read(): " << strerror(errno);
             return;
         }
-        sensordLogT() << "Ambient light value: " << als_data.lux;
+        sensordLogW() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
