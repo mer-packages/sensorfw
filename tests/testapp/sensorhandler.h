@@ -32,7 +32,7 @@
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
 #include "config.h"
-#include <QThread>
+#include "abstractsensorhandler.h"
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -44,22 +44,20 @@
 #include "qt-api/rotationsensor_i.h"
 #include "qt-api/magnetometersensor_i.h"
 
-class SensorHandler : public QThread
+class SensorHandler : public AbstractSensorHandler
 {
     Q_OBJECT
 public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    bool startClient();
-    void createSensorInterface();
-    void run();
-    bool stopClient();
-
-    int dataCount() const { return dataCount_; }
-    QString sensorName() const { return sensorName_; }
+    virtual bool startClient();
+    virtual bool stopClient();
 
     static void init(const QStringList& sensors);
+
+private:
+    void createSensorInterface();
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
@@ -71,14 +69,7 @@ public Q_SLOTS:
     void receivedFrame(const QVector<XYZ>& frame);
 
 private:
-    QString sensorName_;
     AbstractSensorChannelInterface* sensorChannelInterface_;
-    int interval_;
-    int bufferinterval_;
-    bool standbyoverride_;
-    int buffersize_;
-    int dataCount_;
-    int frameCount_;
 };
 
 #endif // SENSORHANDLER_H

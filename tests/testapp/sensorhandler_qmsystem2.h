@@ -28,6 +28,7 @@
 
 #include <QVector>
 #include <QThread>
+#include "abstractsensorhandler.h"
 #include "qmsensor.h"
 #include "qmtap.h"
 #include "qmals.h"
@@ -39,17 +40,15 @@
 #include "qmrotation.h"
 #include "config.h"
 
-class SensorHandler : public QThread
+class SensorHandler : public AbstractSensorHandler
 {
     Q_OBJECT
 public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    void startClient();
-
-    int dataCount() const { return dataCount_; }
-    QString sensorName() const { return sensorName_; }
+    virtual bool startClient();
+    virtual bool stopClient();
 
     static void init(const QStringList& sensors);
 
@@ -64,13 +63,6 @@ public Q_SLOTS:
 
 private:
     MeeGo::QmSensor* sensor_;
-    QString sensorName_;
-    int interval_;
-    int bufferinterval_;
-    bool standbyoverride_;
-    int buffersize_;
-    int dataCount_;
-    int frameCount_;
 };
 
 #endif // SENSORHANDLER_H

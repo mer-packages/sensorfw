@@ -29,6 +29,7 @@
 #include <QList>
 #include <QString>
 #include <QDebug>
+#include <signal.h>
 
 #include "sensorhandler.h"
 #include "parser.h"
@@ -37,6 +38,12 @@
 #include "statprinter.h"
 
 void printUsage();
+
+void sigIntHandler(int param)
+{
+    Q_UNUSED(param);
+    QCoreApplication::exit(0);
+}
 
 int main(int argc, char *argv[])
 {
@@ -52,6 +59,8 @@ int main(int argc, char *argv[])
         app.exit(EXIT_SUCCESS);
         return 0;
     }
+
+    signal(SIGINT, sigIntHandler);
 
     SensordLogger::init(parser.logTarget(), parser.logFilePath());
 
@@ -88,28 +97,34 @@ int main(int argc, char *argv[])
         int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
         for(int i = 0; i < count; ++i)
         {
-
             SensorHandler* handler = new SensorHandler(sensorName, &app);
-            if (parser.singleThread())
-            {
+            if (parser.singleThread()) {
                 handler->startClient();
-            } else
-            {
+            } else {
                 handler->start();
             }
-
             handlers << handler;
         }
     }
-
-
     StatPrinter* printer;
     if(parser.statInterval())
     {
         printer = new StatPrinter(handlers, parser.statInterval(), &app);
     }
     sensordLogD() << "Threads are waiting.";
-    return app.exec();
+    int ret = app.exec();
+    sensordLogD() << "Exitting...";
+    delete printer;
+    foreach(SensorHandler* handler, handlers)
+    {
+        if (!parser.singleThread())
+            handler->quit();
+        handler->stopClient();
+        delete handler;
+    }
+    Config::close();
+    SensordLogger::close();
+    return ret;
 }
 
 void printUsage()

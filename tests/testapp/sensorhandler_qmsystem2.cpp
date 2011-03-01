@@ -26,15 +26,8 @@
 #include "logging.h"
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
-    QThread(parent),
-    sensor_(NULL),
-    sensorName_(sensorName),
-    interval_(100),
-    bufferinterval_(0),
-    standbyoverride_(false),
-    buffersize_(0),
-    dataCount_(0),
-    frameCount_(0)
+    AbstractSensorHandler(sensorName, parent),
+    sensor_(NULL)
 {
     if (sensorName_ == "compasssensor")
     {
@@ -137,13 +130,19 @@ void SensorHandler::receivedData(const MeeGo::QmTapReading data)
                   << data.type << " " << data.direction;
 }
 
-void SensorHandler::startClient()
+bool SensorHandler::startClient()
 {
     sensor_->requestSession(MeeGo::QmSensor::SessionTypeListen);
     sensor_->setInterval(interval_);
     sensor_->setStandbyOverride(standbyoverride_);
+    return true;
 }
 
 void SensorHandler::init(const QStringList&)
 {
+}
+
+bool SensorHandler::stopClient()
+{
+    return true;
 }
