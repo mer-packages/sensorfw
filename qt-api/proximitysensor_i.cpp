@@ -73,7 +73,8 @@ bool ProximitySensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Unsigned ProximitySensorChannelInterface::proximity() const
+Unsigned ProximitySensorChannelInterface::proximity()
 {
-    return qvariant_cast< Unsigned >(internalPropGet("proximity"));
+    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("proximity"));
+    return reply;
 }

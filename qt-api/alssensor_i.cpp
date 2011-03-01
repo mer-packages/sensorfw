@@ -73,7 +73,8 @@ bool ALSSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Unsigned ALSSensorChannelInterface::lux() const
+Unsigned ALSSensorChannelInterface::lux()
 {
-    return qvariant_cast< Unsigned >(internalPropGet("lux"));
+    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("lux"));
+    return reply;
 }

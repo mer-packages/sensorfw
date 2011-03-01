@@ -59,7 +59,7 @@ public:
      */
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Unsigned proximity() const;
+    Unsigned proximity();
 
     /**
      * Constructor.

@@ -71,17 +71,21 @@ bool OrientationSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Unsigned OrientationSensorChannelInterface::orientation() const
+Unsigned OrientationSensorChannelInterface::orientation()
 {
-    return qvariant_cast<Unsigned>(internalPropGet("orientation"));
+    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("orientation"));
+    return reply;
 }
 
-int OrientationSensorChannelInterface::threshold() const
+int OrientationSensorChannelInterface::threshold()
 {
-    return qvariant_cast<int>(internalPropGet("threshold"));
+    QDBusReply<int> reply = call(QDBus::Block, QLatin1String("threshold"));
+    return reply;
 }
 
 void OrientationSensorChannelInterface::setThreshold(int value)
 {
-    internalPropSet("threshold", qVariantFromValue(value));
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(value);
+    callWithArgumentList(QDBus::Block, QLatin1String("threshold"), argumentList);
 }

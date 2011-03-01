@@ -44,19 +44,21 @@ LocalSensorManagerInterface::~LocalSensorManagerInterface()
 {
 }
 
-SensorManagerError LocalSensorManagerInterface::errorCode() const
+SensorManagerError LocalSensorManagerInterface::errorCode()
 {
     return static_cast<SensorManagerError>(errorCodeInt());
 }
 
-QString LocalSensorManagerInterface::errorString() const
+QString LocalSensorManagerInterface::errorString()
 {
-    return qvariant_cast<QString>(internalPropGet("errorString"));
+    QDBusReply<QString> reply = call(QDBus::Block, QLatin1String("errorString"));
+    return reply;
 }
 
-int LocalSensorManagerInterface::errorCodeInt() const
+int LocalSensorManagerInterface::errorCodeInt()
 {
-    return static_cast<SensorManagerError>(qvariant_cast<int>(internalPropGet("errorCodeInt")));
+    QDBusReply<int> reply = call(QDBus::Block, QLatin1String("errorCodeInt"));
+    return reply;
 }
 
 QDBusReply<bool> LocalSensorManagerInterface::loadPlugin(const QString& name)

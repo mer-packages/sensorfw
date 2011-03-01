@@ -97,7 +97,8 @@ QDBusReply<void> MagnetometerSensorChannelInterface::reset()
     return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
 }
 
-MagneticField MagnetometerSensorChannelInterface::magneticField() const
+MagneticField MagnetometerSensorChannelInterface::magneticField()
 {
-    return qvariant_cast< MagneticField >(internalPropGet("magneticField"));
+    QDBusReply<MagneticField> reply = call(QDBus::Block, QLatin1String("MagneticField"));
+    return reply;
 }

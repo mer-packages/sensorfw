@@ -83,9 +83,10 @@ bool AccelerometerSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-XYZ AccelerometerSensorChannelInterface::get() const
+XYZ AccelerometerSensorChannelInterface::get()
 {
-    return qvariant_cast<XYZ>(internalPropGet("value"));
+    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("get"));
+    return reply;
 }
 
 void AccelerometerSensorChannelInterface::connectNotify(const char* signal)

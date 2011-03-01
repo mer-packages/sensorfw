@@ -54,7 +54,7 @@ public:
 
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Unsigned lux() const;
+    Unsigned lux();
 
 public:
     ALSSensorChannelInterface(const QString& path, int sessionId);

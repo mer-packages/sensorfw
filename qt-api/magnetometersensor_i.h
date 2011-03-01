@@ -54,7 +54,7 @@ public:
 
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    MagneticField magneticField() const;
+    MagneticField magneticField();
 
     MagnetometerSensorChannelInterface(const QString& path, int sessionId);
 

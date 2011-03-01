@@ -52,9 +52,9 @@ public:
 
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    XYZ rotation() const;
+    XYZ rotation();
 
-    bool hasZ() const;
+    bool hasZ();
 
     RotationSensorChannelInterface(const QString& path, int sessionId);
 

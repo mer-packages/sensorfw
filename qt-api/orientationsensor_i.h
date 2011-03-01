@@ -53,9 +53,9 @@ public:
 
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Unsigned orientation() const;
+    Unsigned orientation();
 
-    int threshold() const;
+    int threshold();
     void setThreshold(int value);
 
 public:

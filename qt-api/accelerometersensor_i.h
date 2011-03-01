@@ -58,7 +58,7 @@ public:
      */
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    XYZ get() const;
+    XYZ get();
 
     /**
      * Constructor.

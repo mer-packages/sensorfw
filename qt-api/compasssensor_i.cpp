@@ -71,22 +71,27 @@ bool CompassSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Compass CompassSensorChannelInterface::get() const
+Compass CompassSensorChannelInterface::get()
 {
-    return qvariant_cast<Compass>(internalPropGet("value"));
+    QDBusReply<Compass> reply = call(QDBus::Block, QLatin1String("get"));
+    return reply;
 }
 
-bool CompassSensorChannelInterface::useDeclination() const
+bool CompassSensorChannelInterface::useDeclination()
 {
-    return qvariant_cast<bool>(internalPropGet("usedeclination"));
+    QDBusReply<bool> reply = call(QDBus::Block, QLatin1String("usedeclination"));
+    return reply;
 }
 
 void CompassSensorChannelInterface::setUseDeclination(bool enable)
 {
-    internalPropSet("usedeclination", qVariantFromValue(enable));
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(enable);
+    callWithArgumentList(QDBus::Block, QLatin1String("usedeclination"), argumentList);
 }
 
-int CompassSensorChannelInterface::declinationValue() const
+int CompassSensorChannelInterface::declinationValue()
 {
-    return qvariant_cast<int>(internalPropGet("declinationvalue"));
+    QDBusReply<int> reply = call(QDBus::Block, QLatin1String("declinationvalue"));
+    return reply;
 }

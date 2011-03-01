@@ -98,7 +98,8 @@ QDBusReply<void> GyroscopeSensorChannelInterface::reset()
     return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
 }
 
-XYZ GyroscopeSensorChannelInterface::get() const
+XYZ GyroscopeSensorChannelInterface::get()
 {
-    return qvariant_cast<XYZ>(internalPropGet("value"));
+    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("get"));
+    return reply;
 }

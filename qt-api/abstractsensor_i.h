@@ -66,21 +66,21 @@ public:
 
     int sessionId() const;
 
-    SensorError errorCode() const;
+    SensorError errorCode();
 
-    QString errorString() const;
+    QString errorString();
 
-    QString description() const;
+    QString description();
 
-    QString id() const;
+    QString id();
 
-    int interval() const;
+    int interval();
     void setInterval(int value);
 
-    bool standbyOverride() const;
+    bool standbyOverride();
     bool setStandbyOverride(bool override);
 
-    unsigned int bufferInterval() const;
+    unsigned int bufferInterval();
     void setBufferInterval(unsigned int value);
 
     /**
@@ -90,7 +90,7 @@ public:
      */
     IntegerRangeList getAvailableBufferIntervals();
 
-    unsigned int bufferSize() const;
+    unsigned int bufferSize();
     void setBufferSize(unsigned int value);
 
     /**
@@ -101,7 +101,7 @@ public:
      */
     IntegerRangeList getAvailableBufferSizes();
 
-    QString type() const;
+    QString type();
 
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
@@ -119,7 +119,7 @@ public:
     void removeDataRangeRequest();
     bool setDataRangeIndex(int dataRangeIndex);
 private:
-    int errorCodeInt() const;
+    int errorCodeInt();
     void setError(SensorError errorCode, const QString& errorString);
     void clearError();
 

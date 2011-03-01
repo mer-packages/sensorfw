@@ -83,14 +83,16 @@ bool RotationSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-XYZ RotationSensorChannelInterface::rotation() const
+XYZ RotationSensorChannelInterface::rotation()
 {
-    return qvariant_cast< XYZ >(internalPropGet("rotation"));
+    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("rotation"));
+    return reply;
 }
 
-bool RotationSensorChannelInterface::hasZ() const
+bool RotationSensorChannelInterface::hasZ()
 {
-    return qvariant_cast< bool >(internalPropGet("hasZ"));
+    QDBusReply<bool> reply = call(QDBus::Block, QLatin1String("hasZ"));
+    return reply;
 }
 
 void RotationSensorChannelInterface::connectNotify(const char* signal)

@@ -240,7 +240,7 @@ int AbstractSensorChannelInterface::sessionId() const
     return pimpl_->sessionId_;
 }
 
-SensorError AbstractSensorChannelInterface::errorCode() const
+SensorError AbstractSensorChannelInterface::errorCode()
 {
     // TODO: This solution may introduce problems, if errors are
     //       not cleared before another happens.
@@ -250,28 +250,31 @@ SensorError AbstractSensorChannelInterface::errorCode() const
     return static_cast<SensorError>(errorCodeInt());
 }
 
-QString AbstractSensorChannelInterface::errorString() const
+QString AbstractSensorChannelInterface::errorString()
 {
-    if (pimpl_->errorCode_ != SNoError) {
+    if (pimpl_->errorCode_ != SNoError)
         return pimpl_->errorString_;
-    }
-    return qvariant_cast<QString>(internalPropGet("errorString"));
+    return QDBusReply<QString> (call(QDBus::Block, QLatin1String("errorString")));
 }
 
-QString AbstractSensorChannelInterface::description() const
+QString AbstractSensorChannelInterface::description()
 {
-    return qvariant_cast<QString>(internalPropGet("description"));
+    QDBusReply<QString> reply = call(QDBus::Block, QLatin1String("description"));
+    return reply;
+
 }
 
-QString AbstractSensorChannelInterface::id() const
+QString AbstractSensorChannelInterface::id()
 {
-    return qvariant_cast<QString>(internalPropGet("id"));
+    QDBusReply<QString> reply = call(QDBus::Block, QLatin1String("id"));
+    return reply;
 }
 
-int AbstractSensorChannelInterface::interval() const
+int AbstractSensorChannelInterface::interval()
 {
     if (pimpl_->running_)
-        return qvariant_cast<int>(internalPropGet("interval"));
+        return QDBusReply<int> (call(QDBus::Block, QLatin1String("interval")));
+
     return pimpl_->interval_;
 }
 
@@ -282,10 +285,11 @@ void AbstractSensorChannelInterface::setInterval(int value)
         setInterval(pimpl_->sessionId_, value);
 }
 
-unsigned int AbstractSensorChannelInterface::bufferInterval() const
+unsigned int AbstractSensorChannelInterface::bufferInterval()
 {
     if (pimpl_->running_)
-        return qvariant_cast<unsigned int>(internalPropGet("bufferInterval"));
+        return QDBusReply<unsigned int> (call(QDBus::Block, QLatin1String("bufferInterval")));
+
     return pimpl_->bufferInterval_;
 }
 
@@ -296,10 +300,10 @@ void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
         setBufferInterval(pimpl_->sessionId_, value);
 }
 
-unsigned int AbstractSensorChannelInterface::bufferSize() const
+unsigned int AbstractSensorChannelInterface::bufferSize()
 {
     if (pimpl_->running_)
-        return qvariant_cast<unsigned int>(internalPropGet("bufferSize"));
+        return QDBusReply<unsigned int> (call(QDBus::Block, QLatin1String("bufferSize")));
     return pimpl_->bufferSize_;
 }
 
@@ -310,10 +314,10 @@ void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
         setBufferSize(pimpl_->sessionId_, value);
 }
 
-bool AbstractSensorChannelInterface::standbyOverride() const
+bool AbstractSensorChannelInterface::standbyOverride()
 {
     if (pimpl_->running_)
-        return qvariant_cast<bool>(internalPropGet("standbyOverride"));
+        return  QDBusReply<bool> (call(QDBus::Block, QLatin1String("standbyOverride")));
     return pimpl_->standbyOverride_;
 }
 
@@ -323,14 +327,16 @@ bool AbstractSensorChannelInterface::setStandbyOverride(bool override)
     return setStandbyOverride(pimpl_->sessionId_, override);
 }
 
-QString AbstractSensorChannelInterface::type() const
+QString AbstractSensorChannelInterface::type()
 {
-    return qvariant_cast<QString>(internalPropGet("type"));
+    QDBusReply<QString> reply = call(QDBus::Block, QLatin1String("type"));
+    return reply;
 }
 
-int AbstractSensorChannelInterface::errorCodeInt() const
+int AbstractSensorChannelInterface::errorCodeInt()
 {
-    return static_cast<SensorManagerError>(qvariant_cast<int>(internalPropGet("errorCodeInt")));
+    QDBusReply<int> reply = call(QDBus::Block, QLatin1String("errorCodeInt"));
+    return reply;
 }
 
 void AbstractSensorChannelInterface::clearError()

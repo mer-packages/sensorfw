@@ -45,15 +45,15 @@ class LocalSensorManagerInterface: public QDBusAbstractInterface
     Q_PROPERTY(QString errorString READ errorString)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
 
-    int errorCodeInt() const; // this exists as a hack because enums cannot be marshalled over D-BUS
+    int errorCodeInt(); // this exists as a hack because enums cannot be marshalled over D-BUS
 
 public:
     static const char* staticInterfaceName;
 
     virtual ~LocalSensorManagerInterface();
 
-    SensorManagerError errorCode() const;
-    QString errorString() const;
+    SensorManagerError errorCode();
+    QString errorString();
 
 public Q_SLOTS: // METHODS
     QDBusReply<bool> loadPlugin(const QString& name);

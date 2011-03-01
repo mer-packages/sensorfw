@@ -55,12 +55,12 @@ public:
 
     static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
 
-    Compass get() const;
+    Compass get();
 
-    bool useDeclination() const;
+    bool useDeclination();
     void setUseDeclination(bool enable);
 
-    int declinationValue() const;
+    int declinationValue();
 
     CompassSensorChannelInterface(const QString& path, int sessionId);
 
