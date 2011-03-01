@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -51,7 +52,6 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::controlI
     return interface(id);
 }
 
-
 MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
@@ -93,12 +93,10 @@ void MagnetometerSensorChannelInterface::connectNotify(const char* signal)
 
 QDBusReply<void> MagnetometerSensorChannelInterface::reset()
 {
-    QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+    return call(QDBus::Block, QLatin1String("reset"));
 }
 
 MagneticField MagnetometerSensorChannelInterface::magneticField()
 {
-    QDBusReply<MagneticField> reply = call(QDBus::Block, QLatin1String("MagneticField"));
-    return reply;
+    return getAccessor<MagneticField>("magneticField");
 }

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,14 +34,16 @@
 
 class AccelerometerSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(AccelerometerSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.AccelerometerSensor")
+    Q_PROPERTY(XYZ xyz READ xyz);
 
 public:
-    Q_PROPERTY(XYZ value READ get);
-    XYZ get() const;
-
     AccelerometerSensorChannelAdaptor(QObject* parent);
+
+public Q_SLOTS:
+    XYZ xyz() const;
 
 Q_SIGNALS:
     void dataAvailable(const XYZ& data);

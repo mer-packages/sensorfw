@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,21 +34,20 @@
 class CompassSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(CompassSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.CompassSensor")
+    Q_PROPERTY(Compass value READ value)
+    Q_PROPERTY(bool useDeclination READ useDeclination WRITE setUseDeclination)
+    Q_PROPERTY(int declinationValue READ declinationValue)
 
 public:
+    CompassSensorChannelAdaptor(QObject* parent);
 
-    Q_PROPERTY(Compass value READ get)
-    Compass get() const;
-
-    Q_PROPERTY(bool usedeclination READ useDeclination WRITE setUseDeclination);
+public Q_SLOTS:
+    Compass value() const;
     bool useDeclination() const;
     void setUseDeclination(bool enable);
-
-    Q_PROPERTY(int declinationvalue READ declinationValue);
     int declinationValue() const;
-
-    CompassSensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:
     void dataAvailable(const Compass& value);

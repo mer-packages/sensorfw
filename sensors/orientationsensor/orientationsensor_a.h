@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,17 +36,18 @@
 class OrientationSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(OrientationSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.OrientationSensor")
+    Q_PROPERTY(Unsigned orientation READ orientation)
+    Q_PROPERTY(int threshold READ threshold WRITE setThreshold)
 
 public:
-    Q_PROPERTY(Unsigned orientation READ orientation)
-    Unsigned orientation() const;
+    OrientationSensorChannelAdaptor(QObject* parent);
 
-    Q_PROPERTY(int threshold READ threshold WRITE setThreshold)
+public Q_SLOTS:
+    Unsigned orientation() const;
     int threshold() const;
     void setThreshold(int value);
-
-    OrientationSensorChannelAdaptor(QObject* parent);
 
 Q_SIGNALS:
     void orientationChanged(const Unsigned& orientation);

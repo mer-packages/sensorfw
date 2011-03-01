@@ -73,19 +73,17 @@ bool OrientationSensorChannelInterface::dataReceivedImpl()
 
 Unsigned OrientationSensorChannelInterface::orientation()
 {
-    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("orientation"));
-    return reply;
+    return getAccessor<Unsigned>("orientation");
 }
 
 int OrientationSensorChannelInterface::threshold()
 {
-    QDBusReply<int> reply = call(QDBus::Block, QLatin1String("threshold"));
-    return reply;
+    return getAccessor<int>("threshold");
 }
 
 void OrientationSensorChannelInterface::setThreshold(int value)
 {
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(value);
-    callWithArgumentList(QDBus::Block, QLatin1String("threshold"), argumentList);
+    callWithArgumentList(QDBus::Block, QLatin1String("setThreshold"), argumentList);
 }

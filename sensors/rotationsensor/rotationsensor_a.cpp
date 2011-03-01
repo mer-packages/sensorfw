@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,10 +33,10 @@ RotationSensorChannelAdaptor::RotationSensorChannelAdaptor(QObject* parent) :
 
 XYZ RotationSensorChannelAdaptor::rotation() const
 {
-    return qvariant_cast< XYZ >(parent()->property("rotation"));
+    return qvariant_cast<XYZ>(parent()->property("rotation"));
 }
 
 bool RotationSensorChannelAdaptor::hasZ() const
 {
-    return qvariant_cast< bool >(parent()->property("hasZ"));
+    return qvariant_cast<bool>(parent()->property("hasZ"));
 }

@@ -31,7 +31,6 @@ const char* RotationSensorChannelInterface::staticInterfaceName = "local.Rotatio
 
 QDBusAbstractInterface* RotationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new RotationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -85,14 +84,12 @@ bool RotationSensorChannelInterface::dataReceivedImpl()
 
 XYZ RotationSensorChannelInterface::rotation()
 {
-    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("rotation"));
-    return reply;
+    return getAccessor<XYZ>("rotation");
 }
 
 bool RotationSensorChannelInterface::hasZ()
 {
-    QDBusReply<bool> reply = call(QDBus::Block, QLatin1String("hasZ"));
-    return reply;
+    return getAccessor<bool>("hasZ");
 }
 
 void RotationSensorChannelInterface::connectNotify(const char* signal)

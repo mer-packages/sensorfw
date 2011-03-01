@@ -40,8 +40,6 @@
  * measured intensity level can be queried any time. Provided values are in \e lux.
  *
  * For details of measurement process, see #ALSSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class ALSSensorChannelInterface: public AbstractSensorChannelInterface
 {

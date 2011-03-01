@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -34,13 +35,15 @@
 class ProximitySensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ProximitySensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.ProximitySensor")
+    Q_PROPERTY(Unsigned proximity READ proximity)
 
 public:
-    Q_PROPERTY(Unsigned proximity READ proximity);
-    Unsigned proximity() const;
-
     ProximitySensorChannelAdaptor(QObject* parent);
+
+public Q_SLOTS:
+    Unsigned proximity() const;
 
 Q_SIGNALS:
     void dataAvailable(const Unsigned& data);

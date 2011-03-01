@@ -32,7 +32,6 @@ const char* ProximitySensorChannelInterface::staticInterfaceName = "local.Proxim
 
 QDBusAbstractInterface* ProximitySensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new ProximitySensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -59,7 +58,6 @@ ProximitySensorChannelInterface* ProximitySensorChannelInterface::interface(cons
     {
         return 0;
     }
-
     return dynamic_cast<ProximitySensorChannelInterface*>(sm.interface(id));
 }
 
@@ -75,6 +73,5 @@ bool ProximitySensorChannelInterface::dataReceivedImpl()
 
 Unsigned ProximitySensorChannelInterface::proximity()
 {
-    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("proximity"));
-    return reply;
+    return getAccessor<Unsigned>("proximity");
 }

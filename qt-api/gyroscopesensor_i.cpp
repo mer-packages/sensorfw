@@ -94,12 +94,10 @@ void GyroscopeSensorChannelInterface::connectNotify(const char* signal)
 
 QDBusReply<void> GyroscopeSensorChannelInterface::reset()
 {
-    QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+    return call(QDBus::Block, QLatin1String("reset"));
 }
 
 XYZ GyroscopeSensorChannelInterface::get()
 {
-    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("get"));
-    return reply;
+    return getAccessor<AngularVelocityData>("value");
 }

@@ -31,7 +31,6 @@ const char* AccelerometerSensorChannelInterface::staticInterfaceName = "local.Ac
 
 QDBusAbstractInterface* AccelerometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -54,7 +53,6 @@ AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::contro
 AccelerometerSensorChannelInterface* AccelerometerSensorChannelInterface::interface(const QString& id)
 {
     SensorManagerInterface& sm = SensorManagerInterface::instance();
-    // ToDo: can conversion from class name to type string be automated?
     if ( !sm.registeredAndCorrectClassName( id, AccelerometerSensorChannelInterface::staticMetaObject.className() ) )
     {
         return 0;
@@ -85,8 +83,7 @@ bool AccelerometerSensorChannelInterface::dataReceivedImpl()
 
 XYZ AccelerometerSensorChannelInterface::get()
 {
-    QDBusReply<XYZ> reply = call(QDBus::Block, QLatin1String("get"));
-    return reply;
+    return getAccessor<XYZ>("xyz");
 }
 
 void AccelerometerSensorChannelInterface::connectNotify(const char* signal)

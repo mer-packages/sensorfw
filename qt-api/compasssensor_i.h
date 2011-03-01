@@ -39,8 +39,6 @@
  * Acts as a proxy class \e local.CompassSensor interface.
  *
  * For details of measurement process, see #CompassSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class CompassSensorChannelInterface: public AbstractSensorChannelInterface
 {

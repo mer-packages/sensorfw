@@ -38,8 +38,6 @@
  * Acts as a proxy class for interface \e local.OrientationSensor interface.
  *
  * For details of measurement process, see #OrientationSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
 {

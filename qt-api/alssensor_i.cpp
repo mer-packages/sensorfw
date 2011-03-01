@@ -32,7 +32,6 @@ const char* ALSSensorChannelInterface::staticInterfaceName = "local.ALSSensor";
 
 QDBusAbstractInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new ALSSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -75,6 +74,5 @@ bool ALSSensorChannelInterface::dataReceivedImpl()
 
 Unsigned ALSSensorChannelInterface::lux()
 {
-    QDBusReply<Unsigned> reply = call(QDBus::Block, QLatin1String("lux"));
-    return reply;
+    return getAccessor<Unsigned>("lux");
 }

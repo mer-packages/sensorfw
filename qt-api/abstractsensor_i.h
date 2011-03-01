@@ -118,6 +118,14 @@ public:
     void requestDataRange(DataRange range);
     void removeDataRangeRequest();
     bool setDataRangeIndex(int dataRangeIndex);
+
+    /**
+     * Does the sensor driver support buffering or not.
+     *
+     * @return Does the sensor driver support buffering or not.
+     */
+    bool hwBuffering();
+
 private:
     int errorCodeInt();
     void setError(SensorError errorCode, const QString& errorString);
@@ -148,26 +156,33 @@ protected:
 
     virtual bool dataReceivedImpl() = 0;
 
+    template<typename T>
+    T getAccessor(const char* name);
+
 private:
     struct AbstractSensorChannelInterfaceImpl;
 
     AbstractSensorChannelInterfaceImpl* pimpl_;
 
     SocketReader& getSocketReader() const;
-
-public:
-    /**
-     * Does the sensor driver support buffering or not.
-     *
-     * @return Does the sensor driver support buffering or not.
-     */
-    bool hwBuffering();
 };
 
 template<typename T>
 bool AbstractSensorChannelInterface::read(QVector<T>& values)
 {
     return getSocketReader().read(values);
+}
+
+template<typename T>
+T AbstractSensorChannelInterface::getAccessor(const char* name)
+{
+    QDBusReply<T> reply(call(QDBus::Block, QLatin1String(name)));
+    if(!reply.isValid())
+    {
+        qDebug() << "Failed to get '" << name << "' from sensord: " << reply.error().message();
+        return T();
+    }
+    return reply.value();
 }
 
 namespace local {
