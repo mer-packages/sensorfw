@@ -50,7 +50,6 @@ Loader& Loader::instance()
 bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const
 {
     bool    loaded = true;
-    QDir    dir; // TODO
 
     sensordLogT() << "Loading plugin:" << name;
 

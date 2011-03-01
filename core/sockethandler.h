@@ -48,7 +48,7 @@ public:
 
     bool write(const void* source, int size);
 
-    QLocalSocket* getSocket() const { return socket; };
+    QLocalSocket* getSocket() const { return socket; }
     QLocalSocket* stealSocket();
     void setInterval(int interval);
     int getInterval() const;
