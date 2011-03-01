@@ -11,11 +11,13 @@ isEmpty(TARGET_LIB) {
 }
 
 HEADERS += parser.h \
-           statprinter.h
+           statprinter.h \
+           abstractsensorhandler.h
 
 SOURCES += main.cpp \
            parser.cpp \
-           statprinter.cpp
+           statprinter.cpp \
+           abstractsensorhandler.cpp
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \

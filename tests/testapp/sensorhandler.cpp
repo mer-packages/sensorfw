@@ -37,24 +37,9 @@
 #include "qt-api/magnetometersensor_i.h"
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
-    QThread(parent),
-    sensorName_(sensorName),
-    sensorChannelInterface_(NULL),
-    interval_(100),
-    bufferinterval_(0),
-    standbyoverride_(false),
-    buffersize_(0),
-    dataCount_(0),
-    frameCount_(0)
+    AbstractSensorHandler(sensorName, parent),
+    sensorChannelInterface_(NULL)
 {
-    if (Config::configuration() != NULL)
-    {
-        interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
-        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", "0").toInt();
-        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", "false").toBool();
-        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", "0").toInt();
-
-    }
 }
 
 void SensorHandler::receivedData(const MagneticField& data)
@@ -127,21 +112,13 @@ bool SensorHandler::startClient()
 
 bool SensorHandler::stopClient()
 {
-    if (sensorChannelInterface_ != 0)
+    if (sensorChannelInterface_)
     {
         sensorChannelInterface_->stop();
         delete sensorChannelInterface_;
         sensorChannelInterface_ = 0;
     }
-
     return true;
-}
-
-void SensorHandler::run()
-{
-
-    startClient();
-
 }
 
 void SensorHandler::createSensorInterface()
@@ -189,7 +166,6 @@ void SensorHandler::createSensorInterface()
         sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
         connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
     }
-
 }
 
 void SensorHandler::init(const QStringList& sensors)
@@ -218,5 +194,4 @@ void SensorHandler::init(const QStringList& sensors)
             remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
         }
     }
-
 }
