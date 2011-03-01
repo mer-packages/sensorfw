@@ -7,6 +7,7 @@ Parser::Parser(QStringList arguments) :
     changeLogLevel_(false),
     configFile_(false),
     singleThread_(true),
+    gracefulShutdown_(true),
     configFilePath_(""),
     logLevel_(SensordLogWarning),
     logTarget_(1),
@@ -59,14 +60,19 @@ void Parser::parsingCommandLine(QStringList arguments)
             data = opt.split("=");
             configFile_ = true;
             configFilePath_ = data.at(1);
-        } else if (opt.startsWith("-m="))
+        }
+        else if (opt.startsWith("-m="))
         {
             data = opt.split("=");
             if (data.at(1).toInt() == 2)
             {
                 singleThread_ = false ;
             }
-
+        }
+        else if (opt.startsWith("-g="))
+        {
+            data = opt.split("=");
+            gracefulShutdown_ = !data.at(1).toInt() == 0;
         }
         else if (opt.startsWith("-h") || opt.startsWith("--help"))
             printHelp_ = true;
@@ -118,4 +124,9 @@ bool Parser::printHelp() const
 int Parser::statInterval() const
 {
     return statInterval_;
+}
+
+bool Parser::gracefulShutdown() const
+{
+    return gracefulShutdown_;
 }
