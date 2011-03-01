@@ -82,11 +82,8 @@ bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId
 
 unsigned int GyroscopeAdaptor::interval() const
 {
-    if (mode() == SysfsAdaptor::SelectMode)
-    {
-        QByteArray byteArray = readFromFile(dataRatePath_);
-        return byteArray.size() > 0 ? byteArray.toInt() : 0;
-    }
-
-    return SysfsAdaptor::interval();
+    if (mode() == SysfsAdaptor::IntervalMode)
+        return SysfsAdaptor::interval();
+    QByteArray byteArray = readFromFile(dataRatePath_);
+    return byteArray.size() > 0 ? byteArray.toInt() : 0;
 }
