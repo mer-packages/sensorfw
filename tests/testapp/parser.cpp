@@ -6,10 +6,10 @@ Parser::Parser(QStringList arguments) :
     printHelp_(false),
     changeLogLevel_(false),
     configFile_(false),
+    singleThread_(true),
     configFilePath_(""),
     logLevel_(SensordLogWarning),
     logTarget_(1),
-    singleThread_(true),
     logFilePath_("/var/log/sensors-testapp.log"),
     statInterval_(5000)
 {

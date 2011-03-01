@@ -1,12 +1,10 @@
 /**
-   @file sensorhandler.h
+   @file sensorhandler_qmsystem2.h
    @brief test application to create sensor
 
    <p>
-   Copyright (C) 2010-2011 Nokia Corporation
+   Copyright (C) 2011 Nokia Corporation
 
-   @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
-   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
@@ -34,16 +32,6 @@
 #include "config.h"
 #include <QThread>
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
-
 class SensorHandler : public QThread
 {
     Q_OBJECT
@@ -51,28 +39,15 @@ public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    bool startClient();
-    void createSensorInterface();
-    void run();
-    bool stopClient();
+    void startClient();
 
     int dataCount() const { return dataCount_; }
     QString sensorName() const { return sensorName_; }
 
     static void init(const QStringList& sensors);
 
-public Q_SLOTS:
-    void receivedData(const MagneticField& data);
-    void receivedData(const XYZ& data);
-    void receivedData(const Compass& value);
-    void receivedData(const Unsigned& data);
-    void receivedData(const Tap& data);
-    void receivedFrame(const QVector<MagneticField>& frame);
-    void receivedFrame(const QVector<XYZ>& frame);
-
 private:
     QString sensorName_;
-    AbstractSensorChannelInterface* sensorChannelInterface_;
     int interval_;
     int bufferinterval_;
     bool standbyoverride_;
