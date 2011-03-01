@@ -115,13 +115,13 @@ int main(int argc, char *argv[])
     int ret = app.exec();
     if(!parser.gracefulShutdown())
         return ret;
-    sensordLogD() << "Exitting...";
+    sensordLogD() << "Exiting...";
     delete printer;
     foreach(SensorHandler* handler, handlers)
     {
-        if (!parser.singleThread())
-            handler->quit();
         handler->stopClient();
+        if (!parser.singleThread() && handler->isRunning())
+            handler->quit();
         delete handler;
     }
     Config::close();
