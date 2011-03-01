@@ -106,13 +106,15 @@ int main(int argc, char *argv[])
             handlers << handler;
         }
     }
-    StatPrinter* printer;
+    StatPrinter* printer = 0;
     if(parser.statInterval())
     {
         printer = new StatPrinter(handlers, parser.statInterval(), &app);
     }
     sensordLogD() << "Threads are waiting.";
     int ret = app.exec();
+    if(!parser.gracefulShutdown())
+        return ret;
     sensordLogD() << "Exiting...";
     delete printer;
     foreach(SensorHandler* handler, handlers)

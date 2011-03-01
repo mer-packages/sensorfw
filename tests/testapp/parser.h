@@ -21,6 +21,7 @@ public:
     const QString& configFilePath() const;
 
     bool singleThread() const;
+    bool gracefulShutdown() const;
 
     int logTarget() const;
     const QString& logFilePath() const;
@@ -32,6 +33,7 @@ private:
     bool changeLogLevel_;
     bool configFile_;
     bool singleThread_;
+    bool gracefulShutdown_;
 
     QString configFilePath_;
     SensordLogLevel logLevel_;
