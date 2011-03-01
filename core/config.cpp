@@ -103,6 +103,18 @@ QVariant Config::value(const QString &key, const QVariant &defaultValue) const {
     return defaultValue;
 }
 
+QStringList Config::groups() const
+{
+    QStringList groups;
+    foreach(QSettings* setting, settings) {
+        foreach(const QString& group, setting->childGroups()) {
+            if(!groups.contains(group))
+                groups << group;
+        }
+    }
+    return groups;
+}
+
 Config *Config::configuration() {
     if (!static_configuration) {
         sensordLogW() << "Configuration has not been loaded";

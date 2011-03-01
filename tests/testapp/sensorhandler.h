@@ -1,5 +1,5 @@
 /**
-   @file testthread.h
+   @file sensorhandler.h
    @brief test application to create sensor
 
    <p>
@@ -7,6 +7,7 @@
 
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,14 +25,14 @@
    </p>
 */
 
-#ifndef TESTTHREAD_H
-#define TESTTHREAD_H
+#ifndef SENSORHANDLER_H
+#define SENSORHANDLER_H
 
-#include <QThread>
 #include <QVector>
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
 #include "config.h"
+#include "abstractsensorhandler.h"
 
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -43,36 +44,32 @@
 #include "qt-api/rotationsensor_i.h"
 #include "qt-api/magnetometersensor_i.h"
 
-
-class Testthread : public QThread
+class SensorHandler : public AbstractSensorHandler
 {
     Q_OBJECT
 public:
 
-    Testthread(QString sensorName, QObject *parent = 0);
+    SensorHandler(const QString& sensorName, QObject *parent = 0);
 
-    void setInterface(AbstractSensorChannelInterface* inf);
-    void setInterval(int value);
-    void setBufferInterval(int value);
-    void setBufferSize(int value);
-    void setStandbyOverride(bool value);
+    virtual bool startClient();
+    virtual bool stopClient();
 
-    void run();
+    static void init(const QStringList& sensors);
+
+private:
+    void createSensorInterface();
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
+    void receivedData(const XYZ& data);
+    void receivedData(const Compass& value);
+    void receivedData(const Unsigned& data);
+    void receivedData(const Tap& data);
     void receivedFrame(const QVector<MagneticField>& frame);
-
+    void receivedFrame(const QVector<XYZ>& frame);
 
 private:
-    QString sensorName;
-    AbstractSensorChannelInterface* sensorChannelInterface;
-    int interval;
-    int bufferinterval;
-    bool standbyoverride;
-    int buffersize;
-    int dataCount;
-    int frameCount;
+    AbstractSensorChannelInterface* sensorChannelInterface_;
 };
 
-#endif // TESTTHREAD_H
+#endif // SENSORHANDLER_H

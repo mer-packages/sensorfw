@@ -33,6 +33,7 @@ sensord (0.7.0) unstable; urgency=low
   * Removed ugly optimization from RingBuffer.
   * Merged back pipe to SensorManager to delegate socket writing to Qt eventloop thread. Fixes: NB#227398, NB#227034, NB#229068.
   * Since SocketHandler is used only by Qt eventloop unnecessary mutexes are removed.
+  * SensorManager::releaseSensor() now removes bufferSize and bufferInterval settings for session from the node.
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor
@@ -41,9 +42,8 @@ sensord (0.7.0) unstable; urgency=low
   [Shenghua Liu]
   * Add new magnetometer adaptor and plugin for ncdk
   * Code cleanup
-  * 
 
- -- shenghua <shenghua@shenghua-ThinkPad-T43>  Fri, 25 Feb 2011 16:01:19 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 01 Mar 2011 12:33:12 +0200
 
 sensord (0.6.38) unstable; urgency=low
 

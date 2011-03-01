@@ -279,6 +279,8 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     entryIt.value().sensor_->setStandbyOverrideRequest(sessionId, false);
     entryIt.value().sensor_->removeIntervalRequest(sessionId);
     entryIt.value().sensor_->removeDataRangeRequest(sessionId);
+    entryIt.value().sensor_->clearBufferSize(sessionId);
+    entryIt.value().sensor_->clearBufferInterval(sessionId);
 
     if (entryIt.value().sessions_.empty())
     {
@@ -539,7 +541,6 @@ void SensorManager::displayStateChanged(const bool displayState)
     }
 }
 
-
 void SensorManager::devicePSMStateChanged(const bool psmState)
 {
     psmState_ = psmState;
@@ -548,7 +549,6 @@ void SensorManager::devicePSMStateChanged(const bool psmState)
         emit stopCalibration();
     }
 }
-
 
 void SensorManager::printStatus(QStringList& output) const
 {
