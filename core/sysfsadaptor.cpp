@@ -402,6 +402,11 @@ bool SysfsAdaptor::setInterval(const unsigned int value, const int sessionId)
     return true;
 }
 
+SysfsAdaptor::PollMode SysfsAdaptor::mode() const
+{
+    return mode_;
+}
+
 SysfsAdaptorReader::SysfsAdaptorReader(SysfsAdaptor *parent) : running_(false), parent_(parent)
 {
 }

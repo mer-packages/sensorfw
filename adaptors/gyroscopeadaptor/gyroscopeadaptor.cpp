@@ -35,7 +35,7 @@
 
 
 GyroscopeAdaptor::GyroscopeAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::SelectMode)
+        SysfsAdaptor(id, SysfsAdaptor::SelectMode)
 {
     gyroscopeBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("gyroscope", "l3g4200dh", gyroscopeBuffer_);
@@ -66,14 +66,14 @@ void GyroscopeAdaptor::processSample(int pathId, int fd)
     pos->x_ = x;
     pos->y_ = y;
     pos->z_ = z;
-    pos->timestamp_ = Utils::getTimeStamp();
-
-    gyroscopeBuffer_->commit();
     gyroscopeBuffer_->wakeUpReaders();
 }
 
 bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
+    if (mode() == SysfsAdaptor::IntervalMode)
+        return SysfsAdaptor::setInterval(value, sessionId);
+
     int rate = value==0?100:1000/value;
     sensordLogD() << "Setting poll interval for " << dataRatePath_ << " to " << rate;
     QByteArray dataRateString(QString("%1\n").arg(rate).toLocal8Bit());
@@ -82,6 +82,11 @@ bool GyroscopeAdaptor::setInterval(const unsigned int value, const int sessionId
 
 unsigned int GyroscopeAdaptor::interval() const
 {
-    QByteArray byteArray = readFromFile(dataRatePath_);
-    return byteArray.size() > 0 ? byteArray.toInt() : 0;
+    if (mode() == SysfsAdaptor::SelectMode)
+    {
+        QByteArray byteArray = readFromFile(dataRatePath_);
+        return byteArray.size() > 0 ? byteArray.toInt() : 0;
+    }
+
+    return SysfsAdaptor::interval();
 }

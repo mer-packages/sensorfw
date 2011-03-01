@@ -189,6 +189,13 @@ protected:
      */
     virtual bool setInterval(const unsigned int value, const int sessionId);
 
+    /**
+     * Tells which mode the adaptor is using for getting input.
+     * Mode is usually set in constructor or via configuration file.
+     * @return SysfsAdaptor::PollMode matching the used mode.
+     */
+    PollMode mode() const;
+
 private:
     /**
      * Opens all file descriptors required by the adaptor.

@@ -4,6 +4,8 @@ sensord (0.7.0) unstable; urgency=low
   * Added setDataRangeIndex utility for easier range swapping
   * Fixed MOBILITY-2535
   * Fixed NB#223439
+  * Added mode to SysfsAdaptor
+  * Modified gyroadaptor to handle both modes, select and interval
 
   [Lihan Guo]
   * Fixed coverity defects
