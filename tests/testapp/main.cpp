@@ -113,13 +113,13 @@ int main(int argc, char *argv[])
     }
     sensordLogD() << "Threads are waiting.";
     int ret = app.exec();
-    sensordLogD() << "Exitting...";
+    sensordLogD() << "Exiting...";
     delete printer;
     foreach(SensorHandler* handler, handlers)
     {
-        if (!parser.singleThread())
-            handler->quit();
         handler->stopClient();
+        if (!parser.singleThread() && handler->isRunning())
+            handler->quit();
         delete handler;
     }
     Config::close();
