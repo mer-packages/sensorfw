@@ -123,10 +123,21 @@ int main(int argc, char *argv[])
         {
 
             SensorHandler* handler = new SensorHandler(sensorName, &app);
-            parser.singleThread() ? handler->startClient() : handler->start();
+            if (parser.singleThread())
+            {
+                handler->startClient();
+            } else
+            {
+                handler->start();
+            }
+
             handlers << handler;
         }
     }
+
+    SensorHandler* handler = new SensorHandler("magnetometersensor", &app);
+    handler->start();
+
     StatPrinter* printer;
     if(parser.statInterval())
     {

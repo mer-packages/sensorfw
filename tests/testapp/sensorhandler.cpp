@@ -38,51 +38,6 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     dataCount_(0),
     frameCount_(0)
 {
-    if (sensorName_ == "compasssensor")
-    {
-        sensorChannelInterface_ = CompassSensorChannelInterface::interface("compasssensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Compass&)), this, SLOT(receivedData(const Compass&)));
-    }
-    else if (sensorName_ == "magnetometersensor")
-    {
-        sensorChannelInterface_ = MagnetometerSensorChannelInterface::interface("magnetometersensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(receivedData(const MagneticField&)));
-        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(receivedFrame(const QVector<MagneticField>&)));
-
-    }
-    else if (sensorName_ ==  "orientationsensor")
-    {
-        sensorChannelInterface_ = OrientationSensorChannelInterface::interface("orientationsensor");
-        connect(sensorChannelInterface_, SIGNAL(orientationChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
-    }
-    else if (sensorName_ == "accelerometersensor")
-    {
-        sensorChannelInterface_ = AccelerometerSensorChannelInterface::interface("accelerometersensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
-        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
-    }
-    else if (sensorName_ == "alssensor")
-    {
-        sensorChannelInterface_ = ALSSensorChannelInterface::interface("alssensor");
-        connect(sensorChannelInterface_, SIGNAL(ALSChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
-    }
-    else if (sensorName_ == "rotationsensor")
-    {
-        sensorChannelInterface_ = RotationSensorChannelInterface::interface("rotationsensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
-        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
-    }
-    else if (sensorName_ == "tapsensor")
-    {
-        sensorChannelInterface_ = TapSensorChannelInterface::interface("tapsensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Tap&)), this, SLOT(receivedData(const Tap&)));
-    }
-    else if (sensorName_ == "proximitysensor")
-    {
-        sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
-    }
-
     if (Config::configuration() != NULL)
     {
         interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
@@ -146,9 +101,70 @@ void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
 
 void SensorHandler::startClient()
 {
+    createSensorInterface();
+    if (sensorChannelInterface_ == 0)
+    {
+         sensordLogD() << "Creating sensor client interface fails.";
+         return;
+    }
     sensorChannelInterface_->setInterval(interval_);
     sensorChannelInterface_->setBufferInterval(bufferinterval_);
     sensorChannelInterface_->setBufferSize(buffersize_);
     sensorChannelInterface_->setStandbyOverride(standbyoverride_);
     sensorChannelInterface_->start();
+}
+
+void SensorHandler::run()
+{
+
+    startClient();
+
+}
+
+void SensorHandler::createSensorInterface()
+{
+    if (sensorName_ == "compasssensor")
+    {
+        sensorChannelInterface_ = CompassSensorChannelInterface::interface("compasssensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Compass&)), this, SLOT(receivedData(const Compass&)));
+    }
+    else if (sensorName_ == "magnetometersensor")
+    {
+        sensorChannelInterface_ = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(receivedData(const MagneticField&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(receivedFrame(const QVector<MagneticField>&)));
+    }
+    else if (sensorName_ ==  "orientationsensor")
+    {
+        sensorChannelInterface_ = OrientationSensorChannelInterface::interface("orientationsensor");
+        connect(sensorChannelInterface_, SIGNAL(orientationChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+    }
+    else if (sensorName_ == "accelerometersensor")
+    {
+        sensorChannelInterface_ = AccelerometerSensorChannelInterface::interface("accelerometersensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
+    }
+    else if (sensorName_ == "alssensor")
+    {
+        sensorChannelInterface_ = ALSSensorChannelInterface::interface("alssensor");
+        connect(sensorChannelInterface_, SIGNAL(ALSChanged(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+    }
+    else if (sensorName_ == "rotationsensor")
+    {
+        sensorChannelInterface_ = RotationSensorChannelInterface::interface("rotationsensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const XYZ&)), this, SLOT(receivedData(const XYZ&)));
+        connect(sensorChannelInterface_, SIGNAL(frameAvailable(const QVector<XYZ>&)), this, SLOT(receivedFrame(const QVector<XYZ>&)));
+    }
+    else if (sensorName_ == "tapsensor")
+    {
+        sensorChannelInterface_ = TapSensorChannelInterface::interface("tapsensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Tap&)), this, SLOT(receivedData(const Tap&)));
+    }
+    else if (sensorName_ == "proximitysensor")
+    {
+        sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
+        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+    }
+
 }

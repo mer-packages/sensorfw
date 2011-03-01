@@ -52,6 +52,8 @@ public:
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
     void startClient();
+    void createSensorInterface();
+    void run();
 
     int dataCount() const { return dataCount_; }
     QString sensorName() const { return sensorName_; }
