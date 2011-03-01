@@ -102,8 +102,6 @@ int main(int argc, char *argv[])
         }
     }
 
-    SensorHandler* handler = new SensorHandler("magnetometersensor", &app);
-    handler->start();
 
     StatPrinter* printer;
     if(parser.statInterval())
