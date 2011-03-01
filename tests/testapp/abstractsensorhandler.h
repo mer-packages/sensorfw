@@ -30,8 +30,6 @@
 #include <QString>
 #include "qt-api/abstractsensor_i.h"
 
-Q_DECLARE_METATYPE( QAbstractSocket::SocketState)
-
 class AbstractSensorHandler : public QThread
 {
 public:

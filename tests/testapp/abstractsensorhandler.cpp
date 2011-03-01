@@ -51,7 +51,6 @@ AbstractSensorHandler::~AbstractSensorHandler()
 
 void AbstractSensorHandler::run()
 {
-    qRegisterMetaType<QAbstractSocket::SocketState>("SocketState");
     startClient();
     exec();
 }
