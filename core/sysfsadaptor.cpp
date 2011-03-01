@@ -32,7 +32,6 @@
 #include <sys/epoll.h>
 #include <QFile>
 #include "logging.h"
-#include <QDebug>
 
 SysfsAdaptor::SysfsAdaptor(const QString& id,
                            PollMode mode,
@@ -371,7 +370,6 @@ bool SysfsAdaptor::checkIntervalUsage() const
 
 unsigned int SysfsAdaptor::interval() const
 {
-
     if(!checkIntervalUsage())
         return 0;
     return interval_;
@@ -379,7 +377,6 @@ unsigned int SysfsAdaptor::interval() const
 
 bool SysfsAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
-    qDebug() << "setInterval is launched, interval is changed to " << value; 
     Q_UNUSED(sessionId);
     if(!checkIntervalUsage())
         return false;
