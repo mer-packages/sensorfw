@@ -29,7 +29,7 @@
 
 const char* CompassSensorChannelInterface::staticInterfaceName = "local.CompassSensor";
 
-QDBusAbstractInterface* CompassSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* CompassSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new CompassSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
@@ -81,9 +81,7 @@ bool CompassSensorChannelInterface::useDeclination()
 
 void CompassSensorChannelInterface::setUseDeclination(bool enable)
 {
-    QList<QVariant> argumentList;
-    argumentList << qVariantFromValue(enable);
-    callWithArgumentList(QDBus::Block, QLatin1String("usedeclination"), argumentList);
+    setAccessor("setUseDeclination", enable);
 }
 
 int CompassSensorChannelInterface::declinationValue()

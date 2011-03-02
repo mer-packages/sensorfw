@@ -52,7 +52,7 @@ class CompassSensorChannel :
     Q_OBJECT;
 
     Q_PROPERTY(bool usedeclination READ declination WRITE setDeclination)
-    Q_PROPERTY(quint16 declinationvalue READ declinationAngle);
+    Q_PROPERTY(quint16 declinationvalue READ declinationValue);
     Q_PROPERTY(Compass value READ get);
 
 public:
@@ -66,7 +66,7 @@ public:
 
     bool declination() const { return declinationCorrection_; }
     void setDeclination(bool enable);
-    quint16 declinationAngle() const;
+    quint16 declinationValue() const;
 
     Compass get() const { return compassData; }
 

@@ -175,7 +175,6 @@ void ClientApiTest::testMagnetometerSensor()
     delete sensorIfc;
 }
 
-
 void ClientApiTest::testCompassSensor()
 {
     QString sensorName("compasssensor");

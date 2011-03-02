@@ -56,7 +56,7 @@ bool SensorManagerInterface::registeredAndCorrectClassName(const QString& id, co
     return ( sensorInterfaceMap_.contains(cleanId) ) && ( sensorInterfaceMap_[cleanId].type == className );
 }
 
-QDBusAbstractInterface* SensorManagerInterface::interface(const QString& id)
+AbstractSensorChannelInterface* SensorManagerInterface::interface(const QString& id)
 {
     if ( !sensorInterfaceMap_.contains(id) )
     {
@@ -66,13 +66,10 @@ QDBusAbstractInterface* SensorManagerInterface::interface(const QString& id)
 
     // TODO: who owns this interface and how to deal with derived Sensors?
     SensorManagerInterface& sm = SensorManagerInterface::instance();
-    QDBusAbstractInterface* ifc = 0;
+    AbstractSensorChannelInterface* ifc = 0;
     int sessionId = sm.requestSensor(id);
     if ( sessionId >= 0 ) // sensor is available
     {
-        qDebug() << "New sensor" << id << "interface created with session id" << sessionId << "...";
-
-        // TODO: uses both id for key and as parameter...
         QString cleanId = getCleanId(id);
         ifc = sensorInterfaceMap_[cleanId].sensorInterfaceFactory(cleanId, sessionId);
     }
@@ -91,7 +88,7 @@ bool SensorManagerInterface::releaseInterface(const QString& id, int sessionId)
     QDBusReply<bool> reply = LocalSensorManagerInterface::releaseSensor(cleanId, sessionId);
     if ( !reply.isValid() )
     {
-        qDebug() << "Error:" << reply.error().message();
+        qDebug() << "Error: " << reply.error().message();
     }
     return reply.value();
 }

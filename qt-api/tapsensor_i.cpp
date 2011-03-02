@@ -30,7 +30,7 @@
 
 const char* TapSensorChannelInterface::staticInterfaceName = "local.TapSensor";
 
-QDBusAbstractInterface* TapSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* TapSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new TapSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }

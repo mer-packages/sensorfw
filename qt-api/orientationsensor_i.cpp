@@ -29,9 +29,8 @@
 
 const char* OrientationSensorChannelInterface::staticInterfaceName = "local.OrientationSensor";
 
-QDBusAbstractInterface* OrientationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* OrientationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new OrientationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -83,7 +82,5 @@ int OrientationSensorChannelInterface::threshold()
 
 void OrientationSensorChannelInterface::setThreshold(int value)
 {
-    QList<QVariant> argumentList;
-    argumentList << qVariantFromValue(value);
-    callWithArgumentList(QDBus::Block, QLatin1String("setThreshold"), argumentList);
+    setAccessor<int>("setThreshold", value);
 }

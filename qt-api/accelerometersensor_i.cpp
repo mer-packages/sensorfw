@@ -29,7 +29,7 @@
 
 const char* AccelerometerSensorChannelInterface::staticInterfaceName = "local.AccelerometerSensor";
 
-QDBusAbstractInterface* AccelerometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* AccelerometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new AccelerometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
@@ -90,5 +90,5 @@ void AccelerometerSensorChannelInterface::connectNotify(const char* signal)
 {
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
         frameAvailableConnected = true;
-    QDBusAbstractInterface::connectNotify(signal);
+    dbusConnectNotify(signal);
 }

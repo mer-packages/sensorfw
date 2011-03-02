@@ -29,8 +29,9 @@
 #define SENSORMANAGERINTERFACE_H
 
 #include "sensormanager_i.h"
+#include "abstractsensor_i.h"
 
-typedef QDBusAbstractInterface* (*SensorInterfaceFactoryMethod)(const QString& id, int sessionId);
+typedef AbstractSensorChannelInterface* (*SensorInterfaceFactoryMethod)(const QString& id, int sessionId);
 
 struct SensorInterfaceEntry {
     SensorInterfaceFactoryMethod sensorInterfaceFactory;
@@ -44,12 +45,10 @@ class SensorManagerInterface : public LocalSensorManagerInterface
 public:
     static SensorManagerInterface& instance();
 
-    // TODO: should the map key be the class type instead of the sensor type
     template<class SensorInterfaceType>
     void registerSensorInterface(const QString& sensorName);
 
-    // TODO: maybe deal with SensorInterface or something less abstract here?
-    QDBusAbstractInterface* interface(const QString& id);
+    AbstractSensorChannelInterface* interface(const QString& id);
     bool releaseInterface(const QString& id, int sessionId);
 
     bool registeredAndCorrectClassName(const QString& id, const QString& className ) const;

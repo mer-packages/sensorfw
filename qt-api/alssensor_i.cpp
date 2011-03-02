@@ -30,7 +30,7 @@
 
 const char* ALSSensorChannelInterface::staticInterfaceName = "local.ALSSensor";
 
-QDBusAbstractInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new ALSSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }

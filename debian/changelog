@@ -4,6 +4,7 @@ sensord (0.6.40) unstable; urgency=low
   * SensorManager::releaseSensor() now removes bufferSize and bufferInterval settings for session from the node.
   * Qt-api interface classes now directly access methods from dbus adaptor instead of using properties. Fixes: NB#181522.
   * Refactored sensor interface and adaptor classes.
+  * AbstractSensorChannelInterface does not anymore inherit from QDBusAbstractInterface.
 
   [Shenghua Liu]
   * Code cleanup 

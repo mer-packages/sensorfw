@@ -29,7 +29,7 @@
 
 const char* RotationSensorChannelInterface::staticInterfaceName = "local.RotationSensor";
 
-QDBusAbstractInterface* RotationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* RotationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new RotationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
@@ -96,5 +96,5 @@ void RotationSensorChannelInterface::connectNotify(const char* signal)
 {
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
         frameAvailableConnected = true;
-    QDBusAbstractInterface::connectNotify(signal);
+    dbusConnectNotify(signal);
 }

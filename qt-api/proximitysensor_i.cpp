@@ -30,7 +30,7 @@
 
 const char* ProximitySensorChannelInterface::staticInterfaceName = "local.ProximitySensor";
 
-QDBusAbstractInterface* ProximitySensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* ProximitySensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
     return new ProximitySensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }

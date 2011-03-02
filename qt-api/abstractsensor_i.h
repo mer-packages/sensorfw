@@ -42,7 +42,7 @@
 /*
  * Proxy class for interface local.Sensor
  */
-class AbstractSensorChannelInterface: public QDBusAbstractInterface
+class AbstractSensorChannelInterface : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(AbstractSensorChannelInterface)
@@ -126,6 +126,8 @@ public:
      */
     bool hwBuffering();
 
+    bool isValid() const;
+
 private:
     int errorCodeInt();
     void setError(SensorError errorCode, const QString& errorString);
@@ -159,6 +161,24 @@ protected:
     template<typename T>
     T getAccessor(const char* name);
 
+    template<typename T>
+    void setAccessor(const char* name, const T& value);
+
+    QDBusMessage call(QDBus::CallMode mode,
+                      const QString& method,
+                      const QVariant& arg1 = QVariant(),
+                      const QVariant& arg2 = QVariant(),
+                      const QVariant& arg3 = QVariant(),
+                      const QVariant& arg4 = QVariant(),
+                      const QVariant& arg5 = QVariant(),
+                      const QVariant& arg6 = QVariant(),
+                      const QVariant& arg7 = QVariant(),
+                      const QVariant& arg8 = QVariant());
+
+    QDBusMessage callWithArgumentList(QDBus::CallMode mode, const QString& method, const QList<QVariant>& args);
+
+    void dbusConnectNotify(const char* signal);
+
 private:
     struct AbstractSensorChannelInterfaceImpl;
 
@@ -183,6 +203,16 @@ T AbstractSensorChannelInterface::getAccessor(const char* name)
         return T();
     }
     return reply.value();
+}
+
+template<typename T>
+void AbstractSensorChannelInterface::setAccessor(const char* name, const T& value)
+{
+    QDBusReply<void> reply(call(QDBus::Block, QLatin1String(name), qVariantFromValue(value)));
+    if(!reply.isValid())
+    {
+        qDebug() << "Failed to set '" << name << " = " << value << "' to sensord: " << reply.error().message();
+    }
 }
 
 namespace local {
