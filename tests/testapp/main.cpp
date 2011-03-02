@@ -143,5 +143,6 @@ void printUsage()
     qDebug() << "                                  /usr/share/sensord-tests/testapp.conf is used.\n";
     qDebug() << " -m=N  --model=N                  Start clients in single thread model or multithread mode. (1(default)=single thread, 2=multithread)\n";
     qDebug() << " -i=N, --stat-interval=N          Interval for statistics printing.\n";
+    qDebug() << " -g=N                             Perform graceful shutdown (1(default)=yes, 0=no).\n"
     qDebug() << " -h, --help                       Show usage info and exit.";
 }
