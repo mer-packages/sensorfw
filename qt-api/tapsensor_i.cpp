@@ -30,9 +30,8 @@
 
 const char* TapSensorChannelInterface::staticInterfaceName = "local.TapSensor";
 
-QDBusAbstractInterface* TapSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* TapSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new TapSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -120,5 +119,4 @@ void TapSensorChannelInterface::output()
 
     if (type_ == SingleDouble)
         emit dataAvailable(Tap(tapValues_.takeLast()));
-
 }

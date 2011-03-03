@@ -56,7 +56,11 @@ public:
 protected:
     AbstractSensorChannelAdaptor(QObject *parent);
 
-public:
+private: // PROPERTIES
+    int errorCodeInt() const;
+    AbstractSensorChannel* node() const;
+
+public Q_SLOTS: // METHODS
     bool isValid() const;
     QString errorString() const;
     QString description() const;
@@ -68,11 +72,6 @@ public:
     QString type() const;
     // SensorState state() const; //TODO: put state back
 
-private: // PROPERTIES
-    int errorCodeInt() const;
-    AbstractSensorChannel* node() const;
-
-public Q_SLOTS: // METHODS
     void start(int sessionId);
     void stop(int sessionId);
 

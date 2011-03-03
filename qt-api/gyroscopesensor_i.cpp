@@ -32,9 +32,8 @@
 
 const char* GyroscopeSensorChannelInterface::staticInterfaceName = "local.GyroscopeSensor";
 
-QDBusAbstractInterface* GyroscopeSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* GyroscopeSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new GyroscopeSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -91,16 +90,15 @@ void GyroscopeSensorChannelInterface::connectNotify(const char* signal)
 {
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
         frameAvailableConnected = true;
-    QDBusAbstractInterface::connectNotify(signal);
+    dbusConnectNotify(signal);
 }
 
 QDBusReply<void> GyroscopeSensorChannelInterface::reset()
 {
-    QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+    return call(QDBus::Block, QLatin1String("reset"));
 }
 
-XYZ GyroscopeSensorChannelInterface::get() const
+XYZ GyroscopeSensorChannelInterface::get()
 {
-    return qvariant_cast<XYZ>(internalPropGet("value"));
+    return getAccessor<XYZ>("value");
 }

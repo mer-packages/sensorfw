@@ -32,7 +32,7 @@ MagnetometerSensorChannelAdaptor::MagnetometerSensorChannelAdaptor(QObject* pare
 
 MagneticField MagnetometerSensorChannelAdaptor::magneticField() const
 {
-    return qvariant_cast< MagneticField >(parent()->property("magneticField"));
+    return qvariant_cast<MagneticField>(parent()->property("magneticField"));
 }
 
 void MagnetometerSensorChannelAdaptor::reset()

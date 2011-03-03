@@ -29,9 +29,8 @@
 
 const char* CompassSensorChannelInterface::staticInterfaceName = "local.CompassSensor";
 
-QDBusAbstractInterface* CompassSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* CompassSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new CompassSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -48,7 +47,6 @@ CompassSensorChannelInterface* CompassSensorChannelInterface::controlInterface(c
 {
     return interface(id);
 }
-
 
 CompassSensorChannelInterface* CompassSensorChannelInterface::interface(const QString& id)
 {
@@ -71,22 +69,22 @@ bool CompassSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Compass CompassSensorChannelInterface::get() const
+Compass CompassSensorChannelInterface::get()
 {
-    return qvariant_cast<Compass>(internalPropGet("value"));
+    return getAccessor<Compass>("value");
 }
 
-bool CompassSensorChannelInterface::useDeclination() const
+bool CompassSensorChannelInterface::useDeclination()
 {
-    return qvariant_cast<bool>(internalPropGet("usedeclination"));
+    return getAccessor<bool>("useDeclination");
 }
 
 void CompassSensorChannelInterface::setUseDeclination(bool enable)
 {
-    internalPropSet("usedeclination", qVariantFromValue(enable));
+    setAccessor("setUseDeclination", enable);
 }
 
-int CompassSensorChannelInterface::declinationValue() const
+int CompassSensorChannelInterface::declinationValue()
 {
-    return qvariant_cast<int>(internalPropGet("declinationvalue"));
+    return getAccessor<int>("declinationValue");
 }

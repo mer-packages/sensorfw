@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,17 +34,18 @@
 
 class RotationSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
-    Q_OBJECT;
-    Q_CLASSINFO("D-Bus Interface", "local.RotationSensor");
+    Q_OBJECT
+    Q_DISABLE_COPY(RotationSensorChannelAdaptor)
+    Q_CLASSINFO("D-Bus Interface", "local.RotationSensor")
+    Q_PROPERTY(XYZ rotation READ rotation)
+    Q_PROPERTY(bool hasZ READ hasZ)
 
 public:
-    Q_PROPERTY(XYZ rotation READ rotation);
-    XYZ rotation() const;
-
-    Q_PROPERTY(bool hasZ READ hasZ);
-    bool hasZ() const;
-
     RotationSensorChannelAdaptor(QObject* parent);
+
+public Q_SLOTS:
+    XYZ rotation() const;
+    bool hasZ() const;
 
 Q_SIGNALS:
     void dataAvailable(const XYZ& data);

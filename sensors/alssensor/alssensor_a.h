@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,13 +36,15 @@
 class ALSSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
     Q_OBJECT
+    Q_DISABLE_COPY(ALSSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.ALSSensor")
+    Q_PROPERTY(Unsigned lux READ lux)
 
 public:
-    Q_PROPERTY(Unsigned lux READ lux);
-    Unsigned lux() const;
-
     ALSSensorChannelAdaptor(QObject* parent);
+
+public Q_SLOTS:
+    Unsigned lux() const;
 
 Q_SIGNALS:
     void ALSChanged(const Unsigned& value);

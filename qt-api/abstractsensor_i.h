@@ -42,7 +42,7 @@
 /*
  * Proxy class for interface local.Sensor
  */
-class AbstractSensorChannelInterface: public QDBusAbstractInterface
+class AbstractSensorChannelInterface : public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(AbstractSensorChannelInterface)
@@ -66,21 +66,21 @@ public:
 
     int sessionId() const;
 
-    SensorError errorCode() const;
+    SensorError errorCode();
 
-    QString errorString() const;
+    QString errorString();
 
-    QString description() const;
+    QString description();
 
-    QString id() const;
+    QString id();
 
-    int interval() const;
+    int interval();
     void setInterval(int value);
 
-    bool standbyOverride() const;
+    bool standbyOverride();
     bool setStandbyOverride(bool override);
 
-    unsigned int bufferInterval() const;
+    unsigned int bufferInterval();
     void setBufferInterval(unsigned int value);
 
     /**
@@ -90,7 +90,7 @@ public:
      */
     IntegerRangeList getAvailableBufferIntervals();
 
-    unsigned int bufferSize() const;
+    unsigned int bufferSize();
     void setBufferSize(unsigned int value);
 
     /**
@@ -101,7 +101,7 @@ public:
      */
     IntegerRangeList getAvailableBufferSizes();
 
-    QString type() const;
+    QString type();
 
     virtual QDBusReply<void> start();
     virtual QDBusReply<void> stop();
@@ -118,8 +118,18 @@ public:
     void requestDataRange(DataRange range);
     void removeDataRangeRequest();
     bool setDataRangeIndex(int dataRangeIndex);
+
+    /**
+     * Does the sensor driver support buffering or not.
+     *
+     * @return Does the sensor driver support buffering or not.
+     */
+    bool hwBuffering();
+
+    bool isValid() const;
+
 private:
-    int errorCodeInt() const;
+    int errorCodeInt();
     void setError(SensorError errorCode, const QString& errorString);
     void clearError();
 
@@ -148,26 +158,61 @@ protected:
 
     virtual bool dataReceivedImpl() = 0;
 
+    template<typename T>
+    T getAccessor(const char* name);
+
+    template<typename T>
+    void setAccessor(const char* name, const T& value);
+
+    QDBusMessage call(QDBus::CallMode mode,
+                      const QString& method,
+                      const QVariant& arg1 = QVariant(),
+                      const QVariant& arg2 = QVariant(),
+                      const QVariant& arg3 = QVariant(),
+                      const QVariant& arg4 = QVariant(),
+                      const QVariant& arg5 = QVariant(),
+                      const QVariant& arg6 = QVariant(),
+                      const QVariant& arg7 = QVariant(),
+                      const QVariant& arg8 = QVariant());
+
+    QDBusMessage callWithArgumentList(QDBus::CallMode mode, const QString& method, const QList<QVariant>& args);
+
+    void dbusConnectNotify(const char* signal);
+
 private:
     struct AbstractSensorChannelInterfaceImpl;
 
     AbstractSensorChannelInterfaceImpl* pimpl_;
 
     SocketReader& getSocketReader() const;
-
-public:
-    /**
-     * Does the sensor driver support buffering or not.
-     *
-     * @return Does the sensor driver support buffering or not.
-     */
-    bool hwBuffering();
 };
 
 template<typename T>
 bool AbstractSensorChannelInterface::read(QVector<T>& values)
 {
     return getSocketReader().read(values);
+}
+
+template<typename T>
+T AbstractSensorChannelInterface::getAccessor(const char* name)
+{
+    QDBusReply<T> reply(call(QDBus::Block, QLatin1String(name)));
+    if(!reply.isValid())
+    {
+        qDebug() << "Failed to get '" << name << "' from sensord: " << reply.error().message();
+        return T();
+    }
+    return reply.value();
+}
+
+template<typename T>
+void AbstractSensorChannelInterface::setAccessor(const char* name, const T& value)
+{
+    QDBusReply<void> reply(call(QDBus::Block, QLatin1String(name), qVariantFromValue(value)));
+    if(!reply.isValid())
+    {
+        qDebug() << "Failed to set '" << name << " = " << value << "' to sensord: " << reply.error().message();
+    }
 }
 
 namespace local {

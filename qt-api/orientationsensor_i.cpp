@@ -29,9 +29,8 @@
 
 const char* OrientationSensorChannelInterface::staticInterfaceName = "local.OrientationSensor";
 
-QDBusAbstractInterface* OrientationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* OrientationSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new OrientationSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -71,17 +70,17 @@ bool OrientationSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Unsigned OrientationSensorChannelInterface::orientation() const
+Unsigned OrientationSensorChannelInterface::orientation()
 {
-    return qvariant_cast<Unsigned>(internalPropGet("orientation"));
+    return getAccessor<Unsigned>("orientation");
 }
 
-int OrientationSensorChannelInterface::threshold() const
+int OrientationSensorChannelInterface::threshold()
 {
-    return qvariant_cast<int>(internalPropGet("threshold"));
+    return getAccessor<int>("threshold");
 }
 
 void OrientationSensorChannelInterface::setThreshold(int value)
 {
-    internalPropSet("threshold", qVariantFromValue(value));
+    setAccessor<int>("setThreshold", value);
 }

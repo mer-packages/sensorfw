@@ -39,8 +39,6 @@
  * Acts as a proxy class \e local.CompassSensor interface.
  *
  * For details of measurement process, see #CompassSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class CompassSensorChannelInterface: public AbstractSensorChannelInterface
 {
@@ -53,14 +51,14 @@ class CompassSensorChannelInterface: public AbstractSensorChannelInterface
 public:
     static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-    Compass get() const;
+    Compass get();
 
-    bool useDeclination() const;
+    bool useDeclination();
     void setUseDeclination(bool enable);
 
-    int declinationValue() const;
+    int declinationValue();
 
     CompassSensorChannelInterface(const QString& path, int sessionId);
 

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -35,14 +36,16 @@
 
 class GyroscopeSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(GyroscopeSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.GyroscopeSensor")
+    Q_PROPERTY(XYZ value READ value)
 
 public:
-    Q_PROPERTY(XYZ value READ get);
-    XYZ get() const;
-
     GyroscopeSensorChannelAdaptor(QObject* parent);
+
+public Q_SLOTS:
+    XYZ value() const;
 
 Q_SIGNALS:
     void dataAvailable(const XYZ& data);

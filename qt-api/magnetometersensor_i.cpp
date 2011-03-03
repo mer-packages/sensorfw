@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,9 +30,8 @@
 
 const char* MagnetometerSensorChannelInterface::staticInterfaceName = "local.MagnetometerSensor";
 
-QDBusAbstractInterface* MagnetometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* MagnetometerSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new MagnetometerSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -50,7 +50,6 @@ MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::controlI
 {
     return interface(id);
 }
-
 
 MagnetometerSensorChannelInterface* MagnetometerSensorChannelInterface::interface(const QString& id)
 {
@@ -88,16 +87,15 @@ void MagnetometerSensorChannelInterface::connectNotify(const char* signal)
 {
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<MagneticField>)))
         frameAvailableConnected = true;
-    QDBusAbstractInterface::connectNotify(signal);
+    dbusConnectNotify(signal);
 }
 
 QDBusReply<void> MagnetometerSensorChannelInterface::reset()
 {
-    QList<QVariant> argumentList;
-    return callWithArgumentList(QDBus::Block, QLatin1String("reset"), argumentList);
+    return call(QDBus::Block, QLatin1String("reset"));
 }
 
-MagneticField MagnetometerSensorChannelInterface::magneticField() const
+MagneticField MagnetometerSensorChannelInterface::magneticField()
 {
-    return qvariant_cast< MagneticField >(internalPropGet("magneticField"));
+    return getAccessor<MagneticField>("magneticField");
 }

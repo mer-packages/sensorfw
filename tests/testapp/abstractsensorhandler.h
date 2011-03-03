@@ -28,6 +28,7 @@
 
 #include <QThread>
 #include <QString>
+#include "qt-api/abstractsensor_i.h"
 
 class AbstractSensorHandler : public QThread
 {

@@ -103,9 +103,9 @@ void CompassSensorChannel::setDeclination(bool enable)
     signalPropertyChanged("usedeclination");
 }
 
-quint16 CompassSensorChannel::declinationAngle() const
+quint16 CompassSensorChannel::declinationValue() const
 {
-    return qvariant_cast<int>(compassChain_->property("declinationvalue"));
+    return qvariant_cast<quint16>(compassChain_->property("declinationvalue"));
 }
 
 bool CompassSensorChannel::start()

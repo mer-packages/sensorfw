@@ -36,6 +36,9 @@ sensord (0.7.0) unstable; urgency=low
   * Merged back pipe to SensorManager to delegate socket writing to Qt eventloop thread. Fixes: NB#227398, NB#227034, NB#229068.
   * Since SocketHandler is used only by Qt eventloop unnecessary mutexes are removed.
   * SensorManager::releaseSensor() now removes bufferSize and bufferInterval settings for session from the node.
+  * Qt-api interface classes now directly access methods from dbus adaptor instead of using properties. Fixes: NB#181522.
+  * Refactored sensor interface and adaptor classes.
+  * AbstractSensorChannelInterface does not anymore inherit from QDBusAbstractInterface.
 
   [Timo Rongas]
   * Prevent reading values from empty list in SysfsAdaptor

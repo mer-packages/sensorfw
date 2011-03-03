@@ -56,9 +56,9 @@ public:
      * Get an instance of the class.
      * @return Pointer to new instance of the class.
      */
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-    XYZ get() const;
+    XYZ get();
 
     /**
      * Constructor.

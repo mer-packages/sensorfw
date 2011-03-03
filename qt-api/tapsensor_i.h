@@ -43,7 +43,6 @@
  * Acts as a proxy class for interface \e local.TapSensor.
  *
  * For details of measurement process, see #TapSensorChannel.
- * @todo Add member and method descriptions.
  */
 class TapSensorChannelInterface: public AbstractSensorChannelInterface
 {
@@ -53,7 +52,7 @@ class TapSensorChannelInterface: public AbstractSensorChannelInterface
 public:
     static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
 public:
     TapSensorChannelInterface(const QString &path, int sessionId);

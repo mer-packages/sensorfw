@@ -52,4 +52,5 @@ AbstractSensorHandler::~AbstractSensorHandler()
 void AbstractSensorHandler::run()
 {
     startClient();
+    exec();
 }

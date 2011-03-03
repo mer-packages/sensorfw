@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,17 +34,17 @@
 
 class MagnetometerSensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
-    Q_OBJECT;
-    Q_CLASSINFO("D-Bus Interface", "local.MagnetometerSensor");
-    
-public:
+    Q_OBJECT
+    Q_DISABLE_COPY(MagnetometerSensorChannelAdaptor)
+    Q_CLASSINFO("D-Bus Interface", "local.MagnetometerSensor")
     Q_PROPERTY(MagneticField magneticField READ magneticField)
-    MagneticField magneticField() const;
 
+public:
     MagnetometerSensorChannelAdaptor(QObject* parent);
 
 public Q_SLOTS:
     void reset();
+    MagneticField magneticField() const;
 
 Q_SIGNALS:
     void dataAvailable(const MagneticField& data);

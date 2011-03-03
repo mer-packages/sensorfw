@@ -50,11 +50,11 @@ class RotationSensorChannelInterface: public AbstractSensorChannelInterface
 public:
     static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-    XYZ rotation() const;
+    XYZ rotation();
 
-    bool hasZ() const;
+    bool hasZ();
 
     RotationSensorChannelInterface(const QString& path, int sessionId);
 

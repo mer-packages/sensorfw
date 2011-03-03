@@ -40,8 +40,6 @@
  * measured intensity level can be queried any time. Provided values are in \e lux.
  *
  * For details of measurement process, see #ALSSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class ALSSensorChannelInterface: public AbstractSensorChannelInterface
 {
@@ -52,9 +50,9 @@ class ALSSensorChannelInterface: public AbstractSensorChannelInterface
 public:
     static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-    Unsigned lux() const;
+    Unsigned lux();
 
 public:
     ALSSensorChannelInterface(const QString& path, int sessionId);

@@ -38,8 +38,6 @@
  * Acts as a proxy class for interface \e local.OrientationSensor interface.
  *
  * For details of measurement process, see #OrientationSensorChannel.
- *
- * @todo Add property descriptions.
  */
 class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
 {
@@ -51,11 +49,11 @@ class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
 public:
     static const char* staticInterfaceName;
 
-    static QDBusAbstractInterface* factoryMethod(const QString& id, int sessionId);
+    static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-    Unsigned orientation() const;
+    Unsigned orientation();
 
-    int threshold() const;
+    int threshold();
     void setThreshold(int value);
 
 public:

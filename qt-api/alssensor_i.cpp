@@ -30,9 +30,8 @@
 
 const char* ALSSensorChannelInterface::staticInterfaceName = "local.ALSSensor";
 
-QDBusAbstractInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
+AbstractSensorChannelInterface* ALSSensorChannelInterface::factoryMethod(const QString& id, int sessionId)
 {
-    // ToDo: see which arguments can be made explicit
     return new ALSSensorChannelInterface(OBJECT_PATH + "/" + id, sessionId);
 }
 
@@ -73,7 +72,7 @@ bool ALSSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
-Unsigned ALSSensorChannelInterface::lux() const
+Unsigned ALSSensorChannelInterface::lux()
 {
-    return qvariant_cast< Unsigned >(internalPropGet("lux"));
+    return getAccessor<Unsigned>("lux");
 }

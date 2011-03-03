@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Samuli Piippo <ext-samuli.1.piippo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,7 +32,7 @@ GyroscopeSensorChannelAdaptor::GyroscopeSensorChannelAdaptor(QObject* parent) :
 {
 }
 
-XYZ GyroscopeSensorChannelAdaptor::get() const
+XYZ GyroscopeSensorChannelAdaptor::value() const
 {
     return qvariant_cast<XYZ>(parent()->property("value"));
 }

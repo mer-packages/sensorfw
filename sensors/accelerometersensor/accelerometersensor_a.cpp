@@ -30,7 +30,7 @@ AccelerometerSensorChannelAdaptor::AccelerometerSensorChannelAdaptor(QObject* pa
 {
 }
 
-XYZ AccelerometerSensorChannelAdaptor::get() const
+XYZ AccelerometerSensorChannelAdaptor::xyz() const
 {
-    return qvariant_cast< XYZ >(parent()->property("value"));
+    return qvariant_cast<XYZ>(parent()->property("value"));
 }

@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,14 +31,14 @@ CompassSensorChannelAdaptor::CompassSensorChannelAdaptor(QObject* parent) :
 {
 }
 
-Compass CompassSensorChannelAdaptor::get() const
+Compass CompassSensorChannelAdaptor::value() const
 {
-    return qvariant_cast< Compass >(parent()->property("value"));
+    return qvariant_cast<Compass>(parent()->property("value"));
 }
 
 bool CompassSensorChannelAdaptor::useDeclination() const
 {
-    return qvariant_cast< bool >(parent()->property("usedeclination"));
+    return qvariant_cast<bool>(parent()->property("usedeclination"));
 }
 
 void CompassSensorChannelAdaptor::setUseDeclination(bool enable)
@@ -47,5 +48,5 @@ void CompassSensorChannelAdaptor::setUseDeclination(bool enable)
 
 int CompassSensorChannelAdaptor::declinationValue() const
 {
-    return qvariant_cast< int >(parent()->property("declinationvalue"));
+    return qvariant_cast<int>(parent()->property("declinationvalue"));
 }
