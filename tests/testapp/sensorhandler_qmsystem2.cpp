@@ -69,14 +69,6 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
         sensor_ = new MeeGo::QmProximity();
         connect(sensor_, SIGNAL(ProximityChanged(const MeeGo::QmProximityReading)), this, SLOT(receivedData(const MeeGo::QmIntReading)));
     }
-
-    if (Config::configuration() != NULL)
-    {
-        interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
-        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", "0").toInt();
-        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", "false").toBool();
-        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", "0").toInt();
-    }
 }
 
 void SensorHandler::receivedData(const MeeGo::QmAccelerometerReading& data)
