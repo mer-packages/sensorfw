@@ -9,7 +9,7 @@ sensord (0.6.40) unstable; urgency=low
   [Shenghua Liu]
   * Code cleanup 
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Fri, 25 Feb 2011 10:50:28 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 04 Mar 2011 14:27:18 +0200
 
 sensord (0.6.39) unstable; urgency=low
 
