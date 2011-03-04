@@ -29,6 +29,7 @@
 
 #include "sensormanager_i.h"
 #include <QAbstractSocket>
+Q_DECLARE_METATYPE( QAbstractSocket::SocketState)
 
 void __attribute__ ((constructor)) qtapi_init(void)
 {

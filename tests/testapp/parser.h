@@ -9,6 +9,7 @@ class Parser
 public:
 
     Parser(QStringList arguments);
+    Parser();
 
     void parsingCommandLine(QStringList args);
 
