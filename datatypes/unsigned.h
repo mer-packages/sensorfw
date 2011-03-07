@@ -31,7 +31,7 @@
 
 #include <datatypes/timedunsigned.h>
 
-class Unsigned : public QObject //AbstractSensorData
+class Unsigned : public QObject
 {
     Q_OBJECT
 
@@ -57,7 +57,6 @@ public:
     /**
      * Returns the contained #TimedUnsigned
      * @return Contained TimedUnsigned
-     * @todo why is this with capital letter?
      */
     const TimedUnsigned& UnsignedData() const { return data_; }
 
@@ -79,8 +78,8 @@ public:
         return (data_.value_ == rdata.value_ &&
                 data_.timestamp_ == rdata.timestamp_);
     }
+
 private:
-    // TODO: make this a base class
     TimedUnsigned data_;
 
     friend QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned& data);
@@ -90,8 +89,7 @@ private:
 Q_DECLARE_METATYPE( Unsigned )
 
 // Marshall the Unsigned data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned &data)
 {
     argument.beginStructure();
     argument << data.data_.timestamp_ << data.data_.value_;
@@ -100,8 +98,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned &data)
 }
 
 // Retrieve the Unsigned data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Unsigned &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Unsigned &data)
 {
     argument.beginStructure();
     argument >> data.data_.timestamp_ >> data.data_.value_;

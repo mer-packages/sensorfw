@@ -26,19 +26,14 @@
 #ifndef TAP_H
 #define TAP_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/tapdata.h>
 
 /**
  * @brief Container class for #TapData.
- *
- * @todo Derive from AbstractSensorData
- * @todo Make sure that users of this class don't refer to data_ directly and 
- * make it private.
  */
-class Tap : public QObject //AbstractSensorData
+class Tap : public QObject
 {
     Q_OBJECT
 
@@ -83,7 +78,6 @@ public:
 
 private:
 
-    // TODO: make this a base class    
     friend QDBusArgument &operator<<(QDBusArgument &argument, const Tap& tap);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Tap& tap);
 };
@@ -91,8 +85,7 @@ private:
 Q_DECLARE_METATYPE( Tap )
 
 // Marshall Tap data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Tap &tap)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Tap &tap)
 {
     argument.beginStructure();
     argument << tap.data_.timestamp_ << (int)(tap.data_.direction_) << (int)(tap.data_.type_);
@@ -101,8 +94,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const Tap &tap)
 }
 
 // Retrieve Tap data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Tap &tap)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Tap &tap)
 {
     int tmp;
     argument.beginStructure();

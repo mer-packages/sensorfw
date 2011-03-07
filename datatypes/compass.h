@@ -26,19 +26,16 @@
 #ifndef COMPASS_H
 #define COMPASS_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/orientationdata.h>
 
 /**
  * @brief Compass is a wrapper class for #CompassData.
- * 
+ *
  * It is used for marshalling compass measurements over DBus.
- * 
- * @todo derive from AbstractSensorData
  */
-class Compass : public QObject //AbstractSensorData
+class Compass : public QObject
 {
 public:
     Q_OBJECT;
@@ -81,7 +78,6 @@ public:
      */
     int level() const { return data_.level_; }
 
-
     Compass& operator=(const Compass& origin)
     {
         data_ = origin.data();
@@ -106,11 +102,8 @@ private:
 
 Q_DECLARE_METATYPE( Compass )
 
-
-
 // Marshall the Compass data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
     argument << data.data_.timestamp_ << data.data_.degrees_ << data.data_.level_;
@@ -119,8 +112,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 }
 
 // Retrieve the Compass data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
 {
     argument.beginStructure();
     argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.level_;

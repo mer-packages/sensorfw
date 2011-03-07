@@ -79,8 +79,7 @@ Q_DECLARE_METATYPE( DataRange )
 Q_DECLARE_METATYPE( DataRangeList )
 
 // Marshall the DataRange data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const DataRange &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRange &data)
 {
     argument.beginStructure();
     argument << data.min << data.max << data.resolution;
@@ -89,8 +88,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const DataRange &data)
 }
 
 // Retrieve the DataRange data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
 {
     argument.beginStructure();
     argument >> data.min >> data.max >> data.resolution;
@@ -98,8 +96,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
     return argument;
 }
 
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
 {
     argument.beginArray(qMetaTypeId<DataRange>());
     foreach(const DataRange& range, data)
@@ -110,8 +107,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
     return argument;
 }
 
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &data)
 {
     argument.beginArray();
     data.clear();
@@ -124,8 +120,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &da
     return argument;
 }
 
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
 {
     argument.beginStructure();
     argument << data.first << data.second;
@@ -133,8 +128,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
     return argument;
 }
 
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &data)
 {
     argument.beginStructure();
     argument >> data.first >> data.second;
@@ -142,8 +136,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &dat
     return argument;
 }
 
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
 {
     argument.beginArray(qMetaTypeId<IntegerRange>());
     foreach(const IntegerRange& range, data)
@@ -154,8 +147,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
     return argument;
 }
 
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList &data)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList &data)
 {
     argument.beginArray();
     data.clear();

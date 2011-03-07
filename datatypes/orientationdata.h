@@ -23,10 +23,6 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
-
-  @todo Split datatypes into separate files or rename this to something more
-        generic.<br>
-        Drop out unnecessary typedefs.
  */
 
 #ifndef ORIENTATIONDATA_H
@@ -45,7 +41,6 @@ typedef TimedXyzData MagnetometerData;
 
 /**
  * @brief Container for calibrated magnetic field measurements.
- *
  */
 class CalibratedMagneticFieldData : public TimedData {
 public:

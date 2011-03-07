@@ -27,13 +27,11 @@
 #ifndef ORIENTATION_H
 #define ORIENTATION_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/orientationdata.h>
 
-// TODO: derive from AbstractSensorData
-class Orientation : public QObject //AbstractSensorData
+class Orientation : public QObject
 {
     Q_OBJECT
 
@@ -70,7 +68,6 @@ public:
     DisplayOrientation orientation() const { return OrientationUndefined; }
 
 private:
-    // TODO: make this a base class
     OrientationData data_;
 
     friend QDBusArgument &operator<<(QDBusArgument &argument, const Orientation& orientation);
@@ -81,8 +78,7 @@ private:
 Q_DECLARE_METATYPE( Orientation )
 
 // Marshall the Orientation data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Orientation &orientation)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Orientation &orientation)
 {
     argument.beginStructure();
     argument << orientation.data_.timestamp_ << orientation.data_.x_ << orientation.data_.y_ << orientation.data_.z_;
@@ -91,8 +87,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const Orientation &orientatio
 }
 
 // Retrieve the Orientation data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Orientation &orientation)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Orientation &orientation)
 {
     argument.beginStructure();
     argument >> orientation.data_.timestamp_ >> orientation.data_.x_ >> orientation.data_.y_ >> orientation.data_.z_;

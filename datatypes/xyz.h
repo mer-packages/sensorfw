@@ -27,20 +27,17 @@
 #ifndef XYZ_H
 #define XYZ_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/orientationdata.h>
 
 /**
  * @brief XYZ is a wrapper class for #TimedXYZData.
- * 
- * It is used to marshall measurement data with 3 integers and timestamp 
+ *
+ * It is used to marshall measurement data with 3 integers and timestamp
  * #TimedXYZData over DBus.
- * 
- * @todo derive from AbstractSensorData
  */
-class XYZ : public QObject //AbstractSensorData
+class XYZ : public QObject
 {
 public:
     Q_OBJECT;
@@ -83,7 +80,7 @@ public:
      * @return y value.
      */
     int y() const { return data_.y_; }
-    
+
     /**
      * Returns the value for Z.
      * @return z value.
@@ -106,10 +103,7 @@ public:
     }
 
 private:
-    // TODO: make this a base class
     TimedXyzData data_;
-
-    
 
     friend QDBusArgument &operator<<(QDBusArgument &argument, const XYZ& xyz);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, XYZ& xyz);
@@ -118,11 +112,8 @@ private:
 
 Q_DECLARE_METATYPE( XYZ )
 
-
-
 // Marshall the XYZ data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const XYZ &xyz)
+inline QDBusArgument &operator<<(QDBusArgument &argument, const XYZ &xyz)
 {
     argument.beginStructure();
     argument << xyz.data_.timestamp_ << xyz.data_.x_ << xyz.data_.y_ << xyz.data_.z_;
@@ -131,8 +122,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const XYZ &xyz)
 }
 
 // Retrieve the XYZ data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, XYZ &xyz)
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, XYZ &xyz)
 {
     argument.beginStructure();
     argument >> xyz.data_.timestamp_ >> xyz.data_.x_ >> xyz.data_.y_ >> xyz.data_.z_;

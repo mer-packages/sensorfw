@@ -30,8 +30,6 @@
 
 /**
  * Container for device pose interpretation.
- * @todo Rename from PoseData to OrientationData when other uses of OrientationData
- *       have been cleared. Not critical, not really visible to end-user.
  */
 class PoseData : public TimedData {
 public:

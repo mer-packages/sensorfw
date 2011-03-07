@@ -28,14 +28,11 @@
 #ifndef MAGNETICFIELDDATA_H
 #define MAGNETICFIELDDATA_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/orientationdata.h>
 
-/**
-*/
-class MagneticField : public QObject //AbstractSensorData
+class MagneticField : public QObject
 {
 public:
     Q_OBJECT;
@@ -75,8 +72,6 @@ public:
         data_.rz_ = data.data_.rz_; 
     }
 
-    /**
-     */
     const CalibratedMagneticFieldData& data() const { return data_; }
 
     MagneticField& operator=(const MagneticField& origin)
