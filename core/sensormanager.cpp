@@ -201,17 +201,19 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
         delete sensorChannel;
         return NULL;
     }
-    Q_ASSERT( entryIt.value().sensor_ == 0 );
-    entryIt.value().sensor_ = sensorChannel;
 
     bool ok = bus().registerObject(OBJECT_PATH + "/" + sensorChannel->id(), sensorChannel);
     if ( !ok )
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterObject, error.message());
-        Q_ASSERT ( false ); // TODO: release the sensor and update administration accordingly...
+        sensordLogC() << "Failed to register sensor '" << OBJECT_PATH + "/" + sensorChannel->id() << "'";
+        delete sensorChannel;
         return NULL;
     }
+
+    Q_ASSERT( entryIt.value().sensor_ == 0 );
+    entryIt.value().sensor_ = sensorChannel;
     return sensorChannel;
 }
 

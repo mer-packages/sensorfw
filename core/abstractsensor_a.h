@@ -48,7 +48,6 @@ class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(bool hwBuffering READ hwBuffering)
-    // Q_PROPERTY(SensorState state READ state) //TODO: put state back
 
 public:
     virtual ~AbstractSensorChannelAdaptor() {}
@@ -70,7 +69,6 @@ public Q_SLOTS: // METHODS
     unsigned int bufferInterval() const;
     unsigned int bufferSize() const;
     QString type() const;
-    // SensorState state() const; //TODO: put state back
 
     void start(int sessionId);
     void stop(int sessionId);

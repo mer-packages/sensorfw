@@ -28,7 +28,6 @@
 
 #include <QMap>
 #include <QString>
-#include <QVariant>
 
 class ParameterParser
 {
@@ -36,7 +35,7 @@ public:
     static QMap<QString, QString> getPropertyMap(const QString& id);
     static void applyPropertyMap(QObject* object, const QMap<QString, QString> & propertyMap);
 
-protected:
+private:
     static const char TYPE_SEPARATOR            = ';';
     static const char PROP_STRING_SEPARATOR     = ',';
     static const char PROP_NAME_VALUE_SEPARATOR = '=';

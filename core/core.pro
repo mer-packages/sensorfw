@@ -34,6 +34,7 @@ SOURCES += sensormanager.cpp \
     abstractsensor.cpp \
     logging.cpp \
     parameterparser.cpp \
+    abstractchain.cpp \
     sysfsadaptor.cpp \
     sockethandler.cpp \
     inputdevadaptor.cpp \

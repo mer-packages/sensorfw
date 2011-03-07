@@ -463,13 +463,13 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
 
 IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
 {
-    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
-
+    IntegerRangeList list;
     foreach (NodeBase* source, m_sourceList)
     {
-        return source->getAvailableBufferSizes(hwSupported);
+        list = source->getAvailableBufferSizes(hwSupported);
+        if(hwSupported)
+            return list;
     }
-    IntegerRangeList list;
     list.push_back(IntegerRange(1, 256));
     hwSupported = false;
     return list;
@@ -477,13 +477,13 @@ IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
 
 IntegerRangeList NodeBase::getAvailableBufferIntervals(bool& hwSupported) const
 {
-    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
-
+    IntegerRangeList list;
     foreach (NodeBase* source, m_sourceList)
     {
-        return source->getAvailableBufferIntervals(hwSupported);
+        list = source->getAvailableBufferIntervals(hwSupported);
+        if(hwSupported)
+            return list;
     }
-    IntegerRangeList list;
     list.push_back(IntegerRange(0, 60000));
     hwSupported = false;
     return list;
@@ -570,4 +570,3 @@ bool NodeBase::setDataRangeIndex(int sessionId, const int rangeIndex)
     DataRange range = getCurrentDataRange().range;
     return ranges.at(rangeIndex)==range;
 }
-

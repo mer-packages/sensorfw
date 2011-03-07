@@ -100,7 +100,6 @@ void SysfsAdaptor::stopAdaptor()
 
     foreach (AdaptedSensorEntry* entry, sensors()) {
         if ( entry->isRunning() ) {
-            //TODO: Drop refcount, so that we will definitely stop.
             stopSensor(entry->name());
         }
     }
@@ -400,13 +399,13 @@ void SysfsAdaptorReader::run()
             int descriptors = epoll_wait(parent_->epollDescriptor_, events, parent_->sysfsDescriptors_.size() + 1, -1);
 
             if (descriptors == -1) {
-                // TODO: deal with errors
                 sensordLogD() << "epoll_wait(): " << strerror(errno);
                 QThread::msleep(1000);
             } else {
                 bool errorInInput = false;
                 for (int i = 0; i < descriptors; ++i) {
-                    if (events[i].events & (EPOLLHUP | EPOLLERR)) { //TODO: we sort of ignore these type of errors to get sensordiverter.sh working
+                    if (events[i].events & (EPOLLHUP | EPOLLERR)) {
+                        //Note: we ignore error so the sensordiverter.sh works. This should be handled better when testcases are improved.
                         sensordLogD() << "epoll_wait(): error in input fd";
                         errorInInput = true;
                     }

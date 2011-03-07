@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -39,16 +40,12 @@
  * Due to the idea that processing should be shared, each chain is a chain
  * from HW to processed data. It is not possible to change inputs, as that
  * would make sharing difficult.
- *
- * @todo Should the interface provide function for listing available buffers?
  */
 class AbstractChain : public AbstractSensorChannel
 {
     Q_OBJECT;
 public:
-    virtual ~AbstractChain() {
-        // Who owns the output buffers?
-    }
+    virtual ~AbstractChain();
 
     /**
      * Locate a named end buffer of the chain. Buffer names \em should be
@@ -56,22 +53,22 @@ public:
      * @return Pointer to the buffer with the given name. If named buffer
      *         is not found, \c NULL is returned.
      */
-    RingBufferBase* findBuffer(const QString& name) const {
-        QMap<QString, RingBufferBase*>::const_iterator it = outputBufferMap_.find(name);
-        if (it == outputBufferMap_.end())
-            return NULL;
-        return it.value();
-    }
+    RingBufferBase* findBuffer(const QString& name) const;
+
+    /**
+     * List of available buffers.
+     * @return available buffers.
+     */
+    const QMap<QString, RingBufferBase*>& buffers() const;
 
 protected:
-    AbstractChain(const QString& id) : AbstractSensorChannel(id) {}
+    AbstractChain(const QString& id, bool deleteBuffers = false);
 
-    void nameOutputBuffer(const QString& name, RingBufferBase* buffer) {
-        outputBufferMap_.insert(name, buffer);
-    }
+    void nameOutputBuffer(const QString& name, RingBufferBase* buffer);
 
 private:
     QMap<QString, RingBufferBase*> outputBufferMap_;
+    const bool deleteBuffers_;
 };
 
 typedef AbstractChain* (*ChainFactoryMethod)(const QString& id);

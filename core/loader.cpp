@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Semi Malinen <semi.malinen@nokia.com
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,10 +28,9 @@
 
 #include "loader.h"
 #include "plugin.h"
-#include <QDir>
 #include <QLibrary>
-#include <QPluginLoader>
-#include <QHash>
+#include <QStringList>
+#include <QList>
 #include <QCoreApplication>
 
 #include "logging.h"
@@ -38,6 +38,7 @@
 
 Loader::Loader()
 {
+    QCoreApplication::addLibraryPath("/usr/lib/sensord/");
 }
 
 Loader& Loader::instance()
@@ -49,16 +50,9 @@ Loader& Loader::instance()
 
 bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const
 {
-    bool    loaded = true;
-
     sensordLogT() << "Loading plugin:" << name;
 
-    // TODO: perhaps use QCoreApplication::addLibraryPath();
-    // TODO: put the path definition to some reasonable place
-    QCoreApplication::addLibraryPath("/usr/lib/sensord/");
     QLibrary ql(name);
-    //QLibrary ql(dir.absoluteFilePath(name));
-    // TODO: this means RTLD_GLOBAL to dlopen(); think twice before using:
     ql.setLoadHints(QLibrary::ExportExternalSymbolsHint);
     if (!ql.load()) {
         *errorString = ql.errorString();
@@ -96,7 +90,8 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringLi
     QStringList requiredPlugins(plugin->Dependencies());
     sensordLogT() << name << " requires: " << requiredPlugins;
 
-    for (int i = 0; i < requiredPlugins.size() && loaded; i++) {
+    bool loaded = true;
+    for (int i = 0; i < requiredPlugins.size() && loaded; ++i) {
         if (!(loadedPluginNames_.contains(requiredPlugins.at(i)) ||
               newPluginNames.contains(requiredPlugins.at(i))))
         {

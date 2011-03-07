@@ -7,6 +7,7 @@
 
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,23 +30,16 @@
 
 class SinkBase
 {
-public:
-    virtual int typeId() = 0;
-
 protected:
     virtual ~SinkBase() {}
 };
-
 
 template <class TYPE>
 class SinkTyped : public SinkBase
 {
 public:
-    int typeId() { return 0; } // TODO
-
     virtual void collect(int n, const TYPE* values) = 0;
 };
-
 
 template <class DERIVED, class TYPE>
 class Sink : public SinkTyped<TYPE>

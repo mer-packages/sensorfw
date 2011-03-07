@@ -7,6 +7,7 @@
 
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,24 +29,12 @@
 
 bool RingBufferBase::join(RingBufferReaderBase* reader)
 {
-    bool joined = false;
-
-    if (reader->typeId() == typeId()) {
-        joinTypeChecked(reader);
-        joined = true;
-    }
-
-    return joined;
+    joinTypeChecked(reader);
+    return true;
 }
 
 bool RingBufferBase::unjoin(RingBufferReaderBase* reader)
 {
-    bool unjoined = false;
-
-    if (reader->typeId() == typeId()) {
-        unjoinTypeChecked(reader);
-        unjoined = true;
-    }
-    
-    return unjoined;
+    unjoinTypeChecked(reader);
+    return true;
 }

@@ -40,7 +40,6 @@ public:
     virtual QStringList Dependencies() { return QStringList(); }
 };
 
-// TODO: figure out the proper name to use for the I/F
 Q_DECLARE_INTERFACE(PluginBase, "com.nokia.SensorService.Plugin/1.0");
 
 class Plugin : public QObject, PluginBase

@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,24 +30,12 @@
 
 bool SourceBase::join(SinkBase* sink)
 {
-    bool joined = false;
-
-    if (sink->typeId() == typeId()) {
-        joinTypeChecked(sink);
-        joined = true;
-    }
-
-    return joined;
+    joinTypeChecked(sink);
+    return true;
 }
 
 bool SourceBase::unjoin(SinkBase* sink)
 {
-    bool unjoined = false;
-
-    if (sink->typeId() == typeId()) {
-        unjoinTypeChecked(sink);
-        unjoined = true;
-    }
-
-    return unjoined;
+    unjoinTypeChecked(sink);
+    return true;
 }

@@ -1,6 +1,15 @@
 sensord (0.6.41) unstable; urgency=low
 
   [Antti Virtanen]
+  * Refactoring:
+    - Removed unnecessary @todo comments.
+    - AbstractChain is now able to take care of deleting added RingBuffers.
+    - Removed unused SensorState concept.
+    - Loader optimizations.
+    - NodeBase bufferInterval and bufferSize handlers will try to locate source which supports buffering in case there a multiple sources.
+    - Removed unused typeId() concept.
+    - SensorManager::addSensor() now gracefully handles if object registration to dbus fails.
+    - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 07 Mar 2011 16:17:54 +0200
 

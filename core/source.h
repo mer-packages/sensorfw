@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -36,8 +37,6 @@ class SinkBase;
 class SourceBase
 {
 public:
-    virtual int typeId() = 0;
-
     bool join(SinkBase* sink);
     bool unjoin(SinkBase* sink);
 
@@ -54,8 +53,6 @@ template <class TYPE>
 class Source : public SourceBase
 {
 public:
-    int typeId() { return 0; } // TODO
-
     void propagate(int n, const TYPE* values)
     {
         SinkTyped<TYPE>* sink;

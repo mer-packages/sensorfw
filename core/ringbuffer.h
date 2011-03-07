@@ -40,9 +40,6 @@ class RingBuffer;
 
 class RingBufferReaderBase : public Pusher
 {
-public:
-    virtual int typeId() = 0;
-
 protected:
     virtual ~RingBufferReaderBase() {}
 };
@@ -55,8 +52,6 @@ friend class RingBuffer<TYPE>;
 public:
     RingBufferReader() : readCount_(0) {}
     virtual ~RingBufferReader() {}
-
-    int typeId() { return 0; } // TODO
 
 protected:
     unsigned read(unsigned n, TYPE* values)
@@ -73,13 +68,10 @@ private:
 class RingBufferBase : public Consumer
 {
 public:
-    virtual int typeId() = 0;
+    virtual ~RingBufferBase() {}
 
     bool join(RingBufferReaderBase* reader);
     bool unjoin(RingBufferReaderBase* reader);
-
-protected:
-    virtual ~RingBufferBase() {}
 
 private:
     virtual void joinTypeChecked(RingBufferReaderBase* reader) = 0;
@@ -103,8 +95,6 @@ public:
     {
         delete [] buffer_;
     }
-
-    int typeId() { return 0; } // TODO
 
     unsigned read(unsigned                n,
                   TYPE*                   values,

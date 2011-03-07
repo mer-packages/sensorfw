@@ -293,9 +293,8 @@ void SocketHandler::socketReadable()
         if(!m_idMap.contains(sessionId))
             m_idMap.insert(sessionId, new SessionData((QLocalSocket*)sender(), this));
     } else {
-        // TODO: Handle in a clean way, don't die.
-        sensordLogC() << "[SocketHandler]: Failed to read valid session ID from client.";
-        Q_ASSERT(false);
+        sensordLogC() << "[SocketHandler]: Failed to read valid session ID from client. Closing socket.";
+        socket->abort();
     }
 }
 
