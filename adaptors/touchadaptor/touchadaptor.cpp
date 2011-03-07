@@ -25,7 +25,6 @@
    </p>
  */
 
-#include <QtDebug>
 #include "touchadaptor.h"
 #include "datatypes/utils.h"
 #include <errno.h>
@@ -36,11 +35,6 @@ const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 
 TouchAdaptor::TouchAdaptor(const QString& id) : InputDevAdaptor(id, HARD_MAX_TOUCH_POINTS)
 {
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
     if (!getInputDevices("touchscreen")) {
         sensordLogW() << "Input device not found.";
     }
@@ -135,15 +129,6 @@ void TouchAdaptor::interpretEvent(int src, struct input_event *ev)
                 case ABS_Z:
                     touchValues_[src].z = ev->value;
                     break;
-                /* These aren't passed on as they are rather synaptic specific.
-                   No point in processing them either.
-                case ABS_VOLUME:
-                    touchValues_[src].volume = ev->value;
-                    break;
-                case ABS_TOOL_WIDTH:
-                    touchValues_[src].toolWidth = ev->value;
-                    break;
-                */
             }
             break;
 

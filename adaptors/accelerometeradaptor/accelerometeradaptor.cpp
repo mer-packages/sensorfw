@@ -40,10 +40,6 @@
 AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
     if (!getInputDevices(DEVICE_MATCH_STRING)) {
         sensordLogW() << "Input device not found.";
     }

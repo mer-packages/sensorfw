@@ -36,8 +36,6 @@
  * Events are received through @e gpio-keys input layer.
  *
  * Listening clients are notified whenever the state has changed.
- *
- * @todo Move definition of \e KeyboardSliderState to filters/kbsliderstate.
  */
 class KeyboardSliderAdaptor : public InputDevAdaptor
 {

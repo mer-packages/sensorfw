@@ -39,8 +39,6 @@
  * Events are received through @e evdev kernel interface.
  *
  * Listening clients are notified whenever the state has changed.
- *
- * @todo Make \e ProximityState a global datatype for proximity data
  */
 class ProximityAdaptorEvdev : public InputDevAdaptor
 {
@@ -81,4 +79,3 @@ private:
 };
 
 #endif
-

@@ -25,10 +25,6 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
 */
-#include <QTime>
-#include <QTimer>
-#include <QTimerEvent>
-
 #include "tapadaptor.h"
 #include "config.h"
 #include "datatypes/utils.h"
@@ -40,10 +36,6 @@
 TapAdaptor::TapAdaptor(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
     if (!getInputDevices(DEVICE_MATCH_STRING)) {
         sensordLogW() << "Input device not found.";
     }
@@ -79,7 +71,8 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
                 dir = TapData::Z;
                 break;
             default:
-                dir = TapData::X; // TODO: Add Unknown state to TapData
+                dir = TapData::X;
+                sensordLogW() << "TapAdaptor: Unknown event-code received: " << ev->code;
                 break;
         }
         TapData tapValue;
@@ -90,7 +83,6 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
         commitOutput(tapValue);
     }
 }
-
 
 void TapAdaptor::interpretSync(int src, struct input_event *ev)
 {

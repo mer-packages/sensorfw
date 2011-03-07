@@ -24,7 +24,6 @@
    </p>
 */
 
-#include <QtDebug>
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
@@ -40,11 +39,6 @@
 KeyboardSliderAdaptor::KeyboardSliderAdaptor(const QString& id) :
     InputDevAdaptor(id, 1), newKbEventRecorded_(false), currentState_(KeyboardSliderStateUnknown)
 {
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
     if (!getInputDevices(DEVICE_MATCH_STRING)) {
         sensordLogW() << "Input device not found.";
     }
@@ -102,7 +96,6 @@ void KeyboardSliderAdaptor::interpretSync(int src, struct input_event *ev)
 
 void KeyboardSliderAdaptor::commitOutput()
 {
-
     sensordLogD() << "KB Slider state change detected: " << currentState_;
 
     KeyboardSliderState *state = kbstateBuffer_->nextSlot();

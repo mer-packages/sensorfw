@@ -25,7 +25,6 @@
    </p>
 */
 
-#include <QtDebug>
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
@@ -42,11 +41,6 @@
 ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
     InputDevAdaptor(id, 1), currentState_(ProximityStateUnknown)
 {
-
-    //This was previously in the base class, but it's not
-    //possible call virtual methods from base class constructor.
-    //TODO: find a way to get rid of all child classes calling this
-    //manually.
     if (!getInputDevices(Config::configuration()->value("proximity-evdev_match_name").toString())) {
         sensordLogW() << "Input device not found.";
     }
@@ -102,7 +96,7 @@ void ProximityAdaptorEvdev::interpretSync(int src, struct input_event *ev)
 void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
 {
     static ProximityState oldState = ProximityStateUnknown;
-    
+
     if (currentState_ != oldState) {
         sensordLogD() << "Proximity state change detected: " << currentState_;
 
@@ -110,7 +104,7 @@ void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
 
         proximityData->timestamp_ = Utils::getTimeStamp(&(ev->time));
         proximityData->value_ = currentState_;
-        
+
         oldState = currentState_;
 
         proximityBuffer_->commit();
