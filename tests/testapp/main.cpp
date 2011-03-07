@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
     signal(SIGINT, sigIntHandler);
 
     ClientAdmin clientAdmin(parser);
-    clientAdmin.runningClients();
+    clientAdmin.runClients();
 
     int ret = app.exec();
 

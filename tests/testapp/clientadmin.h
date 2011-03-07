@@ -19,12 +19,9 @@ class ClientAdmin : public QObject
 {
     Q_OBJECT
 public:
-    ClientAdmin(QObject *parent = 0);
-    ClientAdmin(const Parser parser, QObject *parent = 0);
+    ClientAdmin(const Parser& parser, QObject *parent = 0);
     ~ClientAdmin();
-    void init();
-    static void registerSensorInterface(const QStringList& sensors);
-    void runningClients();
+    void runClients();
 
 signals:
 
@@ -34,8 +31,10 @@ private:
     Parser parser;
     QList<SensorHandler*> handlers;
     StatPrinter* printer;
-    char* CONFIG_FILE_PATH;
+    static const char* CONFIG_FILE_PATH;
 
+    void init();
+    static void registerSensorInterface(const QStringList& sensors);
 };
 
 #endif // CLIENTADMIN_H

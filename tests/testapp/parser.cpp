@@ -2,10 +2,10 @@
 #include <QDebug>
 #include <iostream>
 
-Parser::Parser()
-{
+//Parser::Parser()
+//{
 
-}
+//}
 
 Parser::Parser(QStringList arguments) :
     printHelp_(false),

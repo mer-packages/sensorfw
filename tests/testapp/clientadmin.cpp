@@ -1,15 +1,10 @@
 #include "clientadmin.h"
 
-ClientAdmin::ClientAdmin(QObject *parent) :
-        QObject(parent)
-{
-}
+const char* ClientAdmin::CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 
-ClientAdmin::ClientAdmin(Parser parser, QObject *parent) :
-        printer(0), QObject(parent)
+ClientAdmin::ClientAdmin(const Parser& parser, QObject *parent) :
+        QObject(parent),parser(parser), printer(0)
 {
-    this->parser = parser;
-    CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 }
 
 void ClientAdmin::init()
@@ -45,7 +40,7 @@ void ClientAdmin::init()
     registerSensorInterface(Config::configuration()->groups());
 }
 
-void ClientAdmin::runningClients()
+void ClientAdmin::runClients()
 {
     init();
 
@@ -112,12 +107,8 @@ ClientAdmin::~ClientAdmin()
         if (parser.singleThread())
         {
             handler->stopClient();
-        }else {
-            while (handler->isRunning())
-            {
-                handler->quit();
-                QTest::qWait(50);
-            }
+        }else {          
+            handler->quit(); //Todo: Find a nice way for saftly thread exiting
         }
         delete handler;
     }
