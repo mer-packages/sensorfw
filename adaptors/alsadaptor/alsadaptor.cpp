@@ -10,6 +10,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 

@@ -8,6 +8,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
