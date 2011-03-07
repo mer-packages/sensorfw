@@ -64,7 +64,6 @@ AbstractSensorChannelInterface* SensorManagerInterface::interface(const QString&
         return 0;
     }
 
-    // TODO: who owns this interface and how to deal with derived Sensors?
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     AbstractSensorChannelInterface* ifc = 0;
     int sessionId = sm.requestSensor(id);
