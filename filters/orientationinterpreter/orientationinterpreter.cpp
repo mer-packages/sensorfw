@@ -47,11 +47,10 @@ typedef PoseData (OrientationInterpreter::*ptrFUN)(int);
 
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
-        threshold_(DEFAULT_THRESHOLD),
         topEdge(PoseData::Undefined),
         face(PoseData::Undefined),
         previousFace(PoseData::Undefined),
-        o_(PoseData::Undefined)
+        orientationData(PoseData::Undefined)
 
 {
     addSink(&accDataSink, "accsink");
@@ -59,13 +58,15 @@ OrientationInterpreter::OrientationInterpreter() :
     addSource(&faceSource, "face");
     addSource(&orientationSource, "orientation");
 
-    minlimit = Config::configuration()->value("orientation_overflow_min",QVariant(OVERFLOW_MIN)).toInt();
-    maxlimit = Config::configuration()->value("orientation_overflow_max",QVariant(OVERFLOW_MAX)).toInt();
+    minLimit = Config::configuration()->value("orientation_overflow_min", QVariant(OVERFLOW_MIN)).toInt();
+    maxLimit = Config::configuration()->value("orientation_overflow_max", QVariant(OVERFLOW_MAX)).toInt();
 
-    angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait",QVariant(THRESHOLD_PORTRAIT)).toInt();
-    angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape",QVariant(THRESHOLD_LANDSCAPE)).toInt();
+    angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait", QVariant(THRESHOLD_PORTRAIT)).toInt();
+    angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape", QVariant(THRESHOLD_LANDSCAPE)).toInt();
 
     discardTime = Config::configuration()->value("orientation_discard_time", QVariant(DISCARD_TIME)).toUInt();
+
+    maxBufferSize = Config::configuration()->value("orientation_buffer_size", QVariant(AVG_BUFFER_MAX_SIZE)).toInt();
 }
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* pdata)
@@ -82,26 +83,18 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     // Append new value to buffer
     dataBuffer.append(data);
 
-    // Limit buffer size to N samples
-    // Avoids bloating when timestamps don't make sense
-    if (dataBuffer.count() > AVG_BUFFER_MAX_SIZE)
-    {
-        dataBuffer.erase(dataBuffer.begin(), dataBuffer.end() - 10);
-    }
-
     // Clear old values from buffer.
-    while (dataBuffer.count() > 1 && (data.timestamp_ - dataBuffer.first().timestamp_ > discardTime))
+    while (dataBuffer.count() > maxBufferSize || (dataBuffer.count() > 1 && (data.timestamp_ - dataBuffer.first().timestamp_ > discardTime)))
     {
         dataBuffer.removeFirst();
     }
 
+    //Calculate average
     long x = 0;
     long y = 0;
     long z = 0;
     foreach (const AccelerationData& sample, dataBuffer)
     {
-        // Dummy average calculations, optimise if a neater method
-        // is figured out.
         x += sample.x_;
         y += sample.y_;
         z += sample.z_;
@@ -123,18 +116,17 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 
 bool OrientationInterpreter::overFlowCheck()
 {
-    int gVector = ((data.x_*data.x_ + data.y_*data.y_ + data.z_*data.z_)/1000);
-    return !((gVector >= minlimit) && (gVector <=maxlimit));
+    int gVector = ((data.x_ * data.x_ + data.y_ * data.y_ + data.z_ * data.z_) / 1000);
+    return !((gVector >= minLimit) && (gVector <= maxLimit));
 }
 
 int OrientationInterpreter::orientationCheck(const AccelerationData &data,  OrientationMode mode) const
 {
     if (mode == OrientationInterpreter::Landscape)
-        return round(atan((double)data.x_ / sqrt(data.y_*data.y_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+        return round(atan((double)data.x_ / sqrt(data.y_ * data.y_ + data.z_ * data.z_)) * RADIANS_TO_DEGREES);
     else
-        return round(atan((double)data.y_ / sqrt(data.x_*data.x_ + data.z_*data.z_)) * RADIANS_TO_DEGREES);
+        return round(atan((double)data.y_ / sqrt(data.x_ * data.x_ + data.z_ * data.z_)) * RADIANS_TO_DEGREES);
 }
-
 
 PoseData OrientationInterpreter::rotateToPortrait(int rotation)
 {
@@ -168,7 +160,6 @@ PoseData OrientationInterpreter::rotateToLandscape(int rotation)
     }
 
     return newTopEdge;
-
 }
 
 PoseData OrientationInterpreter::orientationRotation (const AccelerationData &data, OrientationMode mode, PoseData (OrientationInterpreter::*ptrFUN)(int))
@@ -208,7 +199,7 @@ void OrientationInterpreter::processTopEdge()
     if (topEdge.orientation_ != newTopEdge.orientation_)
     {
         topEdge.orientation_ = newTopEdge.orientation_;
-        sensordLogT() << "new TopEdge value:" << topEdge.orientation_;
+        sensordLogT() << "new TopEdge value: " << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;
         topEdgeSource.propagate(1, &topEdge);
     }
@@ -223,8 +214,7 @@ void OrientationInterpreter::processFace()
 
         if (newFace.orientation_ == PoseData::FaceDown)
         {
-            if (topEdge.orientation_ != PoseData::Undefined)
-            {
+            if (topEdge.orientation_ != PoseData::Undefined) {
                 face.orientation_ = PoseData::FaceUp;
             } else {
                 face.orientation_ = PoseData::FaceDown;
@@ -246,17 +236,16 @@ void OrientationInterpreter::processOrientation()
 {
     PoseData newPose;
 
-    if (topEdge.orientation_ != PoseData::Undefined)
-    {
+    if (topEdge.orientation_ != PoseData::Undefined) {
         newPose.orientation_ = topEdge.orientation_;
     } else {
         newPose.orientation_ = face.orientation_;
     }
 
-    if (newPose.orientation_ != o_.orientation_) {
-        o_.orientation_ = newPose.orientation_;
-        sensordLogT() << "New orientation value:" << o_.orientation_;
-        o_.timestamp_ = data.timestamp_;
-        orientationSource.propagate(1, &o_);
+    if (newPose.orientation_ != orientationData.orientation_) {
+        orientationData.orientation_ = newPose.orientation_;
+        sensordLogT() << "New orientation value: " << orientationData.orientation_;
+        orientationData.timestamp_ = data.timestamp_;
+        orientationSource.propagate(1, &orientationData);
     }
 }

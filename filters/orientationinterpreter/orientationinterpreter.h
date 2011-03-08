@@ -30,7 +30,6 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
-#include <QAtomicInt>
 #include "filter.h"
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
@@ -42,13 +41,11 @@
  * #AccelerometerChain is used.
  *
  */
-
 class OrientationInterpreter : public QObject, public FilterBase
 {
     Q_OBJECT;
 
     Q_PROPERTY(PoseData orientation READ orientation);
-    Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
 
 private:
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
@@ -65,8 +62,6 @@ private:
 
     OrientationInterpreter();
 
-    QAtomicInt threshold_;
-
     PoseData topEdge;
     PoseData face;
     PoseData previousFace;
@@ -75,13 +70,15 @@ private:
     AccelerationData data;
     QList<AccelerationData> dataBuffer;
 
-    int minlimit;
-    int maxlimit;
+    int minLimit;
+    int maxLimit;
     int angleThresholdPortrait;
     int angleThresholdLandscape;
     unsigned long discardTime;
+    int maxBufferSize;
 
-    PoseData o_;
+    PoseData orientationData;
+
     enum OrientationMode
     {
         Portrait = 0, /**< Orientation mode is portrait. */
@@ -117,13 +114,7 @@ public:
         return new OrientationInterpreter();
     }
 
-    PoseData orientation() const {
-        return o_;
-    }
-
-    int threshold() const { return threshold_; }
-
-    void setThreshold(int threshold) { threshold_ = threshold; }
+    PoseData orientation() const { return orientationData; }
 };
 
 #endif
