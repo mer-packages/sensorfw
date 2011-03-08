@@ -23,6 +23,7 @@
 */
 
 #include <QObject>
+#include <QDebug>
 #include <datatypes/xyz.h>
 #include <datatypes/unsigned.h>
 
