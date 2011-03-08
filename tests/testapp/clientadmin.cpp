@@ -133,7 +133,8 @@ ClientAdmin::~ClientAdmin()
         {
             handler->stopClient();
         }else {          
-            handler->quit(); //Todo: Find a nice way for saftly thread exiting
+            handler->exit(0);
+            handler->wait();
         }
         delete handler;
     }
