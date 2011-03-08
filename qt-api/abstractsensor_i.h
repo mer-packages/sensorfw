@@ -58,6 +58,7 @@ class AbstractSensorChannelInterface : public QObject
     Q_PROPERTY(unsigned int bufferInterval READ bufferInterval WRITE setBufferInterval)
     Q_PROPERTY(unsigned int bufferSize READ bufferSize WRITE setBufferSize)
     Q_PROPERTY(bool hwBuffering READ hwBuffering)
+    Q_PROPERTY(bool downsampling READ downsampling WRITE setDownsampling)
 
 public:
     virtual ~AbstractSensorChannelInterface();
@@ -82,6 +83,9 @@ public:
 
     unsigned int bufferInterval();
     void setBufferInterval(unsigned int value);
+
+    bool downsampling();
+    bool setDownsampling(bool value);
 
     /**
      * Returns list of available buffer intervals.
@@ -138,6 +142,7 @@ protected Q_SLOTS:
     QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
     QDBusReply<void> setBufferInterval(int sessionId, unsigned int value);
     QDBusReply<void> setBufferSize(int sessionId, unsigned int value);
+    QDBusReply<void> setDownsampling(int sessionId, bool value);
 
 private Q_SLOTS: // METHODS
     QDBusReply<void> start(int sessionId);

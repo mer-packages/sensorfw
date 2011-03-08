@@ -203,3 +203,8 @@ bool AbstractSensorChannelAdaptor::setDataRangeIndex(int sessionId, int rangeInd
 {
     return node()->setDataRangeIndex(sessionId, rangeIndex);
 }
+
+void AbstractSensorChannelAdaptor::setDownsampling(int sessionId, bool value)
+{
+    SensorManager::instance().socketHandler().setDownsampling(sessionId, value);
+}

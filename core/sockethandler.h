@@ -57,6 +57,8 @@ public:
     unsigned int getBufferSize() const;
     void setBufferInterval(unsigned int interval);
     unsigned int getBufferInterval() const;
+    void setDownsampling(bool value);
+    bool getDownsampling() const;
 
 private:
     long sinceLastWrite() const;
@@ -72,6 +74,7 @@ private:
     QTimer timer;
     unsigned int bufferSize;
     unsigned int bufferInterval;
+    bool downsampling;
 
 private slots:
     void timerTimeout();
@@ -105,6 +108,9 @@ public:
     void setBufferInterval(int sessionId, unsigned int value);
     void clearBufferInterval(int sessionId);
     unsigned int bufferInterval(int sessionId) const;
+
+    bool downsampling(int sessionId) const;
+    void setDownsampling(int sessionId, bool value);
 
 Q_SIGNALS:
     void lostSession(int sessionId);

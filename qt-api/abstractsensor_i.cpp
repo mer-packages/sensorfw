@@ -44,6 +44,7 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl : publ
     SocketReader socketReader_;
     bool running_;
     bool standbyOverride_;
+    bool downsampling_;
 };
 
 AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId, const QString& path, const char* interfaceName) :
@@ -56,7 +57,8 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl::AbstractSens
     bufferSize_(1),
     socketReader_(parent),
     running_(false),
-    standbyOverride_(false)
+    standbyOverride_(false),
+    downsampling_(true)
 {
 }
 
@@ -379,4 +381,24 @@ void AbstractSensorChannelInterface::dbusConnectNotify(const char* signal)
 bool AbstractSensorChannelInterface::isValid() const
 {
     return pimpl_->isValid();
+}
+
+bool AbstractSensorChannelInterface::downsampling()
+{
+    return pimpl_->downsampling_;
+}
+
+bool AbstractSensorChannelInterface::setDownsampling(bool value)
+{
+    pimpl_->downsampling_ = value;
+    return setDownsampling(pimpl_->sessionId_, value).isValid();
+}
+
+QDBusReply<void> AbstractSensorChannelInterface::setDownsampling(int sessionId, bool value)
+{
+    clearError();
+
+    QList<QVariant> argumentList;
+    argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
+    return pimpl_->callWithArgumentList(QDBus::Block, QLatin1String("setDownsampling"), argumentList);
 }

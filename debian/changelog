@@ -10,6 +10,7 @@ sensord (0.6.41) unstable; urgency=low
     - Removed unused typeId() concept.
     - SensorManager::addSensor() now gracefully handles if object registration to dbus fails.
     - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
+  * Downsampling (which works by dropping samples) can be now enabled/disabled.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 07 Mar 2011 16:17:54 +0200
 

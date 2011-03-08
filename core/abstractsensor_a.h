@@ -78,6 +78,7 @@ public Q_SLOTS: // METHODS
     bool setDefaultInterval(int sessionId);
 
     bool setStandbyOverride(int sessionId, bool value);
+    void setDownsampling(int sessionId, bool value);
 
     void setBufferInterval(int sessionId, unsigned int value);
     void setBufferSize(int sessionId, unsigned int value);
