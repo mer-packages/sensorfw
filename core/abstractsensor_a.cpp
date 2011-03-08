@@ -84,13 +84,6 @@ bool AbstractSensorChannelAdaptor::hwBuffering() const
     return hwBuffering;
 }
 
-/*
-SensorState AbstractSensorChannelAdaptor::state() const
-{
-    return node()->state();
-}
-*/
-
 QString AbstractSensorChannelAdaptor::type() const
 {
     return node()->type();
