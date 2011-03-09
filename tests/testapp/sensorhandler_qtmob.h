@@ -6,6 +6,7 @@
    Copyright (C) 2011 Nokia Corporation
 
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 
@@ -27,33 +28,68 @@
 #define SENSORHANDLER_H
 
 #include <QVector>
+#include <QThread>
+#include <QString>
 #include "qt-api/abstractsensor_i.h"
 #include "datatypes/xyz.h"
 #include "config.h"
-#include <QThread>
 
-class SensorHandler : public QThread
+#include <QSensor>
+#include <QAccelerometer>
+#include <QCompass>
+#include <QMagnetometer>
+#include <QOrientationSensor>
+#include <QAmbientLightSensor>
+#include <QRotationSensor>
+#include <QTapSensor>
+#include <QProximitySensor>
+
+#include <QAccelerometerReading>
+#include <QCompassReading>
+#include <QMagnetometerReading>
+#include <QOrientationReading>
+#include <QAmbientLightReading>
+#include <QRotationReading>
+#include <QTapReading>
+#include <QProximityReading>
+
+
+QTM_USE_NAMESPACE
+
+class SensorHandler : public QThread 
 {
     Q_OBJECT
+
 public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
-
-    void startClient();
+    bool startClient();
+    void stopClient();
 
     int dataCount() const { return dataCount_; }
     QString sensorName() const { return sensorName_; }
 
     static void init(const QStringList& sensors);
 
+public Q_SLOTS:
+    void receivedData(const QAccelerometerReading* data);
+    void receivedData(const QAmbientLightReading* data);
+    void receivedData(const QCompassReading* data);
+    void receivedData(const QMagnetometerReading* data);
+    void receivedData(const QOrientationReading* data);
+    void receivedData(const QRotationReading* data);
+    void receivedData(const QTapReading* data);
+    void receivedData(const QProximityReading* data);
+
 private:
+
     QString sensorName_;
     int interval_;
     int bufferinterval_;
     bool standbyoverride_;
     int buffersize_;
     int dataCount_;
-    int frameCount_;
+    QSensor* m_sensor;
 };
 
 #endif // SENSORHANDLER_H

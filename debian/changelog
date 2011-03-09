@@ -1,5 +1,8 @@
 sensord (0.6.41) unstable; urgency=low
 
+  [Lihan Guo]
+  * Added qt-mobility for tests/testapp.
+
   [Antti Virtanen]
   * Refactoring:
     - Removed unnecessary @todo comments.
