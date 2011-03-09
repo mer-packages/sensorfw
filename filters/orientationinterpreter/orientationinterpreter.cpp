@@ -29,16 +29,15 @@
 
 #include "orientationinterpreter.h"
 #include "logging.h"
+#include "config.h"
 #include <math.h>
 #include <stdlib.h>
-#include "config.h"
+#include <limits.h>
 
-const int OrientationInterpreter::DEFAULT_THRESHOLD = 250;
 const float OrientationInterpreter::RADIANS_TO_DEGREES = 180.0/M_PI;
-const int OrientationInterpreter::ANGLE_LIMIT = 45;
 const int OrientationInterpreter::SAME_AXIS_LIMIT = 5;
-const int OrientationInterpreter::OVERFLOW_MIN = 800;
-const int OrientationInterpreter::OVERFLOW_MAX = 1250;
+const int OrientationInterpreter::OVERFLOW_MIN = 0;
+const int OrientationInterpreter::OVERFLOW_MAX = INT_MAX;
 const int OrientationInterpreter::THRESHOLD_LANDSCAPE = 25;
 const int OrientationInterpreter::THRESHOLD_PORTRAIT = 20;
 const int OrientationInterpreter::DISCARD_TIME = 750000;
@@ -116,8 +115,8 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 
 bool OrientationInterpreter::overFlowCheck()
 {
-    int gVector = ((data.x_ * data.x_ + data.y_ * data.y_ + data.z_ * data.z_) / 1000);
-    return !((gVector >= minLimit) && (gVector <= maxLimit));
+    int vector = ((data.x_ * data.x_ + data.y_ * data.y_ + data.z_ * data.z_) / 1000);
+    return !((vector >= minLimit) && (vector <= maxLimit));
 }
 
 int OrientationInterpreter::orientationCheck(const AccelerationData &data,  OrientationMode mode) const
@@ -131,7 +130,7 @@ int OrientationInterpreter::orientationCheck(const AccelerationData &data,  Orie
 PoseData OrientationInterpreter::rotateToPortrait(int rotation)
 {
     PoseData newTopEdge = PoseData::Undefined;
-    newTopEdge.orientation_ = (rotation>=0) ? PoseData::BottomUp : PoseData::BottomDown;
+    newTopEdge.orientation_ = (rotation >= 0) ? PoseData::BottomUp : PoseData::BottomDown;
 
     // Some threshold to switching between portrait modes
     if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown)
@@ -149,7 +148,7 @@ PoseData OrientationInterpreter::rotateToLandscape(int rotation)
 {
 
     PoseData newTopEdge = PoseData::Undefined;
-    newTopEdge.orientation_ = (rotation>=0) ? PoseData::LeftUp : PoseData::RightUp;
+    newTopEdge.orientation_ = (rotation >= 0) ? PoseData::LeftUp : PoseData::RightUp;
     // Some threshold to switching between landscape modes
     if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp)
     {
