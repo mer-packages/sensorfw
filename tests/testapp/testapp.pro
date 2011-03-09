@@ -1,7 +1,9 @@
 QT += core testlib dbus network
 QT -= gui
 
-CONFIG += debug
+MOBILITY += sensors
+
+CONFIG += debug mobility
 TEMPLATE = app
 TARGET = sensortestapp
 
@@ -32,7 +34,8 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../datatypes -lsensordatatypes \
-                      -L../../core -lsensorfw
+                      -L../../core -lsensorfw \
+                      -lQtSensors
 
 message("Compiling testapp for $$TARGET_LIB")
 equals(TARGET_LIB,qt-api) {
@@ -50,6 +53,9 @@ equals(TARGET_LIB,qtmob) {
     SOURCES += sensorhandler_qtmob.cpp
     LIBS += -lQtSensors
 }
+
+INCLUDEPATH += /usr/include/qt4/QtSensors
+INCLUDEPATH += /usr/include/qt4/QtMobility
 
 testconf.path = /usr/share/sensord-tests/
 testconf.files = testapp.conf
