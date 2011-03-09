@@ -1,6 +1,5 @@
 sensord (0.6.41) unstable; urgency=low
 
-  [ Antti Virtanen ]
   [Lihan Guo]
   * Added qt-mobility support for tests/testapp.
 
@@ -21,9 +20,9 @@ sensord (0.6.41) unstable; urgency=low
 
   [ shenghua ]
   * Make sensortestapp thread safe in exiting
-  * Fix sensord-tests-install
+  * Fix sensord-tests-install 
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Mar 2011 15:05:43 +0200
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Mar 2011 15:12:59 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
