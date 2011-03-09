@@ -25,18 +25,11 @@
 
 #include "sensorhandler_qtmob.h"
 #include "logging.h"
-#include <QDebug>
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
-    QThread(parent),
-    sensorName_(sensorName),
-    interval_(100),
-    bufferinterval_(0),
-    standbyoverride_(false),
-    buffersize_(0),
-    dataCount_(0)
+    AbstractSensorHandler(sensorName, parent),
+    m_sensor(NULL)
 {
-
     if (sensorName_ == "compasssensor")
     {
         m_sensor = new QCompass();
@@ -86,20 +79,14 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
                 this, SLOT(receivedData(m_sensor->reading())));
     }
 
-
-    if (Config::configuration() != NULL)
-    {
-        interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
-        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", "0").toInt();
-        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", "false").toBool();
-        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", "0").toInt();
-
-    }
-   
-    m_sensor -> connectToBackend();
-    m_sensor -> setProperty("alwaysOn", true);
+    m_sensor -> setProperty("alwaysOn", standbyoverride_);
     m_sensor -> setProperty("bufferSize", buffersize_);
-    m_sensor -> setDataRate(interval_);
+    m_sensor -> setDataRate(1000/interval_);
+}
+
+SensorHandler::~SensorHandler()
+{
+    delete m_sensor;
 }
 
 void SensorHandler::receivedData(const QAccelerometerReading* data)
@@ -160,24 +147,19 @@ void SensorHandler::receivedData(const QProximityReading* data)
                   << "Close " <<  data->close();
 }
 
-
 bool SensorHandler::startClient()
 {
-    if (m_sensor -> start()){
-        m_sensor -> setProperty("alwaysOn", true);
-        m_sensor -> setProperty("bufferSize", buffersize_);
-        m_sensor -> setDataRate(interval_);
+    if (m_sensor -> start())
         return true;
-    }
     return false;
 }
 
-void SensorHandler::init(const QStringList& sensors)
+void SensorHandler::init(const QStringList&)
 {
 }
 
-
-void SensorHandler::stopClient()
+bool SensorHandler::stopClient()
 {
     m_sensor -> stop();
+    return true;
 }
