@@ -28,11 +28,8 @@
 #define SENSORHANDLER_H
 
 #include <QVector>
-#include <QThread>
-#include <QString>
-#include "qt-api/abstractsensor_i.h"
-#include "datatypes/xyz.h"
 #include "config.h"
+#include "abstractsensorhandler.h"
 
 #include <QSensor>
 #include <QAccelerometer>
@@ -56,15 +53,16 @@
 
 QTM_USE_NAMESPACE
 
-class SensorHandler : public QThread 
+class SensorHandler : public AbstractSensorHandler
 {
     Q_OBJECT
 
 public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
-    bool startClient();
-    void stopClient();
+    ~SensorHandler();
+    virtual bool startClient();
+    virtual bool stopClient();
 
     int dataCount() const { return dataCount_; }
     QString sensorName() const { return sensorName_; }
@@ -82,13 +80,6 @@ public Q_SLOTS:
     void receivedData(const QProximityReading* data);
 
 private:
-
-    QString sensorName_;
-    int interval_;
-    int bufferinterval_;
-    bool standbyoverride_;
-    int buffersize_;
-    int dataCount_;
     QSensor* m_sensor;
 };
 
