@@ -1,7 +1,7 @@
 sensord (0.6.41) unstable; urgency=low
 
   [Lihan Guo]
-  * Added qt-mobility for tests/testapp.
+  * Added qt-mobility support for tests/testapp.
 
   [Antti Virtanen]
   * Refactoring:
