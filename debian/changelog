@@ -1,5 +1,6 @@
 sensord (0.6.41) unstable; urgency=low
 
+  [ Antti Virtanen ]
   [Lihan Guo]
   * Added qt-mobility support for tests/testapp.
 
@@ -18,7 +19,11 @@ sensord (0.6.41) unstable; urgency=low
   * Threshold accessors removed from OrientationFilter since those had no effect.
   * OrientationInterpreter default settings now provide more sensitive orientation detection. Fixes: NB#232872.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 07 Mar 2011 16:17:54 +0200
+  [ shenghua ]
+  * Make sensortestapp thread safe in exiting
+  * Fix sensord-tests-install
+
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Mar 2011 15:05:43 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
