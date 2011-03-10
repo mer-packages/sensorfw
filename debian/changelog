@@ -13,16 +13,17 @@ sensord (0.6.41) unstable; urgency=low
     - Removed unused typeId() concept.
     - SensorManager::addSensor() now gracefully handles if object registration to dbus fails.
     - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
+    - Cleanup for adaptor codes
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.
   * OrientationInterpreter default settings now provide more sensitive orientation detection. Fixes: NB#232872.
 
-  [ shenghua ]
+  [ Shenghua Liu ]
   * Make sensortestapp thread safe in exiting
   * Fix sensord-tests-install 
 
- -- shenghua <ext-shenghua.1.liu@nokia.com>  Wed, 09 Mar 2011 15:12:59 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 10 Mar 2011 12:31:12 +0200
 
 sensord (0.6.40) unstable; urgency=low
 

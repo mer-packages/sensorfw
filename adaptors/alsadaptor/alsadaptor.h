@@ -40,7 +40,6 @@
     #include <mce/dbus-names.h>
 #endif
 
-
 /**
  * @brief Adaptor for internal ambient light sensor.
  *
@@ -90,8 +89,6 @@ protected:
     ALSAdaptor(const QString& id);
     ~ALSAdaptor();
 
-
-
 private:
 
     /**
@@ -109,9 +106,6 @@ private:
 #ifdef SENSORFW_MCE_WATCHER
     QDBusInterface *dbusIfc;
 #endif
-
-
 };
 
 #endif
-

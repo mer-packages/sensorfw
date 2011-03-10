@@ -50,7 +50,6 @@ protected:
 
 private:
     void processSample(int pathId, int fd);
-    int devId;
     char buf[32];
 
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetBuffer_;

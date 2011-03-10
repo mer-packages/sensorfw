@@ -59,42 +59,31 @@ struct bh1770glc_als {
     __u16 lux;
 } __attribute__((packed));
 
-
 ALSAdaptor::ALSAdaptor(const QString& id):
-        SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
+    device(DeviceUnknown)
 {
-    device = DeviceUnknown;
-
 #ifdef SENSORFW_MCE_WATCHER
     dbusIfc = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
-                                                 QDBusConnection::systemBus(), this);
+                                 QDBusConnection::systemBus(), this);
 #endif
 
-
-    QString rm680_als = Config::configuration()->value("als_dev_path_rm680").toString();
-    QString rm696_als = Config::configuration()->value("als_dev_path_rm696").toString();
+    QString rm680_als = Config::configuration()->value("als_dev_path_rm680", RM680_ALS).toString();
+    QString rm696_als = Config::configuration()->value("als_dev_path_rm696", RM696_ALS).toString();
 
     if (QFile::exists(rm680_als))
     {
         device = RM680;
         addPath(rm680_als);
-    } else if (QFile::exists(RM680_ALS))
-    {
-        device = RM680;
-        addPath(RM680_ALS);
-    } else if (QFile::exists(rm696_als))
+    }
+    else if (QFile::exists(rm696_als))
     {
         device = RM696;
         addPath(rm696_als);
-    } else if (QFile::exists(RM696_ALS))
-    {
-        device = RM696;
-        addPath(RM696_ALS);
     }
-
-    if (device == DeviceUnknown)
+    else
     {
-        sensordLogW() << "Other HW except RM680 and RM696";
+        sensordLogC() << "Failed to locate ALS sensor";
     }
 
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
@@ -104,9 +93,7 @@ ALSAdaptor::ALSAdaptor(const QString& id):
     introduceAvailableDataRange(DataRange(0, 65535, 1));
     introduceAvailableInterval(DataRange(0, 0, 0));
     setDefaultInterval(0);
-
 }
-
 
 ALSAdaptor::~ALSAdaptor()
 {
@@ -118,8 +105,6 @@ ALSAdaptor::~ALSAdaptor()
     }
     delete alsBuffer_;
 }
-
-
 
 bool ALSAdaptor::startAdaptor()
 {
@@ -144,8 +129,6 @@ void ALSAdaptor::stopAdaptor()
     SysfsAdaptor::stopAdaptor();
 }
 
-
-
 void ALSAdaptor::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
@@ -158,7 +141,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
@@ -177,7 +160,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
         int bytesRead = read(fd, &als_data, sizeof(als_data));
 
         if (bytesRead <= 0) {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
         sensordLogT() << "Ambient light value: " << als_data.lux;
@@ -189,5 +172,4 @@ void ALSAdaptor::processSample(int pathId, int fd)
 
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
-
 }

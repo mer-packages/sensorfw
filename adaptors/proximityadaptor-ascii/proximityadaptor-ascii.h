@@ -50,7 +50,6 @@ protected:
 
 private:
     void processSample(int pathId, int fd);
-    int devId;
     char buf[16];
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* proximityBuffer_;

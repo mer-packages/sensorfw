@@ -46,7 +46,6 @@ struct bh1770glc_ps {
     __u8 led3;
 } __attribute__((packed));
 
-
 struct apds990x_data {
         __u32 lux; /* 10x scale */
         __u32 lux_raw; /* 10x scale */
@@ -54,7 +53,6 @@ struct apds990x_data {
         __u16 ps_raw;
         __u16 status;
 } __attribute__((packed));
-
 
 ProximityAdaptor::ProximityAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
@@ -68,46 +66,34 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 
     device = DeviceUnknown;
 
-    QString rm680_ps = Config::configuration()->value("proximity_dev_path_rm680").toString();
-    QString rm696_ps = Config::configuration()->value("proximity_dev_path_rm696").toString();
+    QString rm680_ps = Config::configuration()->value("proximity_dev_path_rm680", RM680_PS).toString();
+    QString rm696_ps = Config::configuration()->value("proximity_dev_path_rm696", RM696_PS).toString();
 
     if (QFile::exists(rm680_ps))
     {
         device = RM680;
         addPath(rm680_ps);
-    } else if (QFile::exists(RM680_PS))
-    {
-        device = RM680;
-        addPath(RM680_PS);
-    } else if (QFile::exists(rm696_ps))
+    }
+    else if (QFile::exists(rm696_ps))
     {
         device = RM696;
         addPath(rm696_ps);
-    } else if (QFile::exists(RM696_PS))
-    {
-        device = RM696;
-        addPath(RM696_PS);
-    }
-
-    if (device == DeviceUnknown)
-    {
-        sensordLogW() << "Other HW except RM680 and RM696";
-    }
-
-    if (device == RM696)
-    {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_enable");
+        dbusIfc->call(QDBus::NoBlock, "req_proximity_sensor_enable");
 #endif
     }
-
+    else
+    {
+        sensordLogC() << "Failed to locate proximity sensor";
+    }
     proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
-    m_threshold = readThreshold();
-    if (m_threshold <= 0) {
-        sensordLogW() << "Received value 0 for proximity threshold. Falling back to default (35)";
-        m_threshold = 35;
+    int threshold = readThreshold();
+    if (threshold <= 0) {
+        sensordLogW() << "Received value 0 for proximity threshold. Falling back to default " << m_threshold;
+    } else {
+        m_threshold = threshold;
     }
 
     setDescription("Proximity sensor readings (Dipro sensor)");
@@ -116,65 +102,58 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     setDefaultInterval(0);
 }
 
-
 ProximityAdaptor::~ProximityAdaptor()
 {
     if (device == RM696)
     {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_proximity_sensor_disable");
+        dbusIfc->call(QDBus::NoBlock, "req_proximity_sensor_disable");
         delete dbusIfc;
 #endif
     }
-
     delete proximityBuffer_;
 }
-
 
 void ProximityAdaptor::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
 
-    static char buffer[100];
-    int ret = 0;
+    if (device == DeviceUnknown)
+        return;
 
+    int ret = 0;
     if (device == RM680)
     {
         bh1770glc_ps ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer)-1);
+        int bytesRead = read(fd, &ps_data, sizeof(ps_data));
 
         if (bytesRead > 0) {
-            memcpy(&ps_data, buffer, sizeof(ps_data));
             sensordLogT() << "Proximity Values: " << ps_data.led1 << ", " << ps_data.led2 << ", " <<  ps_data.led3;
         } else {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
 
         if ( ps_data.led1 > m_threshold ) {
             ret = 1;
         }
-    } else if(device == RM696)
+    }
+    else if(device == RM696)
     {
         apds990x_data ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer)-1);
+        int bytesRead = read(fd, &ps_data, sizeof(ps_data));
 
         if (bytesRead > 0) {
-            memcpy(&ps_data, buffer, sizeof(ps_data));
             sensordLogT() << "Proximity Values: " << ps_data.ps << ", " << ps_data.ps_raw << ", " << ps_data.status;
         } else {
-            sensordLogW() << "read():" << strerror(errno);
+            sensordLogW() << "read(): " << strerror(errno);
             return;
         }
 
         if ( ps_data.ps > m_threshold ) {
             ret = 1;
         }
-    } else
-    {
-        sensordLogW() << "Other HW except RM680 and RM696";
     }
-
 
     TimedUnsigned* proximityData = proximityBuffer_->nextSlot();
 
@@ -185,38 +164,21 @@ void ProximityAdaptor::processSample(int pathId, int fd)
     proximityBuffer_->wakeUpReaders();
 }
 
-
 int ProximityAdaptor::readThreshold()
 {
     int value = 0;
-    QFile thresholdFile;
-    QString configKey = "proximity_threshold";
-
-    if (Config::configuration()->value(configKey, "").toString().size() > 0) {
-        thresholdFile.setFileName(Config::configuration()->value(configKey, "").toString());
-    } else {
-        if (device == RM680)
-        {
-            thresholdFile.setFileName(THRESHOLD_FILE_PATH_RM680);
-        }else if (device == RM696)
-        {
-            thresholdFile.setFileName(THRESHOLD_FILE_PATH_RM696);
-        }else
-        {
-        }
-    }
+    QString configKey = "proximity_threshold_path";
+    QString configFileName = (device == RM680 ? THRESHOLD_FILE_PATH_RM680 : THRESHOLD_FILE_PATH_RM696);
+    QFile thresholdFile(Config::configuration()->value(configKey, configFileName).toString());
 
     if (!(thresholdFile.exists() && thresholdFile.open(QIODevice::ReadOnly))) {
-        sensordLogW() << "Unable to locate threshold setting for" << id();
-        return value;
+        sensordLogW() << "Unable to locate threshold setting for " << id();
+    } else {
+        char buf[16];
+
+        if (thresholdFile.readLine(buf, sizeof(buf)) > 0) {
+            value = QString(buf).split(" ").at(0).toInt();
+        }
     }
-
-    char buf[16];
-
-    if (thresholdFile.readLine(buf, sizeof(buf)) > 0) {
-        value = QString(buf).split(" ").at(0).toInt();
-    }
-
-    thresholdFile.close();
     return value;
 }

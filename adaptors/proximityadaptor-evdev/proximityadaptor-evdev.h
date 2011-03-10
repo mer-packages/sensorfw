@@ -31,7 +31,6 @@
 #include "inputdevadaptor.h"
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
-#include <QTime>
 
 /**
  * @brief Adaptor for proximity sensor.
