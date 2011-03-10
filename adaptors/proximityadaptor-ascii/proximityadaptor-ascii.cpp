@@ -12,6 +12,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -41,10 +42,9 @@
 ProximityAdaptorAscii::ProximityAdaptorAscii(const QString& id) :
                         SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
-    memset(buf, 0x0, 16);
     introduceAvailableDataRange(DataRange(0, 4096, 1));
     addPath(SYSFS_PROXIMITY_PATH);
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     addAdaptedSensor("proximity", "apds9802ps ascii", proximityBuffer_);
 }
 
@@ -55,6 +55,7 @@ ProximityAdaptorAscii::~ProximityAdaptorAscii()
 
 void ProximityAdaptorAscii::processSample(int pathId, int fd)
 {
+    char buf[16];
     lseek(fd, 0, SEEK_SET);
     if (read(fd, buf, sizeof(buf)) <= 0) {
         sensordLogW() << "read(): " << strerror(errno);
@@ -62,9 +63,9 @@ void ProximityAdaptorAscii::processSample(int pathId, int fd)
     }
     sensordLogT() << "Proximity output value: " << buf;
 
-    TimedUnsigned* proximity = proximityBuffer_->nextSlot();
+    ProximityData* proximity = proximityBuffer_->nextSlot();
     sscanf(buf, "%d", &proximity->value_);
-
+    proximity->blocked_ = proximity->value_;
     proximity->timestamp_ = Utils::getTimeStamp();
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();

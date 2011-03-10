@@ -8,6 +8,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,9 +29,8 @@
 #ifndef ORIENTATIONDATA_H
 #define ORIENTATIONDATA_H
 
-#include <QMetaType>
-
 #include <datatypes/genericdata.h>
+#include <datatypes/unsigned.h>
 
 typedef TimedXyzData AccelerationData;
 typedef TimedXyzData MagneticFieldData;
@@ -86,6 +86,19 @@ public:
 
     int degrees_; /**< Angle to north */
     int level_;   /**< Magnetometer calibration level */
+};
+
+/**
+ * Container for Proximity measurements
+ */
+class ProximityData : public TimedUnsigned {
+public:
+    ProximityData() : TimedUnsigned(), blocked_(false) {}
+
+    ProximityData(quint64 timestamp, unsigned int value, bool blocked) :
+        TimedUnsigned(timestamp, value), blocked_(blocked) {}
+
+    bool blocked_;   /* is proximity sensor blocked or not */
 };
 
 #endif // ORIENTATIONDATA_H

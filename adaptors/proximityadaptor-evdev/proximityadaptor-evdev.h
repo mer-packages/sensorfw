@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Markus Lehtonen <markus.lehtonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,7 +31,7 @@
 
 #include "inputdevadaptor.h"
 #include "deviceadaptorringbuffer.h"
-#include "datatypes/timedunsigned.h"
+#include "datatypes/orientationdata.h"
 
 /**
  * @brief Adaptor for proximity sensor.
@@ -69,7 +70,7 @@ protected:
 
 private:
 
-    DeviceAdaptorRingBuffer<TimedUnsigned>*   proximityBuffer_;
+    DeviceAdaptorRingBuffer<ProximityData>*   proximityBuffer_;
     ProximityState                            currentState_;
 
     void interpretEvent(int src, struct input_event *ev);

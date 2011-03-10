@@ -8,6 +8,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,7 +32,7 @@
 #include <QDBusInterface>
 #include "sysfsadaptor.h"
 #include "deviceadaptorringbuffer.h"
-#include "datatypes/timedunsigned.h"
+#include "datatypes/orientationdata.h"
 
 #ifdef SENSORFW_MCE_WATCHER
 #include <mce/mode-names.h>
@@ -75,7 +76,7 @@ protected:
     ~ProximityAdaptor();
 
 private:
-    DeviceAdaptorRingBuffer<TimedUnsigned>* proximityBuffer_;
+    DeviceAdaptorRingBuffer<ProximityData>* proximityBuffer_;
 
     /**
      * Read and process data. Run when sysfsadaptor has detected new available

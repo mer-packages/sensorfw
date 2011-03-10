@@ -18,6 +18,8 @@ sensord (0.6.41) unstable; urgency=low
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.
   * OrientationInterpreter default settings now provide more sensitive orientation detection. Fixes: NB#232872.
+  * Proximity sensor dataflow now uses datatype ProximityData. 
+  * ProximitySensorChannelInterface provides signal and accessor for getting proximity reading with reflectance value.
 
   [ Shenghua Liu ]
   * Make sensortestapp thread safe in exiting

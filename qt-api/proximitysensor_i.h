@@ -31,6 +31,7 @@
 
 #include "abstractsensor_i.h"
 #include <datatypes/unsigned.h>
+#include <datatypes/proximity.h>
 
 /**
  * @brief DBus-interface for accessing proximity state.
@@ -45,6 +46,7 @@ class ProximitySensorChannelInterface: public AbstractSensorChannelInterface
     Q_OBJECT
     Q_DISABLE_COPY(ProximitySensorChannelInterface)
     Q_PROPERTY(Unsigned proximity READ proximity);
+    Q_PROPERTY(Proximity proximityReflectance READ proximityReflectance);
 
 public:
     /**
@@ -60,6 +62,8 @@ public:
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
     Unsigned proximity();
+
+    Proximity proximityReflectance();
 
     /**
      * Constructor.
@@ -95,9 +99,17 @@ protected:
 Q_SIGNALS: // SIGNALS
     /**
      * Sent when new measurement data has become available.
+     * Value in the passed data contains boolean information is the
+     * proximity sensor blocked or not.
      * @param data New measurement data.
      */
     void dataAvailable(const Unsigned& data);
+
+    /**
+     * Sent when new measurement data has become available.
+     * @param data New measurement data.
+     */
+    void reflectanceDataAvailable(const Proximity& data);
 };
 
 namespace local {

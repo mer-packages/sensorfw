@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,17 +33,16 @@
 
 ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<TimedUnsigned>(10),
-        previousValue_(0, -1)
+        DataEmitter<ProximityData>(10)
 {
     SensorManager& sm = SensorManager::instance();
 
     proximityAdaptor_ = sm.requestDeviceAdaptor("proximityadaptor");
     Q_ASSERT( proximityAdaptor_ );
 
-    proximityReader_ = new BufferReader<TimedUnsigned>(1);
+    proximityReader_ = new BufferReader<ProximityData>(1);
 
-    outputBuffer_ = new RingBuffer<TimedUnsigned>(1);
+    outputBuffer_ = new RingBuffer<ProximityData>(1);
 
     // Create buffers for filter chain
     filterBin_ = new Bin;
@@ -106,12 +106,12 @@ bool ProximitySensorChannel::stop()
     return true;
 }
 
-void ProximitySensorChannel::emitData(const TimedUnsigned& value)
+void ProximitySensorChannel::emitData(const ProximityData& value)
 {
     previousValue_.timestamp_ = value.timestamp_;
-    
+
     if (value.value_ != previousValue_.value_) {
         previousValue_.value_ = value.value_;
-        writeToClients((const void *)&value, sizeof(TimedUnsigned));
+        writeToClients((const void *)&value, sizeof(ProximityData));
     }
 }

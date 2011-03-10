@@ -22,7 +22,8 @@ HEADERS += xyz.h \
     tap.h \
     posedata.h \
     tapdata.h \
-    touchdata.h
+    touchdata.h \
+    proximity.h
 
 SOURCES += xyz.cpp \
     orientation.cpp \

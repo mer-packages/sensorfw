@@ -10,6 +10,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Shenghua <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -86,7 +87,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
     {
         sensordLogC() << "Failed to locate proximity sensor";
     }
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     int threshold = readThreshold();
@@ -155,10 +156,10 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         }
     }
 
-    TimedUnsigned* proximityData = proximityBuffer_->nextSlot();
+    ProximityData* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
-    proximityData->value_ = ret;
+    proximityData->blocked_ = ret;
 
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();

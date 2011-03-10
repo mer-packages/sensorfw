@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Markus Lehtonen <markus.lehtonen@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,7 +46,7 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     addAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 
     introduceAvailableDataRange(DataRange(-1, 1, 1));
@@ -100,10 +101,10 @@ void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
     if (currentState_ != oldState) {
         sensordLogD() << "Proximity state change detected: " << currentState_;
 
-        TimedUnsigned *proximityData = proximityBuffer_->nextSlot();
+        ProximityData *proximityData = proximityBuffer_->nextSlot();
 
         proximityData->timestamp_ = Utils::getTimeStamp(&(ev->time));
-        proximityData->value_ = currentState_;
+        proximityData->blocked_ = currentState_;
 
         oldState = currentState_;
 
