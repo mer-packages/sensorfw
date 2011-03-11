@@ -123,6 +123,8 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         return;
 
     int ret = 0;
+    unsigned rawdata = 0;
+
     if (device == RM680)
     {
         bh1770glc_ps ps_data;
@@ -138,6 +140,8 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         if ( ps_data.led1 > m_threshold ) {
             ret = 1;
         }
+
+        rawdata = ps_data.led1;
     }
     else if(device == RM696)
     {
@@ -154,12 +158,15 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         if ( ps_data.ps > m_threshold ) {
             ret = 1;
         }
+
+        rawdata = ps_data.ps;
     }
 
     ProximityData* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
     proximityData->withinProximity_ = ret;
+    proximityData->value_ = rawdata;
 
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();
