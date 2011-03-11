@@ -543,7 +543,7 @@ sensord (0.6.1) unstable; urgency=low
 sensord (0.6.0) unstable; urgency=low
 
   * Implements: SWP#MaSSW-1004, SWP#MaSSW-1187
-  * Fixes: NB#155680 - UI is not rotated with 2.6.32 (linux-dali) kernel
+  * Fixes: NB#155680 - UI is not rotated with 2.6.32 kernel
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 25 Jan 2010 13:51:17 +0200
 
