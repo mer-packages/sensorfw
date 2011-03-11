@@ -48,8 +48,9 @@ void Config::clearConfig() {
     settings.clear();
 }
 
-Config *Config::loadConfig(const QString &defConfigPath, const QString &configDPath) {
+bool Config::loadConfig(const QString &defConfigPath, const QString &configDPath) {
     Config *config = NULL;
+    bool ret = true;
 
     /* Check/create new static config */
     if (static_configuration) {
@@ -58,24 +59,30 @@ Config *Config::loadConfig(const QString &defConfigPath, const QString &configDP
         config = new Config();
     }
 
-    /* Delete old configuration */
-    config->clearConfig();
-
     /* Scan config.d dir */
     QDir dir(configDPath, "*.conf", QDir::Name, QDir::Files);
     QStringList fileList = dir.entryList();
 
     /* Load all conf files */
-    config->loadConfigFile(defConfigPath);
+    if (!config->loadConfigFile(defConfigPath))
+        ret = false;
     foreach(const QString& file, fileList)
-        config->loadConfigFile(dir.absoluteFilePath(file));
+    {
+        if (!config->loadConfigFile(dir.absoluteFilePath(file)))
+            ret = false;
+    }
 
     static_configuration = config;
 
-    return config;
+    return ret;
 }
 
 bool Config::loadConfigFile(const QString &configFileName) {
+    if(!QFile::exists(configFileName))
+    {
+        sensordLogW() << "File does not exists \"" << configFileName <<  "\"";
+        return false;
+    }
     QSettings* setting = new QSettings(configFileName, QSettings::IniFormat);
     if(setting->status() == QSettings::NoError) {
         settings.append(setting);

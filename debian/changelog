@@ -20,6 +20,8 @@ sensord (0.6.41) unstable; urgency=low
   * OrientationInterpreter default settings now provide more sensitive orientation detection. Fixes: NB#232872.
   * Proximity sensor dataflow now uses datatype ProximityData. 
   * ProximitySensorChannelInterface provides signal and accessor for getting proximity reading with reflectance value.
+  * c-api removed from doxygen targets.
+  * Config-class now better handles errors.
 
   [ Shenghua Liu ]
   * Make sensortestapp thread safe in exiting

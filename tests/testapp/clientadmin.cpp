@@ -34,7 +34,6 @@ ClientAdmin::ClientAdmin(const Parser& parser, QObject *parent) :
 
 void ClientAdmin::init()
 {
-
     SensordLogger::init(parser.logTarget(), parser.logFilePath());
 
     if (parser.changeLogLevel())
@@ -92,13 +91,22 @@ void ClientAdmin::runClients()
     sensordLogD() << "Threads are waiting.";
 }
 
-void ClientAdmin::registerSensorInterface(const QStringList& sensors)
+bool ClientAdmin::registerSensorInterface(const QStringList& sensors)
 {
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
-
+    if(!remoteSensorManager.isValid())
+    {
+        sensordLogC() << "Failed to create SensorManagerInterface";
+        return false;
+    }
     foreach (const QString& sensorName, sensors)
     {
-        remoteSensorManager.loadPlugin(sensorName);
+        QDBusReply<bool> reply(remoteSensorManager.loadPlugin(sensorName));
+        if(!reply.isValid() || !reply.value())
+        {
+            sensordLogW() << "Failed to load plugin";
+            return false;
+        }
 
         if (sensorName == "orientationsensor"){
             remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
@@ -132,7 +140,7 @@ ClientAdmin::~ClientAdmin()
         if (parser.singleThread())
         {
             handler->stopClient();
-        }else {          
+        }else {
             handler->exit(0);
             handler->wait();
         }

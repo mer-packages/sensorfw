@@ -26,12 +26,8 @@
 #define CLIENTADMIN_H
 
 #include <QObject>
-
-#include <QTest>
 #include <QList>
 #include <QString>
-#include <QDebug>
-#include <signal.h>
 
 #include "sensorhandler.h"
 #include "parser.h"
@@ -47,10 +43,6 @@ public:
     ~ClientAdmin();
     void runClients();
 
-signals:
-
-public slots:
-
 private:
     Parser parser;
     QList<SensorHandler*> handlers;
@@ -58,7 +50,7 @@ private:
     static const char* CONFIG_FILE_PATH;
 
     void init();
-    static void registerSensorInterface(const QStringList& sensors);
+    static bool registerSensorInterface(const QStringList& sensors);
 };
 
 #endif // CLIENTADMIN_H

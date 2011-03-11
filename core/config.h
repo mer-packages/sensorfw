@@ -45,7 +45,7 @@ public:
     QStringList groups() const;
 
     static Config *configuration();
-    static Config *loadConfig(const QString &defConfigPath, const QString &configDPath);
+    static bool loadConfig(const QString &defConfigPath, const QString &configDPath);
     static void close();
 
 private:

@@ -19,7 +19,6 @@ doctarget.commands = INPUT=\"$${_PRO_FILE_PWD_}/adaptors \
                      $${_PRO_FILE_PWD_}/chains \
                      $${_PRO_FILE_PWD_}/include \
                      $${_PRO_FILE_PWD_}/qt-api \
-                     $${_PRO_FILE_PWD_}/c-api \
                      $${_PRO_FILE_PWD_}/doc/mainpage.h\" \
                      STRIP_FROM_PATH=\"$${_PRO_FILE_PWD_}\" \
                      doxygen $$system(pwd)/Doxyfile
@@ -33,7 +32,6 @@ for( folder, DOC_FOLDERS ) {
 }
 
 QMAKE_EXTRA_TARGETS += doccleantarget
-
 
 # Documentation install target
 documentation.path = /usr/share/doc/sensord
