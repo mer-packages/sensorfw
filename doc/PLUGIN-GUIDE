@@ -1,7 +1,7 @@
 ###
 ### INSTRUCTIONS FOR WRITING PLUG-INS FOR SENSOR FRAMEWORK
 ###
-### 10.03.2010
+### 10.03.2011
 ###
 
 ##
@@ -116,26 +116,16 @@ See examples/samplefilter/* for filter construction.
 ## WRITING A SENSOR
 ##
 
-A sensor is responsible for providing information about the environment the device is in. Sensors get data from adaptors and push them to clients through internal qt-api.
+To create a new sensor, the following four steps should be done
+  * implementation of AbstractSensorChannel
+  * implementation of AbstractSensorChannelAdaptor
+  * implementation of AbstractSensorChannelInterface
+  * implementation of datatypes if sensor introduces new ones
 
-A new sensor should be created by inheriting from AbstractSensorChannel and DataEmitter.
+AbstractSensorChannel is the end-node in the sensor graph. AbstractSensorChannelAdaptor is the DBus interface of the sensor.
+AbstractSensorChannelInterface is the client API for managing sensor through DBus and reading datastream from the socket.
 
-Then what need to be implemented are:
-  * In the header file
-	- Override the static factoryMethod() function and return a new instance of the sensor
-  * In the constructor
-	- Get an instance of SensorManager
-  	- Get pointer to a chain and create a reader for it
-  	- Create output buffer
-  	- Create buffers for filter chain
-	- Connect the 'sampledata' buffer in chain and reader
-	- Set MetaData
-  * Do the cleaning up in the destructor
-  * Override start() function to start sensor channel
-  * Override stop() function to stop sensor channel
-  * Reimplement emitData to send data to the client
-
-See examples/samplesensor/* for sensor construction.
+See examples/samplesensor/* for sensor channel construction.
 
 
 ##
@@ -143,7 +133,7 @@ See examples/samplesensor/* for sensor construction.
 ##
 
 A chain is responsible for adapting filters into the data flow between an adaptor and a sensor.
-A new chain should be created by inheriting from AbstractChain.
+A new chain is created by inheriting from AbstractChain.
 
 Then what need to be implemented are:
   * In the header file
@@ -174,6 +164,8 @@ Each node (adaptor/chain/sensor, not filters) should define metadata for itself.
   * Interval range(s)
   * Data range(s)
   * Standby override sources (sort of metadata)
+  * Buffersize
+  * Bufferinterval
 
 ## Description
 
