@@ -122,7 +122,10 @@ To create a new sensor, the following four steps should be done
   * implementation of AbstractSensorChannelInterface
   * implementation of datatypes if sensor introduces new ones
 
-AbstractSensorChannel is the end-node in the sensor graph. AbstractSensorChannelAdaptor is the DBus interface of the sensor.
+AbstractSensorChannel is the end-node in the sensor graph.
+
+AbstractSensorChannelAdaptor is the DBus interface of the sensor.
+
 AbstractSensorChannelInterface is the client API for managing sensor through DBus and reading datastream from the socket.
 
 See examples/samplesensor/* for sensor channel construction.
@@ -164,8 +167,8 @@ Each node (adaptor/chain/sensor, not filters) should define metadata for itself.
   * Interval range(s)
   * Data range(s)
   * Standby override sources (sort of metadata)
-  * Buffersize
-  * Bufferinterval
+  * Buffer size
+  * Buffer interval
 
 ## Description
 
@@ -199,6 +202,15 @@ In adaptors, display blank will result in all filehandles being released. Settin
 
 The property should be used with care and only when required in order to minimize power consumption.
 
+## Buffer size and interval
+
+Buffering means two things:
+  * sensor driver of chip may have internal buffer for storing data. In that case adaptor will implement setBufferSize() virtual function to configure the driver and implement getAvailableBufferSizes() virtual function to list available buffer sizes.
+  * if adaptor doesn't support buffering then sensorfw uses internal buffering to send data in bursts to the clients. These modes are mutually exclusive for single sensor.
+
+Buffer interval can be used to configure the time limit for long we will wait for buffer to get full before flushing the content to the user. For driver/chip supported interval handling adaptor will implement setBufferInterval() virtual function to configure the driver and implement getAvailableBufferIntervals() virtual function to list available intervals.
+
+By default buffering is disabled for client sessions.
 
 ##
 ## CONFIGURATION FILES
