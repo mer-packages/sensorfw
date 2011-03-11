@@ -110,8 +110,11 @@ void ProximitySensorChannel::emitData(const ProximityData& value)
 {
     previousValue_.timestamp_ = value.timestamp_;
 
-    if (value.value_ != previousValue_.value_) {
+    if (value.value_ != previousValue_.value_ ||
+        value.withinProximity_ != previousValue_.withinProximity_)
+    {
         previousValue_.value_ = value.value_;
+        previousValue_.withinProximity_ = value.withinProximity_;
         writeToClients((const void *)&value, sizeof(ProximityData));
     }
 }
