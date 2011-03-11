@@ -93,12 +93,12 @@ public:
  */
 class ProximityData : public TimedUnsigned {
 public:
-    ProximityData() : TimedUnsigned(), blocked_(false) {}
+    ProximityData() : TimedUnsigned(), withinProximity_(false) {}
 
-    ProximityData(quint64 timestamp, unsigned int value, bool blocked) :
-        TimedUnsigned(timestamp, value), blocked_(blocked) {}
+    ProximityData(quint64 timestamp, unsigned int value, bool withinProximity) :
+        TimedUnsigned(timestamp, value), withinProximity_(withinProximity) {}
 
-    bool blocked_;   /* is proximity sensor blocked or not */
+    bool withinProximity_;   /* is proximity sensor withinProximity or not */
 };
 
 #endif // ORIENTATIONDATA_H

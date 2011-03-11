@@ -65,7 +65,7 @@ void ProximityAdaptorAscii::processSample(int pathId, int fd)
 
     ProximityData* proximity = proximityBuffer_->nextSlot();
     sscanf(buf, "%d", &proximity->value_);
-    proximity->blocked_ = proximity->value_;
+    proximity->withinProximity_ = proximity->value_;
     proximity->timestamp_ = Utils::getTimeStamp();
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();

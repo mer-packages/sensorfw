@@ -159,7 +159,7 @@ void ProximityAdaptor::processSample(int pathId, int fd)
     ProximityData* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
-    proximityData->blocked_ = ret;
+    proximityData->withinProximity_ = ret;
 
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();

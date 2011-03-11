@@ -36,7 +36,7 @@ class Proximity : public Unsigned
     Q_OBJECT
 
     Q_PROPERTY(int reflectance READ reflectance)
-    Q_PROPERTY(int blocked READ blocked)
+    Q_PROPERTY(int withinProximity READ withinProximity)
 
 public:
 
@@ -49,15 +49,15 @@ public:
      * Copy constructor (needed for Qt metatype system)
      */
     Proximity(const ProximityData& data) :
-        Unsigned(TimedUnsigned(data.timestamp_, data.blocked_)),
-        data_(data.timestamp_, data.value_, data.blocked_)
+        Unsigned(TimedUnsigned(data.timestamp_, data.withinProximity_)),
+        data_(data.timestamp_, data.value_, data.withinProximity_)
         {}
 
     /**
      * Copy constructor (needed for Qt metatype system)
      */
     Proximity(const Proximity& data) :
-        Unsigned(data.UnsignedData()), data_(data.proximityData().timestamp_, data.proximityData().value_, data.proximityData().blocked_)
+        Unsigned(data.UnsignedData()), data_(data.proximityData().timestamp_, data.proximityData().value_, data.proximityData().withinProximity_)
         {}
 
     /**
@@ -67,9 +67,9 @@ public:
     const ProximityData& proximityData() const { return data_; }
 
     /**
-     * @return is the proximity sensor blocked or not
+     * @return is the proximity sensor withinProximity or not
      */
-    bool blocked() const { return data_.blocked_; }
+    bool withinProximity() const { return data_.withinProximity_; }
 
     /**
      * @return proximity reflectance reading
@@ -86,7 +86,7 @@ public:
     {
         ProximityData rdata = right.proximityData();
         return (data_.value_ == rdata.value_ &&
-                data_.blocked_ == rdata.blocked_ &&
+                data_.withinProximity_ == rdata.withinProximity_ &&
                 data_.timestamp_ == rdata.timestamp_);
     }
 
@@ -103,7 +103,7 @@ Q_DECLARE_METATYPE( Proximity )
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Proximity &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.value_ << data.data_.blocked_;
+    argument << data.data_.timestamp_ << data.data_.value_ << data.data_.withinProximity_;
     argument.endStructure();
     return argument;
 }
@@ -112,7 +112,7 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const Proximity &data)
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Proximity &data)
 {
     argument.beginStructure();
-    argument >> data.data_.timestamp_ >> data.data_.value_ >> data.data_.blocked_;
+    argument >> data.data_.timestamp_ >> data.data_.value_ >> data.data_.withinProximity_;
     argument.endStructure();
     return argument;
 }
