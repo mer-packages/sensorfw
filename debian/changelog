@@ -8,7 +8,6 @@ sensord (0.7.0) unstable; urgency=low
   * Modified gyroadaptor to handle both modes, select and interval
 
   [Lihan Guo]
-  * Added qt-moblity for testapp
   * Fixed coverity defects
   * Improved sensorfw examples
   * Changed DbusEmitter to DataEmitter
