@@ -29,13 +29,15 @@
 #ifndef ABSTRACTSENSOR_H
 #define ABSTRACTSENSOR_H
 
-#include <QTimer>
 #include <QStringList>
+#include <QMap>
+#include <QList>
 
 #include "nodebase.h"
 #include "logging.h"
 #include "sfwerror.h"
 #include "datarange.h"
+#include "genericdata.h"
 
 class AbstractSensorChannel : public NodeBase {
     Q_OBJECT
@@ -114,6 +116,10 @@ protected:
     void clearError() { errorCode_ = SNoError; errorString_.clear(); }
 
     bool writeToClients(const void* source, int size);
+
+    typedef QMap<int, QList<TimedXyzData> > TimedXyzDownsampleBuffer;
+
+    bool downsampleAndPropagate(const TimedXyzData& data, TimedXyzDownsampleBuffer& buffer);
 
     void signalPropertyChanged(const QString& name)
     {

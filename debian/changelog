@@ -22,6 +22,11 @@ sensord (0.6.41) unstable; urgency=low
   * ProximitySensorChannelInterface provides signal and accessor for getting proximity reading with reflectance value.
   * c-api removed from doxygen targets.
   * Config-class now better handles errors.
+  * AccelerometerAdaptor used for some reason OrientationData. Should have
+    been AccelerometerData. Only cosmetic change.
+  * Implemented new downsampling logic:
+    - AccelerometerAdaptor interval rangelist has been limited to certain sizes.
+    - AccelerometerSensorChannel downsamples data before propagating it.
 
   [ Shenghua Liu ]
   * Make sensortestapp thread safe in exiting

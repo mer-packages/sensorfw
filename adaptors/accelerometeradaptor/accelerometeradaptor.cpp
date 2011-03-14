@@ -45,14 +45,18 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
         sensordLogW() << "Input device not found.";
     }
 
-    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1);
+    accelerometerBuffer_ = new DeviceAdaptorRingBuffer<AccelerationData>(1);
     addAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
 
     // Set Metadata
     setDescription("Input device accelerometer adaptor (lis302d)");
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    introduceAvailableInterval(DataRange(0, 0, 0));
-    introduceAvailableInterval(DataRange(10, 1000, 0)); // -> [1,100] Hz
+    //int ranges[] = {0, 10, 20, 25, 40, 50, 100, 200, 250, 500, 1000};
+    int ranges[] = {0, 10, 20, 100, 500, 1000};
+    for(size_t i = 0; i < sizeof(ranges); ++i)
+    {
+        introduceAvailableInterval(DataRange(ranges[i], ranges[i], 0));
+    }
     setDefaultInterval(0);
 }
 
@@ -90,7 +94,7 @@ void AccelerometerAdaptor::interpretSync(int src, struct input_event *ev)
 
 void AccelerometerAdaptor::commitOutput(struct input_event *ev)
 {
-    OrientationData* d = accelerometerBuffer_->nextSlot();
+    AccelerationData* d = accelerometerBuffer_->nextSlot();
 
     d->timestamp_ = Utils::getTimeStamp(&(ev->time));
     d->x_ = orientationValue_.x_;

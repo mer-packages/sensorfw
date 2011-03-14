@@ -99,3 +99,47 @@ bool AbstractSensorChannel::writeToClients(const void* source, int size)
     }
     return true;
 }
+
+bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, TimedXyzDownsampleBuffer& buffer)
+{
+    foreach(const int& sessionId, activeSessions_)
+    {
+        unsigned int currentInterval = interval();
+        unsigned int sessionInterval = getInterval(sessionId);
+        QList<TimedXyzData>& samples(buffer[sessionId]);
+        samples.push_back(data);
+        if(samples.size() > 1)
+        {
+            for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
+            {
+                //erase samples which are older than 1sec or if there are too many samples
+                if(data.timestamp_ - it->timestamp_ > 1000000 ||
+                   static_cast<unsigned int>(samples.size()) > currentInterval / sessionInterval)
+                {
+                    it = samples.erase(it);
+                    if(it == samples.end())
+                        break;
+                }
+            }
+        }
+        long x = 0;
+        long y = 0;
+        long z = 0;
+        foreach(const TimedXyzData& data, samples)
+        {
+            x += data.x_;
+            y += data.y_;
+            z += data.z_;
+        }
+        TimedXyzData downsampled(data.timestamp_,
+                                 x / samples.count(),
+                                 y / samples.count(),
+                                 z / samples.count());
+        if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
+        {
+            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+            return false;
+        }
+    }
+    return true;
+}

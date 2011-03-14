@@ -211,6 +211,14 @@ unsigned int NodeBase::getInterval() const
     return interval();
 }
 
+unsigned int NodeBase::getInterval(int sessionId) const
+{
+    QMap<int, unsigned int>::const_iterator it(m_intervalMap.find(sessionId));
+    if(it == m_intervalMap.end())
+        return 0;
+    return it.value();
+}
+
 bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
 {
     // Has single defined source, pass the request that way
@@ -569,4 +577,13 @@ bool NodeBase::setDataRangeIndex(int sessionId, const int rangeIndex)
     DataRangeList ranges = getAvailableDataRanges();
     DataRange range = getCurrentDataRange().range;
     return ranges.at(rangeIndex)==range;
+}
+
+void NodeBase::removeSession(int sessionId)
+{
+    setStandbyOverrideRequest(sessionId, false);
+    removeIntervalRequest(sessionId);
+    removeDataRangeRequest(sessionId);
+    clearBufferSize(sessionId);
+    clearBufferInterval(sessionId);
 }

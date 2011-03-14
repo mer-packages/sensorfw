@@ -167,6 +167,11 @@ public Q_SLOTS:
     unsigned int getInterval() const;
 
     /**
+     * Return the interval of given session.
+     */
+    unsigned int getInterval(int sessionId) const;
+
+    /**
      * Returns list of available buffer sizes. The list is ordered by
      * efficiency of the size.
      *
@@ -190,6 +195,8 @@ public Q_SLOTS:
     bool clearBufferSize(int sessionId);
     bool setBufferInterval(int sessionId, unsigned int value);
     bool clearBufferInterval(int sessionId);
+
+    virtual void removeSession(int sessionId);
 
 Q_SIGNALS:
     void propertyChanged(const QString& name);

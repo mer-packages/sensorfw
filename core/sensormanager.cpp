@@ -278,11 +278,7 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     }
 
     /// Remove any property requests by this session
-    entryIt.value().sensor_->setStandbyOverrideRequest(sessionId, false);
-    entryIt.value().sensor_->removeIntervalRequest(sessionId);
-    entryIt.value().sensor_->removeDataRangeRequest(sessionId);
-    entryIt.value().sensor_->clearBufferSize(sessionId);
-    entryIt.value().sensor_->clearBufferInterval(sessionId);
+    entryIt.value().sensor_->removeSession(sessionId);
 
     if (entryIt.value().sessions_.empty())
     {

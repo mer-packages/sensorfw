@@ -66,6 +66,8 @@ public:
 
     XYZ get() const { return previousSample_; }
 
+    virtual void removeSession(int sessionId);
+
 public Q_SLOTS:
     bool start();
     bool stop();
@@ -89,6 +91,7 @@ private:
     BufferReader<AccelerationData>*  accelerometerReader_;
     RingBuffer<AccelerationData>*    outputBuffer_;
     AccelerationData                 previousSample_;
+    TimedXyzDownsampleBuffer         downsampleBuffer_;
 
     void emitData(const AccelerationData& value);
 };
