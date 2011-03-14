@@ -70,14 +70,15 @@ public:
     static void init(const QStringList& sensors);
 
 public Q_SLOTS:
-    void receivedData(const QAccelerometerReading* data);
-    void receivedData(const QAmbientLightReading* data);
-    void receivedData(const QCompassReading* data);
-    void receivedData(const QMagnetometerReading* data);
-    void receivedData(const QOrientationReading* data);
-    void receivedData(const QRotationReading* data);
-    void receivedData(const QTapReading* data);
-    void receivedData(const QProximityReading* data);
+
+    void receivedAccelerometerData();
+    void receivedAlsData();
+    void receivedCompassData();
+    void receivedMagnetometerData();
+    void receivedOrientationData();
+    void receivedRotationData();
+    void receivedTapData();
+    void receivedProximityData();
 
 private:
     QSensor* m_sensor;
