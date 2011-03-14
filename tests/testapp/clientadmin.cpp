@@ -126,6 +126,7 @@ bool ClientAdmin::registerSensorInterface(const QStringList& sensors)
             remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
         }
     }
+    return true;
 }
 
 ClientAdmin::~ClientAdmin()
