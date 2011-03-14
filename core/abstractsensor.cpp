@@ -104,17 +104,27 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
 {
     foreach(const int& sessionId, activeSessions_)
     {
+        if(!downsamplingEnabled(sessionId))
+        {
+            if (!(SensorManager::instance().write(sessionId, (const void*)(&data), sizeof(data))))
+            {
+                sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+                return false;
+            }
+            return true;
+        }
         unsigned int currentInterval = interval();
         unsigned int sessionInterval = getInterval(sessionId);
+        int bufferSize = currentInterval / sessionInterval;
+        if(!bufferSize)
+            bufferSize = 1;
         QList<TimedXyzData>& samples(buffer[sessionId]);
         samples.push_back(data);
         if(samples.size() > 1)
         {
             for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
             {
-                //erase samples which are older than 1sec or if there are too many samples
-                if(data.timestamp_ - it->timestamp_ > 1000000 ||
-                   static_cast<unsigned int>(samples.size()) > currentInterval / sessionInterval)
+                if(samples.size() > bufferSize)
                 {
                     it = samples.erase(it);
                     if(it == samples.end())
@@ -122,6 +132,8 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
                 }
             }
         }
+        if(samples.size() < bufferSize)
+            return false;
         long x = 0;
         long y = 0;
         long z = 0;
@@ -135,11 +147,37 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
                                  x / samples.count(),
                                  y / samples.count(),
                                  z / samples.count());
+        sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
         if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
         {
             sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
             return false;
         }
+        samples.clear();
     }
     return true;
+}
+
+void AbstractSensorChannel::setDownsamplingEnabled(int sessionId, bool value)
+{
+    downsampling_[sessionId] = value;
+}
+
+bool AbstractSensorChannel::downsamplingEnabled(int sessionId)
+{
+    QMap<int, bool>::const_iterator it(downsampling_.find(sessionId));
+    if(it == downsampling_.end())
+        return false;
+    return it.value() && getInterval(sessionId);
+}
+
+bool AbstractSensorChannel::downsamplingSupported() const
+{
+    return false;
+}
+
+void AbstractSensorChannel::removeSession(int sessionId)
+{
+    downsampling_.take(sessionId);
+    NodeBase::removeSession(sessionId);
 }

@@ -68,6 +68,8 @@ public:
 
     virtual void removeSession(int sessionId);
 
+    virtual bool downsamplingSupported() const;
+
 public Q_SLOTS:
     bool start();
     bool stop();

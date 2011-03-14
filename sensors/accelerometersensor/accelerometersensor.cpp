@@ -115,5 +115,10 @@ void AccelerometerSensorChannel::emitData(const AccelerationData& value)
 void AccelerometerSensorChannel::removeSession(int sessionId)
 {
     downsampleBuffer_.take(sessionId);
-    NodeBase::removeSession(sessionId);
+    AbstractSensorChannel::removeSession(sessionId);
+}
+
+bool AccelerometerSensorChannel::downsamplingSupported() const
+{
+    return true;
 }

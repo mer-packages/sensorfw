@@ -70,6 +70,12 @@ public:
 
     bool running() { return (bool)(cnt_ > 0); }
 
+    void setDownsamplingEnabled(int sessionId, bool value);
+    bool downsamplingEnabled(int sessionId);
+    virtual bool downsamplingSupported() const;
+
+    virtual void removeSession(int sessionId);
+
 public Q_SLOTS:
     /**
      * @brief Start data flow.
@@ -141,6 +147,8 @@ private:
     QList<int>          activeSessions_;
 
     QList<DataRange>    intervalList_;
+
+    QMap<int, bool>     downsampling_;
 };
 
 typedef AbstractSensorChannel* (*SensorChannelFactoryMethod)(const QString& id);
