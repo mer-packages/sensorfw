@@ -77,6 +77,13 @@ void SensorHandler::receivedData(const Tap& data)
                   << data.direction() << " " << data.type();
 }
 
+void SensorHandler::receivedData(const Proximity& data)
+{
+    dataCount_++;
+    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+                  << data.UnsignedData().value_ << " " << data.proximityData().value_;
+}
+
 void SensorHandler::receivedFrame(const QVector<MagneticField>& frame)
 {
     frameCount_++;
@@ -164,34 +171,11 @@ void SensorHandler::createSensorInterface()
     else if (sensorName_ == "proximitysensor")
     {
         sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
-        connect(sensorChannelInterface_, SIGNAL(dataAvailable(const Unsigned&)), this, SLOT(receivedData(const Unsigned&)));
+        connect(sensorChannelInterface_, SIGNAL(reflectanceDataAvailable(const Proximity&)), this, SLOT(receivedData(const Proximity&)));
     }
 }
 
 void SensorHandler::init(const QStringList& sensors)
 {
-    SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
 
-    foreach (const QString& sensorName, sensors)
-    {
-        remoteSensorManager.loadPlugin(sensorName);
-
-        if (sensorName == "orientationsensor"){
-            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "accelerometersensor"){
-            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>(sensorName);
-        } else if (sensorName == "compasssensor"){
-            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>(sensorName);
-        } else if (sensorName == "tapsensor"){
-            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>(sensorName);
-        } else if (sensorName == "alssensor"){
-            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>(sensorName);
-        } else if (sensorName == "proximitysensor"){
-            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>(sensorName);
-        } else if (sensorName == "rotationsensor"){
-            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "magnetometersensor"){
-            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
-        }
-    }
 }

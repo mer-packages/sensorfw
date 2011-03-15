@@ -156,7 +156,7 @@ int main(int argc, char *argv[])
     }
 
     int ret = app.exec();
-    sensordLogD() << "Exitting...";
+    sensordLogD() << "Exiting...";
     Config::close();
     SensordLogger::close();
     return ret;

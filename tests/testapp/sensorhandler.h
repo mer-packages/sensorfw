@@ -67,6 +67,8 @@ public Q_SLOTS:
     void receivedData(const Tap& data);
     void receivedFrame(const QVector<MagneticField>& frame);
     void receivedFrame(const QVector<XYZ>& frame);
+    void receivedData(const Proximity& data);
+
 
 private:
     AbstractSensorChannelInterface* sensorChannelInterface_;
