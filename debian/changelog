@@ -31,8 +31,13 @@ sensord (0.6.41) unstable; urgency=low
   [ Shenghua Liu ]
   * Make sensortestapp thread safe in exiting
   * Fix sensord-tests-install 
+  * Fix sensordtestapp for qt apt to print out proximity reflectance data
+  * Fix the Proximity metatype registration problem
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 10 Mar 2011 12:31:12 +0200
+  [ shenghua ]
+  * 
+
+ -- shenghua <shenghua@shenghua-ThinkPad-T43>  Tue, 15 Mar 2011 17:53:25 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
