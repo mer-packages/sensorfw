@@ -213,9 +213,15 @@ unsigned int NodeBase::getInterval() const
 
 unsigned int NodeBase::getInterval(int sessionId) const
 {
+    if (!hasLocalInterval())
+    {
+        return m_intervalSource->getInterval(sessionId);
+    }
     QMap<int, unsigned int>::const_iterator it(m_intervalMap.find(sessionId));
     if(it == m_intervalMap.end())
+    {
         return 0;
+    }
     return it.value();
 }
 
@@ -230,7 +236,7 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     // Validate interval request
     if (!isValidIntervalRequest(value))
     {
-        sensordLogD() << "Invalid interval requested.";
+        sensordLogW() << "Invalid interval requested for node '" << description() << "' by session '" << sessionId << "': " << value;
         return false;
     }
 

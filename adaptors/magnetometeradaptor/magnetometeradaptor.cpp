@@ -42,10 +42,8 @@ struct ak8974_data {
 }; //__attribute__((packed)); <-- documentation states that this is a nogo for c++
 
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
-    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false),
-    originalPollingRate_(1000)
+    SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
-
     driverHandle_ = getDriverHandle();
     if (driverHandle_.size() == 0) {
         sensordLogW() << "Input device not found.";
@@ -74,7 +72,7 @@ MagnetometerAdaptor::~MagnetometerAdaptor()
     delete magnetometerBuffer_;
 }
 
-QString MagnetometerAdaptor::getDriverHandle()
+QString MagnetometerAdaptor::getDriverHandle() const
 {
     QString magFile = Config::configuration()->value("mag_ak8974_dev_path").toString();
     if (magFile.size() > 0 && QFile::exists(magFile)) {
@@ -118,16 +116,14 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
 
     magnetometerBuffer_->commit();
     magnetometerBuffer_->wakeUpReaders();
-
 }
 
 bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessionId)
 {
     if(driverHandle_.contains("8975"))
     {
-        // Driver spends approximately 16ms between starting the read to returning
-        // Compensating here.
-        return SysfsAdaptor::setInterval(value>16 ? value-16 : 0, sessionId);
+        // Driver spends approximately 16ms between starting the read to returning.
+        return SysfsAdaptor::setInterval(value > 16 ? value - 16 : 0, sessionId);
     }
     return SysfsAdaptor::setInterval(value, sessionId);
 }

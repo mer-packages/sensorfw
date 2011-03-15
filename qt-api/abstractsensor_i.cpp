@@ -332,6 +332,7 @@ void AbstractSensorChannelInterface::clearError()
 
 void AbstractSensorChannelInterface::dataReceived()
 {
+    qDebug() << "dataReceived";
     do
     {
         if(!dataReceivedImpl())

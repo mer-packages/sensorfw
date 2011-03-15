@@ -433,7 +433,6 @@ void SysfsAdaptorReader::run()
 
             // Read through all fds.
             for (int i = 0; i < parent_->sysfsDescriptors_.size(); ++i) {
-
                 parent_->processSample(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
 
                 if (parent_->doSeek_)

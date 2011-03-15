@@ -67,7 +67,8 @@ bool CalibrationHandler::initiateSession()
     if (m_sessionId <= 0)
     {
         sensordLogW() << "Failed to get session for magnetometersensor.";
-    } else
+    }
+    else
     {
         m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
     }
@@ -113,7 +114,7 @@ void CalibrationHandler::calibrationTimeout()
 
 void CalibrationHandler::resumeCalibration()
 {
-    sensordLogD() << "Resuming magnetometer background calibration.";
+    sensordLogD() << "Resuming magnetometer background calibration";
     if (m_sensor && !m_timer.isActive())
     {
         m_sensor->start();

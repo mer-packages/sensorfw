@@ -56,9 +56,6 @@ public:
 
     static void init(const QStringList& sensors);
 
-private:
-    void createSensorInterface();
-
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
     void receivedData(const XYZ& data);
@@ -69,8 +66,9 @@ public Q_SLOTS:
     void receivedFrame(const QVector<XYZ>& frame);
     void receivedData(const Proximity& data);
 
-
 private:
+    void createSensorInterface();
+
     AbstractSensorChannelInterface* sensorChannelInterface_;
 };
 

@@ -61,11 +61,9 @@ public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
     ~SensorHandler();
+
     virtual bool startClient();
     virtual bool stopClient();
-
-    int dataCount() const { return dataCount_; }
-    QString sensorName() const { return sensorName_; }
 
     static void init(const QStringList& sensors);
 

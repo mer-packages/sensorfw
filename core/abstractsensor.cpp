@@ -9,6 +9,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -46,7 +47,7 @@ AbstractSensorChannel::AbstractSensorChannel(const QString& id) :
 
 void AbstractSensorChannel::setError(SensorError errorCode, const QString& errorString)
 {
-    sensordLogC() << "SensorError:" <<  errorString;
+    sensordLogC() << "SensorError: " <<  errorString;
 
     errorCode_   = errorCode;
     errorString_ = errorString;
@@ -54,7 +55,8 @@ void AbstractSensorChannel::setError(SensorError errorCode, const QString& error
     emit errorSignal(errorCode);
 }
 
-bool AbstractSensorChannel::start(int sessionId) {
+bool AbstractSensorChannel::start(int sessionId)
+{
     if (!(activeSessions_.contains(sessionId))) {
         activeSessions_.append(sessionId);
     }
@@ -102,6 +104,7 @@ bool AbstractSensorChannel::writeToClients(const void* source, int size)
 
 bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, TimedXyzDownsampleBuffer& buffer)
 {
+    bool ret = true;
     foreach(const int& sessionId, activeSessions_)
     {
         if(!downsamplingEnabled(sessionId))
@@ -109,13 +112,13 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
             if (!(SensorManager::instance().write(sessionId, (const void*)(&data), sizeof(data))))
             {
                 sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
-                return false;
+                ret = false;
             }
-            return true;
+            continue;
         }
-        unsigned int currentInterval = interval();
+        unsigned int currentInterval = getInterval();
         unsigned int sessionInterval = getInterval(sessionId);
-        int bufferSize = currentInterval / sessionInterval;
+        int bufferSize = sessionInterval / currentInterval;
         if(!bufferSize)
             bufferSize = 1;
         QList<TimedXyzData>& samples(buffer[sessionId]);
@@ -124,7 +127,8 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
         {
             for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
             {
-                if(samples.size() > bufferSize)
+                if(samples.size() > bufferSize ||
+                   data.timestamp_ - it->timestamp_ > 2000000)
                 {
                     it = samples.erase(it);
                     if(it == samples.end())
@@ -133,7 +137,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
             }
         }
         if(samples.size() < bufferSize)
-            return false;
+            continue;
         long x = 0;
         long y = 0;
         long z = 0;
@@ -151,16 +155,21 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
         if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
         {
             sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
-            return false;
+            ret = false;
+            continue;
         }
         samples.clear();
     }
-    return true;
+    return ret;
 }
 
 void AbstractSensorChannel::setDownsamplingEnabled(int sessionId, bool value)
 {
-    downsampling_[sessionId] = value;
+    if(downsamplingSupported())
+    {
+        sensordLogT() << "Downsampling state for session " << sessionId << ": " << value;
+        downsampling_[sessionId] = value;
+    }
 }
 
 bool AbstractSensorChannel::downsamplingEnabled(int sessionId)

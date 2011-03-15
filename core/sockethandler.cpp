@@ -42,7 +42,7 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   count(0),
                                                                   bufferSize(1),
                                                                   bufferInterval(0),
-                                                                  downsampling(true)
+                                                                  downsampling(false)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -104,7 +104,7 @@ bool SessionData::write(const void* source, int size)
     if(bufferSize <= 1)
     {
         memcpy(buffer + sizeof(unsigned int), source, size);
-        if(downsampling && since >= interval)
+        if(!downsampling || (downsampling && since >= interval))
         {
             sensordLogT() << "[SocketHandler]: writing, since > interval or downsampling disabled";
             gettimeofday(&lastWrite, 0);

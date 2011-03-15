@@ -89,7 +89,9 @@ void SensorHandler::receivedFrame(const QVector<MagneticField>& frame)
     frameCount_++;
     sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
     foreach (const MagneticField& data, frame)
+    {
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
+    }
 }
 
 void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
@@ -97,7 +99,9 @@ void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
     frameCount_++;
     sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
     foreach (const XYZ& data, frame)
+    {
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
+    }
 }
 
 bool SensorHandler::startClient()
@@ -108,10 +112,12 @@ bool SensorHandler::startClient()
          sensordLogD() << "Creating sensor client interface fails.";
          return false;
     }
+    sensordLogD() << "Created sensor: " << sensorChannelInterface_->description();
     sensorChannelInterface_->setInterval(interval_);
     sensorChannelInterface_->setBufferInterval(bufferinterval_);
     sensorChannelInterface_->setBufferSize(buffersize_);
     sensorChannelInterface_->setStandbyOverride(standbyoverride_);
+    sensorChannelInterface_->setDownsampling(downsample_);
     sensorChannelInterface_->start();
 
     return true;
@@ -126,6 +132,10 @@ bool SensorHandler::stopClient()
         sensorChannelInterface_ = 0;
     }
     return true;
+}
+
+void SensorHandler::init(const QStringList&)
+{
 }
 
 void SensorHandler::createSensorInterface()
@@ -173,9 +183,4 @@ void SensorHandler::createSensorInterface()
         sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
         connect(sensorChannelInterface_, SIGNAL(reflectanceDataAvailable(const Proximity&)), this, SLOT(receivedData(const Proximity&)));
     }
-}
-
-void SensorHandler::init(const QStringList& sensors)
-{
-
 }

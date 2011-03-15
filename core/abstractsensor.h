@@ -9,6 +9,7 @@
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -39,7 +40,8 @@
 #include "datarange.h"
 #include "genericdata.h"
 
-class AbstractSensorChannel : public NodeBase {
+class AbstractSensorChannel : public NodeBase
+{
     Q_OBJECT
 
     Q_PROPERTY(bool isValid READ isValid)

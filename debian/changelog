@@ -28,16 +28,13 @@ sensord (0.6.41) unstable; urgency=low
     - AccelerometerAdaptor interval rangelist has been limited to certain sizes.
     - AccelerometerSensorChannel downsamples data before propagating it.
 
-  [ Shenghua Liu ]
+  [Shenghua Liu]
   * Make sensortestapp thread safe in exiting
   * Fix sensord-tests-install 
   * Fix sensordtestapp for qt apt to print out proximity reflectance data
   * Fix the Proximity metatype registration problem
 
-  [ shenghua ]
-  * 
-
- -- shenghua <shenghua@shenghua-ThinkPad-T43>  Tue, 15 Mar 2011 17:53:25 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 15 Mar 2011 17:53:25 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
