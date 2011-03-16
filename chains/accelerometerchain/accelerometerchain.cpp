@@ -51,7 +51,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     accelerometerReader_ = new BufferReader<AccelerationData>(1);
 
     // Get the transformation matrix from config file
-    QString aconvString = Config::configuration()->value("acc_trans_matrix", "").toString();
+    QString aconvString = Config::configuration()->value<QString>("acc_trans_matrix", "");
     if (aconvString.size() > 0)
     {
         if (!setMatrixFromString(aconvString))

@@ -45,7 +45,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
     driverHandle_ = getDriverHandle();
-    if (driverHandle_.size() == 0) {
+    if (driverHandle_.isEmpty()) {
         sensordLogW() << "Input device not found.";
     } else {
         sensordLogD() << "Detected magnetometer driver at " << driverHandle_;
@@ -74,13 +74,13 @@ MagnetometerAdaptor::~MagnetometerAdaptor()
 
 QString MagnetometerAdaptor::getDriverHandle() const
 {
-    QString magFile = Config::configuration()->value("mag_ak8974_dev_path").toString();
-    if (magFile.size() > 0 && QFile::exists(magFile)) {
+    QString magFile = Config::configuration()->value<QString>("mag_ak8974_dev_path");
+    if (!magFile.isNull() && QFile::exists(magFile)) {
         return magFile;
     }
 
-    magFile = Config::configuration()->value("mag_ak8975_dev_path").toString();
-    if (magFile.size() > 0 && QFile::exists(magFile)) {
+    magFile = Config::configuration()->value<QString>("mag_ak8975_dev_path");
+    if (!magFile.isNull() && QFile::exists(magFile)) {
         return magFile;
     }
 

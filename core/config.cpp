@@ -99,15 +99,20 @@ bool Config::loadConfigFile(const QString &configFileName) {
     return false;
 }
 
-QVariant Config::value(const QString &key, const QVariant &defaultValue) const {
+QVariant Config::value(const QString &key) const {
     /* Iterate through configs so that keys in the first files
      * have preference over the last.
      */
     foreach(QSettings* setting, settings) {
         if(setting->contains(key))
-            return setting->value(key, defaultValue);
+        {
+            QVariant var = setting->value(key, QVariant());
+            if(var.isValid())
+                sensordLogD() << "Value for key '" << key << "': " << var.toString();
+            return var;
+        }
     }
-    return defaultValue;
+    return QVariant();
 }
 
 QStringList Config::groups() const
@@ -132,4 +137,9 @@ Config *Config::configuration() {
 void Config::close() {
     delete static_configuration;
     static_configuration = 0;
+}
+
+bool Config::exists(const QString &key) const
+{
+    return value(key).isValid();
 }

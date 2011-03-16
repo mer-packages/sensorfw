@@ -67,8 +67,8 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 
     device = DeviceUnknown;
 
-    QString rm680_ps = Config::configuration()->value("proximity_dev_path_rm680", RM680_PS).toString();
-    QString rm696_ps = Config::configuration()->value("proximity_dev_path_rm696", RM696_PS).toString();
+    QString rm680_ps = Config::configuration()->value<QString>("proximity_dev_path_rm680", RM680_PS);
+    QString rm696_ps = Config::configuration()->value<QString>("proximity_dev_path_rm696", RM696_PS);
 
     if (QFile::exists(rm680_ps))
     {
@@ -177,7 +177,7 @@ int ProximityAdaptor::readThreshold()
     int value = 0;
     QString configKey = "proximity_threshold_path";
     QString configFileName = (device == RM680 ? THRESHOLD_FILE_PATH_RM680 : THRESHOLD_FILE_PATH_RM696);
-    QFile thresholdFile(Config::configuration()->value(configKey, configFileName).toString());
+    QFile thresholdFile(Config::configuration()->value(configKey, configFileName));
 
     if (!(thresholdFile.exists() && thresholdFile.open(QIODevice::ReadOnly))) {
         sensordLogW() << "Unable to locate threshold setting for " << id();

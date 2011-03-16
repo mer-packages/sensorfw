@@ -78,15 +78,15 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
 
     // Check if this device name is defined in configuration
     QString configKey = QString("dev_%1").arg(matchString);
-    QString deviceName = Config::configuration()->value(configKey, "DEV_NOT_FOUND").toString();
+    QString deviceName = Config::configuration()->value<QString>(configKey, "");
 
     // Do not perform strict checks for the input device
-    if (deviceName != "DEV_NOT_FOUND" && checkInputDevice(deviceName, matchString, false)) {
+    if (deviceName.size() && checkInputDevice(deviceName, matchString, false)) {
         addPath(deviceName, deviceCount_);
         ++deviceCount_;
         deviceNumber_ = deviceNumber;
     }
-    else
+    else if(!deviceSysPathString_.contains("%1"))
     {
         const int MAX_EVENT_DEV = 16;
 
@@ -103,14 +103,10 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
     }
 
     QString pollConfigKey = QString("dev_poll_%1").arg(deviceString_);
-    if (Config::configuration()->value(pollConfigKey, "").toString().size() > 0) {
-        usedDevicePollFilePath_ = Config::configuration()->value(pollConfigKey, "").toString();
-    } else {
-        usedDevicePollFilePath_ = devicePollFilePath_.arg(deviceNumber_);
-    }
+    usedDevicePollFilePath_ = Config::configuration()->value<QString>(pollConfigKey, devicePollFilePath_.arg(deviceNumber_));
 
     if (deviceCount_ == 0) {
-        sensordLogW() << "Cannot find any device for: " << matchString;
+        sensordLogW() << id() << " cannot find any device for: " << matchString;
         setValid(false);
     }
 

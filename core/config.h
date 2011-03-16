@@ -41,8 +41,13 @@ class Config {
 public:
     ~Config();
 
-    QVariant value(const QString &key, const QVariant &defaultValue = QVariant()) const;
+    QVariant value(const QString &key) const;
     QStringList groups() const;
+
+    template<typename T>
+    T value(const QString &key, const T &def = T()) const;
+
+    bool exists(const QString &key) const;
 
     static Config *configuration();
     static bool loadConfig(const QString &defConfigPath, const QString &configDPath);
@@ -58,5 +63,14 @@ private:
 
     QList<QSettings*> settings;
 };
+
+template<typename T>
+T Config::value(const QString &key, const T &def) const
+{
+    QVariant val(value(key));
+    if(!val.isValid())
+        return def;
+    return val.value<T>();
+}
 
 #endif // SENSORD_CONFIG_H

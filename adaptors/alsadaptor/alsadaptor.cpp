@@ -68,8 +68,8 @@ ALSAdaptor::ALSAdaptor(const QString& id):
                                  QDBusConnection::systemBus(), this);
 #endif
 
-    QString rm680_als = Config::configuration()->value("als_dev_path_rm680", RM680_ALS).toString();
-    QString rm696_als = Config::configuration()->value("als_dev_path_rm696", RM696_ALS).toString();
+    QString rm680_als = Config::configuration()->value<QString>("als_dev_path_rm680", RM680_ALS);
+    QString rm696_als = Config::configuration()->value<QString>("als_dev_path_rm696", RM696_ALS);
 
     if (QFile::exists(rm680_als))
     {

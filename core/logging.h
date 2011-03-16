@@ -49,14 +49,14 @@ public:
 
     SensordLogger& operator<<(const QStringList& item)
     {
-        if(initialized && isLoggable(currentLevel))
+        if(initialized && oss && isLoggable(currentLevel))
             return this->operator<<(item.join(", "));
         return *this;
     }
 
     SensordLogger& operator<<(const QString& item)
     {
-        if(initialized && isLoggable(currentLevel))
+        if(initialized && oss && isLoggable(currentLevel))
             *oss << item.toStdString();
         return *this;
     }
@@ -64,7 +64,7 @@ public:
     template <typename T>
     SensordLogger& operator<<(const T& item)
     {
-        if(initialized && isLoggable(currentLevel))
+        if(initialized && oss && isLoggable(currentLevel))
             *oss << item;
         return *this;
     }
@@ -72,7 +72,7 @@ public:
 public:
 
     static void setOutputLevel(SensordLogLevel level);
-    static SensordLogLevel getOutputLevel();
+    static inline SensordLogLevel getOutputLevel() { return outputLevel; }
     static void init(int target, QString logFilePath);
     static void close();
 

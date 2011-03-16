@@ -153,7 +153,7 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {
-        sensordLogW() << "Sensor not found" << sensorId;
+        sensordLogW() << "Sensor not found " << sensorId;
         return;
     }
 

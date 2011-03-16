@@ -24,6 +24,7 @@
 */
 
 #include "clientadmin.h"
+#include "config.h"
 
 const char* ClientAdmin::CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 
@@ -70,7 +71,7 @@ void ClientAdmin::runClients()
 
     foreach (const QString& sensorName, Config::configuration()->groups())
     {
-        int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
+        int count = 0;//Config::configuration()->value<int>(sensorName + "/instances", 0);
         for(int i = 0; i < count; ++i)
         {
             SensorHandler* handler = new SensorHandler(sensorName, this);

@@ -25,7 +25,6 @@
 */
 
 #include <QCoreApplication>
-#include <QTest>
 #include <QList>
 #include <QString>
 #include <QDebug>
@@ -47,7 +46,7 @@ void sigIntHandler(int param)
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication app(argc, argv);    
+    QCoreApplication app(argc, argv);
 
     Parser parser(app.arguments());
 

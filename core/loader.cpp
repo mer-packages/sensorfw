@@ -141,7 +141,7 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
 
 QString Loader::resolveRealPluginName(const QString& pluginName) const
 {
-    QString deviceId = Config::configuration()->value("deviceId", "default").toString();
+    QString deviceId = Config::configuration()->value<QString>("deviceId", "default");
     QString key = QString("%1/%2").arg(deviceId).arg(pluginName);
 
     QString nameFromConfig = Config::configuration()->value(key).toString();

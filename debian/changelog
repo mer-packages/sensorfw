@@ -14,6 +14,8 @@ sensord (0.6.41) unstable; urgency=low
     - SensorManager::addSensor() now gracefully handles if object registration to dbus fails.
     - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
     - Cleanup for adaptor codes
+    - Better error checks in InputDevAdaptor::getInputDevices().
+    - Logger optimized a bit.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.
@@ -27,6 +29,7 @@ sensord (0.6.41) unstable; urgency=low
   * Implemented new downsampling logic:
     - AccelerometerAdaptor interval rangelist has been limited to certain sizes.
     - AccelerometerSensorChannel downsamples data before propagating it.
+  * Config-class has now more friendly API.
 
   [Shenghua Liu]
   * Make sensortestapp thread safe in exiting

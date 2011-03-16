@@ -1,4 +1,4 @@
-QT += core testlib dbus network
+QT += core dbus network
 QT -= gui
 
 CONFIG += debug
@@ -13,7 +13,7 @@ isEmpty(TARGET_LIB) {
 HEADERS += parser.h \
            statprinter.h \
            abstractsensorhandler.h \
-    clientadmin.h
+           clientadmin.h
 
 SOURCES += main.cpp \
            parser.cpp \

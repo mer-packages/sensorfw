@@ -64,11 +64,6 @@ void SensordLogger::setOutputLevel(SensordLogLevel level)
     outputLevel = level;
 }
 
-SensordLogLevel SensordLogger::getOutputLevel()
-{
-    return outputLevel;
-}
-
 void SensordLogger::close()
 {
     if (initialized)
