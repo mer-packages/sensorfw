@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,8 +34,8 @@
 RotationSensorChannel::RotationSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DataEmitter<TimedXyzData>(10),
-        prevRotation_(0,0,0,0),
-        hasZ_(false)
+        compassReader_(NULL),
+        prevRotation_(0,0,0,0)
 {
     SensorManager& sm = SensorManager::instance();
 
@@ -46,7 +47,6 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     compassChain_ = sm.requestChain("compasschain");
     if (compassChain_ && compassChain_->isValid()) {
-        hasZ_ = true;
         compassReader_ = new BufferReader<CompassData>(1);
     } else {
         sensordLogW() << "Unable to use compass for z-axis rotation.";
@@ -64,7 +64,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     filterBin_->add(rotationFilter_, "rotationfilter");
     filterBin_->add(outputBuffer_, "buffer");
 
-    if (hasZ_)
+    if (hasZ())
     {
         filterBin_->add(compassReader_, "compass");
         filterBin_->join("compass", "source", "rotationfilter", "compasssink");
@@ -75,7 +75,7 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
     connectToSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
-    if (hasZ_)
+    if (hasZ())
     {
         connectToSource(compassChain_, "truenorth", compassReader_);
         addStandbyOverrideSource(compassChain_);
@@ -91,10 +91,14 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     addStandbyOverrideSource(accelerometerChain_);
 
     // Provide interval value from acc, but range depends on sane compass
-    if (hasZ_)
+    if (hasZ())
     {
         // No less than 5hz allowed for compass
-        introduceAvailableInterval(DataRange(10, 200, 0));  //-> [5-100] Hz
+        int ranges[] = {10, 20, 25, 40, 50, 100, 200};
+        for(size_t i = 0; i < sizeof(ranges) / sizeof(int); ++i)
+        {
+            introduceAvailableInterval(DataRange(ranges[i], ranges[i], 0));
+        }
     } else {
         setIntervalSource(accelerometerChain_);
     }
@@ -109,7 +113,7 @@ RotationSensorChannel::~RotationSensorChannel()
     disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
     sm.releaseChain("accelerometerchain");
 
-    if (hasZ_)
+    if (hasZ())
     {
         disconnectFromSource(compassChain_, "truenorth", compassReader_);
         sm.releaseChain("compasschain");
@@ -131,7 +135,7 @@ bool RotationSensorChannel::start()
         marshallingBin_->start();
         filterBin_->start();
         accelerometerChain_->start();
-        if (hasZ_)
+        if (hasZ())
         {
             compassChain_->setProperty("compassEnabled", true);
             compassChain_->start();
@@ -147,7 +151,7 @@ bool RotationSensorChannel::stop()
     if (AbstractSensorChannel::stop()) {
         accelerometerChain_->stop();
         filterBin_->stop();
-        if (hasZ_)
+        if (hasZ())
         {
             compassChain_->stop();
             compassChain_->setProperty("compassEnabled", false);
@@ -160,7 +164,7 @@ bool RotationSensorChannel::stop()
 void RotationSensorChannel::emitData(const TimedXyzData& value)
 {
     prevRotation_ = value;
-    writeToClients((const void*)(&value), sizeof(TimedXyzData));
+    downsampleAndPropagate(value, downsampleBuffer_);
 }
 
 unsigned int RotationSensorChannel::interval() const
@@ -173,10 +177,21 @@ unsigned int RotationSensorChannel::interval() const
 bool RotationSensorChannel::setInterval(unsigned int value, int sessionId)
 {
     bool success = accelerometerChain_->setIntervalRequest(sessionId, value);
-    if (hasZ_)
+    if (hasZ())
     {
         success = compassChain_->setIntervalRequest(sessionId, value) && success;
     }
 
     return success;
+}
+
+void RotationSensorChannel::removeSession(int sessionId)
+{
+    downsampleBuffer_.take(sessionId);
+    AbstractSensorChannel::removeSession(sessionId);
+}
+
+bool RotationSensorChannel::downsamplingSupported() const
+{
+    return true;
 }

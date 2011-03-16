@@ -113,6 +113,8 @@ bool SensorHandler::startClient()
          return false;
     }
     sensordLogD() << "Created sensor: " << sensorChannelInterface_->description();
+    sensordLogD() << "Support intervals: " << toString(sensorChannelInterface_->getAvailableIntervals());
+    sensordLogD() << "Support dataranges: " << toString(sensorChannelInterface_->getAvailableDataRanges());
     sensorChannelInterface_->setInterval(interval_);
     sensorChannelInterface_->setBufferInterval(bufferinterval_);
     sensorChannelInterface_->setBufferSize(buffersize_);
@@ -217,4 +219,22 @@ void SensorHandler::createSensorInterface()
         sensorChannelInterface_ = ProximitySensorChannelInterface::interface("proximitysensor");
         connect(sensorChannelInterface_, SIGNAL(reflectanceDataAvailable(const Proximity&)), this, SLOT(receivedData(const Proximity&)));
     }
+}
+
+QString SensorHandler::toString(const DataRangeList& ranges)
+{
+    QString str;
+    bool first = true;
+    foreach(const DataRange& range, ranges)
+    {
+        if(!first)
+            str.append(", ");
+        str.append("[")
+            .append(QVariant(range.min).toString())
+            .append(", ")
+            .append(QVariant(range.max).toString())
+            .append("]");
+        first = false;
+    }
+    return str;
 }

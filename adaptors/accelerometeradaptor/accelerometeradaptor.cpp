@@ -52,8 +52,7 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     setDescription("Input device accelerometer adaptor (lis302d)");
     introduceAvailableDataRange(DataRange(-2048, 2048, 1));
     int ranges[] = {0, 10, 20, 25, 40, 50, 100, 200, 250, 500, 1000};
-    //int ranges[] = {0, 10, 20, 100, 500, 1000};
-    for(size_t i = 0; i < sizeof(ranges); ++i)
+    for(size_t i = 0; i < sizeof(ranges) / sizeof(int); ++i)
     {
         introduceAvailableInterval(DataRange(ranges[i], ranges[i], 0));
     }

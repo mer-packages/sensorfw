@@ -39,6 +39,7 @@
 #include "sfwerror.h"
 #include "datarange.h"
 #include "genericdata.h"
+#include "orientationdata.h"
 
 class AbstractSensorChannel : public NodeBase
 {
@@ -126,8 +127,11 @@ protected:
     bool writeToClients(const void* source, int size);
 
     typedef QMap<int, QList<TimedXyzData> > TimedXyzDownsampleBuffer;
+    typedef QMap<int, QList<CalibratedMagneticFieldData> > MagneticFieldDownsampleBuffer;
 
     bool downsampleAndPropagate(const TimedXyzData& data, TimedXyzDownsampleBuffer& buffer);
+
+    bool downsampleAndPropagate(const CalibratedMagneticFieldData& data, MagneticFieldDownsampleBuffer& buffer);
 
     void signalPropertyChanged(const QString& name)
     {

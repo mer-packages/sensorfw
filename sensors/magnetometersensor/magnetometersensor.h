@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -68,6 +69,10 @@ public:
         return MagneticField(prevMeasurement_);
     }
 
+    virtual void removeSession(int sessionId);
+
+    virtual bool downsamplingSupported() const;
+
 public Q_SLOTS:
     bool start();
     bool stop();
@@ -95,6 +100,7 @@ private:
     RingBuffer<CalibratedMagneticFieldData>*   outputBuffer_;
     CalibratedMagneticFieldData                prevMeasurement_;
     int                                        scaleCoefficient_;
+    MagneticFieldDownsampleBuffer              downsampleBuffer_;
 
     void emitData(const CalibratedMagneticFieldData& value);
 };

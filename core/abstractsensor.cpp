@@ -163,6 +163,77 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
     return ret;
 }
 
+bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticFieldData& data, MagneticFieldDownsampleBuffer& buffer)
+{
+    bool ret = true;
+    foreach(const int& sessionId, activeSessions_)
+    {
+        if(!downsamplingEnabled(sessionId))
+        {
+            if (!(SensorManager::instance().write(sessionId, (const void*)(&data), sizeof(data))))
+            {
+                sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+                ret = false;
+            }
+            continue;
+        }
+        unsigned int currentInterval = getInterval();
+        unsigned int sessionInterval = getInterval(sessionId);
+        int bufferSize = sessionInterval / currentInterval;
+        if(!bufferSize)
+            bufferSize = 1;
+        QList<CalibratedMagneticFieldData>& samples(buffer[sessionId]);
+        samples.push_back(data);
+        if(samples.size() > 1)
+        {
+            for(QList<CalibratedMagneticFieldData>::iterator it = samples.begin(); it != samples.end(); ++it)
+            {
+                if(samples.size() > bufferSize ||
+                   data.timestamp_ - it->timestamp_ > 2000000)
+                {
+                    it = samples.erase(it);
+                    if(it == samples.end())
+                        break;
+                }
+            }
+        }
+        if(samples.size() < bufferSize)
+            continue;
+        long x = 0;
+        long y = 0;
+        long z = 0;
+        long rx = 0;
+        long ry = 0;
+        long rz = 0;
+        foreach(const CalibratedMagneticFieldData& data, samples)
+        {
+            x += data.x_;
+            y += data.y_;
+            z += data.z_;
+            rx += data.rx_;
+            ry += data.ry_;
+            rz += data.rz_;
+        }
+        CalibratedMagneticFieldData downsampled(data.timestamp_,
+                                                x / samples.count(),
+                                                y / samples.count(),
+                                                z / samples.count(),
+                                                rx / samples.count(),
+                                                ry / samples.count(),
+                                                rz / samples.count(),
+                                                data.level_);
+        sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_ << downsampled.rx_ << ", " << downsampled.ry_ << ", " << downsampled.rz_;
+        if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
+        {
+            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+            ret = false;
+            continue;
+        }
+        samples.clear();
+    }
+    return ret;
+}
+
 void AbstractSensorChannel::setDownsamplingEnabled(int sessionId, bool value)
 {
     if(downsamplingSupported())

@@ -68,6 +68,8 @@ public Q_SLOTS:
 private:
     void createSensorInterface();
 
+    static QString toString(const DataRangeList& ranges);
+
     AbstractSensorChannelInterface* sensorChannelInterface_;
 };
 
