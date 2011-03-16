@@ -484,7 +484,8 @@ IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
         if(hwSupported)
             return list;
     }
-    list.push_back(IntegerRange(1, 256));
+    if(list.isEmpty())
+        list.push_back(IntegerRange(1, 256));
     hwSupported = false;
     return list;
 }
@@ -498,7 +499,8 @@ IntegerRangeList NodeBase::getAvailableBufferIntervals(bool& hwSupported) const
         if(hwSupported)
             return list;
     }
-    list.push_back(IntegerRange(0, 60000));
+    if(list.isEmpty())
+        list.push_back(IntegerRange(0, 60000));
     hwSupported = false;
     return list;
 }
