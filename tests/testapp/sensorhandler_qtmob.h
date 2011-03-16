@@ -65,8 +65,6 @@ public:
     virtual bool startClient();
     virtual bool stopClient();
 
-    static void init(const QStringList& sensors);
-
 public Q_SLOTS:
 
     void receivedAccelerometerData();

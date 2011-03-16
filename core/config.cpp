@@ -59,17 +59,20 @@ bool Config::loadConfig(const QString &defConfigPath, const QString &configDPath
         config = new Config();
     }
 
-    /* Scan config.d dir */
-    QDir dir(configDPath, "*.conf", QDir::Name, QDir::Files);
-    QStringList fileList = dir.entryList();
-
-    /* Load all conf files */
     if (!config->loadConfigFile(defConfigPath))
         ret = false;
-    foreach(const QString& file, fileList)
+
+    /* Scan config.d dir */
+    QStringList fileList;
+    if(!configDPath.isEmpty())
     {
-        if (!config->loadConfigFile(dir.absoluteFilePath(file)))
-            ret = false;
+        QDir dir(configDPath, "*.conf", QDir::Name, QDir::Files);
+        fileList = dir.entryList();
+        foreach(const QString& file, fileList)
+        {
+            if (!config->loadConfigFile(dir.absoluteFilePath(file)))
+                ret = false;
+        }
     }
 
     static_configuration = config;

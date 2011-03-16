@@ -7,7 +7,7 @@ TARGET = sensortestapp
 
 TARGET_LIB = $$[TARGET_LIB]
 isEmpty(TARGET_LIB) {
-    TARGET_LIB = qt-api
+    TARGET_LIB = qtapi
 }
 
 HEADERS += parser.h \
@@ -34,10 +34,12 @@ QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../datatypes -lsensordatatypes \
                       -L../../core -lsensorfw
 
+DEFINES += TARGET_LIB_$$TARGET_LIB
+
 message("Compiling testapp for $$TARGET_LIB")
-equals(TARGET_LIB,qt-api) {
-    HEADERS += sensorhandler.h
-    SOURCES += sensorhandler.cpp
+equals(TARGET_LIB,qtapi) {
+    HEADERS += sensorhandler_qtapi.h
+    SOURCES += sensorhandler_qtapi.cpp
 }
 equals(TARGET_LIB,qmsystem2) {
     HEADERS += sensorhandler_qmsystem2.h

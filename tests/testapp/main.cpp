@@ -30,7 +30,6 @@
 #include <QDebug>
 #include <signal.h>
 
-#include "sensorhandler.h"
 #include "parser.h"
 #include "config.h"
 #include "logging.h"

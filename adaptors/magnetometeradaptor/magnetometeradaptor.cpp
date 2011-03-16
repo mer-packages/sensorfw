@@ -75,12 +75,12 @@ MagnetometerAdaptor::~MagnetometerAdaptor()
 QString MagnetometerAdaptor::getDriverHandle() const
 {
     QString magFile = Config::configuration()->value<QString>("mag_ak8974_dev_path");
-    if (!magFile.isNull() && QFile::exists(magFile)) {
+    if (!magFile.isEmpty() && QFile::exists(magFile)) {
         return magFile;
     }
 
     magFile = Config::configuration()->value<QString>("mag_ak8975_dev_path");
-    if (!magFile.isNull() && QFile::exists(magFile)) {
+    if (!magFile.isEmpty() && QFile::exists(magFile)) {
         return magFile;
     }
 

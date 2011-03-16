@@ -25,6 +25,19 @@
 
 #include "clientadmin.h"
 #include "config.h"
+#include <stdlib.h>
+
+#ifdef TARGET_LIB_qtapi
+#include "sensorhandler_qtapi.h"
+#endif
+
+#ifdef TARGET_LIB_qmsystem2
+#include "sensorhandler_qmsystem2.h"
+#endif
+
+#ifdef TARGET_LIB_qtmob
+#include "sensorhandler_qtmob.h"
+#endif
 
 const char* ClientAdmin::CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
 
@@ -62,7 +75,11 @@ void ClientAdmin::init()
         exit(EXIT_FAILURE);
     }
 
-    registerSensorInterface(Config::configuration()->groups());
+    if (!SensorHandler::init(Config::configuration()->groups()))
+    {
+        sensordLogC() << "Failed to initialize SensorHandler. Aborting.";
+        exit(EXIT_FAILURE);
+    }
 }
 
 void ClientAdmin::runClients()
@@ -71,7 +88,7 @@ void ClientAdmin::runClients()
 
     foreach (const QString& sensorName, Config::configuration()->groups())
     {
-        int count = 0;//Config::configuration()->value<int>(sensorName + "/instances", 0);
+        int count = Config::configuration()->value<int>(sensorName + "/instances", 0);
         for(int i = 0; i < count; ++i)
         {
             SensorHandler* handler = new SensorHandler(sensorName, this);
@@ -92,44 +109,6 @@ void ClientAdmin::runClients()
     sensordLogD() << "Threads are waiting.";
 }
 
-bool ClientAdmin::registerSensorInterface(const QStringList& sensors)
-{
-    SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
-    if(!remoteSensorManager.isValid())
-    {
-        sensordLogC() << "Failed to create SensorManagerInterface";
-        return false;
-    }
-    foreach (const QString& sensorName, sensors)
-    {
-        QDBusReply<bool> reply(remoteSensorManager.loadPlugin(sensorName));
-        if(!reply.isValid() || !reply.value())
-        {
-            sensordLogW() << "Failed to load plugin";
-            return false;
-        }
-
-        if (sensorName == "orientationsensor"){
-            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "accelerometersensor"){
-            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>(sensorName);
-        } else if (sensorName == "compasssensor"){
-            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>(sensorName);
-        } else if (sensorName == "tapsensor"){
-            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>(sensorName);
-        } else if (sensorName == "alssensor"){
-            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>(sensorName);
-        } else if (sensorName == "proximitysensor"){
-            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>(sensorName);
-        } else if (sensorName == "rotationsensor"){
-            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>(sensorName);
-        } else if (sensorName == "magnetometersensor"){
-            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
-        }
-    }
-    return true;
-}
-
 ClientAdmin::~ClientAdmin()
 {
     if(!parser.gracefulShutdown())
@@ -137,7 +116,7 @@ ClientAdmin::~ClientAdmin()
     sensordLogD() << "Exiting...";
 
     delete printer;
-    foreach(SensorHandler* handler, handlers)
+    foreach(AbstractSensorHandler* handler, handlers)
     {
         if (parser.singleThread())
         {

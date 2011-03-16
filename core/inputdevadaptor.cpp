@@ -86,7 +86,7 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
         ++deviceCount_;
         deviceNumber_ = deviceNumber;
     }
-    else if(!deviceSysPathString_.contains("%1"))
+    else if(deviceSysPathString_.contains("%1"))
     {
         const int MAX_EVENT_DEV = 16;
 

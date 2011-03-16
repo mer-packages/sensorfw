@@ -29,7 +29,7 @@
 #include <QString>
 #include <QDebug>
 
-StatPrinter::StatPrinter(QList<SensorHandler*> handlers, int interval, QObject *parent) :
+StatPrinter::StatPrinter(QList<AbstractSensorHandler*> handlers, int interval, QObject *parent) :
     QObject(parent),
     handlers(handlers),
     first(true)
@@ -40,7 +40,7 @@ StatPrinter::StatPrinter(QList<SensorHandler*> handlers, int interval, QObject *
 void StatPrinter::timerEvent(QTimerEvent*)
 {
     QMap<QString, int> summary;
-    foreach(SensorHandler* handler, handlers)
+    foreach(AbstractSensorHandler* handler, handlers)
     {
         summary[handler->sensorName()] += handler->dataCount();
     }

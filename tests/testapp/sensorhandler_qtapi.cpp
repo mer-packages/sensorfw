@@ -24,7 +24,7 @@
    </p>
 */
 
-#include "sensorhandler.h"
+#include "sensorhandler_qtapi.h"
 #include "logging.h"
 #include "qt-api/sensormanagerinterface.h"
 #include "qt-api/orientationsensor_i.h"
@@ -134,8 +134,42 @@ bool SensorHandler::stopClient()
     return true;
 }
 
-void SensorHandler::init(const QStringList&)
+bool SensorHandler::init(const QStringList& sensors)
 {
+    SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
+    if(!remoteSensorManager.isValid())
+    {
+        sensordLogC() << "Failed to create SensorManagerInterface";
+        return false;
+    }
+    foreach (const QString& sensorName, sensors)
+    {
+        QDBusReply<bool> reply(remoteSensorManager.loadPlugin(sensorName));
+        if(!reply.isValid() || !reply.value())
+        {
+            sensordLogW() << "Failed to load plugin";
+            return false;
+        }
+
+        if (sensorName == "orientationsensor"){
+            remoteSensorManager.registerSensorInterface<OrientationSensorChannelInterface>(sensorName);
+        } else if (sensorName == "accelerometersensor"){
+            remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>(sensorName);
+        } else if (sensorName == "compasssensor"){
+            remoteSensorManager.registerSensorInterface<CompassSensorChannelInterface>(sensorName);
+        } else if (sensorName == "tapsensor"){
+            remoteSensorManager.registerSensorInterface<TapSensorChannelInterface>(sensorName);
+        } else if (sensorName == "alssensor"){
+            remoteSensorManager.registerSensorInterface<ALSSensorChannelInterface>(sensorName);
+        } else if (sensorName == "proximitysensor"){
+            remoteSensorManager.registerSensorInterface<ProximitySensorChannelInterface>(sensorName);
+        } else if (sensorName == "rotationsensor"){
+            remoteSensorManager.registerSensorInterface<RotationSensorChannelInterface>(sensorName);
+        } else if (sensorName == "magnetometersensor"){
+            remoteSensorManager.registerSensorInterface<MagnetometerSensorChannelInterface>(sensorName);
+        }
+    }
+    return true;
 }
 
 void SensorHandler::createSensorInterface()

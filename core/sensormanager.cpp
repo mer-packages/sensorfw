@@ -136,7 +136,7 @@ SensorManager::~SensorManager()
 
 void SensorManager::setError(SensorManagerError errorCode, const QString& errorString)
 {
-    sensordLogW() << "SensorManagerError:" <<  errorString;
+    sensordLogW() << "SensorManagerError: " << errorString;
 
     errorCode_   = errorCode;
     errorString_ = errorString;
@@ -182,7 +182,7 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(cleanId);
 
     if (entryIt == sensorInstanceMap_.end()) {
-        sensordLogC() << QString("<%1> Sensor not present...").arg(cleanId);
+        sensordLogC() << QString("%1 not present").arg(cleanId);
         setError( SmIdNotRegistered, QString(tr("instance for sensor type '%1' not registered").arg(cleanId)) );
         return NULL;
     }
@@ -198,6 +198,7 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
     AbstractSensorChannel* sensorChannel = sensorFactoryMap_[typeName](id);
     if ( !sensorChannel->isValid() )
     {
+        sensordLogC() << QString("%1 instantiation failed").arg(cleanId);
         delete sensorChannel;
         return NULL;
     }
@@ -256,6 +257,7 @@ int SensorManager::requestSensor(const QString& id)
         AbstractSensorChannel* sensor = addSensor(id);
         if ( sensor == NULL )
         {
+            setError(SmNotInstantiated, tr("sensor has not been instantiated"));
             return INVALID_SESSION;
         }
     }

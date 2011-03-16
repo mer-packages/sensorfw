@@ -29,7 +29,7 @@
 #include <QList>
 #include <QString>
 
-#include "sensorhandler.h"
+#include "abstractsensorhandler.h"
 #include "parser.h"
 #include "config.h"
 #include "logging.h"
@@ -45,12 +45,11 @@ public:
 
 private:
     Parser parser;
-    QList<SensorHandler*> handlers;
+    QList<AbstractSensorHandler*> handlers;
     StatPrinter* printer;
     static const char* CONFIG_FILE_PATH;
 
     void init();
-    static bool registerSensorInterface(const QStringList& sensors);
 };
 
 #endif // CLIENTADMIN_H
