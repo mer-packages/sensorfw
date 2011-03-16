@@ -124,8 +124,9 @@ void PowerManagementTest::testIntervalRace()
     qDebug() << "original interval:" << originalInterval;
     QVERIFY2((originalInterval == 0 || originalInterval > 3), "Can't run the test with current poll value.");
 
-    unsigned int testIntervalOne = originalInterval > 2 ? originalInterval / 2 : 100; // Faster than original
-    unsigned int testIntervalTwo = testIntervalOne / 2; // Faster than previous
+    unsigned int testIntervalOne = 100; // Faster than original
+    unsigned int testIntervalTwo = 50; // Faster than previous
+    unsigned int testIntervalThree = 200; // Slower than previous
 
     accOne->setInterval(testIntervalOne);
     accOne->start();
@@ -141,16 +142,14 @@ void PowerManagementTest::testIntervalRace()
 
     QVERIFY(readPollInterval(accPollFile) == testIntervalOne);
 
-    // testIntervalTwo*3 is 3/4 of original, thus slower than
-    // testIntervalOne, but faster than original.
-    accTwo->setInterval(testIntervalTwo*3);
+    accTwo->setInterval(testIntervalThree);
     accTwo->start();
 
     QVERIFY(readPollInterval(accPollFile) == testIntervalOne);
 
     accOne->stop();
 
-    QVERIFY(readPollInterval(accPollFile) == testIntervalTwo*3);
+    QVERIFY(readPollInterval(accPollFile) == testIntervalThree);
 
     accTwo->stop();
 
