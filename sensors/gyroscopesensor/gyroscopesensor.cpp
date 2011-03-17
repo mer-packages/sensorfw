@@ -32,7 +32,7 @@
 
 GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<AngularVelocityData>(10),
+        DataEmitter<AngularVelocityData>(1),
         previousSample_(0,0,0,0)
 {
     SensorManager& sm = SensorManager::instance();

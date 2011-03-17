@@ -18,6 +18,7 @@ sensord (0.6.41) unstable; urgency=low
     - Logger optimized and improved a bit.
     - Debug logs improved.
     - Cleanup makefiles.
+    - Reduced used DataEmitter buffer sizes to 1.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

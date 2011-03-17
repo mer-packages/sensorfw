@@ -33,7 +33,7 @@
 
 AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<AccelerationData>(10),
+        DataEmitter<AccelerationData>(1),
         previousSample_(0,0,0,0)
 {
     SensorManager& sm = SensorManager::instance();

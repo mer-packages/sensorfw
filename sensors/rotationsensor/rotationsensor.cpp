@@ -33,7 +33,7 @@
 
 RotationSensorChannel::RotationSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<TimedXyzData>(10),
+        DataEmitter<TimedXyzData>(1),
         compassReader_(NULL),
         prevRotation_(0,0,0,0)
 {

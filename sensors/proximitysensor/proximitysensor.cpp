@@ -33,7 +33,7 @@
 
 ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<ProximityData>(10)
+        DataEmitter<ProximityData>(1)
 {
     SensorManager& sm = SensorManager::instance();
 
