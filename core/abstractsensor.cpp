@@ -105,6 +105,7 @@ bool AbstractSensorChannel::writeToClients(const void* source, int size)
 bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, TimedXyzDownsampleBuffer& buffer)
 {
     bool ret = true;
+    unsigned int currentInterval = getInterval();
     foreach(const int& sessionId, activeSessions_)
     {
         if(!downsamplingEnabled(sessionId))
@@ -116,7 +117,6 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
             }
             continue;
         }
-        unsigned int currentInterval = getInterval();
         unsigned int sessionInterval = getInterval(sessionId);
         int bufferSize = sessionInterval / currentInterval;
         if(!bufferSize)
@@ -166,6 +166,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
 bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticFieldData& data, MagneticFieldDownsampleBuffer& buffer)
 {
     bool ret = true;
+    unsigned int currentInterval = getInterval();
     foreach(const int& sessionId, activeSessions_)
     {
         if(!downsamplingEnabled(sessionId))
@@ -177,7 +178,6 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
             }
             continue;
         }
-        unsigned int currentInterval = getInterval();
         unsigned int sessionInterval = getInterval(sessionId);
         int bufferSize = sessionInterval / currentInterval;
         if(!bufferSize)
