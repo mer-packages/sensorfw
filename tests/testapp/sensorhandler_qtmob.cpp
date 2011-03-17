@@ -81,7 +81,7 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
 
     m_sensor->setProperty("alwaysOn", standbyoverride_);
     m_sensor->setProperty("bufferSize", buffersize_);
-    m_sensor->setDataRate(1000 / interval_);
+    m_sensor->setDataRate(interval_ ? 1000 / interval_ : 0);
 }
 
 SensorHandler::~SensorHandler()
