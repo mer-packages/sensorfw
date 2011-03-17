@@ -45,49 +45,49 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
 void SensorHandler::receivedData(const MagneticField& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x() << " " << data.y() << " " <<   data.z();
 }
 
 void SensorHandler::receivedData(const XYZ& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x() << " " << data.y() << " " <<   data.z();
 }
 
 void SensorHandler::receivedData(const Compass& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.degrees() << " " << data.level();
 }
 
 void SensorHandler::receivedData(const Unsigned& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x();
 }
 
 void SensorHandler::receivedData(const Tap& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.direction() << " " << data.type();
 }
 
 void SensorHandler::receivedData(const Proximity& data)
 {
     dataCount_++;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.UnsignedData().value_ << " " << data.proximityData().value_;
 }
 
 void SensorHandler::receivedFrame(const QVector<MagneticField>& frame)
 {
     frameCount_++;
-    sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
+    sensordLogT() << sensorName_ << " frame " << frameCount_ << " size " << frame.size();
     foreach (const MagneticField& data, frame)
     {
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();
@@ -97,7 +97,7 @@ void SensorHandler::receivedFrame(const QVector<MagneticField>& frame)
 void SensorHandler::receivedFrame(const QVector<XYZ>& frame)
 {
     frameCount_++;
-    sensordLogT() << this->objectName() << " frame " << frameCount_ << " size " << frame.size();
+    sensordLogT() << sensorName_ << " frame " << frameCount_ << " size " << frame.size();
     foreach (const XYZ& data, frame)
     {
         sensordLogT() << data.x() << " " << data.y() << " " << data.z();

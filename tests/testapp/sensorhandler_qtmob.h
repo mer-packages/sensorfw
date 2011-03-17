@@ -62,6 +62,8 @@ public:
     SensorHandler(const QString& sensorName, QObject *parent = 0);
     ~SensorHandler();
 
+    static bool init(const QStringList& sensors);
+
     virtual bool startClient();
     virtual bool stopClient();
 

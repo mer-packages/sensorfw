@@ -74,28 +74,28 @@ SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
 void SensorHandler::receivedData(const MeeGo::QmAccelerometerReading& data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x << " " << data.y << " " <<   data.z;
 }
 
 void SensorHandler::receivedData(const MeeGo::QmIntReading data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.value;
 }
 
 void SensorHandler::receivedData(const MeeGo::QmCompassReading data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.level << " " << data.degrees;
 }
 
 void SensorHandler::receivedData(const MeeGo::QmMagnetometerReading& data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x << " " << data.y << " " << data.z << " "
                   << data.rx << " " << data.ry << " " << data.rz << " "
                   << data.level;
@@ -104,21 +104,21 @@ void SensorHandler::receivedData(const MeeGo::QmMagnetometerReading& data)
 void SensorHandler::receivedData(const MeeGo::QmOrientationReading data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.value;
 }
 
 void SensorHandler::receivedData(const MeeGo::QmRotationReading& data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.x << " " << data.y << " " <<   data.z;
 }
 
 void SensorHandler::receivedData(const MeeGo::QmTapReading data)
 {
     ++dataCount_;
-    sensordLogT() << this->objectName() << " sample " << dataCount_ << ": "
+    sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
                   << data.type << " " << data.direction;
 }
 
@@ -130,8 +130,9 @@ bool SensorHandler::startClient()
     return true;
 }
 
-void SensorHandler::init(const QStringList&)
+bool SensorHandler::init(const QStringList&)
 {
+    return true;
 }
 
 bool SensorHandler::stopClient()
