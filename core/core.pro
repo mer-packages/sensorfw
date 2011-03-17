@@ -5,8 +5,7 @@ TARGET = sensorfw
 
 include( ../common-config.pri )
 
-CONFIG += console \
-          link_pkgconfig
+CONFIG += link_pkgconfig
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
@@ -15,9 +14,7 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -Wl,-rpath,/usr/lib/sensord
-LIBS += -Wl,-E
-LIBS += -L../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
 
 SOURCES += sensormanager.cpp \
     sensormanager_a.cpp \
@@ -76,7 +73,6 @@ HEADERS += sensormanager.h \
     HEADERS += mcewatcher.h
     DEFINES += SENSORFW_MCE_WATCHER
 }
-
 
 publicheaders.path  = $${publicheaders.path}/core
 publicheaders.files = $$HEADERS

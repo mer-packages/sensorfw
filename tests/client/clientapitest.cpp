@@ -544,6 +544,62 @@ void ClientApiTest::testAvailableBufferSizes()
     delete magnetometer;
 }
 
+void ClientApiTest::testDownsampling()
+{
+    MagnetometerSensorChannelInterface* magnetometer1 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer1 && magnetometer1->isValid(), "Could not get magnetometer sensor channel");
+    SampleCollector client1(*magnetometer1, true);
+    magnetometer1->setInterval(100);
+    magnetometer1->start();
+
+    MagnetometerSensorChannelInterface* magnetometer2 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer2 && magnetometer2->isValid(), "Could not get magnetometer sensor channel");
+    SampleCollector client2(*magnetometer2, true);
+    magnetometer2->setInterval(1000);
+    magnetometer2->setDownsampling(true);
+    magnetometer2->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 2200ms.";
+    QTest::qWait(2200);
+
+    magnetometer1->stop();
+    magnetometer2->stop();
+
+    QVERIFY(client1.getSamples().size() > 20);
+    QVERIFY(client2.getSamples().size() == 2);
+
+    delete magnetometer1;
+    delete magnetometer2;
+}
+
+void ClientApiTest::testDownsamplingDisabled()
+{
+    MagnetometerSensorChannelInterface* magnetometer1 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer1 && magnetometer1->isValid(), "Could not get magnetometer sensor channel");
+    SampleCollector client1(*magnetometer1, true);
+    magnetometer1->setInterval(100);
+    magnetometer1->start();
+
+    MagnetometerSensorChannelInterface* magnetometer2 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
+    QVERIFY2(magnetometer2 && magnetometer2->isValid(), "Could not get magnetometer sensor channel");
+    SampleCollector client2(*magnetometer2, true);
+    magnetometer2->setInterval(1000);
+    magnetometer2->setDownsampling(false);
+    magnetometer2->start();
+
+    qDebug() << "Magnetometer sensor started, waiting for 2200ms.";
+    QTest::qWait(2200);
+
+    magnetometer1->stop();
+    magnetometer2->stop();
+
+    QVERIFY(client1.getSamples().size() > 20);
+    QVERIFY(abs(client1.getSamples().size() - client2.getSamples().size()) < 2);
+
+    delete magnetometer1;
+    delete magnetometer2;
+}
+
 TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
     dataCount(0),
     frameCount(0),
@@ -556,6 +612,30 @@ TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFra
 
 TestClient::~TestClient()
 {
+}
+
+SampleCollector::SampleCollector(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
+    TestClient(iface, listenFrames)
+{
+}
+
+SampleCollector::~SampleCollector()
+{
+}
+
+void SampleCollector::dataAvailable(const MagneticField& data)
+{
+    samples.push_back(data);
+    TestClient::dataAvailable(data);
+}
+
+void SampleCollector::frameAvailable(const QVector<MagneticField>& frame)
+{
+    foreach(const MagneticField& data, frame)
+    {
+        samples.push_back(data);
+    }
+    TestClient::frameAvailable(frame);
 }
 
 QTEST_MAIN(ClientApiTest)

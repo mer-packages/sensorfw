@@ -7,7 +7,6 @@ include( ../common-config.pri )
 
 CONFIG += console \
           link_pkgconfig
-CONFIG -= app_bundle
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
@@ -17,13 +16,13 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -Wl,-rpath,/usr/lib/sensord
-LIBS += -Wl,-E
-LIBS += -L../datatypes -lsensordatatypes
-LIBS += -L../core -lsensorfw
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes \
+                      -L../core -lsensorfw
+
+QMAKE_RPATHDIR += /usr/lib/sensord
 
 SOURCES += main.cpp \
-    parser.cpp
+           parser.cpp
 
 HEADERS += parser.h
 

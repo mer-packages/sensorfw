@@ -15,8 +15,9 @@ sensord (0.6.41) unstable; urgency=low
     - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
     - Cleanup for adaptor codes
     - Better error checks in InputDevAdaptor::getInputDevices().
-    - Logger optimized a bit.
+    - Logger optimized and improved a bit.
     - Debug logs improved.
+    - Cleanup makefiles.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

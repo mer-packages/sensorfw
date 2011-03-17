@@ -48,7 +48,7 @@ ClientAdmin::ClientAdmin(const Parser& parser, QObject *parent) :
 
 void ClientAdmin::init()
 {
-    SensordLogger::init(parser.logTarget(), parser.logFilePath());
+    SensordLogger::init(parser.logTarget(), parser.logFilePath(), "sensortestapp");
 
     if (parser.changeLogLevel())
     {

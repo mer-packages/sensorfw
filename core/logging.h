@@ -73,7 +73,7 @@ public:
 
     static void setOutputLevel(SensordLogLevel level);
     static inline SensordLogLevel getOutputLevel() { return outputLevel; }
-    static void init(int target, QString logFilePath);
+    static void init(int target, const QString& logFilePath, const QString& name);
     static void close();
 
 private:
@@ -85,6 +85,7 @@ private:
     static std::ofstream* logFile;
     static QMutex mutex;
     static int logTarget;
+    static QByteArray appName;
 
     void printToTarget(const char* data) const;
     static int logPriority(int currentLevel);

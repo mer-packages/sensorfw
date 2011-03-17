@@ -247,7 +247,7 @@ bool AbstractSensorChannel::downsamplingEnabled(int sessionId)
 {
     QMap<int, bool>::const_iterator it(downsampling_.find(sessionId));
     if(it == downsampling_.end())
-        return false;
+        return downsamplingSupported();
     return it.value() && getInterval(sessionId);
 }
 

@@ -1,5 +1,4 @@
-
-QT += dbus network
+QT += network
 TARGET = sensorclient
 TEMPLATE = lib
 
@@ -39,7 +38,7 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -L../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes
 
 include(../common-install.pri)
 publicheaders.files = $$HEADERS

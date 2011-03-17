@@ -56,12 +56,18 @@ private slots:
     // Special cases
     void testCommonAdaptorPipeline();
     void testSessionInitiation();
+
+    // Buffering
     void testBuffering();
     void testBufferingHighRate();
     void testBufferingCompatibility();
     void testBufferingInterval();
     void testAvailableBufferIntervals();
     void testAvailableBufferSizes();
+
+    // Downsampling
+    void testDownsampling();
+    void testDownsamplingDisabled();
 };
 
 class TestClient : public QObject
@@ -77,13 +83,31 @@ public:
     int getFrameDataCount() const { return frameDataCount; }
 
 public Q_SLOTS:
-    void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"; ++dataCount; }
-    void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
+    virtual void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"; ++dataCount; }
+    virtual void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
 
 private:
     int dataCount;
     int frameCount;
     int frameDataCount;
+};
+
+class SampleCollector : public TestClient
+{
+    Q_OBJECT;
+
+public:
+    SampleCollector(MagnetometerSensorChannelInterface& iface, bool listenFrames);
+    virtual ~SampleCollector();
+
+    QVector<MagneticField> getSamples() { return samples; }
+
+public Q_SLOTS:
+    virtual void dataAvailable(const MagneticField&);
+    virtual void frameAvailable(const QVector<MagneticField>& frame);
+
+private:
+    QVector<MagneticField> samples;
 };
 
 #endif // CLIENT_API_TEST_H
