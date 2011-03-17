@@ -559,14 +559,80 @@ void ClientApiTest::testDownsampling()
     magnetometer2->setDownsampling(true);
     magnetometer2->start();
 
-    qDebug() << "Magnetometer sensor started, waiting for 2200ms.";
-    QTest::qWait(2200);
+    qDebug() << "Magnetometer sensor started, waiting for 2500ms.";
+    QTest::qWait(2500);
 
     magnetometer1->stop();
     magnetometer2->stop();
 
     QVERIFY(client1.getSamples().size() > 20);
     QVERIFY(client2.getSamples().size() == 2);
+
+    long x1 = 0;
+    long y1 = 0;
+    long z1 = 0;
+    long rx1 = 0;
+    long ry1 = 0;
+    long rz1 = 0;
+    foreach(const MagneticField& data, client1.getSamples())
+    {
+        x1 += data.x();
+        y1 += data.y();
+        z1 += data.z();
+        rx1 += data.rx();
+        ry1 += data.ry();
+        rz1 += data.rz();
+    }
+    x1 = x1 / client1.getSamples().size();
+    y1 = y1 / client1.getSamples().size();
+    z1 = z1 / client1.getSamples().size();
+    rx1 = rx1 / client1.getSamples().size();
+    ry1 = ry1 / client1.getSamples().size();
+    rz1 = rz1 / client1.getSamples().size();
+
+    qDebug() << "x1=" << x1 << ", "
+             << "y1=" << y1 << ", "
+             << "z1=" << z1 << ", "
+             << "rx1=" << rx1 << ", "
+             << "ry1=" << ry1 << ", "
+             << "rz1=" << rz1;
+
+    long x2 = 0;
+    long y2 = 0;
+    long z2 = 0;
+    long rx2 = 0;
+    long ry2 = 0;
+    long rz2 = 0;
+    foreach(const MagneticField& data, client2.getSamples())
+    {
+        x2 += data.x();
+        y2 += data.y();
+        z2 += data.z();
+        rx2 += data.rx();
+        ry2 += data.ry();
+        rz2 += data.rz();
+    }
+    x2 = x2 / client2.getSamples().size();
+    y2 = y2 / client2.getSamples().size();
+    z2 = z2 / client2.getSamples().size();
+    rx2 = rx2 / client2.getSamples().size();
+    ry2 = ry2 / client2.getSamples().size();
+    rz2 = rz2 / client2.getSamples().size();
+
+    qDebug() << "x2=" << x2 << ", "
+             << "y2=" << y2 << ", "
+             << "z2=" << z2 << ", "
+             << "rx2=" << rx2 << ", "
+             << "ry2=" << ry2 << ", "
+             << "rz2=" << rz2;
+
+    //since instances were not started at the same time there may be few samples of difference...
+    QVERIFY(abs(x1 - x2) < 1000);
+    QVERIFY(abs(y1 - y2) < 1000);
+    QVERIFY(abs(z1 - z2) < 1000);
+    QVERIFY(abs(rx1 - rx2) < 1000);
+    QVERIFY(abs(ry1 - ry2) < 1000);
+    QVERIFY(abs(rz1 - rz2) < 1000);
 
     delete magnetometer1;
     delete magnetometer2;
