@@ -44,33 +44,25 @@ void StatPrinter::timerEvent(QTimerEvent*)
     {
         summary[handler->sensorName()] += handler->dataCount();
     }
-    QList<QString> keys(summary.keys());
-    qSort(keys.begin(), keys.end());
-    bool firstKey = true;
-    QString prefixLine;
-    QString dataLine;
-    foreach(QString key, keys)
-    {
-        if(!firstKey)
-        {
-            if (first)
-            {
-                prefixLine.append('\t');
-            }
-            dataLine.append('\t');
-        }
 
-        if(first) {
+    QString prefixLine, dataLine;
+    foreach(QString key, summary.keys())
+    {
+        if (first)
+        {
             prefixLine.append(key);
+            prefixLine.append('\t');
         }
 
         dataLine.append(QString::number(summary[key]));
-        firstKey = false;
+
+        dataLine.append('\t');
     }
+
     if(first)
     {
-        qDebug()<< prefixLine;
+        qDebug()<< prefixLine.trimmed();
         first = false;
     }
-    qDebug() << dataLine;
+    qDebug() << dataLine.trimmed();
 }
