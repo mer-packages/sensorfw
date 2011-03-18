@@ -29,7 +29,7 @@ sensord (0.6.41) unstable; urgency=low
   * Config-class now better handles errors.
   * AccelerometerAdaptor used for some reason OrientationData. Should have
     been AccelerometerData. Only cosmetic change.
-  * Implemented new downsampling logic:
+  * Implemented new downsampling logic (Fixes: NB#234563):
     - AccelerometerAdaptor, MagnetometerAdaptor and RotationSensorChannel interval rangelist has been limited to certain sizes.
     - AccelerometerSensorChannel, RotationSensorChannel and MagnetometerSensorChannel downsamples data before propagating it.
   * Config-class has now more friendly API.
@@ -40,6 +40,7 @@ sensord (0.6.41) unstable; urgency=low
   * Fix sensord-tests-install 
   * Fix sensordtestapp for qt apt to print out proximity reflectance data
   * Fix the Proximity metatype registration problem
+  * ProximityAdaptor now stores reflectance reading (Fixes: NB#234186)
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 15 Mar 2011 17:53:25 +0200
 
