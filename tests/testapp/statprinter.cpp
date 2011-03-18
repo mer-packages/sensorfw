@@ -53,15 +53,24 @@ void StatPrinter::timerEvent(QTimerEvent*)
     {
         if(!firstKey)
         {
-            prefixLine.append('\t');
+            if (first)
+            {
+                prefixLine.append('\t');
+            }
             dataLine.append('\t');
         }
-        prefixLine.append(key);
+
+        if(first) {
+            prefixLine.append(key);
+        }
+
         dataLine.append(QString::number(summary[key]));
         firstKey = false;
     }
     if(first)
+    {
         qDebug()<< prefixLine;
-    first = false;
+        first = false;
+    }
     qDebug() << dataLine;
 }

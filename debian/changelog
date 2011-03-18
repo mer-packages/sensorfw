@@ -40,8 +40,10 @@ sensord (0.6.41) unstable; urgency=low
   * Fix sensord-tests-install 
   * Fix sensordtestapp for qt apt to print out proximity reflectance data
   * Fix the Proximity metatype registration problem
+  * Push proximity reflectance raw data from proximity adaptor. Fixes: NB#234186.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 15 Mar 2011 17:53:25 +0200
+
+ -- shenghua <ext-shenghua.1.liu@nokia.com>  Fri, 18 Mar 2011 11:16:28 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
