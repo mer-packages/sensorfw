@@ -52,11 +52,15 @@ public:
 
     /**
      * Copy constructor (needed for Qt metatype system)
+     *
+     * @param data Source object.
      */
     Compass(const CompassData& data);
 
     /**
      * Copy constructor (needed for Qt metatype system)
+     *
+     * @param data Source object.
      */
     Compass(const Compass& data);
 
@@ -78,12 +82,23 @@ public:
      */
     int level() const { return data_.level_; }
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     Compass& operator=(const Compass& origin)
     {
         data_ = origin.data();
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const Compass& right) const
     {
         CompassData rdata = right.data();
@@ -102,7 +117,13 @@ private:
 
 Q_DECLARE_METATYPE( Compass )
 
-// Marshall the Compass data into a D-Bus argument
+/**
+ * Marshall the Compass data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
@@ -111,7 +132,13 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
     return argument;
 }
 
-// Retrieve the Compass data from the D-Bus argument
+/**
+ * Unmarshall Compass data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
 {
     argument.beginStructure();
