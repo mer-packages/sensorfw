@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,7 +31,10 @@
 #include <QDBusArgument>
 #include <QPair>
 
+/* Datatype for storing integer ranges. */
 typedef QPair<unsigned int, unsigned int> IntegerRange;
+
+/* Datatype for storing list of integer ranges. */
 typedef QList<IntegerRange> IntegerRangeList;
 
 Q_DECLARE_METATYPE( IntegerRange )
@@ -43,19 +47,43 @@ class DataRange : public QObject {
     Q_OBJECT;
 public:
 
+    /**
+     * Default constructor.
+     */
     DataRange() : QObject(), min(0), max(0), resolution(0) {}
 
+    /**
+     * Copy constructor
+     *
+     * @param other source object.
+     */
     DataRange(const DataRange &other) :
         QObject(), min(other.min), max(other.max), resolution(other.resolution) {}
 
-    DataRange(double pmin, double pmax, double presolution) :
+    /**
+     * Constructor.
+     *
+     * @param min Range lower end.
+     * @param max Range higher end.
+     * @param resolution Resolution of the range.
+     */
+    DataRange(double min, double max, double resolution) :
         QObject(), min(pmin), max(pmax), resolution(presolution) {}
 
-
+    /* Range lower end */
     double min;
+
+    /* Range higher end */
     double max;
+
+    /* Range resolution */
     double resolution;
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     DataRange& operator=(const DataRange& origin)
     {
         min = origin.min;
@@ -64,21 +92,33 @@ public:
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const DataRange& right) const
     {
         return (min == right.min &&
                 max == right.max &&
                 resolution == right.resolution);
     }
-
 };
 
+/* Datatype for list of data ranges */
 typedef QList<DataRange> DataRangeList;
 
 Q_DECLARE_METATYPE( DataRange )
 Q_DECLARE_METATYPE( DataRangeList )
 
-// Marshall the DataRange data into a D-Bus argument
+/**
+ * Marshall the DataRange into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRange &data)
 {
     argument.beginStructure();
@@ -87,7 +127,13 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRange &data)
     return argument;
 }
 
-// Retrieve the DataRange data from the D-Bus argument
+/**
+ * Unmarshall DataRange from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange &data)
 {
     argument.beginStructure();
@@ -96,6 +142,13 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRange 
     return argument;
 }
 
+/**
+ * Marshall the DataRangeList into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &data)
 {
     argument.beginArray(qMetaTypeId<DataRange>());
@@ -107,6 +160,13 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const DataRangeList &d
     return argument;
 }
 
+/**
+ * Unmarshall DataRangeList from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeList &data)
 {
     argument.beginArray();
@@ -120,6 +180,13 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, DataRangeL
     return argument;
 }
 
+/**
+ * Marshall the IntegerRange into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &data)
 {
     argument.beginStructure();
@@ -128,6 +195,13 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRange &da
     return argument;
 }
 
+/**
+ * Unmarshall IntegerRange from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRange &data)
 {
     argument.beginStructure();
@@ -136,6 +210,13 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRan
     return argument;
 }
 
+/**
+ * Marshall the IntegerRangeList into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList &data)
 {
     argument.beginArray(qMetaTypeId<IntegerRange>());
@@ -147,6 +228,13 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const IntegerRangeList
     return argument;
 }
 
+/**
+ * Unmarshall IntegerRangeList from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRangeList &data)
 {
     argument.beginArray();
@@ -161,20 +249,42 @@ inline const QDBusArgument &operator>>(const QDBusArgument &argument, IntegerRan
 }
 
 /**
- * Request class. Contains id of the requester and the range.
+ * DataRange request class.
  */
-class DataRangeRequest {
+class DataRangeRequest
+{
 public:
+
+    /* Request ID */
     int       id;
+
+    /* Resuested range */
     DataRange range;
 
+    /**
+     * Constructor.
+     *
+     * @param newId id of the request.
+     */
     DataRangeRequest(int newId) :
         id(newId) {};
 
+    /**
+     * Constructor.
+     *
+     * @param newId id of the request.
+     * @param newRange requested range.
+     */
     DataRangeRequest(int newId, const DataRange& newRange) :
         id(newId),
         range(newRange) {};
 
+    /**
+     * Comparison operator.
+     *
+     * @param right object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const DataRangeRequest& right) const
     {
         return (id == right.id && range == right.range);
@@ -182,23 +292,45 @@ public:
 };
 
 /**
- * Request class for Intervals. Contains id of the requester and value.
+ * Interval Request class.
  */
 class IntervalRequest {
 public:
+    /* Request ID */
     int      id;
+
+    /* Requested interval value */
     unsigned value;
 
+    /**
+     * Constructor.
+     *
+     * @param newId Request ID.
+     * @param newValue interval value to request.
+     */
     IntervalRequest(int newId, unsigned newValue) :
         id(newId),
         value(newValue) {}
 
+    /**
+     * Comparison operator.
+     *
+     * @param right object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const IntervalRequest& right) const
     {
         return (id == right.id && value == right.value);
     }
 };
 
+/**
+ * Checks is given value inside range list.
+ *
+ * @param ref value to check.
+ * @param container range list.
+ * @return is value in range or not.
+ */
 template<typename T, typename U>
 inline bool isInRange(T ref, const U& container)
 {
