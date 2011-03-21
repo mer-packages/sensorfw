@@ -26,8 +26,14 @@
 #ifndef SFW_ERROR_H
 #define SFW_ERROR_H
 
+/**
+ * Symbol for invalid session ID.
+ */
 static const int INVALID_SESSION = -1;
 
+/**
+ * Enumeration about SensorManager error states.
+ */
 typedef enum
 {
     SmNoError = 0,
@@ -41,6 +47,9 @@ typedef enum
     SmAdaptorNotStarted
 } SensorManagerError;
 
+/**
+ * Enumeration about sensor error states.
+ */
 typedef enum
 {
     SNoError = 0,
