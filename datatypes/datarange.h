@@ -68,7 +68,7 @@ public:
      * @param resolution Resolution of the range.
      */
     DataRange(double min, double max, double resolution) :
-        QObject(), min(pmin), max(pmax), resolution(presolution) {}
+        QObject(), min(min), max(max), resolution(resolution) {}
 
     /* Range lower end */
     double min;
