@@ -32,6 +32,7 @@
  * Return leftmost part separated by ";". For example return for "foo;bar" is "foo".
  *
  * @param id ID to clean.
+ * @return cleaned ID.
  */
 inline QString getCleanId(const QString& id)
 {
