@@ -31,6 +31,9 @@
 #include <datatypes/unsigned.h>
 #include <datatypes/orientationdata.h>
 
+/**
+ * QObject facade for #ProximityData.
+ */
 class Proximity : public Unsigned
 {
     Q_OBJECT
@@ -41,12 +44,14 @@ class Proximity : public Unsigned
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor
      */
     Proximity() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Constructor
+     *
+     * @param data Source object.
      */
     Proximity(const ProximityData& data) :
         Unsigned(TimedUnsigned(data.timestamp_, data.withinProximity_)),
@@ -54,7 +59,9 @@ public:
         {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor
+     *
+     * @param data Source object.
      */
     Proximity(const Proximity& data) :
         Unsigned(data.UnsignedData()), data_(data.proximityData().timestamp_, data.proximityData().value_, data.proximityData().withinProximity_)
@@ -67,21 +74,36 @@ public:
     const ProximityData& proximityData() const { return data_; }
 
     /**
-     * @return is the proximity sensor withinProximity or not
+     * Accessor for proximity status.
+     *
+     * @return is an object in proximity of sensor or not
      */
     bool withinProximity() const { return data_.withinProximity_; }
 
     /**
-     * @return proximity reflectance reading
+     * Accessor for raw reflectance reading.
+     *
+     * @return proximity reflectance reading.
      */
     int reflectance() const { return data_.value_; }
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     Proximity& operator=(const Proximity& origin)
     {
         data_ = origin.proximityData();
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const Proximity& right) const
     {
         ProximityData rdata = right.proximityData();
@@ -91,24 +113,35 @@ public:
     }
 
 private:
-    ProximityData data_;
+    ProximityData data_; /**< Contained proximity reading. */
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Proximity& data);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Proximity& data);
 };
 
 Q_DECLARE_METATYPE( Proximity )
 
-// Marshall the Proximity data into a D-Bus argument
+/**
+ * Marshall the Proximity data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Proximity &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.value_ << data.data_.withinProximity_;
+    argument << data.proximityData().timestamp_ << data.proximityData().value_ << data.proximityData().withinProximity_;
     argument.endStructure();
     return argument;
 }
 
-// Retrieve the Proximity data from the D-Bus argument
+/**
+ * Unmarshall Proximity data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Proximity &data)
 {
     argument.beginStructure();

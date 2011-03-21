@@ -28,9 +28,11 @@
 #define ORIENTATION_H
 
 #include <QDBusArgument>
-
 #include <datatypes/orientationdata.h>
 
+/**
+ * QObject facade for #OrientationData.
+ */
 class Orientation : public QObject
 {
     Q_OBJECT
@@ -41,6 +43,11 @@ class Orientation : public QObject
     Q_PROPERTY(DisplayOrientation orientation READ orientation)
 
 public:
+    /**
+     * Display orientation.
+     *
+     * @deprecated Not used.
+     */
     enum DisplayOrientation
     {
         OrientationUndefined = 0,
@@ -52,41 +59,92 @@ public:
         OrientationDisplayDownwards
     };
 
-    // default constructor (needed for Qt metatype system)
+    /**
+     * Default constructor.
+     */
     Orientation() {}
 
-    // copy constructor (needed for Qt metatype system)
+    /**
+     * Constructor.
+     *
+     * @param orientationData Source object.
+     */
     Orientation(const OrientationData& orientationData);
+
+    /**
+     * Copy constructor.
+     *
+     * @param orientation Source object.
+     */
     Orientation(const Orientation& orientation);
 
-    const OrientationData& orientationData() const { return  data_; }
+    /**
+     * Accessor for contained #OrientationData.
+     *
+     * @return contained #OrientationData.
+     */
+    const OrientationData& orientationData() const { return data_; }
 
+    /**
+     * Accessor for X coordinate.
+     *
+     * @return X coordinate.
+     */
     int x() const { return data_.x_; }
+
+    /**
+     * Accessor for Y coordinate.
+     *
+     * @return Y coordinate.
+     */
     int y() const { return data_.y_; }
+
+    /**
+     * Accessor for Z coordinate.
+     *
+     * @return Z coordinate.
+     */
     int z() const { return data_.z_; }
 
+    /**
+     * Accessor for display orientation.
+     *
+     * @return display orientation.
+     *
+     * @deprecated Returns always OrientationUndefined.
+     */
     DisplayOrientation orientation() const { return OrientationUndefined; }
 
 private:
-    OrientationData data_;
+    OrientationData data_; /**< Contained data */
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Orientation& orientation);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Orientation& orientation);
-    friend class OrientationSensorChannel;
 };
 
 Q_DECLARE_METATYPE( Orientation )
 
-// Marshall the Orientation data into a D-Bus argument
+/**
+ * Marshall the Orientation data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param orientation data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Orientation &orientation)
 {
     argument.beginStructure();
-    argument << orientation.data_.timestamp_ << orientation.data_.x_ << orientation.data_.y_ << orientation.data_.z_;
+    argument << orientation.orientationData().timestamp_ << orientation.orientationData().x_ << orientation.orientationData().y_ << orientation.orientationData().z_;
     argument.endStructure();
     return argument;
 }
 
-// Retrieve the Orientation data from the D-Bus argument
+/**
+ * Unmarshall Orientation data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param orientation unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Orientation &orientation)
 {
     argument.beginStructure();

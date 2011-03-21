@@ -28,29 +28,34 @@
 #define UNSIGNED_H
 
 #include <QDBusArgument>
-
 #include <datatypes/timedunsigned.h>
 
+/**
+ * QObject facae for #TimedUnsigned.
+ */
 class Unsigned : public QObject
 {
     Q_OBJECT
-
     Q_PROPERTY(int x READ x)
 
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     Unsigned() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Constructor.
+     *
+     * @param unsignedData Source object.
      */
     Unsigned(const TimedUnsigned& unsignedData);
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param data Source object.
      */
     Unsigned(const Unsigned& data);
 
@@ -66,12 +71,23 @@ public:
      */
     int x() const { return data_.value_; }
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     Unsigned& operator=(const Unsigned& origin)
     {
         data_ = origin.UnsignedData();
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const Unsigned& right) const
     {
         TimedUnsigned rdata = right.UnsignedData();
@@ -80,24 +96,35 @@ public:
     }
 
 private:
-    TimedUnsigned data_;
+    TimedUnsigned data_; /**< Contained data. */
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned& data);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Unsigned& data);
 };
 
 Q_DECLARE_METATYPE( Unsigned )
 
-// Marshall the Unsigned data into a D-Bus argument
+/**
+ * Marshall the Unsigned data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Unsigned &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.value_;
+    argument << data.UnsignedData().timestamp_ << data.UnsignedData().value_;
     argument.endStructure();
     return argument;
 }
 
-// Retrieve the Unsigned data from the D-Bus argument
+/**
+ * Unmarshall Unsigned data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Unsigned &data)
 {
     argument.beginStructure();

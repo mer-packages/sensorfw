@@ -28,38 +28,37 @@
 #define XYZ_H
 
 #include <QDBusArgument>
-
 #include <datatypes/orientationdata.h>
 
 /**
- * @brief XYZ is a wrapper class for #TimedXYZData.
- *
- * It is used to marshall measurement data with 3 integers and timestamp
- * #TimedXYZData over DBus.
+ * QObject facade for #TimedXYZData.
  */
 class XYZ : public QObject
 {
-public:
-    Q_OBJECT;
+    Q_OBJECT
 
-    Q_PROPERTY(int x READ x);
-    Q_PROPERTY(int y READ y);
-    Q_PROPERTY(int z READ z);
+    Q_PROPERTY(int x READ x)
+    Q_PROPERTY(int y READ y)
+    Q_PROPERTY(int z READ z)
 
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     XYZ() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param xyzData Source object.
      */
     XYZ(const TimedXyzData& xyzData);
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param xyz Source object.
      */
     XYZ(const XYZ& xyz);
 
@@ -87,12 +86,23 @@ public:
      */
     int z() const { return data_.z_; }
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     XYZ& operator=(const XYZ& origin)
     {
         data_ = origin.XYZData();
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const XYZ& right) const
     {
         TimedXyzData rdata = right.XYZData();
@@ -103,25 +113,35 @@ public:
     }
 
 private:
-    TimedXyzData data_;
+    TimedXyzData data_; /**< Contained data. */
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const XYZ& xyz);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, XYZ& xyz);
-    friend class OrientationSensorChannel;
 };
 
 Q_DECLARE_METATYPE( XYZ )
 
-// Marshall the XYZ data into a D-Bus argument
+/**
+ * Marshall the XYZ data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param xyz data to marshall.
+ * @return dbus argument.
+ */
 inline QDBusArgument &operator<<(QDBusArgument &argument, const XYZ &xyz)
 {
     argument.beginStructure();
-    argument << xyz.data_.timestamp_ << xyz.data_.x_ << xyz.data_.y_ << xyz.data_.z_;
+    argument << xyz.XYZData().timestamp_ << xyz.XYZData().x_ << xyz.XYZData().y_ << xyz.XYZData().z_;
     argument.endStructure();
     return argument;
 }
 
-// Retrieve the XYZ data from the D-Bus argument
+/**
+ * Unmarshall XYZ data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param xyz unmarshalled data.
+ * @return dbus argument.
+ */
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, XYZ &xyz)
 {
     argument.beginStructure();

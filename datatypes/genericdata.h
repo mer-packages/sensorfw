@@ -30,24 +30,30 @@
 #include <QMetaType>
 
 /**
- * A base class for measurements that contain timestamp.
+ * A base class for measurement data that contain timestamp.
  */
-class TimedData {
+class TimedData
+{
 public:
-    TimedData(quint64 timestamp) : timestamp_(timestamp) {}
 
-    quint64 timestamp_; /**< Timestamp value */
+    /**
+     * Constructor
+     *
+     * @param timestamp monotonic time (microsec)
+     */
+    TimedData(const quint64& timestamp) : timestamp_(timestamp) {}
+
+    quint64 timestamp_;  /**< monotonic time (microsec) */
 };
 
 /**
- * Class for vector type measurement data (timestamp, x, y, z). Can easily be
- * extended.
+ * Class for vector type measurement data (timestamp, x, y, z).
  */
 class TimedXyzData : public TimedData
 {
 public:
     TimedXyzData() : TimedData(0), x_(0), y_(0), z_(0) {}
-    TimedXyzData(quint64 timestamp, int x, int y, int z) : TimedData(timestamp), x_(x), y_(y), z_(z) {}
+    TimedXyzData(const quint64& timestamp, int x, int y, int z) : TimedData(timestamp), x_(x), y_(y), z_(z) {}
 
     int x_; /**< X value */
     int y_; /**< Y value */

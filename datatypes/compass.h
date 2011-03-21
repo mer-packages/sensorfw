@@ -31,34 +31,32 @@
 #include <datatypes/orientationdata.h>
 
 /**
- * @brief Compass is a wrapper class for #CompassData.
- *
- * It is used for marshalling compass measurements over DBus.
+ * QObject facade for #CompassData.
  */
 class Compass : public QObject
 {
 public:
-    Q_OBJECT;
+    Q_OBJECT
 
-    Q_PROPERTY(int degrees READ degrees);
-    Q_PROPERTY(int level READ level);
+    Q_PROPERTY(int degrees READ degrees)
+    Q_PROPERTY(int level READ level)
 
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     Compass() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
      *
      * @param data Source object.
      */
     Compass(const CompassData& data);
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
      *
      * @param data Source object.
      */
@@ -110,9 +108,7 @@ public:
 private:
     CompassData data_;
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Compass& data);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Compass& data);
-    friend class CompassSensorChannel;
 };
 
 Q_DECLARE_METATYPE( Compass )
@@ -127,7 +123,7 @@ Q_DECLARE_METATYPE( Compass )
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.degrees_ << data.data_.level_;
+    argument << data.data().timestamp_ << data.data().degrees_ << data.data().level_;
     argument.endStructure();
     return argument;
 }

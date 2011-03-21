@@ -33,12 +33,22 @@
  */
 class TimedUnsigned : public TimedData {
 public:
+    /**
+     * Default constructor.
+     */
     TimedUnsigned() : TimedData(0), value_(0) {}
-    TimedUnsigned(quint64 timestamp, unsigned value) : TimedData(timestamp), value_(value) {}
 
-    unsigned value_;
+    /**
+     * Constructor.
+     *
+     * @param timestamp timestamp as monotonic time (microsec).
+     * @param value value of the measurement.
+     */
+    TimedUnsigned(const quint64& timestamp, unsigned value) : TimedData(timestamp), value_(value) {}
+
+    unsigned value_; /**< Measurement value. */
 };
-Q_DECLARE_METATYPE ( TimedUnsigned )
 
+Q_DECLARE_METATYPE ( TimedUnsigned )
 
 #endif // TIMED_UNSIGNED_H

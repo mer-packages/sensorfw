@@ -70,14 +70,9 @@ public:
     DataRange(double min, double max, double resolution) :
         QObject(), min(min), max(max), resolution(resolution) {}
 
-    /* Range lower end */
-    double min;
-
-    /* Range higher end */
-    double max;
-
-    /* Range resolution */
-    double resolution;
+    double min;         /**< Range lower end */
+    double max;         /**< Range higher end */
+    double resolution;  /**< Range resolution */
 
     /**
      * Assignment operator.
@@ -255,11 +250,8 @@ class DataRangeRequest
 {
 public:
 
-    /* Request ID */
-    int       id;
-
-    /* Resuested range */
-    DataRange range;
+    int       id;     /**< Request ID */
+    DataRange range;  /**< Resuested range */
 
     /**
      * Constructor.
@@ -296,11 +288,8 @@ public:
  */
 class IntervalRequest {
 public:
-    /* Request ID */
-    int      id;
-
-    /* Requested interval value */
-    unsigned value;
+    int      id;     /**< Request ID */
+    unsigned value;  /**< Requested interval value */
 
     /**
      * Constructor.

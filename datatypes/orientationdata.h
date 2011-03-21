@@ -32,73 +32,131 @@
 #include <datatypes/genericdata.h>
 #include <datatypes/unsigned.h>
 
+/**
+ * Accelerometer mesurement data.
+ */
 typedef TimedXyzData AccelerationData;
+
+/**
+ * Magnetometer measurement data.
+ */
 typedef TimedXyzData MagneticFieldData;
+
+/**
+ * Gyroscope measurement data.
+ */
 typedef TimedXyzData AngularVelocityData;
 
+/**
+ * Device orientation measurement data.
+ */
 typedef TimedXyzData OrientationData;
+
+/**
+ * Magnetometer measurement data.
+ */
 typedef TimedXyzData MagnetometerData;
 
 /**
- * @brief Container for calibrated magnetic field measurements.
+ * Datatype for calibrated magnetometer measurements.
  */
-class CalibratedMagneticFieldData : public TimedData {
+class CalibratedMagneticFieldData : public TimedData
+{
 public:
+    /**
+     * Default constructor.
+     */
     CalibratedMagneticFieldData() : TimedData(0),
                                     x_(0), y_(0), z_(0),
                                     rx_(0), ry_(0), rz_(0),
                                     level_(0) {}
 
-    CalibratedMagneticFieldData(quint64 timestamp, int x, int y, int z, int rx, int ry, int rz, int level) :
+    /**
+     * Constructor.
+     *
+     * @param timestamp timestamp as monotonic time (microsec).
+     * @param x X coordinate value.
+     * @param y Y coordinate value.
+     * @param z Z coordinate value.
+     * @param rx raw X coordinate value.
+     * @param ry raw Y coordinate value.
+     * @param rz raw Z coordinate value.
+     * @param level Calibration level.
+     */
+    CalibratedMagneticFieldData(const quint64& timestamp, int x, int y, int z, int rx, int ry, int rz, int level) :
         TimedData(timestamp),
         x_(x), y_(y), z_(z),
         rx_(rx), ry_(ry), rz_(rz),
         level_(level) {}
 
+    /**
+     * Constructor.
+     *
+     * @param magData Magnetometer data.
+     * @param level Calibration level.
+     */
     CalibratedMagneticFieldData(TimedXyzData magData, int level) :
         TimedData(magData.timestamp_),
         x_(0), y_(0), z_(0),
         rx_(magData.x_), ry_(magData.y_), rz_(magData.z_),
         level_(level) {}
 
-    int x_;
-    int y_;
-    int z_;
-    int rx_;
-    int ry_;
-    int rz_;
-
-    int level_;                   /**< Magnetometer calibration level */
+    int x_;     /**< X coordinate value */
+    int y_;     /**< Y coordinate value */
+    int z_;     /**< Z coordinate value */
+    int rx_;    /**< raw X coordinate value */
+    int ry_;    /**< raw Y coordinate value */
+    int rz_;    /**< raw Z coordinate value */
+    int level_; /**< Magnetometer calibration level. Higher value means better calibration. */
 };
 
 /**
- * @brief Container for Compass measurements.
- *
- * Holds measurement timestamp, compass direction and magnetometer calibration
- * level.
+ * Datatype for compass measurements.
  */
-class CompassData : public TimedData {
+class CompassData : public TimedData
+{
 public:
+    /**
+     * Default constructor.
+     */
     CompassData() : TimedData(0), degrees_(0), level_(0) {}
 
-    CompassData(quint64 timestamp, int degrees, int level) :
+    /**
+     * Constructor.
+     *
+     * @param timestamp timestamp as monotonic time (microsec).
+     * @param degrees Angle to north.
+     * @param level Magnetometer calibration level.
+     */
+    CompassData(const quint64& timestamp, int degrees, int level) :
         TimedData(timestamp), degrees_(degrees), level_(level) {}
 
     int degrees_; /**< Angle to north */
-    int level_;   /**< Magnetometer calibration level */
+    int level_;   /**< Magnetometer calibration level. Higher value means better calibration. */
 };
 
 /**
- * Container for Proximity measurements
+ * Datatype for proximity measurements
  */
-class ProximityData : public TimedUnsigned {
+class ProximityData : public TimedUnsigned
+{
 public:
+    /**
+     * Default constructor.
+     */
     ProximityData() : TimedUnsigned(), withinProximity_(false) {}
 
-    ProximityData(quint64 timestamp, unsigned int value, bool withinProximity) :
+    /**
+     * Constructor
+     *
+     * @param timestamp timestamp as monotonic time (microsec).
+     * @param value raw proximity value.
+     * @param withinProximity is there an object within proximity.
+     */
+    ProximityData(const quint64& timestamp, unsigned int value, bool withinProximity) :
         TimedUnsigned(timestamp, value), withinProximity_(withinProximity) {}
 
-    bool withinProximity_;   /* is proximity sensor withinProximity or not */
+    bool withinProximity_; /**< is an object within proximity or not */
 };
 
 #endif // ORIENTATIONDATA_H
