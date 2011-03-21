@@ -412,6 +412,7 @@ void ClientApiTest::testBuffering()
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
     magnetometer->setBufferInterval(1500);
+    magnetometer->setDownsampling(false);
 
     magnetometer->start();
 
@@ -441,6 +442,7 @@ void ClientApiTest::testBufferingHighRate()
     magnetometer->setInterval(25);
     magnetometer->setBufferSize(100);
     magnetometer->setBufferInterval(6000);
+    magnetometer->setDownsampling(false);
 
     magnetometer->start();
 
@@ -463,6 +465,7 @@ void ClientApiTest::testBufferingCompatibility()
     magnetometer->setInterval(100);
     magnetometer->setBufferSize(10);
     magnetometer->setBufferInterval(1500);
+    magnetometer->setDownsampling(false);
 
     magnetometer->start();
 
@@ -492,6 +495,7 @@ void ClientApiTest::testBufferingInterval()
     magnetometer->setInterval(100);
     magnetometer->setBufferInterval(0);
     magnetometer->setBufferSize(40);
+    magnetometer->setDownsampling(false);
 
     magnetometer->start();
 
