@@ -155,6 +155,8 @@ private:
     QList<DataRange>    intervalList_;
 
     QMap<int, bool>     downsampling_;
+
+    bool writeToSession(int sessionId, const void* source, int size);
 };
 
 typedef AbstractSensorChannel* (*SensorChannelFactoryMethod)(const QString& id);

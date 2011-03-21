@@ -91,14 +91,22 @@ bool AbstractSensorChannel::stop()
     return false;
 }
 
+
+bool AbstractSensorChannel::writeToSession(int sessionId, const void* source, int size)
+{
+    if (!(SensorManager::instance().write(sessionId, source, size))) {
+        sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+        return false;
+    }
+
+    return true;
+}
+
 bool AbstractSensorChannel::writeToClients(const void* source, int size)
 {
     bool ret = true;
     foreach(const int& sessionId, activeSessions_) {
-        if (!(SensorManager::instance().write(sessionId, source, size))) {
-            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
-            ret = false;
-        }
+        ret &= writeToSession(sessionId, source, size);
     }
     return ret;
 }
@@ -111,34 +119,35 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
     {
         if(!downsamplingEnabled(sessionId))
         {
-            if (!(SensorManager::instance().write(sessionId, (const void*)(&data), sizeof(data))))
-            {
-                sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
-                ret = false;
-            }
+            ret &= writeToSession(sessionId, (const void *)& data, sizeof(data));
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
-        int bufferSize = sessionInterval / currentInterval;
-        if(!bufferSize)
-            bufferSize = 1;
+        int bufferSize = (sessionInterval < currentInterval ) ? 1 : sessionInterval / currentInterval;
+
         QList<TimedXyzData>& samples(buffer[sessionId]);
         samples.push_back(data);
-        if(samples.size() > 1)
+
+        for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
         {
-            for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
+
+            if(samples.size() > bufferSize ||
+               data.timestamp_ - it->timestamp_ > 2000000)
             {
-                if(samples.size() > bufferSize ||
-                   data.timestamp_ - it->timestamp_ > 2000000)
-                {
-                    it = samples.erase(it);
-                    if(it == samples.end())
-                        break;
-                }
+                it = samples.erase(it);
+                if(it == samples.end())
+                    break;
+            } else
+            {
+                break;
             }
         }
+
         if(samples.size() < bufferSize)
+        {
             continue;
+        }
+
         long x = 0;
         long y = 0;
         long z = 0;
@@ -153,14 +162,16 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
                                  y / samples.count(),
                                  z / samples.count());
         sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
-        if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
+
+        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
         {
-            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+            samples.clear();
+        } else
+        {
             ret = false;
-            continue;
         }
-        samples.clear();
     }
+
     return ret;
 }
 
@@ -172,32 +183,29 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
     {
         if(!downsamplingEnabled(sessionId))
         {
-            if (!(SensorManager::instance().write(sessionId, (const void*)(&data), sizeof(data))))
-            {
-                sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
-                ret = false;
-            }
+            ret &= writeToSession(sessionId, (const void *)& data, sizeof(data));
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
-        int bufferSize = sessionInterval / currentInterval;
-        if(!bufferSize)
-            bufferSize = 1;
+        int bufferSize = (sessionInterval < currentInterval ) ? 1 : sessionInterval / currentInterval;
+
         QList<CalibratedMagneticFieldData>& samples(buffer[sessionId]);
         samples.push_back(data);
-        if(samples.size() > 1)
+
+        for(QList<CalibratedMagneticFieldData>::iterator it = samples.begin(); it != samples.end(); ++it)
         {
-            for(QList<CalibratedMagneticFieldData>::iterator it = samples.begin(); it != samples.end(); ++it)
+            if(samples.size() > bufferSize ||
+               data.timestamp_ - it->timestamp_ > 2000000)
             {
-                if(samples.size() > bufferSize ||
-                   data.timestamp_ - it->timestamp_ > 2000000)
-                {
-                    it = samples.erase(it);
-                    if(it == samples.end())
-                        break;
-                }
+                it = samples.erase(it);
+                if(it == samples.end())
+                    break;
+            } else
+            {
+                break;
             }
         }
+
         if(samples.size() < bufferSize)
             continue;
         long x = 0;
@@ -224,16 +232,19 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
                                                 rz / samples.count(),
                                                 data.level_);
         sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_ << downsampled.rx_ << ", " << downsampled.ry_ << ", " << downsampled.rz_;
-        if (!(SensorManager::instance().write(sessionId, (const void*)(&downsampled), sizeof(downsampled))))
+
+        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
         {
-            sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
+            samples.clear();
+        } else
+        {
             ret = false;
-            continue;
         }
-        samples.clear();
+
     }
     return ret;
 }
+
 
 void AbstractSensorChannel::setDownsamplingEnabled(int sessionId, bool value)
 {
