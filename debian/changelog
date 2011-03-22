@@ -23,6 +23,7 @@ sensord (0.6.41) unstable; urgency=low
     - Removed unnecessary friend declarations from datatypes.
     - Tap now hides internal data member.
     - TouchData members renamed for clarity.
+    - AbstractSensorChannelInterface::release() deprecated.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

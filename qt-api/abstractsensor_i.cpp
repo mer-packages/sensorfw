@@ -73,7 +73,7 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString& pa
 AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
 {
     if ( pimpl_->isValid() )
-        release();
+        SensorManagerInterface::instance().releaseInterface(id(), pimpl_->sessionId_);
     if (!pimpl_->socketReader_.dropConnection())
         setError(SClientSocketError, "Socket disconnect failed.");
     delete pimpl_;
@@ -86,7 +86,7 @@ SocketReader& AbstractSensorChannelInterface::getSocketReader() const
 
 bool AbstractSensorChannelInterface::release()
 {
-    return SensorManagerInterface::instance().releaseInterface(id(), pimpl_->sessionId_);
+    return true;
 }
 
 void AbstractSensorChannelInterface::setError(SensorError errorCode, const QString& errorString)

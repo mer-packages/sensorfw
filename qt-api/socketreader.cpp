@@ -67,10 +67,8 @@ bool SocketReader::initiateConnection(int sessionId)
 
 bool SocketReader::dropConnection()
 {
-    if (socket_ == NULL) {
-        qDebug() << "Attempting to drop non-existant connection.";
+    if (!socket_)
         return false;
-    }
 
     socket_->disconnectFromServer();
     if(socket_->state() != QLocalSocket::UnconnectedState)

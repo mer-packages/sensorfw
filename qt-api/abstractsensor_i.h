@@ -61,8 +61,18 @@ class AbstractSensorChannelInterface : public QObject
     Q_PROPERTY(bool downsampling READ downsampling WRITE setDownsampling)
 
 public:
+
+    /**
+     * Destructor
+     */
     virtual ~AbstractSensorChannelInterface();
 
+    /**
+     * Release the sensor instance.
+     *
+     * @return true always.
+     * @deprecated Session lifecycle ends by destructing this object.
+     */
     bool release();
 
     int sessionId() const;
