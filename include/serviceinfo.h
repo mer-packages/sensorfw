@@ -29,7 +29,14 @@
 
 #include <QString>
 
+/**
+ * Name of the exported DBus service.
+ */
 const QString SERVICE_NAME = "com.nokia.SensorService";
+
+/**
+ * Name of the exported DBus object.
+ */
 const QString OBJECT_PATH  = "/SensorManager";
 
 #endif // SRVC_INFO_H

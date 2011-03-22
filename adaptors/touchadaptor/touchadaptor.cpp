@@ -166,8 +166,8 @@ void TouchAdaptor::commitOutput(int src, struct input_event *ev)
     d->x_ = touchValues_[src].x;
     d->y_ = touchValues_[src].y;
     d->z_ = touchValues_[src].z;
-    d->tp_ = src;
-    d->st_ = touchValues_[src].fingerState;
+    d->object_ = src;
+    d->state_ = touchValues_[src].fingerState;
 
     outputBuffer_->commit();
     outputBuffer_->wakeUpReaders();

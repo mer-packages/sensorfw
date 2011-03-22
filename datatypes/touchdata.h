@@ -44,19 +44,23 @@ public:
         FingerStateInaccurate      /**< Coordinates are either accurate or mirrored. */
     };
 
-    int tp_;         /**< Touch event source (which finger), 1,2,... */
-    FingerState st_; /**< Touch event finger state */
+    int object_;         /**< Touch event source (which finger), 1,2,... */
+    FingerState state_;  /**< Touch event finger state */
 
     /**
-     * Constructor. Initialises all values as zero.
+     * Default Constructor. Initialises all values as zero.
      */
-    TouchData() : TimedXyzData(), tp_(0), st_(FingerStateNotPresent) {}
+    TouchData() : TimedXyzData(), object_(0), state_(FingerStateNotPresent) {}
 
     /**
-     * Constructor. Provide initial values for all members.
+     * Constructor.
+     *
+     * @param timedXyzData contained data.
+     * @param object event source.
+     * @param state event state.
      */
-    TouchData(TimedXyzData timedXyzData, int tp, FingerState st) :
-        TimedXyzData(timedXyzData), tp_(tp), st_(st) {}
+    TouchData(TimedXyzData timedXyzData, int object, FingerState state) :
+        TimedXyzData(timedXyzData), object_(object), state_(state) {}
 };
 
 #endif // TOUCHDATA_H

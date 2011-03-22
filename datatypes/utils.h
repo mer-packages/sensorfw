@@ -29,10 +29,24 @@
 #define UTILS_H
 #include <sys/time.h>
 
+/**
+ * Collection of static utility functions.
+ */
 class Utils
 {
 public:
+    /**
+     * Get timestamp of monotonic clock in microsecs.
+     *
+     * @return timestamp.
+     */
     static quint64 getTimeStamp();
+
+    /**
+     * Convert given timeval struct into microsecs.
+     *
+     * @return timestamp.
+     */
     static quint64 getTimeStamp(const struct timeval*);
 };
 
