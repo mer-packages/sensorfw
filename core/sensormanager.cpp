@@ -268,9 +268,14 @@ int SensorManager::requestSensor(const QString& id)
 
 bool SensorManager::releaseSensor(const QString& id, int sessionId)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing in release
-
     clearError();
+
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        sensordLogW() << "Invalid parameter passed to releaseSensor(): " << id;
+        return false;
+    }
+
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
 
     if ( entryIt == sensorInstanceMap_.end() )
@@ -362,9 +367,12 @@ void SensorManager::releaseChain(const QString& id)
 
 DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing support for adaptors
-
     clearError();
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        setError( SmIdNotRegistered, QString(tr("unknown adaptor id '%1'").arg(id)) );
+        return false;
+    }
 
     DeviceAdaptor* da = NULL;
     QMap<QString, DeviceAdaptorInstanceEntry>::iterator entryIt = deviceAdaptorInstanceMap_.find(id);
@@ -416,9 +424,12 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 
 void SensorManager::releaseDeviceAdaptor(const QString& id)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing support for adaptors
-
     clearError();
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        setError( SmIdNotRegistered, QString(tr("unknown adaptor id '%1'").arg(id)) );
+        return;
+    }
 
     QMap<QString, DeviceAdaptorInstanceEntry>::iterator entryIt = deviceAdaptorInstanceMap_.find(id);
     if ( entryIt != deviceAdaptorInstanceMap_.end() )
