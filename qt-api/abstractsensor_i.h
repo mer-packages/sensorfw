@@ -39,8 +39,8 @@
 #include "socketreader.h"
 #include "datatypes/datarange.h"
 
-/*
- * Proxy class for interface local.Sensor
+/**
+ * Base-class for client facades of different sensor types.
  */
 class AbstractSensorChannelInterface : public QObject
 {
@@ -54,7 +54,6 @@ class AbstractSensorChannelInterface : public QObject
     Q_PROPERTY(int interval READ interval WRITE setInterval)
     Q_PROPERTY(bool standbyOverride READ standbyOverride WRITE setStandbyOverride)
     Q_PROPERTY(QString type READ type)
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(unsigned int bufferInterval READ bufferInterval WRITE setBufferInterval)
     Q_PROPERTY(unsigned int bufferSize READ bufferSize WRITE setBufferSize)
     Q_PROPERTY(bool hwBuffering READ hwBuffering)
@@ -75,36 +74,136 @@ public:
      */
     bool release();
 
+    /**
+     * Get ID of the current session.
+     *
+     * @return current session ID.
+     */
     int sessionId() const;
 
+    /**
+     * Get error code of occured local or remote error.
+     *
+     * @return error code.
+     */
     SensorError errorCode();
 
+    /**
+     * Get error description of occured local or remote error.
+     *
+     * @return error description.
+     */
     QString errorString();
 
+    /**
+     * Get description of the sensor.
+     *
+     * @return description of the sensor.
+     */
     QString description();
 
+    /**
+     * Get ID of the sensor.
+     *
+     * @return ID of the sensor.
+     */
     QString id();
 
+    /**
+     * Get used sensor sampling interval (in millisecs).
+     * If sensor has been started (by #start()) effective interval is
+     * returned.
+     *
+     * @return used sampling interval (in millisecs)
+     */
     int interval();
+
+    /**
+     * Set sensor sampling interval (in millisecs).
+     * Value "0" will clear previously set interval.
+     * Supported intervals are listed by #getAvailableIntervals().
+     *
+     * @param value sampling interval (in millisecs).
+     */
     void setInterval(int value);
 
+    /**
+     * Is standby-override enabled or not.
+     * Standby-override is used to keep sensor enabled when display
+     * is blanked.
+     *
+     * @return enabled or not.
+     */
     bool standbyOverride();
+
+    /**
+     * Enable or disable standby-override.
+     * Standby-override is used to keep sensor enabled when display
+     * is blanked.
+     *
+     * @param standby-override state
+     * @return true if succesfully set.
+     */
     bool setStandbyOverride(bool override);
 
+    /**
+     * Used buffer interval. Buffer interval defines the timeout for
+     * buffered data to be flushed unless the buffer is filled before it.
+     *
+     * @return interval in millisecs.
+     */
     unsigned int bufferInterval();
+
+    /**
+     * Set buffer interval. Buffer interval defines the timeout for
+     * buffered data to be flushed unless the buffer is filled before it.
+     * Supported intervals are listed by #getAvailableBufferIntervals().
+     *
+     * @param value interval in millisecs.
+     */
     void setBufferInterval(unsigned int value);
 
+    /**
+     * Is downsampling enabled or not.
+     * Downsampling is used to fit requested measurement interval
+     * #setInterval(int) to effective interval.
+     *
+     * @return downsampling state.
+     */
     bool downsampling();
+
+    /**
+     * Enable or disable downsampling.
+     * Downsampling is used to fit requested measurement interval
+     * #setInterval(int) to effective interval. Not all sensors support
+     * downsampling so the call will fail for those.
+     *
+     * @param value enable or disable downsampling.
+     * @return was downsampling state succesfully changed.
+     */
     bool setDownsampling(bool value);
 
     /**
-     * Returns list of available buffer intervals.
+     * Returns list of available buffer interval ranges.
      *
-     * @return The list of supported buffer intervals.
+     * @return The list of supported buffer interval ranges.
      */
     IntegerRangeList getAvailableBufferIntervals();
 
+    /**
+     * Get used buffer size. Buffer size is used to control how many
+     * samples are collected before signaling application about them.
+     *
+     * @return used buffer size.
+     */
     unsigned int bufferSize();
+
+    /**
+     * Set buffer size. Buffer size is used to control how many
+     * samples are collected before signaling application about them.
+     *
+     * @param value buffer size.
+     */
     void setBufferSize(unsigned int value);
 
     /**
@@ -115,22 +214,69 @@ public:
      */
     IntegerRangeList getAvailableBufferSizes();
 
+    /**
+     * Textual description about sensor type.
+     *
+     * @return sensor type description.
+     */
     QString type();
 
+    /**
+     * Start sensor. This will cause necessary resources to be
+     * acquired so the sensor readings can be received.
+     *
+     * @return object from which the success of call can be seen.
+     */
     virtual QDBusReply<void> start();
+
+    /**
+     * Stop sensor. This will cause acquired resourced to be released.
+     *
+     * @return object from which the success of call can be seen.
+     */
     virtual QDBusReply<void> stop();
 
     /**
-     * Get the list of available intervals for the sensor.
+     * Get the list of available intervals ranges for the sensor.
      *
-     * @return List of available intervals (or interval ranges)
+     * @return List of available intervals ranges.
      */
     DataRangeList getAvailableIntervals();
 
+    /**
+     * Get the list of available data ranges for the sensor.
+     *
+     * @return List of available data ranges.
+     */
     DataRangeList getAvailableDataRanges();
+
+    /**
+     * Get current used data range.
+     *
+     * @return currently used data range.
+     */
     DataRange getCurrentDataRange();
+
+    /**
+     * Request data range. Usable ranges are listed by
+     * #getAvailableDataRanges().
+     *
+     * @param requested range.
+     */
     void requestDataRange(DataRange range);
+
+    /**
+     * Remove set data range request.
+     */
     void removeDataRangeRequest();
+
+    /**
+     * Request data range by using index which points to the list
+     * returned by #getAvailableDataRanges().
+     *
+     * @param dataRangeIndex requeted data range index.
+     * @return false if given index is invalid.
+     */
     bool setDataRangeIndex(int dataRangeIndex);
 
     /**
@@ -140,45 +286,162 @@ public:
      */
     bool hwBuffering();
 
+    /**
+     * Does the current instance have valid connection established
+     * to sensor daemon.
+     *
+     * @return is the established connection valid.
+     */
     bool isValid() const;
 
 private:
-    int errorCodeInt();
+    /**
+     * Set error information.
+     *
+     * @param errorCode error code.
+     * @param errorString error description.
+     */
     void setError(SensorError errorCode, const QString& errorString);
+
+    /**
+     * Clear set error information.
+     */
     void clearError();
 
-protected Q_SLOTS:
-    QDBusReply<void> setInterval(int sessionId, int value);
-    QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
-    QDBusReply<void> setBufferInterval(int sessionId, unsigned int value);
-    QDBusReply<void> setBufferSize(int sessionId, unsigned int value);
-    QDBusReply<void> setDownsampling(int sessionId, bool value);
+    /**
+     * Get socket reader instance.
+     */
+    SocketReader& getSocketReader() const;
 
 private Q_SLOTS: // METHODS
+    /**
+     * Set interval to session.
+     *
+     * @param sessionId session ID.
+     * @param value interval.
+     * @return DBus reply.
+     */
+    QDBusReply<void> setInterval(int sessionId, int value);
+
+    /**
+     * Set standby-override to session.
+     *
+     * @param sessionId session ID.
+     * @param value standby-override.
+     * @return DBus reply.
+     */
+    QDBusReply<bool> setStandbyOverride(int sessionId, bool value);
+
+    /**
+     * Set buffer interval to session.
+     *
+     * @param sessionId session ID.
+     * @param value buffer interval.
+     * @return DBus reply.
+     */
+    QDBusReply<void> setBufferInterval(int sessionId, unsigned int value);
+
+    /**
+     * Set buffer size to session.
+     *
+     * @param sessionId session ID.
+     * @param value buffer size.
+     * @return DBus reply.
+     */
+    QDBusReply<void> setBufferSize(int sessionId, unsigned int value);
+
+    /**
+     * Set downsampling to session.
+     *
+     * @param sessionId session ID.
+     * @param value downsampling.
+     * @return DBus reply.
+     */
+    QDBusReply<void> setDownsampling(int sessionId, bool value);
+
+    /**
+     * Start sensor for session.
+     *
+     * @param sessionId session ID.
+     * @return DBus reply.
+     */
     QDBusReply<void> start(int sessionId);
+
+    /**
+     * Stop sensor for session.
+     *
+     * @param sessionId session ID.
+     * @return DBus reply.
+     */
     QDBusReply<void> stop(int sessionId);
 
+    /**
+     * Callback for pending data in data socket.
+     */
     void dataReceived();
 
-Q_SIGNALS: // SIGNALS
-    void propertyChanged(const QString& name);
-
 protected:
+    /**
+     * Constructor.
+     *
+     * @param path DBus object path.
+     * @param interfaceName DBus object name.
+     * @param sessionId Session ID.
+     */
     AbstractSensorChannelInterface(const QString& path, const char* interfaceName, int sessionId);
 
+    /**
+     * Read data from socket into buffer.
+     *
+     * @param buffer Pointer to buffer where to write.
+     * @param size Number of bytes to read.
+     */
     bool read(void* buffer, int size);
 
+    /**
+     * Read data from socket into passed container.
+     *
+     * @tparam Type to which to convert raw data.
+     * @param values Container for data.
+     * @return was read successful.
+     */
     template<typename T>
     bool read(QVector<T>& values);
 
+    /**
+     * Callback for subclasses in which they must read their expected data
+     * from socket.
+     *
+     * @return was read successful.
+     */
     virtual bool dataReceivedImpl() = 0;
 
+    /**
+     * Utility for calling DBus methods from current connection which
+     * return value and take no args.
+     *
+     * @tparam return type.
+     * @param name method name.
+     * @return called method return value.
+     */
     template<typename T>
     T getAccessor(const char* name);
 
+    /**
+     * Utility for calling DBus methods from current connection which
+     * return nothing and take one arg.
+     *
+     * @tparam argument type.
+     * @param name method name.
+     * @param value method argument.
+     */
     template<typename T>
     void setAccessor(const char* name, const T& value);
 
+    /**
+     * Wrapper for function of QDBusAbstractInterface.
+     * For more details see QDBusAbstractInterface docs.
+     */
     QDBusMessage call(QDBus::CallMode mode,
                       const QString& method,
                       const QVariant& arg1 = QVariant(),
@@ -190,16 +453,22 @@ protected:
                       const QVariant& arg7 = QVariant(),
                       const QVariant& arg8 = QVariant());
 
+    /**
+     * Wrapper for function of QDBusAbstractInterface.
+     * For more details see QDBusAbstractInterface docs.
+     */
     QDBusMessage callWithArgumentList(QDBus::CallMode mode, const QString& method, const QList<QVariant>& args);
 
+    /**
+     * Wrapper for function of QDBusAbstractInterface.
+     * For more details see QDBusAbstractInterface docs.
+     */
     void dbusConnectNotify(const char* signal);
 
 private:
     struct AbstractSensorChannelInterfaceImpl;
 
-    AbstractSensorChannelInterfaceImpl* pimpl_;
-
-    SocketReader& getSocketReader() const;
+    AbstractSensorChannelInterfaceImpl* pimpl_; /**< private impl pointer */
 };
 
 template<typename T>
@@ -231,7 +500,7 @@ void AbstractSensorChannelInterface::setAccessor(const char* name, const T& valu
 }
 
 namespace local {
-  typedef ::AbstractSensorChannelInterface AbstractSensor;
+    typedef ::AbstractSensorChannelInterface AbstractSensor;
 }
 
 #endif

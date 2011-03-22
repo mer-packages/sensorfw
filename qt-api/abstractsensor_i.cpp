@@ -120,11 +120,7 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     argumentList << qVariantFromValue(sessionId);
     QDBusReply<void> returnValue = pimpl_->callWithArgumentList(QDBus::Block, QLatin1String("start"), argumentList);
 
-    if (pimpl_->standbyOverride_)
-    {
-        setStandbyOverride(sessionId, true);
-    }
-    /// Send interval request when started.
+    setStandbyOverride(sessionId, pimpl_->standbyOverride_);
     setInterval(sessionId, pimpl_->interval_);
     setBufferInterval(sessionId, pimpl_->bufferInterval_);
     setBufferSize(sessionId, pimpl_->bufferSize_);
@@ -239,7 +235,7 @@ SensorError AbstractSensorChannelInterface::errorCode()
     if (pimpl_->errorCode_ != SNoError) {
         return pimpl_->errorCode_;
     }
-    return static_cast<SensorError>(errorCodeInt());
+    return static_cast<SensorError>(getAccessor<int>("errorCodeInt"));
 }
 
 QString AbstractSensorChannelInterface::errorString()
@@ -283,7 +279,7 @@ unsigned int AbstractSensorChannelInterface::bufferInterval()
 void AbstractSensorChannelInterface::setBufferInterval(unsigned int value)
 {
     pimpl_->bufferInterval_ = value;
-    if (!pimpl_->running_)
+    if (pimpl_->running_)
         setBufferInterval(pimpl_->sessionId_, value);
 }
 
@@ -297,7 +293,7 @@ unsigned int AbstractSensorChannelInterface::bufferSize()
 void AbstractSensorChannelInterface::setBufferSize(unsigned int value)
 {
     pimpl_->bufferSize_ = value;
-    if (!pimpl_->running_)
+    if (pimpl_->running_)
         setBufferSize(pimpl_->sessionId_, value);
 }
 
@@ -311,17 +307,14 @@ bool AbstractSensorChannelInterface::standbyOverride()
 bool AbstractSensorChannelInterface::setStandbyOverride(bool override)
 {
     pimpl_->standbyOverride_ = override;
-    return setStandbyOverride(pimpl_->sessionId_, override);
+    if (pimpl_->running_)
+        return setStandbyOverride(pimpl_->sessionId_, override);
+    return true;
 }
 
 QString AbstractSensorChannelInterface::type()
 {
     return getAccessor<QString>("type");
-}
-
-int AbstractSensorChannelInterface::errorCodeInt()
-{
-    return getAccessor<int>("errorCodeInt");
 }
 
 void AbstractSensorChannelInterface::clearError()
