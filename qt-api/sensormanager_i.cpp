@@ -30,16 +30,13 @@
 
 #include "sensormanager_i.h"
 #include <QAbstractSocket>
+
 Q_DECLARE_METATYPE( QAbstractSocket::SocketState)
 
 void __attribute__ ((constructor)) qtapi_init(void)
 {
     qRegisterMetaType<QAbstractSocket::SocketState>("SocketState");
 }
-
-/*
- * Implementation of interface class LocalSensorManagerInterface
- */
 
 const char* LocalSensorManagerInterface::staticInterfaceName = "local.SensorManager";
 
@@ -60,13 +57,17 @@ SensorManagerError LocalSensorManagerInterface::errorCode()
 QString LocalSensorManagerInterface::errorString()
 {
     QDBusReply<QString> reply = call(QDBus::Block, QLatin1String("errorString"));
-    return reply;
+    if(reply.isValid())
+        return reply.value();
+    return "Failed to fetch error string";
 }
 
 int LocalSensorManagerInterface::errorCodeInt()
 {
     QDBusReply<int> reply = call(QDBus::Block, QLatin1String("errorCodeInt"));
-    return reply;
+    if(reply.isValid())
+        return reply.value();
+    return -1;
 }
 
 QDBusReply<bool> LocalSensorManagerInterface::loadPlugin(const QString& name)
@@ -87,9 +88,9 @@ QDBusReply<int> LocalSensorManagerInterface::requestSensor(const QString& id)
 
 QDBusReply<bool> LocalSensorManagerInterface::releaseSensor(const QString& id, int sessionId)
 {
+    qint64 pid = QCoreApplication::applicationPid();
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(id) << qVariantFromValue(sessionId);
-    qint64 pid = QCoreApplication::applicationPid();
     argumentList << qVariantFromValue(pid);
     return callWithArgumentList(QDBus::Block, QLatin1String("releaseSensor"), argumentList);
 }

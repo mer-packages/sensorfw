@@ -34,63 +34,91 @@
 #include <datatypes/xyz.h>
 
 /**
- * @brief DBus-interface for listening on device rotation changes.
- *
- * Acts as a proxy class for interface \e local.RotationSensor interface.
- *
- * For details of measurement process, see #RotationSensorChannel.
+ * Client interface for listening device rotation changes.
  */
 class RotationSensorChannelInterface: public AbstractSensorChannelInterface
 {
-    Q_OBJECT;
+    Q_OBJECT
     Q_DISABLE_COPY(RotationSensorChannelInterface)
-    Q_PROPERTY(XYZ rotation READ rotation);
-    Q_PROPERTY(bool hasZ READ hasZ);
+    Q_PROPERTY(XYZ rotation READ rotation)
+    Q_PROPERTY(bool hasZ READ hasZ)
 
 public:
+    /**
+     * Get name of the D-Bus interface for this class.
+     *
+     * @return Name of the interface.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest rotation reading from sensor daemon.
+     *
+     * @return rotation reading.
+     */
     XYZ rotation();
 
+    /**
+     * Does reported readings include Z coordinate.
+     *
+     * @return Does reported readings include Z coordinate.
+     */
     bool hasZ();
 
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session id.
+     */
     RotationSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const RotationSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static RotationSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static RotationSensorChannelInterface* interface(const QString& id);
 
 protected:
     virtual void connectNotify(const char* signal);
-
-private:
-    bool frameAvailableConnected;
-
-protected:
     virtual bool dataReceivedImpl();
 
-Q_SIGNALS: // SIGNALS
+private:
+    bool frameAvailableConnected; /**< has applicaiton connected slot for frameAvailable signal. */
+
+Q_SIGNALS:
     /**
      * Sent when device rotation has changed.
+     *
      * @param data Current device rotation.
      */
     void dataAvailable(const XYZ& data);
@@ -99,6 +127,7 @@ Q_SIGNALS: // SIGNALS
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
+     *
      * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<XYZ>& frame);

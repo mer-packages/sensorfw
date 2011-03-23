@@ -33,13 +33,9 @@
 #include "abstractsensor_i.h"
 
 /**
- * @brief DBus-interface for listening on device orientation changes.
- *
- * Acts as a proxy class for interface \e local.OrientationSensor interface.
- *
- * For details of measurement process, see #OrientationSensorChannel.
+ * Client interface for listening device orientation changes.
  */
-class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
+class OrientationSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(OrientationSensorChannelInterface)
@@ -47,35 +43,74 @@ class OrientationSensorChannelInterface: public AbstractSensorChannelInterface
     Q_PROPERTY(int threshold READ threshold WRITE setThreshold)
 
 public:
+    /**
+     * Name of the D-Bus interface for this class.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest orientation reading from sensor daemon.
+     *
+     * @return Current device orientation. The given integer
+     *         value is enumeration from #PoseData::Orientation.
+     */
     Unsigned orientation();
 
+    /**
+     * Gets the currently used threshold value. Value is in mG.
+     *
+     * @return Current threshold value.
+     * @deprecated Not used.
+     */
     int threshold();
+
+    /**
+     * Sets the currently used threshold value. Value is in mG.
+     *
+     * @param value threshold value.
+     * @deprecated Not used.
+     */
     void setThreshold(int value);
 
-public:
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session ID.
+     */
     OrientationSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const OrientationSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static OrientationSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static OrientationSensorChannelInterface* interface(const QString& id);
@@ -83,11 +118,12 @@ public:
 protected:
     virtual bool dataReceivedImpl();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when device orientation has changed.
-     * @param orientation Current device orientation. The given integer value is
-                          enumeration from PoseData::Orientation.
+     *
+     * @param orientation Current device orientation. The given integer
+     *                    value is enumeration from #PoseData::Orientation.
      */
     void orientationChanged(const Unsigned& orientation);
 };

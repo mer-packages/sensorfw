@@ -50,9 +50,8 @@ class OrientationSensorChannel :
         public DataEmitter<PoseData>
 {
     Q_OBJECT;
-
     Q_PROPERTY(Unsigned orientation READ orientation);
-    //Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
+
 public:
 
     /**

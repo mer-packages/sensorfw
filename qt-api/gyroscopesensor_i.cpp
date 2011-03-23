@@ -91,11 +91,6 @@ void GyroscopeSensorChannelInterface::connectNotify(const char* signal)
     dbusConnectNotify(signal);
 }
 
-QDBusReply<void> GyroscopeSensorChannelInterface::reset()
-{
-    return call(QDBus::Block, QLatin1String("reset"));
-}
-
 XYZ GyroscopeSensorChannelInterface::get()
 {
     return getAccessor<AngularVelocityData>("value");

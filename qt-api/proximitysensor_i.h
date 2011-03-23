@@ -34,12 +34,7 @@
 #include <datatypes/proximity.h>
 
 /**
- * @brief DBus-interface for accessing proximity state.
- *
- * ProximitySensorChannelInterface acts as a proxy class for interface
- * \e local.ProximitySensor.
- *
- * For details of measurement process, see #ProximitySensorChannel.
+ * Client interface for listening proximity sensor state changes.
  */
 class ProximitySensorChannelInterface: public AbstractSensorChannelInterface
 {
@@ -51,22 +46,38 @@ class ProximitySensorChannelInterface: public AbstractSensorChannelInterface
 public:
     /**
      * Get name of the D-Bus interface for this class.
+     *
      * @return Name of the interface.
      */
     static const char* staticInterfaceName;
 
     /**
-     * Get an instance of the class.
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
      * @return Pointer to new instance of the class.
      */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest proximity reading from sensor daemon.
+     *
+     * @return proximity reading. Non-zero value means that object is within proximity.
+     * @deprecated Use #proximityReflectance().
+     */
     Unsigned proximity();
 
+    /**
+     * Get latest proximity reading from sensor daemon.
+     *
+     * @return proximity reading.
+     */
     Proximity proximityReflectance();
 
     /**
      * Constructor.
+     *
      * @param path      path.
      * @param sessionId session id.
      */
@@ -74,21 +85,26 @@ public:
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const ProximitySensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static ProximitySensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static ProximitySensorChannelInterface* interface(const QString& id);
@@ -96,17 +112,20 @@ public:
 protected:
     virtual bool dataReceivedImpl();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when new measurement data has become available.
      * Value in the passed data contains boolean information is the
      * proximity sensor blocked or not.
+     *
      * @param data New measurement data.
+     * @deprecated Use #reflectanceDataAvailable(const Proximity&).
      */
     void dataAvailable(const Unsigned& data);
 
     /**
      * Sent when new measurement data has become available.
+     *
      * @param data New measurement data.
      */
     void reflectanceDataAvailable(const Proximity& data);

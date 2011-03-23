@@ -35,46 +35,66 @@
 #include <datatypes/magneticfield.h>
 
 /**
- * @brief DBus-interface for listening on magnetic field measurements.
- *
- * Acts as a proxy class for interface \e local.MagnetometerSensor interface.
- *
- * For details of measurement process, see #MagnetometerSensorChannel.
- * An initial datarate of 1hz is set to get some output data without manual
- * adjustment.
+ * Client interface for accessing magnetometer sensor.
  */
-class MagnetometerSensorChannelInterface: public AbstractSensorChannelInterface
+class MagnetometerSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(MagnetometerSensorChannelInterface)
     Q_PROPERTY(MagneticField magneticField READ magneticField)
 
 public:
+    /**
+     * Name of the D-Bus interface for this class.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest magnetometer reading from sensor daemon.
+     *
+     * @return magnetometer reading.
+     */
     MagneticField magneticField();
 
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session id.
+     */
     MagnetometerSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const MagnetometerSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static MagnetometerSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static MagnetometerSensorChannelInterface* interface(const QString& id);
@@ -84,14 +104,20 @@ protected:
     virtual bool dataReceivedImpl();
 
 private:
-    bool frameAvailableConnected;
+    bool frameAvailableConnected; /**< has applicaiton connected slot for frameAvailable signal. */
 
-public Q_SLOTS: // METHODS
+public Q_SLOTS:
+    /**
+     * Reset magnetometer calibration to 0.
+     *
+     * @return DBus reply.
+     */
     QDBusReply<void> reset();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when new measurement is available.
+     *
      * @param data Current magnetic field measurement.
      */
     void dataAvailable(const MagneticField& data);
@@ -100,6 +126,7 @@ Q_SIGNALS: // SIGNALS
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
+     *
      * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<MagneticField>& frame);

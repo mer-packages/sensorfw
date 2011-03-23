@@ -34,10 +34,10 @@
 #include <QString>
 #include "sfwerror.h"
 
-/*
- * Proxy class for interface local.SensorManager
+/**
+ * DBus interface to SensorManager instance.
  */
-class LocalSensorManagerInterface: public QDBusAbstractInterface
+class LocalSensorManagerInterface : public QDBusAbstractInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(LocalSensorManagerInterface)
@@ -45,27 +45,86 @@ class LocalSensorManagerInterface: public QDBusAbstractInterface
     Q_PROPERTY(QString errorString READ errorString)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
 
-    int errorCodeInt(); // this exists as a hack because enums cannot be marshalled over D-BUS
+    /**
+     * Get error code integer.
+     *
+     * @return error code interger.
+     */
+    int errorCodeInt();
 
 public:
+    /**
+     * Get name of the D-Bus interface for this class.
+     *
+     * @return Name of the interface.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Destructor.
+     */
     virtual ~LocalSensorManagerInterface();
 
+    /**
+     * Get error code of occured remote error.
+     *
+     * @return error code.
+     */
     SensorManagerError errorCode();
+
+    /**
+     * Get error description of occured remote error.
+     *
+     * @return error description.
+     */
     QString errorString();
 
-public Q_SLOTS: // METHODS
+public Q_SLOTS:
+
+    /**
+     * Request sensor daemon to load plugin.
+     *
+     * @param name plugin name.
+     * @return DBus reply.
+     */
     QDBusReply<bool> loadPlugin(const QString& name);
 
+    /**
+     * Request sensor deamon to start new session for sensor.
+     *
+     * @param id sensor ID.
+     * @return DBus reply.
+     */
     QDBusReply<int> requestSensor(const QString& id);
 
+    /**
+     * Request sensor deamon to release existing session.
+     *
+     * @param id sensor ID.
+     * @param sessionId session ID.
+     * @return DBus reply.
+     */
     QDBusReply<bool> releaseSensor(const QString& id, int sessionId);
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
+
+    /**
+     * Signal about occured errors.
+     *
+     * @param error Occured error code.
+     */
     void errorSignal(int error);
 
 protected:
+
+    /**
+     * Constructor.
+     *
+     * @param service DBus service name.
+     * @param path DBus service path.
+     * @param connection DBUs connection.
+     * @param parent Parent object.
+     */
     LocalSensorManagerInterface(const QString& service, const QString& path, const QDBusConnection& connection, QObject* parent = 0);
 };
 

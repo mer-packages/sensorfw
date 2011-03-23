@@ -30,17 +30,12 @@
 #include <QtDBus/QtDBus>
 
 #include "abstractsensor_i.h"
-#include <datatypes/orientationdata.h>
 #include <datatypes/compass.h>
 
 /**
- * @brief DBus-interface for logical compass sensor using internal sensors.
- *
- * Acts as a proxy class \e local.CompassSensor interface.
- *
- * For details of measurement process, see #CompassSensorChannel.
+ * Client interface for accessing compass sensor.
  */
-class CompassSensorChannelInterface: public AbstractSensorChannelInterface
+class CompassSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(CompassSensorChannelInterface)
@@ -49,36 +44,81 @@ class CompassSensorChannelInterface: public AbstractSensorChannelInterface
     Q_PROPERTY(int declinationvalue READ declinationValue)
 
 public:
+    /**
+     * Name of the D-Bus interface for this class.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest compass reading from sensor daemon.
+     *
+     * @return compass reading.
+     */
     Compass get();
 
+    /**
+     * Returns whether the sensor is applying declination correction to the
+     * output value and returning <i>true north</i>, or not applying it and
+     * returning <i>magnetic north</i>.
+     *
+     * @return True if decliation correction is applied, false otherwise
+     */
     bool useDeclination();
+
+    /**
+     * Sets whether the declination correction should be applied or not.
+     *
+     * @param enable If true, declination correction will be applied,
+     *               if false, it will not be applied
+     */
     void setUseDeclination(bool enable);
 
+    /**
+     * Returns the currently used declination correction value.
+     *
+     * @return Current declination value
+     */
     int declinationValue();
 
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session ID.
+     */
     CompassSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const CompassSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static CompassSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static CompassSensorChannelInterface* interface(const QString& id);
@@ -86,10 +126,11 @@ public:
 protected:
     virtual bool dataReceivedImpl();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
 
     /**
      * Sent when compass direction or calibration level has changed.
+     *
      * @param value Current compass measurement.
      */
     void dataAvailable(const Compass& value);

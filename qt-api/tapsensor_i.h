@@ -38,45 +38,85 @@
 
 
 /**
- * @brief DBus-interface for accessing device tap events.
- *
- * Acts as a proxy class for interface \e local.TapSensor.
- *
- * For details of measurement process, see #TapSensorChannel.
+ * Client interface for accessing accelerometer based tap events.
  */
-class TapSensorChannelInterface: public AbstractSensorChannelInterface
+class TapSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(TapSensorChannelInterface)
 
 public:
+    /**
+     * Name of the D-Bus interface for this class.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
-public:
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session ID.
+     */
     TapSensorChannelInterface(const QString &path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const TapSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static TapSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static TapSensorChannelInterface* interface(const QString& id);
+
+    /**
+     * Tap type selection
+     */
+    enum TapSelection
+    {
+        Single = 1,  /**< Only listen single taps. */
+        Double,      /**< Only listen double taps. */
+        SingleDouble /**< Listen both single and double taps. */
+    };
+
+    /**
+     * Set type of taps to be listened for.
+     *
+     * @param type type of tap to be listened for.
+     */
+    void setTapType(TapSelection type);
+
+    /**
+     * Get type of taps to be listened for.
+     *
+     * @return type of taps to be listened for.
+     */
+    TapSelection getTapType();
 
 protected:
     virtual bool dataReceivedImpl();
@@ -84,31 +124,20 @@ protected:
 private Q_SLOTS:
     void output();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when new tap event has occurred.
+     *
      * @param data The tap event.
      */
     void dataAvailable(const Tap& data);
 
-public:
-
-    enum TapSelection
-    {
-        Single = 1,
-        Double,
-        SingleDouble
-    };
-
-    void setTapType(TapSelection type);
-    TapSelection getTapType();
-
 private:
 
-    QList<TapData> tapValues_;
-    TapSelection type_;
-    QTimer *timer;
-    static const int doubleClickInteval = 500;
+    QList<TapData> tapValues_; /**< buffer of received tap values. */
+    TapSelection type_; /**< tap type to listen for. */
+    QTimer *timer; /**< timer for doubletap detection. */
+    static const int doubleClickInteval = 500; /**< doubletap recognition window */
 };
 
 namespace local {
