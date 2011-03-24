@@ -45,34 +45,28 @@
 class AbstractSensorChannel : public NodeBase
 {
     Q_OBJECT
-
-    Q_PROPERTY(bool isValid READ isValid)
+    Q_DISABLE_COPY(AbstractSensorChannel)
     Q_PROPERTY(SensorError errorCode READ errorCode)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(QString errorString READ errorString)
-
-    /** Idenfication string for the sensor channel */
-    Q_PROPERTY(QString id READ id)
-
-    /** Type of the sensor channel */
     Q_PROPERTY(QString type READ type)
-
-    /** Whether sensor is running or not */
-    Q_PROPERTY(bool running READ running);
+    Q_PROPERTY(bool running READ running)
 
 public:
+    /**
+     * Destructor.
+     */
     virtual ~AbstractSensorChannel() {}
-
-    bool isValid() const { return isValid_; }
 
     SensorError errorCode() const { return errorCode_; }
     int errorCodeInt() const { return static_cast<int>(errorCode_); }
     QString errorString() const { return errorString_; }
 
-    const QString& id() const { return id_; }
+    /** Type of the sensor channel */
     const QString type() const { return metaObject()->className(); }
 
-    bool running() { return (bool)(cnt_ > 0); }
+    /** Whether sensor is running or not */
+    bool running() { return (cnt_ > 0); }
 
     void setDownsamplingEnabled(int sessionId, bool value);
     bool downsamplingEnabled(int sessionId);
@@ -139,16 +133,12 @@ protected:
         emit propertyChanged(name);
     }
 
-    virtual void setValid(bool valid) { isValid_ = valid; }
-
 private:
-    QString             id_;
     QString             name_;
 
     SensorError         errorCode_;
     QString             errorString_;
 
-    bool                isValid_;
     int                 cnt_;
 
     QList<int>          activeSessions_;

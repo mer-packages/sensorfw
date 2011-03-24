@@ -47,10 +47,23 @@ class NodeBase : public QObject
 
     Q_PROPERTY(bool standbyOverride READ standbyOverride);
     Q_PROPERTY(unsigned int interval READ getInterval);
+    Q_PROPERTY(QString id READ id)
+    Q_PROPERTY(bool isValid READ isValid)
 
 protected:
-    NodeBase(QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0), DEFAULT_DATA_RANGE_REQUEST(-1) {}
+    NodeBase(const QString& id, QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0), DEFAULT_DATA_RANGE_REQUEST(-1), id_(id), isValid_(false) {}
     virtual ~NodeBase() {}
+
+public:
+    /** Idenfication string for the sensor channel */
+    const QString& id() const { return id_; }
+
+    /**
+     * Is object succesfully initialized.
+     *
+     * @return is object successfully initialized.
+     */
+    bool isValid() const { return isValid_; }
 
 public Q_SLOTS:
 
@@ -202,6 +215,8 @@ Q_SIGNALS:
     void propertyChanged(const QString& name);
 
 protected:
+    virtual void setValid(bool valid) { isValid_ = valid; }
+
     /**
      * Sets up a source for this node.
      */
@@ -387,6 +402,9 @@ private:
     QMap<int, unsigned int> m_bufferIntervalMap;
 
     const DataRangeRequest  DEFAULT_DATA_RANGE_REQUEST;
+
+    QString                 id_;
+    bool                    isValid_;
 };
 
 #endif

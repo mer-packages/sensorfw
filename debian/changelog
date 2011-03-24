@@ -30,6 +30,7 @@ sensord (0.6.41) unstable; urgency=low
       - listenInterface() and controlInterface() are now deprecated.
       - marked some old unused features deprecated.
       - few more members are hidden which weren't supposed to be visible.
+    - Moved few members from DeviceAdaptor and AbstractSensor to NodeBase.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

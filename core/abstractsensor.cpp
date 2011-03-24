@@ -39,11 +39,10 @@
 #include "abstractsensor.h"
 
 AbstractSensorChannel::AbstractSensorChannel(const QString& id) :
+    NodeBase(getCleanId(id)),
     errorCode_(SNoError),
-    isValid_(false),
     cnt_(0)
 {
-    id_ = getCleanId(id);
 }
 
 void AbstractSensorChannel::setError(SensorError errorCode, const QString& errorString)

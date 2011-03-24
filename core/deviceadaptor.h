@@ -89,12 +89,9 @@ class DeviceAdaptor : public NodeBase
 {
     Q_OBJECT;
 
-    Q_PROPERTY(QString id READ id);
-    Q_PROPERTY(bool isValid READ isValid);
-
 public:
 
-    DeviceAdaptor(const QString id) : id_(id), isValid_(true), standbyOverride_(false), screenBlanked(false) {}
+    DeviceAdaptor(const QString id) : NodeBase(id), standbyOverride_(false), screenBlanked(false) {}
     virtual ~DeviceAdaptor();
 
     void setScreenBlanked(bool status)
@@ -102,13 +99,9 @@ public:
         screenBlanked = status;
     }
 
-    virtual bool isValid() const {return isValid_;}
-
     virtual bool setStandbyOverride(bool override);
 
     bool deviceStandbyOverride() const { return standbyOverride_; }
-
-    const QString& id() const { return id_; }
 
     AdaptedSensorEntry* findAdaptedSensor(const QString& sensorId) const;
     QList<QString> findAdaptedSensors() const;
@@ -129,13 +122,9 @@ protected:
 
     const QHash<QString, AdaptedSensorEntry*>& sensors() const { return sensors_; }
 
-    virtual void setValid(bool valid) { isValid_ = valid; }
-
 private:
     void addAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
 
-    const QString id_;
-    bool isValid_;
     bool standbyOverride_;
     QHash<QString, AdaptedSensorEntry*> sensors_;
     bool screenBlanked;
