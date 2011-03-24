@@ -33,7 +33,7 @@
 #include "abstractsensor.h"
 
 /**
- * AbstractChain is a container for filterchain ending in a named buffer.
+ * AbstractChain is a container for filterchain ending in one or more named buffers.
  * It allows sharing of commmon processing easily, without having to rewrite
  * or recalculate filterchains.
  *
@@ -43,34 +43,58 @@
  */
 class AbstractChain : public AbstractSensorChannel
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(AbstractChain)
+
 public:
+    /**
+     * Destructor
+     */
     virtual ~AbstractChain();
 
     /**
      * Locate a named end buffer of the chain. Buffer names \em should be
      * available from documentation of the given chain.
-     * @return Pointer to the buffer with the given name. If named buffer
-     *         is not found, \c NULL is returned.
+     *
+     * @param name Name of the buffer.
+     * @return Pointer to the buffer. If named buffer is not found
+     *         NULL is returned.
      */
     RingBufferBase* findBuffer(const QString& name) const;
 
     /**
      * List of available buffers.
+     *
      * @return available buffers.
      */
     const QMap<QString, RingBufferBase*>& buffers() const;
 
 protected:
+    /**
+     * Constructor.
+     *
+     * @param id identifier of the chain.
+     * @param deleteBuffers delete attached buffers automatically when
+     *                      chain is deleted.
+     */
     AbstractChain(const QString& id, bool deleteBuffers = false);
 
+    /**
+     * Attach buffer with given name.
+     *
+     * @param name Name of the buffer.
+     * @param buffer Pointer to buffer.
+     */
     void nameOutputBuffer(const QString& name, RingBufferBase* buffer);
 
 private:
-    QMap<QString, RingBufferBase*> outputBufferMap_;
-    const bool deleteBuffers_;
+    QMap<QString, RingBufferBase*> outputBufferMap_; /**< buffers */
+    const bool deleteBuffers_; /**< are buffers deleted automatically */
 };
 
+/**
+ * Factory type for constructing chain.
+ */
 typedef AbstractChain* (*ChainFactoryMethod)(const QString& id);
 
 #endif // ABSTRACT_CHAIN_H
