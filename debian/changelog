@@ -31,6 +31,9 @@ sensord (0.6.41) unstable; urgency=low
       - marked some old unused features deprecated.
       - few more members are hidden which weren't supposed to be visible.
     - Moved few members from DeviceAdaptor and AbstractSensorChannel to NodeBase.
+    - Removed unnecessary members from AbstractSensorChannel.
+    - Simplified AbstractSensorChannel start/stop handling.
+    - Const correctness fixes.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

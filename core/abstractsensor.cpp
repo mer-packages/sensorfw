@@ -28,15 +28,11 @@
    </p>
  */
 
-#include <QStringList>
-#include <QVariant>
-
+#include "abstractsensor.h"
 #include "sensormanager.h"
 #include "sockethandler.h"
 #include "idutils.h"
 #include "logging.h"
-
-#include "abstractsensor.h"
 
 AbstractSensorChannel::AbstractSensorChannel(const QString& id) :
     NodeBase(getCleanId(id)),
@@ -57,40 +53,35 @@ void AbstractSensorChannel::setError(SensorError errorCode, const QString& error
 
 bool AbstractSensorChannel::start(int sessionId)
 {
-    if (!(activeSessions_.contains(sessionId))) {
-        activeSessions_.append(sessionId);
+    if(!activeSessions_.contains(sessionId))
+    {
+        activeSessions_.insert(sessionId);
+        requestDefaultInterval(sessionId);
+        return start();
     }
-
-    requestDefaultInterval(sessionId);
-
-    return start();
+    return false;
 }
 
 bool AbstractSensorChannel::start()
 {
-    if (++cnt_ == 1) return true;
-    return false;
+    return (++cnt_ == 1) ? true : false;
 }
 
 bool AbstractSensorChannel::stop(int sessionId)
 {
-    activeSessions_.removeAll(sessionId);
-
-    if(stop())
-    {
-        removeIntervalRequest(sessionId);
-        return true;
-    }
+    if(activeSessions_.remove(sessionId))
+        return stop();
     return false;
 }
 
 bool AbstractSensorChannel::stop()
 {
-    if (--cnt_ == 0) return true;
-    if (cnt_ < 0) cnt_ = 0;
+    if (--cnt_ == 0)
+        return true;
+    if (cnt_ < 0)
+        cnt_ = 0;
     return false;
 }
-
 
 bool AbstractSensorChannel::writeToSession(int sessionId, const void* source, int size)
 {
@@ -98,7 +89,6 @@ bool AbstractSensorChannel::writeToSession(int sessionId, const void* source, in
         sensordLogD() << "AbstractSensor failed to write to session " << sessionId;
         return false;
     }
-
     return true;
 }
 
@@ -137,16 +127,13 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
                 it = samples.erase(it);
                 if(it == samples.end())
                     break;
-            } else
-            {
-                break;
             }
+            else
+                break;
         }
 
         if(samples.size() < bufferSize)
-        {
             continue;
-        }
 
         long x = 0;
         long y = 0;
@@ -166,7 +153,8 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
         if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
         {
             samples.clear();
-        } else
+        }
+        else
         {
             ret = false;
         }
@@ -200,14 +188,14 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
                 it = samples.erase(it);
                 if(it == samples.end())
                     break;
-            } else
-            {
-                break;
             }
+            else
+                break;
         }
 
         if(samples.size() < bufferSize)
             continue;
+
         long x = 0;
         long y = 0;
         long z = 0;
@@ -236,7 +224,8 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
         if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
         {
             samples.clear();
-        } else
+        }
+        else
         {
             ret = false;
         }
@@ -255,7 +244,7 @@ void AbstractSensorChannel::setDownsamplingEnabled(int sessionId, bool value)
     }
 }
 
-bool AbstractSensorChannel::downsamplingEnabled(int sessionId)
+bool AbstractSensorChannel::downsamplingEnabled(int sessionId) const
 {
     QMap<int, bool>::const_iterator it(downsampling_.find(sessionId));
     if(it == downsampling_.end())
@@ -272,4 +261,35 @@ void AbstractSensorChannel::removeSession(int sessionId)
 {
     downsampling_.take(sessionId);
     NodeBase::removeSession(sessionId);
+}
+
+SensorError AbstractSensorChannel::errorCode() const
+{
+    return errorCode_;
+}
+
+const QString& AbstractSensorChannel::errorString() const
+{
+    return errorString_;
+}
+
+const QString AbstractSensorChannel::type() const
+{
+    return metaObject()->className();
+}
+
+bool AbstractSensorChannel::running() const
+{
+    return (cnt_ > 0);
+}
+
+void AbstractSensorChannel::clearError()
+{
+    errorCode_ = SNoError;
+    errorString_.clear();
+}
+
+void AbstractSensorChannel::signalPropertyChanged(const QString& name)
+{
+    emit propertyChanged(name);
 }
