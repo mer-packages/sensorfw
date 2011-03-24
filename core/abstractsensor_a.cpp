@@ -44,7 +44,7 @@ bool AbstractSensorChannelAdaptor::isValid() const
 
 int AbstractSensorChannelAdaptor::errorCodeInt() const
 {
-    return node()->errorCodeInt();
+    return static_cast<int>(node()->errorCode());
 }
 
 QString AbstractSensorChannelAdaptor::errorString() const

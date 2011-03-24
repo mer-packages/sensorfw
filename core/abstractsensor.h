@@ -31,7 +31,7 @@
 #ifndef ABSTRACTSENSOR_H
 #define ABSTRACTSENSOR_H
 
-#include <QStringList>
+#include <QString>
 #include <QMap>
 #include <QList>
 
@@ -47,7 +47,6 @@ class AbstractSensorChannel : public NodeBase
     Q_OBJECT
     Q_DISABLE_COPY(AbstractSensorChannel)
     Q_PROPERTY(SensorError errorCode READ errorCode)
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(QString errorString READ errorString)
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(bool running READ running)
@@ -59,7 +58,6 @@ public:
     virtual ~AbstractSensorChannel() {}
 
     SensorError errorCode() const { return errorCode_; }
-    int errorCodeInt() const { return static_cast<int>(errorCode_); }
     QString errorString() const { return errorString_; }
 
     /** Type of the sensor channel */
