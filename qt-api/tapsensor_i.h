@@ -136,7 +136,7 @@ private:
 
     QList<TapData> tapValues_; /**< buffer of received tap values. */
     TapSelection type_; /**< tap type to listen for. */
-    QTimer *timer; /**< timer for doubletap detection. */
+    QTimer *timer_; /**< timer for doubletap detection. */
     static const int doubleClickInteval = 500; /**< doubletap recognition window */
 };
 
