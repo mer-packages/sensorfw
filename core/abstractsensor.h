@@ -167,6 +167,12 @@ Q_SIGNALS:
     void errorSignal(int error);
 
 protected:
+    /** Sample buffer type for TimedXyzData downsampling. */
+    typedef QMap<int, QList<TimedXyzData> > TimedXyzDownsampleBuffer;
+
+    /** Sample buffer type for CalibratedMagneticFieldData downsampling. */
+    typedef QMap<int, QList<CalibratedMagneticFieldData> > MagneticFieldDownsampleBuffer;
+
     /**
      * Constructor.
      *
@@ -196,12 +202,6 @@ protected:
      */
     bool writeToClients(const void* source, int size);
 
-    /** Sample buffer type for TimedXyzData downsampling. */
-    typedef QMap<int, QList<TimedXyzData> > TimedXyzDownsampleBuffer;
-
-    /** Sample buffer type for CalibratedMagneticFieldData downsampling. */
-    typedef QMap<int, QList<CalibratedMagneticFieldData> > MagneticFieldDownsampleBuffer;
-
     /**
      * Downsample and propagate data to all connected sessions.
      *
@@ -222,16 +222,12 @@ protected:
 
     /**
      * Signal property change.
+     *
+     * @param name property name.
      */
     void signalPropertyChanged(const QString& name);
 
 private:
-    SensorError         errorCode_;       /**< previous occured error code */
-    QString             errorString_;     /**< previous occured error description */
-    int                 cnt_;             /**< usage reference count */
-    QSet<int>           activeSessions_;  /**< active sessions */
-    QMap<int, bool>     downsampling_;    /**< downsample state for sessions */
-
     /**
      * Write to given session.
      *
@@ -241,6 +237,12 @@ private:
      * @return was data succesfully written.
      */
     bool writeToSession(int sessionId, const void* source, int size);
+
+    SensorError         errorCode_;       /**< previous occured error code */
+    QString             errorString_;     /**< previous occured error description */
+    int                 cnt_;             /**< usage reference count */
+    QSet<int>           activeSessions_;  /**< active sessions */
+    QMap<int, bool>     downsampling_;    /**< downsample state for sessions */
 };
 
 /**
