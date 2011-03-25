@@ -70,7 +70,10 @@ bool AbstractSensorChannel::start()
 bool AbstractSensorChannel::stop(int sessionId)
 {
     if(activeSessions_.remove(sessionId))
+    {
+        removeSession(sessionId); //Note: when client restarts the session it is responsible to reconfiguring the sensor.
         return stop();
+    }
     return false;
 }
 

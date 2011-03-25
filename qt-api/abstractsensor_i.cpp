@@ -124,6 +124,7 @@ QDBusReply<void> AbstractSensorChannelInterface::start(int sessionId)
     setInterval(sessionId, pimpl_->interval_);
     setBufferInterval(sessionId, pimpl_->bufferInterval_);
     setBufferSize(sessionId, pimpl_->bufferSize_);
+    setDownsampling(pimpl_->sessionId_, pimpl_->downsampling_);
 
     return returnValue;
 }
@@ -138,9 +139,6 @@ QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
     pimpl_->running_ = false ;
 
     disconnect(pimpl_->socketReader_.socket(), SIGNAL(readyRead()), this, SLOT(dataReceived()));
-    setStandbyOverride(sessionId, false);
-    /// Drop interval requests when stopped
-    setInterval(sessionId, 0);
 
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(sessionId);
