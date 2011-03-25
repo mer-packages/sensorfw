@@ -55,9 +55,7 @@ class Source : public SourceBase
 public:
     void propagate(int n, const TYPE* values)
     {
-        SinkTyped<TYPE>* sink;
-
-        foreach (sink, sinks_) {
+        foreach (SinkTyped<TYPE>* sink, sinks_) {
             sink->collect(n, values);
         }
     }

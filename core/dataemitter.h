@@ -7,6 +7,7 @@
 
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -28,26 +29,40 @@
 #define DATAEMITTER_H
 
 #include "pusher.h"
-#include "source.h"
 #include "ringbuffer.h"
 
-
+/**
+ * Data producer subclass which emits individual objects. Does not have
+ * any sources provided.
+ *
+ * @tparam TYPE datatype being emitted.
+ */
 template <class TYPE>
 class DataEmitter : public RingBufferReader<TYPE>
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param chunkSize how many objects will be internally buffered.
+     */
     DataEmitter(unsigned chunkSize) :
         chunkSize_(chunkSize),
         chunk_(new TYPE[chunkSize])
     {
-        addSource(&source_, "source");
     }
 
+    /**
+     * Destructor.
+     */
     virtual ~DataEmitter()
     {
         delete[] chunk_;
     }
 
+    /**
+     * Propagate data by calling emitData.
+     */
     void pushNewData()
     {
         unsigned n;
@@ -59,12 +74,14 @@ public:
     }
 
 protected:
+    /**
+     * Callback for emitted objects.
+     */
     virtual void emitData(const TYPE& value) = 0;
 
 private:
-    Source<TYPE> source_;
-    unsigned     chunkSize_;
-    TYPE*        chunk_;
+    unsigned     chunkSize_; /**< How many objects can be buffered */
+    TYPE*        chunk_;     /**< Buffer */
 };
 
 #endif

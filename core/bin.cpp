@@ -93,9 +93,9 @@ void Bin::add(FilterBase* filter, const QString& name)
 }
 
 bool Bin::join(const QString& producerName,
-                  const QString& sourceName,
-                  const QString& consumerName,
-                  const QString& sinkName)
+               const QString& sourceName,
+               const QString& consumerName,
+               const QString& sinkName)
 {
     bool joined = false;
 
@@ -131,9 +131,9 @@ bool Bin::join(const QString& producerName,
 }
 
 bool Bin::unjoin(const QString& producerName,
-                  const QString& sourceName,
-                  const QString& consumerName,
-                  const QString& sinkName)
+                 const QString& sourceName,
+                 const QString& consumerName,
+                 const QString& sinkName)
 {
     SourceBase* src = source(producerName, sourceName);
     SinkBase*   snk = sink(consumerName, sinkName);
@@ -164,8 +164,7 @@ bool Bin::unjoin(const QString& producerName,
     return unjoined;
 }
 
-SourceBase* Bin::source(const QString& producerName,
-                        const QString& sourceName)
+SourceBase* Bin::source(const QString& producerName, const QString& sourceName) const
 {
     SourceBase* source = 0;
 
@@ -176,7 +175,7 @@ SourceBase* Bin::source(const QString& producerName,
     return source;
 }
 
-SinkBase* Bin::sink(const QString& consumerName, const QString& sinkName)
+SinkBase* Bin::sink(const QString& consumerName, const QString& sinkName) const
 {
     SinkBase* sink = 0;
 
@@ -187,7 +186,7 @@ SinkBase* Bin::sink(const QString& consumerName, const QString& sinkName)
     return sink;
 }
 
-Producer* Bin::producer(const QString& name)
+Producer* Bin::producer(const QString& name) const
 {
     Producer* p = 0;
 
@@ -200,7 +199,7 @@ Producer* Bin::producer(const QString& name)
     return p;
 }
 
-Consumer* Bin::consumer(const QString& name)
+Consumer* Bin::consumer(const QString& name) const
 {
     Consumer* c = 0;
 

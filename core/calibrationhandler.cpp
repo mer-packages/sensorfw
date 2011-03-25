@@ -31,16 +31,18 @@
 #include "abstractsensor.h"
 #include "config.h"
 
-CalibrationHandler::CalibrationHandler(QObject* parent) : QObject(parent),
+const QString CalibrationHandler::SENSOR_NAME("magnetometersensor");
+
+CalibrationHandler::CalibrationHandler(QObject* parent) :
+    QObject(parent),
     m_sensor(NULL),
     m_sessionId(-1),
-    m_sensorName("magnetometersensor"),
     m_level(-1)
 {
     m_timer.setSingleShot(true);
 
-    calibration_rate = Config::configuration()->value("calibration_rate",  QVariant(100)).toInt();
-    calib_timeout = Config::configuration()->value("calibration_timeout", QVariant(60000)).toInt();
+    m_calibRate = Config::configuration()->value<int>("m_calibRate", 100);
+    m_calibTimeout = Config::configuration()->value<int>("calibration_timeout", 60000);
 }
 
 CalibrationHandler::~CalibrationHandler()
@@ -48,7 +50,7 @@ CalibrationHandler::~CalibrationHandler()
     if (m_sessionId > 0)
     {
         SensorManager& sm = SensorManager::instance();
-        sm.releaseSensor(m_sensorName, m_sessionId);
+        sm.releaseSensor(SENSOR_NAME, m_sessionId);
         m_sensor = NULL;
     }
 }
@@ -57,20 +59,20 @@ bool CalibrationHandler::initiateSession()
 {
     SensorManager& sm = SensorManager::instance();
     sensordLogD() << "Loading MagnetometerSensorPlugin";
-    if (!sm.loadPlugin(m_sensorName))
+    if (!sm.loadPlugin(SENSOR_NAME))
     {
         sensordLogW() << "Failed to load magnetometer plug-in";
         return false;
     }
 
-    m_sessionId = sm.requestSensor(m_sensorName);
+    m_sessionId = sm.requestSensor(SENSOR_NAME);
     if (m_sessionId <= 0)
     {
         sensordLogW() << "Failed to get session for magnetometersensor.";
     }
     else
     {
-        m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(m_sensorName).sensor_);
+        m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(SENSOR_NAME).sensor_);
     }
 
     // Connect timeout
@@ -85,7 +87,7 @@ void CalibrationHandler::sampleReceived(const MagneticField& sample)
     if ((sample.level() != m_level))
     {
         m_level = sample.level();
-        m_timer.start(calib_timeout);
+        m_timer.start(m_calibTimeout);
     }
 }
 
@@ -118,9 +120,9 @@ void CalibrationHandler::resumeCalibration()
     if (m_sensor && !m_timer.isActive())
     {
         m_sensor->start();
-        m_sensor->setIntervalRequest(m_sessionId, calibration_rate);
+        m_sensor->setIntervalRequest(m_sessionId, m_calibRate);
         m_sensor->setStandbyOverrideRequest(m_sessionId, true);
         connect(m_sensor, SIGNAL(internalData(const MagneticField&)), this, SLOT(sampleReceived(const MagneticField&)));
     }
-    m_timer.start(calib_timeout);
+    m_timer.start(m_calibTimeout);
 }

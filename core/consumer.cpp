@@ -7,6 +7,7 @@
 
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,7 +32,10 @@ void Consumer::addSink(SinkBase* sink, const QString& name)
     sinks_.insert(name, sink);
 }
 
-SinkBase* Consumer::sink(const QString& name)
+SinkBase* Consumer::sink(const QString& name) const
 {
-    return sinks_[name];
+    QHash<QString, SinkBase*>::const_iterator it = sinks_.find(name);
+    if(it == sinks_.end())
+        return NULL;
+    return it.value();
 }
