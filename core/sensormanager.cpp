@@ -49,12 +49,43 @@ typedef struct {
     void* buffer;
 } PipeData;
 
-
 SensorManager* SensorManager::instance_ = NULL;
 int SensorManager::sessionIdCount_ = 0;
 
-inline
-QDBusConnection bus()
+SensorInstanceEntry::SensorInstanceEntry(const QString& type) :
+    sensor_(0),
+    type_(type)
+{
+}
+
+SensorInstanceEntry::~SensorInstanceEntry()
+{
+}
+
+ChainInstanceEntry::ChainInstanceEntry(const QString& type) :
+    cnt_(0),
+    chain_(0),
+    type_(type)
+{
+}
+
+ChainInstanceEntry::~ChainInstanceEntry()
+{
+}
+
+DeviceAdaptorInstanceEntry::DeviceAdaptorInstanceEntry(const QString& type, const QString& id) :
+    adaptor_(0),
+    cnt_(0),
+    type_(type)
+{
+    propertyMap_ = ParameterParser::getPropertyMap(id);
+}
+
+DeviceAdaptorInstanceEntry::~DeviceAdaptorInstanceEntry()
+{
+}
+
+inline QDBusConnection bus()
 {
     return QDBusConnection::systemBus();
 }
@@ -94,9 +125,6 @@ SensorManager::SensorManager() :
         sensordLogW() << "Error setting socket permissions! " << SOCKET_NAME;
     }
 
-    displayState_ = true;
-    psmState_ = false;
-
 #ifdef SENSORFW_MCE_WATCHER
 
     mceWatcher_ = new MceWatcher(this);
@@ -106,7 +134,6 @@ SensorManager::SensorManager() :
     connect(mceWatcher_, SIGNAL(devicePSMStateChanged(const bool)),
             this, SLOT(devicePSMStateChanged(const bool)));
 
-
 #endif //SENSORFW_MCE_WATCHER
 }
 
@@ -114,14 +141,12 @@ SensorManager::~SensorManager()
 {
     foreach (const QString& key, sensorInstanceMap_.keys())
     {
-         sensordLogW() << "ERROR: sensor" << key << "not released!";
-         Q_ASSERT( sensorInstanceMap_[key].sensor_ == 0 );
+         sensordLogW() << "ERROR: sensor " << key << " not released!";
     }
 
     foreach (const QString& key, deviceAdaptorInstanceMap_.keys())
     {
-         sensordLogW() << "ERROR: device adaptor" << key << "not released!";
-         Q_ASSERT( deviceAdaptorInstanceMap_[key].adaptor_ == 0 );
+         sensordLogW() << "ERROR: device adaptor " << key << " not released!";
     }
 
     delete socketHandler_;
@@ -261,7 +286,7 @@ int SensorManager::requestSensor(const QString& id)
             return INVALID_SESSION;
         }
     }
-    entryIt.value().sessions_.append(sessionId);
+    entryIt.value().sessions_.insert(sessionId);
 
     return sessionId;
 }
@@ -295,7 +320,7 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
     bool returnValue = false;
 
-    if(entryIt.value().sessions_.removeAll( sessionId ))
+    if(entryIt.value().sessions_.remove( sessionId ))
     {
         if ( entryIt.value().sessions_.empty() )
         {
@@ -522,16 +547,13 @@ void SensorManager::lostClient(int sessionId)
     sensordLogW() << "[SensorManager]: Lost session " << sessionId << " detected, but not found from session list";
 }
 
-void SensorManager::displayStateChanged(const bool displayState)
+void SensorManager::displayStateChanged(bool displayState)
 {
-    sensordLogD() << "Signal detected, display state changed to:" << displayState;
-
-    displayState_ = displayState;
-
-    if (displayState_) {
+    sensordLogD() << "Signal detected, display state changed to: " << displayState;
+    if (displayState) {
         /// Emit signal to make background calibration resume from sleep
         emit displayOn();
-        if (!psmState_)
+        if (!mceWatcher_->PSMEnabled())
         {
             emit resumeCalibration();
         }
@@ -551,10 +573,9 @@ void SensorManager::displayStateChanged(const bool displayState)
     }
 }
 
-void SensorManager::devicePSMStateChanged(const bool psmState)
+void SensorManager::devicePSMStateChanged(bool psmState)
 {
-    psmState_ = psmState;
-    if (psmState_)
+    if (psmState)
     {
         emit stopCalibration();
     }
@@ -601,7 +622,7 @@ QString SensorManager::socketToPid(int id) const
     return "n/a";
 }
 
-QString SensorManager::socketToPid(QList<int> ids) const
+QString SensorManager::socketToPid(const QSet<int>& ids) const
 {
     QString str;
     bool first = true;
@@ -615,14 +636,46 @@ QString SensorManager::socketToPid(QList<int> ids) const
     return str;
 }
 
-bool SensorManager::getPSMState()
-{
-    return psmState_;
-}
-
 int SensorManager::createNewSessionId()
 {
     return ++sessionIdCount_;
+}
+
+const SensorInstanceEntry* SensorManager::getSensorInstance(const QString& id) const
+{
+    QMap<QString, SensorInstanceEntry>::const_iterator it(sensorInstanceMap_.find(id));
+    if(it == sensorInstanceMap_.end())
+    {
+        sensordLogW() << "Failed to locate sensor instance: " << id;
+        return NULL;
+    }
+    return &it.value();
+}
+
+SensorManagerError SensorManager::errorCode() const
+{
+    return errorCode_;
+}
+
+int SensorManager::errorCodeInt() const
+{
+    return static_cast<int>(errorCode_);
+}
+
+const QString& SensorManager::errorString() const
+{
+    return errorString_;
+}
+
+void SensorManager::clearError()
+{
+    errorCode_ = SmNoError;
+    errorString_.clear();
+}
+
+SocketHandler& SensorManager::socketHandler() const
+{
+    return *socketHandler_;
 }
 
 #ifdef SM_PRINT

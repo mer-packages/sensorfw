@@ -38,7 +38,8 @@
  */
 class MceWatcher : public QObject
 {
-    Q_OBJECT;
+    Q_OBJECT
+    Q_DISABLE_COPY(MceWatcher)
 
 public:
     /**
@@ -47,6 +48,20 @@ public:
      * @param parent Parent object.
      */
     MceWatcher(QObject* parent = 0);
+
+    /**
+     * Get display state.
+     *
+     * @return display state.
+     */
+    bool displayEnabled() const;
+
+    /**
+     * Get powersave-mode state.
+     *
+     * @return powersave-mode state.
+     */
+    bool PSMEnabled() const;
 
 signals:
     /**

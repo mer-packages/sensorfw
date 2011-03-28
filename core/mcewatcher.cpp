@@ -75,3 +75,13 @@ void MceWatcher::slotPSMStateChanged(bool mode)
         emit devicePSMStateChanged(powerSave);
     }
 }
+
+bool MceWatcher::displayEnabled() const
+{
+    return displayState;
+}
+
+bool MceWatcher::PSMEnabled() const
+{
+    return powerSave;
+}

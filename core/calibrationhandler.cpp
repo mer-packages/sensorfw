@@ -72,7 +72,7 @@ bool CalibrationHandler::initiateSession()
     }
     else
     {
-        m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(SENSOR_NAME).sensor_);
+        m_sensor = reinterpret_cast<MagnetometerSensorChannel*>(sm.getSensorInstance(SENSOR_NAME)->sensor_);
     }
 
     // Connect timeout
