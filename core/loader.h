@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Semi Malinen <semi.malinen@nokia.com
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -31,10 +32,25 @@
 #include <QStringList>
 #include "plugin.h"
 
-class Loader {
+/**
+ * Utility to load plugins. Class uses singleton-pattern.
+ */
+class Loader
+{
 public:
+    /**
+     * Get singleton instance.
+     */
     static Loader& instance();
 
+    /**
+     * Load plugin with given name. If called twice with same plugin name
+     * the second call won't do anything.
+     *
+     * @param name plugin name.
+     * @param errorMessage object to write error message if plugin loading
+     *                     fails. If NULL then error message is not written.
+     */
     bool loadPlugin(const QString& name, QString* errorMessage = 0);
 
 private:
@@ -42,10 +58,25 @@ private:
     Loader(const Loader&);
     Loader& operator=(const Loader&);
 
+    /**
+     * Resolve and load plugin with depenencies.
+     *
+     * @param name plugin to load.
+     * @param errorString object to write error message if plugin loading fails.
+     * @param newPluginNames List of new loaded plugin names.
+     * @param newPlugin List of new loaded plugin objects.
+     */
     bool loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const;
+
+    /**
+     * Resolve plugin name.
+     *
+     * @param pluginName plugin name.
+     * @return resolved plugin name.
+     */
     QString resolveRealPluginName(const QString& pluginName) const;
 
-    QStringList        loadedPluginNames_;
+    QStringList        loadedPluginNames_; /**< list of loaded plugins */
 };
 
 #endif

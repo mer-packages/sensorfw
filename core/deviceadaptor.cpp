@@ -75,7 +75,7 @@ RingBufferBase* AdaptedSensorEntry::buffer() const
     return buffer_;
 }
 
-DeviceAdaptor::DeviceAdaptor(const QString id) :
+DeviceAdaptor::DeviceAdaptor(const QString& id) :
     NodeBase(id),
     standbyOverride_(false),
     screenBlanked_(false)

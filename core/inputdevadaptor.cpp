@@ -9,6 +9,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -42,13 +43,8 @@
 InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     deviceCount_(0),
-    maxDeviceCount_(maxDeviceCount),
-    deviceNumber_(-1),
-    originalPollingInterval_(0)
+    maxDeviceCount_(maxDeviceCount)
 {
-    deviceSysPathString_ = Config::configuration()->value("device_sys_path").toString();
-    devicePollFilePath_ = Config::configuration()->value("device_poll_file_path").toString();
-
     memset(evlist_, 0x0, sizeof(input_event)*64);
 }
 
@@ -56,24 +52,12 @@ InputDevAdaptor::~InputDevAdaptor()
 {
 }
 
-bool InputDevAdaptor::startSensor(const QString& sensorId)
-{
-    if (!(SysfsAdaptor::startSensor(sensorId))) {
-        return false;
-    }
-
-    return true;
-}
-
-void InputDevAdaptor::stopSensor(const QString& sensorId)
-{
-    SysfsAdaptor::stopSensor(sensorId);
-}
-
 int InputDevAdaptor::getInputDevices(const QString& matchString)
 {
+    QString deviceSysPathString = Config::configuration()->value("device_sys_path").toString();
+    QString devicePollFilePath = Config::configuration()->value("device_poll_file_path").toString();
+
     int deviceNumber = 0;
-    deviceCount_ = 0;
     deviceString_ = matchString;
 
     // Check if this device name is defined in configuration
@@ -84,26 +68,24 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
     if (deviceName.size() && checkInputDevice(deviceName, matchString, false)) {
         addPath(deviceName, deviceCount_);
         ++deviceCount_;
-        deviceNumber_ = deviceNumber;
     }
-    else if(deviceSysPathString_.contains("%1"))
+    else if(deviceSysPathString.contains("%1"))
     {
         const int MAX_EVENT_DEV = 16;
 
         // No configuration for this device, try find the device from the device system path
         while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
-            deviceName = deviceSysPathString_.arg(deviceNumber);
+            deviceName = deviceSysPathString.arg(deviceNumber);
             if (checkInputDevice(deviceName, matchString)) {
                 addPath(deviceName, deviceCount_);
                 ++deviceCount_;
-                deviceNumber_ = deviceNumber;
             }
             ++deviceNumber;
         }
     }
 
     QString pollConfigKey = QString("dev_poll_%1").arg(deviceString_);
-    usedDevicePollFilePath_ = Config::configuration()->value<QString>(pollConfigKey, devicePollFilePath_.arg(deviceNumber_));
+    usedDevicePollFilePath_ = Config::configuration()->value<QString>(pollConfigKey, devicePollFilePath.arg(deviceNumber));
 
     if (deviceCount_ == 0) {
         sensordLogW() << id() << " cannot find any device for: " << matchString;
@@ -143,7 +125,7 @@ void InputDevAdaptor::processSample(int pathId, int fd)
     }
 }
 
-bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& matchString, bool strictChecks)
+bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& matchString, bool strictChecks) const
 {
     char deviceName[256] = {0,};
     bool check = true;
@@ -184,7 +166,7 @@ bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) co
 
 unsigned int InputDevAdaptor::interval() const
 {
-    if (deviceNumber_ < 0) {
+    if (!deviceCount_) {
         return -1;
     }
 
@@ -212,8 +194,13 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
     QString frequencyString = QString("%1\n").arg(value);
 
     if (pollFile.write(frequencyString.toAscii().constData(), frequencyString.length()) < 0) {
-        sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ":" << pollFile.error();
+        sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ": " << pollFile.error();
         return false;
     }
     return true;
+}
+
+int InputDevAdaptor::getDeviceCount() const
+{
+    return deviceCount_;
 }

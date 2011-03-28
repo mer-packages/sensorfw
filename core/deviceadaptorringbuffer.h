@@ -29,10 +29,19 @@
 
 #include "ringbuffer.h"
 
+/**
+ * Ring buffer specialization for sensor adaptors.
+ * @tparam TYPE data type in buffer.
+ */
 template <class TYPE>
 class DeviceAdaptorRingBuffer : public RingBuffer<TYPE>
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param size how many elements fit into buffer.
+     */
     DeviceAdaptorRingBuffer(unsigned size) :
         RingBuffer<TYPE>(size)
     {}

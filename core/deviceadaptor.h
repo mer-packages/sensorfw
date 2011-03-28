@@ -124,7 +124,7 @@ public:
      *
      * @param id Sensor ID.
      */
-    DeviceAdaptor(const QString id);
+    DeviceAdaptor(const QString& id);
 
     /**
      * Destructor.

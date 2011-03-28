@@ -29,23 +29,39 @@
 
 #include "consumer.h"
 #include "producer.h"
-#include <QString>
-
-
-class FilterBase : public Consumer, public Producer
-{
-protected:
-    FilterBase();
-};
-
-
 #include "sink.h"
 #include "source.h"
 
-template <class INPUT_TYPE, class DERIVED, class OUTPUT_TYPE=INPUT_TYPE>
+/**
+ * Filter base class.
+ */
+class FilterBase : public Consumer, public Producer
+{
+protected:
+    /**
+     * Default constructor.
+     */
+    FilterBase();
+};
+
+/**
+ * Extendable filter class. Filters data from given source "source"
+ * to sink "sink".
+ *
+ * @tparam INPUT_TYPE input data type.
+ * @tparam DERIVED subclass type.
+ * @tparam OUTPUT_TYPE output data type.
+ */
+template <class INPUT_TYPE, class DERIVED, class OUTPUT_TYPE = INPUT_TYPE>
 class Filter : public FilterBase
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param instance pointer to subclass instance.
+     * @param member sink callback.
+     */
     Filter(DERIVED*                                   instance,
            typename Sink<DERIVED, INPUT_TYPE>::Member member) :
         sink_(instance, member)
@@ -55,10 +71,13 @@ public:
     }
 
 protected:
-    Sink<DERIVED, INPUT_TYPE> sink_;
-    Source<OUTPUT_TYPE>       source_;
+    Sink<DERIVED, INPUT_TYPE> sink_;   /**< data sink.   */
+    Source<OUTPUT_TYPE>       source_; /**< data source. */
 };
 
+/**
+ * Filter factory definition.
+ */
 typedef FilterBase* (*FilterFactoryMethod)();
 
 #endif
