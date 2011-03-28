@@ -29,16 +29,33 @@
 #include <QMap>
 #include <QString>
 
+/**
+ * Parameter parser for property strings. Format is:
+ *   <text>;<propName1>=<propValue1>,<propName2>=...
+ */
 class ParameterParser
 {
 public:
+    /**
+     * Parse properties from given input.
+     *
+     * @param id input string to parse.
+     * @return property map.
+     */
     static QMap<QString, QString> getPropertyMap(const QString& id);
+
+    /**
+     * Apply properties to given object.
+     *
+     * @param object QObject to set properties.
+     * @param propertyMap properties to set.
+     */
     static void applyPropertyMap(QObject* object, const QMap<QString, QString> & propertyMap);
 
 private:
-    static const char TYPE_SEPARATOR            = ';';
-    static const char PROP_STRING_SEPARATOR     = ',';
-    static const char PROP_NAME_VALUE_SEPARATOR = '=';
+    static const char TYPE_SEPARATOR            = ';'; /**< type separator. */
+    static const char PROP_STRING_SEPARATOR     = ','; /**< property separator */
+    static const char PROP_NAME_VALUE_SEPARATOR = '='; /**< property name/value separator */
 };
 
 #endif // PARAMETERPARSER_H

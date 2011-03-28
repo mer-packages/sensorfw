@@ -51,7 +51,7 @@ QMap<QString, QString> ParameterParser::getPropertyMap(const QString& id)
             }
             else
             {
-                sensordLogW() << "Ignoring property:" << property;
+                sensordLogW() << "Propery value missing. Ignoring property: " << property;
             }
         }
     }

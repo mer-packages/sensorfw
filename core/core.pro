@@ -18,6 +18,7 @@ QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
 
 SOURCES += sensormanager.cpp \
     sensormanager_a.cpp \
+    pusher.cpp \
     ringbuffer.cpp \
     producer.cpp \
     source.cpp \

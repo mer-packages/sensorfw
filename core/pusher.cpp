@@ -1,11 +1,13 @@
 /**
-   @file plugin.cpp
-   @brief Base class for plugins
+   @file pusher.cpp
+   @brief Pusher
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Semi Malinen <semi.malinen@nokia.com
+   @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -23,21 +25,21 @@
    </p>
  */
 
-#include "plugin.h"
+#include "pusher.h"
 
-PluginBase::~PluginBase()
+Pusher::Pusher() :
+    ready_(0)
 {
 }
 
-Plugin::~Plugin()
+void Pusher::setReadyCallback(const CallbackBase* ready)
 {
+    ready_ = ready;
 }
 
-void PluginBase::Init(Loader&)
+void Pusher::wakeup() const
 {
-}
-
-QStringList PluginBase::Dependencies()
-{
-    return QStringList();
+    if (ready_) {
+        (*ready_)();
+    }
 }

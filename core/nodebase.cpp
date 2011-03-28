@@ -28,6 +28,34 @@
 #include "logging.h"
 #include "ringbuffer.h"
 
+NodeBase::NodeBase(const QString& id, QObject* parent) :
+    QObject(parent),
+    m_bufferSize(0),
+    m_bufferInterval(0),
+    m_dataRangeSource(NULL),
+    m_intervalSource(NULL),
+    m_hasDefault(false),
+    m_defaultInterval(0),
+    DEFAULT_DATA_RANGE_REQUEST(-1),
+    id_(id),
+    isValid_(false)
+{
+}
+
+NodeBase::~NodeBase()
+{
+}
+
+const QString& NodeBase::id() const
+{
+    return id_;
+}
+
+bool NodeBase::isValid() const
+{
+    return isValid_;
+}
+
 bool NodeBase::isMetadataValid() const
 {
     if (!hasLocalRange())
@@ -577,14 +605,16 @@ bool NodeBase::updateBufferInterval()
     return false;
 }
 
-bool NodeBase::setDataRangeIndex(int sessionId, const int rangeIndex)
+bool NodeBase::setDataRangeIndex(int sessionId, int rangeIndex)
 {
-    if (rangeIndex<0) return false;
-    if (rangeIndex>m_dataRangeList.size()-1) return false;
+    if (rangeIndex < 0)
+        return false;
+    if (rangeIndex > (m_dataRangeList.size() - 1))
+        return false;
     requestDataRange(sessionId, m_dataRangeList.at(rangeIndex));
     DataRangeList ranges = getAvailableDataRanges();
     DataRange range = getCurrentDataRange().range;
-    return ranges.at(rangeIndex)==range;
+    return ranges.at(rangeIndex) == range;
 }
 
 void NodeBase::removeSession(int sessionId)
@@ -594,4 +624,53 @@ void NodeBase::removeSession(int sessionId)
     removeDataRangeRequest(sessionId);
     clearBufferSize(sessionId);
     clearBufferInterval(sessionId);
+}
+
+void NodeBase::setValid(bool valid)
+{
+    isValid_ = valid;
+}
+
+bool NodeBase::setDataRange(const DataRange& range, int sessionId)
+{
+    Q_UNUSED(range);
+    Q_UNUSED(sessionId);
+    return false;
+}
+
+bool NodeBase::setStandbyOverride(bool override)
+{
+    Q_UNUSED(override);
+    return false;
+}
+
+unsigned int NodeBase::interval() const
+{
+    return 0;
+}
+
+bool NodeBase::setInterval(unsigned int value, int sessionId)
+{
+    sensordLogW() << "setInterval() not implemented in some node using it.";
+    Q_UNUSED(value);
+    Q_UNUSED(sessionId);
+    return false;
+}
+
+RingBufferBase* NodeBase::findBuffer(const QString& name) const
+{
+    Q_UNUSED(name);
+    return NULL;
+}
+
+bool NodeBase::setBufferSize(unsigned int value)
+{
+    Q_UNUSED(value);
+    return false;
+}
+
+bool NodeBase::setBufferInterval(unsigned int value)
+{
+    Q_UNUSED(value);
+    return false;
 }

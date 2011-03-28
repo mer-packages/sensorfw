@@ -30,31 +30,36 @@
 #include "producer.h"
 #include "callback.h"
 
-
+/**
+ * Base-class for pusher type of data producers.
+ */
 class Pusher : public Producer
 {
 public:
-    Pusher() :
-        ready_()
-    {}
+    /**
+     * Constructor.
+     */
+    Pusher();
 
-    // public or Thread as a friend?
-    void setReadyCallback(const CallbackBase* ready)
-    {
-        ready_ = ready;
-    }
+    /**
+     * Set callback to be called when new data is pushed.
+     *
+     * @param ready Callback.
+     */
+    void setReadyCallback(const CallbackBase* ready);
 
-    void wakeup() const
-    {
-        if (ready_) {
-            (*ready_)();
-        }
-    }
+    /**
+     * Invoke callback.
+     */
+    void wakeup() const;
 
+    /**
+     * Push new data.
+     */
     virtual void pushNewData() = 0;
 
 protected:
-    const CallbackBase* ready_;
+    const CallbackBase* ready_; /**< callback */
 };
 
 #endif

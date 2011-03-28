@@ -27,6 +27,10 @@
 
 #include "ringbuffer.h"
 
+RingBufferReaderBase::~RingBufferReaderBase()
+{
+}
+
 bool RingBufferBase::join(RingBufferReaderBase* reader)
 {
     joinTypeChecked(reader);

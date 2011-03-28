@@ -32,17 +32,36 @@
 
 class SourceBase;
 
+/**
+ * Data producer base-class.
+ */
 class Producer
 {
 public:
-    // public or Thread as a friend?
+    /**
+     * Locate source with given name.
+     *
+     * @param name source name.
+     * @return pointer to source or NULL if not found.
+     */
     SourceBase* source(const QString& name);
 
 protected:
-    virtual ~Producer() {}
+    /**
+     * Destructor.
+     */
+    virtual ~Producer();
+
+    /**
+     * Add source with given name.
+     *
+     * @param source source to add.
+     * @param name name of the source.
+     */
     void addSource(SourceBase* source, const QString& name);
 
-    QHash<QString, SourceBase*> sources_;
+private:
+    QHash<QString, SourceBase*> sources_; /**< map of sources */
 };
 
 #endif
