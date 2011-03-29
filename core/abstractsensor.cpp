@@ -296,3 +296,9 @@ void AbstractSensorChannel::signalPropertyChanged(const QString& name)
 {
     emit propertyChanged(name);
 }
+
+RingBufferBase* AbstractSensorChannel::findBuffer(const QString&) const
+{
+    sensordLogW() << "Tried to locate buffer from SensorChannel!";
+    return NULL;
+}

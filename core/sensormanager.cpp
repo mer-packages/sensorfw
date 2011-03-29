@@ -341,27 +341,39 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
 AbstractChain* SensorManager::requestChain(const QString& id)
 {
+    sensordLogD() << "Requesting chain: " << id;
     clearError();
 
     AbstractChain* chain = NULL;
     QMap<QString, ChainInstanceEntry>::iterator entryIt = chainInstanceMap_.find(id);
-    if (entryIt != chainInstanceMap_.end()) {
-        if (entryIt.value().chain_ ) {
+    if (entryIt != chainInstanceMap_.end())
+    {
+        if (entryIt.value().chain_ )
+        {
             chain = entryIt.value().chain_;
             entryIt.value().cnt_++;
-        } else {
+            sensordLogD() << "Found chain '" << id << "'. Ref count: " << entryIt.value().cnt_;
+        }
+        else
+        {
             QString type = entryIt.value().type_;
-            if (chainFactoryMap_.contains(type)) {
+            if (chainFactoryMap_.contains(type))
+            {
                 chain = chainFactoryMap_[type](id);
                 Q_ASSERT(chain);
+                sensordLogD() << "Instantiated chain '" << id << "'. Valid = " << chain->isValid();
 
                 entryIt.value().cnt_++;
                 entryIt.value().chain_ = chain;
-            } else {
+            }
+            else
+            {
                 setError( SmFactoryNotRegistered, QString(tr("unknown chain type '%1'").arg(type)) );
             }
         }
-    } else {
+    }
+    else
+    {
         setError( SmIdNotRegistered, QString(tr("unknown chain id '%1'").arg(id)) );
     }
 
@@ -392,6 +404,8 @@ void SensorManager::releaseChain(const QString& id)
 
 DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 {
+    sensordLogD() << "Requesting adaptor: " << id;
+
     clearError();
     if( id.contains(';') ) // no parameter passing in release
     {
@@ -408,13 +422,13 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
             Q_ASSERT( entryIt.value().adaptor_ );
             da = entryIt.value().adaptor_;
             entryIt.value().cnt_++;
+            sensordLogD() << "Found adaptor '" << id << "'. Ref count: " << entryIt.value().cnt_;
         }
         else
         {
             QString type = entryIt.value().type_;
             if ( deviceAdaptorFactoryMap_.contains(type) )
             {
-                sensordLogD() << __PRETTY_FUNCTION__ << "new instance created:" << id;
                 da = deviceAdaptorFactoryMap_[type](id);
                 Q_ASSERT( da );
 
@@ -425,6 +439,7 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
                 {
                     entryIt.value().adaptor_ = da;
                     entryIt.value().cnt_++;
+                    sensordLogD() << "Instantiated adaptor '" << id << "'. Valid = " << da->isValid();
                 }
                 else
                 {

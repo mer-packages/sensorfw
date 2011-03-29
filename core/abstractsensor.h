@@ -227,6 +227,8 @@ protected:
      */
     void signalPropertyChanged(const QString& name);
 
+    virtual RingBufferBase* findBuffer(const QString& name) const;
+
 private:
     /**
      * Write to given session.

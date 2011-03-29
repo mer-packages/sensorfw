@@ -108,6 +108,7 @@ public:
      * @param sourceName Data source name of the producer.
      * @param consumerName Name of the consumer.
      * @param sinkName Name of the data sink of the consumer.
+     * @return was connection succesful.
      */
     bool join(const QString& producerName,
               const QString& sourceName,
@@ -121,6 +122,7 @@ public:
      * @param sourceName Data source name of the producer.
      * @param consumerName Name of the consumer.
      * @param sinkName Name of the data sink of the consumer.
+     * @return was disconnection succesful.
      */
     bool unjoin(const QString& producerName,
                 const QString& sourceName,
@@ -133,6 +135,7 @@ protected:
      *
      * @param producerName Name of the producer.
      * @param sourceName Data source name of the producer.
+     * @return source pointer.
      */
     SourceBase* source(const QString& producerName, const QString& sourceName) const;
 
@@ -141,6 +144,7 @@ protected:
      *
      * @param consumerName Name of the consumer.
      * @param sinkName Name of the data sink of the consumer.
+     * @return sink pointer.
      */
     SinkBase*   sink(const QString& consumerName, const QString& sinkName) const;
 
@@ -148,6 +152,7 @@ protected:
      * Pointer to the producer.
      *
      * @param name Name of the producer.
+     * @return producer pointer.
      */
     Producer*   producer(const QString& name) const;
 
@@ -155,6 +160,7 @@ protected:
      * Pointer to the consumer.
      *
      * @param name Name of the consumer.
+     * @return consumer pointer.
      */
     Consumer*   consumer(const QString& name) const;
 

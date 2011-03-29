@@ -486,7 +486,7 @@ protected:
      * @param name buffer name to locate.
      * @return pointer to buffer or NULL if not found.
      */
-    virtual RingBufferBase* findBuffer(const QString& name) const;
+    virtual RingBufferBase* findBuffer(const QString& name) const = 0;
 
     /**
      * Set buffer size. Nodes subclasses supporting buffering needs to

@@ -33,12 +33,10 @@ RingBufferReaderBase::~RingBufferReaderBase()
 
 bool RingBufferBase::join(RingBufferReaderBase* reader)
 {
-    joinTypeChecked(reader);
-    return true;
+    return joinTypeChecked(reader);
 }
 
 bool RingBufferBase::unjoin(RingBufferReaderBase* reader)
 {
-    unjoinTypeChecked(reader);
-    return true;
+    return unjoinTypeChecked(reader);
 }

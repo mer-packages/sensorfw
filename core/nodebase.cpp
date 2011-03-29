@@ -453,7 +453,7 @@ bool NodeBase::connectToSource(NodeBase* source, const QString& bufferName, Ring
     if (rb == NULL)
     {
         // This is critical as long as connections are statically defined.
-        sensordLogC() << "Buffer '" << bufferName << "' not found while building connections";
+        sensordLogC() << "Buffer '" << bufferName << "' not found while building connections for node: " << id();
         return false;
     }
 
@@ -473,7 +473,7 @@ bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName,
     RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
-        sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections";
+        sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections for node: " << id();
         return false;
     }
 
@@ -484,7 +484,7 @@ bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName,
         // Remove the source reference from storage
         if (!m_sourceList.removeOne(source))
         {
-            sensordLogW() << "Buffer '" << bufferName << "' not disconnected properly.";
+            sensordLogW() << "Buffer '" << bufferName << "' not disconnected properly for node: " << id();
         }
     }
 
@@ -629,6 +629,10 @@ void NodeBase::removeSession(int sessionId)
 void NodeBase::setValid(bool valid)
 {
     isValid_ = valid;
+    if(!isValid_)
+    {
+        sensordLogW() << "Node '" << id() << "' state changed to invalid";
+    }
 }
 
 bool NodeBase::setDataRange(const DataRange& range, int sessionId)
@@ -655,12 +659,6 @@ bool NodeBase::setInterval(unsigned int value, int sessionId)
     Q_UNUSED(value);
     Q_UNUSED(sessionId);
     return false;
-}
-
-RingBufferBase* NodeBase::findBuffer(const QString& name) const
-{
-    Q_UNUSED(name);
-    return NULL;
 }
 
 bool NodeBase::setBufferSize(unsigned int value)

@@ -80,6 +80,7 @@ DeviceAdaptor::DeviceAdaptor(const QString& id) :
     standbyOverride_(false),
     screenBlanked_(false)
 {
+    setValid(true);
 }
 
 DeviceAdaptor::~DeviceAdaptor()

@@ -30,6 +30,8 @@
 #define SOURCE_H
 
 #include "sink.h"
+#include "logging.h"
+#include <typeinfo>
 #include <QSet>
 
 class SinkBase;
@@ -67,15 +69,17 @@ private:
      * Connect and check that sink is compatible with source.
      *
      * @param sink Sink.
+     * @return was sink joined.
      */
-    virtual void joinTypeChecked(SinkBase* sink) = 0;
+    virtual bool joinTypeChecked(SinkBase* sink) = 0;
 
     /**
      * Disconnect and check that sink is compatible with source.
      *
      * @param sink Sink.
+     * @return was sink unjoined.
      */
-    virtual void unjoinTypeChecked(SinkBase* sink) = 0;
+    virtual bool unjoinTypeChecked(SinkBase* sink) = 0;
 };
 
 /**
@@ -100,13 +104,28 @@ public:
         }
     }
 private:
-    void joinTypeChecked(SinkBase* sink)
+    bool joinTypeChecked(SinkBase* sink)
     {
-        sinks_.insert(dynamic_cast<SinkTyped<TYPE>*>(sink));
+        SinkTyped<TYPE>* type = dynamic_cast<SinkTyped<TYPE>*>(sink);
+        if(type)
+        {
+            sinks_.insert(type);
+            return true;
+        }
+        sensordLogC() << "Failed to join type '" << typeid(type).name() << " to source!";
+        return false;
     }
 
-    void unjoinTypeChecked(SinkBase* sink) {
-        sinks_.remove(dynamic_cast<SinkTyped<TYPE>*>(sink));
+    bool unjoinTypeChecked(SinkBase* sink)
+    {
+        SinkTyped<TYPE>* type = dynamic_cast<SinkTyped<TYPE>*>(sink);
+        if(type)
+        {
+            sinks_.remove(type);
+            return true;
+        }
+        sensordLogC() << "Failed to unjoin type '" << typeid(type).name() << " from source!";
+        return false;
     }
 
     QSet<SinkTyped<TYPE>*> sinks_; /**< connected sinks. */

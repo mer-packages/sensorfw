@@ -121,15 +121,17 @@ private:
      * Connect reader to this buffer.
      *
      * @param reader reader to connect.
+     * @return was join succesful.
      */
-    virtual void joinTypeChecked(RingBufferReaderBase* reader) = 0;
+    virtual bool joinTypeChecked(RingBufferReaderBase* reader) = 0;
 
     /**
      * Disconnect reader from this buffer.
      *
      * @param reader reader to disconnect.
+     * @return was unjoin succesful.
      */
-    virtual void unjoinTypeChecked(RingBufferReaderBase* reader) = 0;
+    virtual bool unjoinTypeChecked(RingBufferReaderBase* reader) = 0;
 };
 
 /**
@@ -238,21 +240,21 @@ protected:
      *
      * @param reader reader to connect.
      */
-    virtual void joinTypeChecked(RingBufferReaderBase* reader)
+    virtual bool joinTypeChecked(RingBufferReaderBase* reader)
     {
         sensordLogT() << "joining reader to ringbuffer.";
 
-        RingBufferReader<TYPE>* r =
-            dynamic_cast<RingBufferReader<TYPE>*>(reader);
+        RingBufferReader<TYPE>* r = dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {
             sensordLogW() << "Ringbuffer join failed!";
-            return;
+            return false;
         }
 
         r->readCount_ = writeCount_;
         r->buffer_    = this;
 
         readers_.insert(r);
+        return true;
     }
 
     /**
@@ -260,16 +262,16 @@ protected:
      *
      * @param reader reader to disconnect.
      */
-    virtual void unjoinTypeChecked(RingBufferReaderBase* reader)
+    virtual bool unjoinTypeChecked(RingBufferReaderBase* reader)
     {
-        RingBufferReader<TYPE>* r =
-            dynamic_cast<RingBufferReader<TYPE>*>(reader);
+        RingBufferReader<TYPE>* r = dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {
             sensordLogW() << "Ringbuffer unjoin failed!";
-            return;
+            return false;
         }
 
         readers_.remove(r);
+        return true;
     }
 
 private:

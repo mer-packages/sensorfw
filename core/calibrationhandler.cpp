@@ -64,7 +64,6 @@ bool CalibrationHandler::initiateSession()
         sensordLogW() << "Failed to load magnetometer plug-in";
         return false;
     }
-
     m_sessionId = sm.requestSensor(SENSOR_NAME);
     if (m_sessionId <= 0)
     {
