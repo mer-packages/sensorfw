@@ -75,20 +75,14 @@ bool SysfsAdaptor::addPath(const QString& path, const int id)
     return true;
 }
 
-bool SysfsAdaptor::isRunning()
+bool SysfsAdaptor::isRunning() const
 {
     return running_;
 }
 
 bool SysfsAdaptor::startAdaptor()
 {
-    if (initNotDone) {
-        connect(&reader_, SIGNAL(readyRead(int, int)),
-                this, SLOT(dataAvailable(int, int)));
-        initNotDone = false;
-    }
-    // Nothing to initialize. File handles are opened on HW sensor start,
-    // otherwise we might not get data on restart.
+    initNotDone = false;
     return true;
 }
 
@@ -97,7 +91,6 @@ void SysfsAdaptor::stopAdaptor()
     if(initNotDone)
         return;
     initNotDone = true;
-    disconnect(&reader_, SIGNAL(readyRead(int,int)), this, SLOT(dataAvailable(int,int)));
 
     foreach (AdaptedSensorEntry* entry, sensors()) {
         if ( entry->isRunning() ) {
@@ -307,10 +300,9 @@ void SysfsAdaptor::stopReaderThread()
     if (mode_ == SelectMode) {
         quint64 dummy = 1;
         write(pipeDescriptors_[1], &dummy, 8);
-    } else {
-        reader_.running_= false;
     }
-
+    else
+        reader_.shouldStop();
     reader_.wait();
 }
 
@@ -322,13 +314,12 @@ bool SysfsAdaptor::startReaderThread()
         return false;
     }
 
-    reader_.running_ = true;
     reader_.start();
 
     return true;
 }
 
-bool SysfsAdaptor::writeToFile(QString path, QString content)
+bool SysfsAdaptor::writeToFile(const QString& path, const QString& content) const
 {
     if (!QFile::exists(path)) {
         return false;
@@ -347,11 +338,6 @@ bool SysfsAdaptor::writeToFile(QString path, QString content)
     close(fd);
 
     return true;
-}
-
-void SysfsAdaptor::dataAvailable(int pathId, int fd)
-{
-    processSample(pathId, fd);
 }
 
 bool SysfsAdaptor::checkIntervalUsage() const
@@ -388,8 +374,14 @@ SysfsAdaptorReader::SysfsAdaptorReader(SysfsAdaptor *parent) : running_(false), 
 {
 }
 
+void SysfsAdaptorReader::shouldStop()
+{
+    running_ = false;
+}
+
 void SysfsAdaptorReader::run()
 {
+    running_ = true;
     while (running_) {
 
         if (parent_->mode_ == SysfsAdaptor::SelectMode) {

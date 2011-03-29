@@ -32,10 +32,10 @@
 #include <QtDBus/QtDBus>
 #include "sensormanager.h"
 
-/*
- * Adaptor class for interface local.SensorManager
+/**
+ * Adaptor class for SensorManager DBus interface.
  */
-class SensorManagerAdaptor: public QDBusAbstractAdaptor
+class SensorManagerAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "local.SensorManager")
@@ -43,22 +43,74 @@ class SensorManagerAdaptor: public QDBusAbstractAdaptor
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
 
 public:
+    /**
+     * Constructor.
+     *
+     * @param parent Parent object.
+     */
     SensorManagerAdaptor(QObject *parent);
+
+    /**
+     * Destructor.
+     */
     virtual ~SensorManagerAdaptor() {}
 
+    /**
+     * Get previous occured error description.
+     *
+     * @return error description.
+     */
     QString errorString() const;
 
-private: // PROPERTIES
+private:
+    /**
+     * Get previous occured error code.
+     *
+     * @return error code.
+     */
     int errorCodeInt() const;
+
+    /**
+     * Get sensor manager instance.
+     *
+     * @return sensor manager instance.
+     */
     SensorManager* sensorManager() const;
 
-public Q_SLOTS: // METHODS
+public Q_SLOTS:
+    /**
+     * Load sensor plugin.
+     *
+     * @param name plugin name.
+     * @return was plugin loaded succesfully.
+     */
     bool loadPlugin(const QString& name);
 
-    int  requestSensor(const QString &id, qint64 pid);
+    /**
+     * Request new sensor session to be created.
+     *
+     * @param id Sensor ID.
+     * @param pid Requestor PID.
+     * @return Session ID.
+     */
+    int requestSensor(const QString &id, qint64 pid);
+
+    /**
+     * Release sensor session.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @param pid Requestor PID.
+     * @return was session released succesfully.
+     */
     bool releaseSensor(const QString &id, int sessionId, qint64 pid);
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
+    /**
+     * Signal which is emitted for occured errors.
+     *
+     * @param error error code.
+     */
     void errorSignal(int error);
 };
 

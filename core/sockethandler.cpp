@@ -158,6 +158,11 @@ QLocalSocket* SessionData::stealSocket()
     return tmpsocket;
 }
 
+QLocalSocket* SessionData::getSocket() const
+{
+    return socket;
+}
+
 void SessionData::setInterval(int interval)
 {
     this->interval = interval;
@@ -228,7 +233,7 @@ SocketHandler::~SocketHandler()
     }
 }
 
-bool SocketHandler::listen(QString serverName)
+bool SocketHandler::listen(const QString& serverName)
 {
     if (m_server->isListening()) {
         sensordLogW() << "[SocketHandler]: Already listening";

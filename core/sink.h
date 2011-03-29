@@ -28,25 +28,57 @@
 #ifndef SINK_H
 #define SINK_H
 
+/**
+ * Data sink base class.
+ */
 class SinkBase
 {
 protected:
+    /**
+     * Destructor.
+     */
     virtual ~SinkBase() {}
 };
 
+/**
+ * Data sink inteface with data type.
+ *
+ * @tparam TYPE Data type which sink accepts.
+ */
 template <class TYPE>
 class SinkTyped : public SinkBase
 {
 public:
+    /**
+     * Push data to sink.
+     *
+     * @param n Number of elements.
+     * @param values Data source location.
+     */
     virtual void collect(int n, const TYPE* values) = 0;
 };
 
+/**
+ * Data sink.
+ *
+ * @tparam DERIVED Data sink implementor type.
+ * @tparam TYPE Data type which sink accepts.
+ */
 template <class DERIVED, class TYPE>
 class Sink : public SinkTyped<TYPE>
 {
 public:
+    /**
+     * Sink callback function type.
+     */
     typedef void (DERIVED::* Member)(unsigned n, const TYPE* values);
 
+    /**
+     * Constructor.
+     *
+     * @param instance implementor reference.
+     * @param member callback function reference.
+     */
     Sink(DERIVED* instance, Member member) :
         instance_(instance),
         member_(member)
@@ -58,8 +90,8 @@ private:
         (instance_->*member_)(n, values);
     }
 
-    DERIVED* instance_;
-    Member   member_;
+    DERIVED* instance_; /** sink callback implementor */
+    Member   member_;   /** sink callback function */
 };
 
 #endif

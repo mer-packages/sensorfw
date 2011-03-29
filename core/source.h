@@ -34,25 +34,65 @@
 
 class SinkBase;
 
+/**
+ * Base-class for data source.
+ */
 class SourceBase
 {
 public:
+    /**
+     * Connect sink to the source.
+     *
+     * @param sink Sink.
+     * @return was sink connected succesfully.
+     */
     bool join(SinkBase* sink);
+
+    /**
+     * Disconnect sink from the source.
+     *
+     * @param sink Sink.
+     * @return was sink disconnected succesfully.
+     */
     bool unjoin(SinkBase* sink);
 
 protected:
+    /**
+     * Destructor.
+     */
     virtual ~SourceBase() {}
 
 private:
+    /**
+     * Connect and check that sink is compatible with source.
+     *
+     * @param sink Sink.
+     */
     virtual void joinTypeChecked(SinkBase* sink) = 0;
+
+    /**
+     * Disconnect and check that sink is compatible with source.
+     *
+     * @param sink Sink.
+     */
     virtual void unjoinTypeChecked(SinkBase* sink) = 0;
 };
 
-
+/**
+ * Data source.
+ *
+ * @tparam TYPE type of data streamed from the source.
+ */
 template <class TYPE>
 class Source : public SourceBase
 {
 public:
+    /**
+     * Propagate data to connected sinks.
+     *
+     * @param n how many elements to stream.
+     * @param values source from where to stream data.
+     */
     void propagate(int n, const TYPE* values)
     {
         foreach (SinkTyped<TYPE>* sink, sinks_) {
@@ -69,7 +109,7 @@ private:
         sinks_.remove(dynamic_cast<SinkTyped<TYPE>*>(sink));
     }
 
-    QSet<SinkTyped<TYPE>*> sinks_;
+    QSet<SinkTyped<TYPE>*> sinks_; /**< connected sinks. */
 };
 
 #endif
