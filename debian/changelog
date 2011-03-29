@@ -53,6 +53,7 @@ sensord (0.6.41) unstable; urgency=low
   * Config-class has now more friendly API.
   * sensordtestapp improvements.
   * API documentation improvements.
+  * Improved dataflowtests.
 
   [Shenghua Liu]
   * Make sensortestapp thread safe in exiting

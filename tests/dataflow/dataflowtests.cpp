@@ -7,6 +7,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Pia Niemela <pia.s.niemela@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -43,7 +44,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-class TestSensorManager2;
 
 void DataFlowTest::initTestCase()
 {
@@ -118,13 +118,13 @@ void DataFlowTest::testAdaptorSharing()
 
     // Check that the adaptor still exists
     // TestSensorManager - check ref count
-    int adaptorCount = TestSensorManager2::getAdaptorCount(sm, adaptorString);
+    int adaptorCount = getRefCount(sm, adaptorString);
     QString msg("After releasing there should be one adaptor left, however had ");
     QString number;
     msg.append(number.setNum(adaptorCount));
     QVERIFY2(adaptorCount==1, msg.toLocal8Bit().constData());
 
-    int refCount = TestSensorManager2::getRefCountSum(sm);
+    int refCount = getRefCountSum(sm);
     msg = "After releasing reference count should equal to 1, however was ";
     msg.append(number.setNum(refCount));
     QVERIFY2(refCount==1, msg.toLocal8Bit().constData());
@@ -133,7 +133,7 @@ void DataFlowTest::testAdaptorSharing()
     sm.releaseDeviceAdaptor(adaptorString);
 
     // check that the adaptor was destroyed
-    adaptorCount = TestSensorManager2::getAdaptorCount(sm, adaptorString);
+    adaptorCount = getRefCount(sm, adaptorString);
 
     // check that the adaptor was destroyed
     // TestSensorManager - check ref count
@@ -187,6 +187,25 @@ void DataFlowTest::testChainSharing()
     // release second time
     sm.releaseChain("accelerometerchain");
     // check that does not exist
+}
+QList<QString> DataFlowTest::getKeys(const SensorManager &that)
+{
+    return that.getAdaptorTypes();
+}
+
+int DataFlowTest::getRefCountSum(const SensorManager &that)
+{
+    int refCount = 0;
+    foreach(const QString& key, getKeys(that))
+    {
+        refCount += getRefCount(that, key);
+    }
+    return refCount;
+}
+
+int DataFlowTest::getRefCount(const SensorManager &that, QString key)
+{
+    return that.getAdaptorCount(key);
 }
 
 QTEST_MAIN(DataFlowTest)

@@ -678,6 +678,19 @@ SocketHandler& SensorManager::socketHandler() const
     return *socketHandler_;
 }
 
+QList<QString> SensorManager::getAdaptorTypes() const
+{
+    return deviceAdaptorInstanceMap_.keys();
+}
+
+int SensorManager::getAdaptorCount(const QString& type) const
+{
+    QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.find(type);
+    if(it == deviceAdaptorInstanceMap_.end())
+        return 0;
+    return it.value().cnt_;
+}
+
 #ifdef SM_PRINT
 void SensorManager::print() const
 {

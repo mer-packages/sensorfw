@@ -259,35 +259,6 @@ public:
      */
     bool write(int id, const void* source, int size);
 
-private Q_SLOTS:
-    /**
-     * Callback for lost session connections.
-     *
-     * @param sessionId Session ID.
-     */
-    void lostClient(int sessionId);
-
-    /**
-     * Callback for MCE display state change event.
-     *
-     * @param displayState display state.
-     */
-    void displayStateChanged(bool displayState);
-
-    /**
-     * Callback for MCE powersave mode change event.
-     *
-     * @param deviceMode device PSM state.
-     */
-    void devicePSMStateChanged(bool deviceMode);
-
-    /**
-     * Callback for arrived sensor data in internal pipe which SensorManager
-     * needs to propagate to the SocketHandler.
-     */
-    void sensorDataHandler(int);
-
-public:
     /**
      * Load plugin.
      *
@@ -326,6 +297,44 @@ public:
      * @return socket handler.
      */
     SocketHandler& socketHandler() const;
+
+    /**
+     * Get list configured of adaptor types.
+     */
+    QList<QString> getAdaptorTypes() const;
+
+    /**
+     * Get list configured of adaptor types.
+     */
+    int getAdaptorCount(const QString& type) const;
+
+private Q_SLOTS:
+    /**
+     * Callback for lost session connections.
+     *
+     * @param sessionId Session ID.
+     */
+    void lostClient(int sessionId);
+
+    /**
+     * Callback for MCE display state change event.
+     *
+     * @param displayState display state.
+     */
+    void displayStateChanged(bool displayState);
+
+    /**
+     * Callback for MCE powersave mode change event.
+     *
+     * @param deviceMode device PSM state.
+     */
+    void devicePSMStateChanged(bool deviceMode);
+
+    /**
+     * Callback for arrived sensor data in internal pipe which SensorManager
+     * needs to propagate to the SocketHandler.
+     */
+    void sensorDataHandler(int);
 
 Q_SIGNALS:
     /**
