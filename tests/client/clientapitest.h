@@ -67,7 +67,7 @@ private slots:
 
     // Buffering
     void testBuffering();
-    void testBufferingHighRate();
+    void testBufferingAllIntervalRanges();
     void testBufferingCompatibility();
     void testBufferingInterval();
     void testAvailableBufferIntervals();
@@ -93,9 +93,9 @@ public:
     int getFrameDataCount() const { return frameDataCount; }
 
 public Q_SLOTS:
-    virtual void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"; ++dataCount; }
+    virtual void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"<< ++dataCount; }
     virtual void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
-    virtual void dataAvailable2(const XYZ&) { qDebug() << "dataAvailable()"; ++dataCount; }
+    virtual void dataAvailable2(const XYZ&) { qDebug() << "dataAvailable()"<< ++dataCount; }
     virtual void frameAvailable2(const QVector<XYZ>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
 
 private:
