@@ -201,6 +201,8 @@ bool SensorManager::registerService()
 
 AbstractSensorChannel* SensorManager::addSensor(const QString& id)
 {
+    sensordLogD() << "Adding sensor: " << id;
+
     clearError();
 
     QString cleanId = getCleanId(id);
@@ -245,6 +247,8 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
 
 void SensorManager::removeSensor(const QString& id)
 {
+    sensordLogD() << "Removing sensor: " << id;
+
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
     bus().unregisterObject(OBJECT_PATH + "/" + id);
     delete entryIt.value().sensor_;
@@ -253,6 +257,8 @@ void SensorManager::removeSensor(const QString& id)
 
 bool SensorManager::loadPlugin(const QString& name)
 {
+    sensordLogD() << "Loading plugin: " << name;
+
     QString errorMessage;
     bool result;
 
@@ -265,6 +271,8 @@ bool SensorManager::loadPlugin(const QString& name)
 
 int SensorManager::requestSensor(const QString& id)
 {
+    sensordLogD() << "Requesting sensor: " << id;
+
     clearError();
 
     QString cleanId = getCleanId(id);
@@ -293,6 +301,8 @@ int SensorManager::requestSensor(const QString& id)
 
 bool SensorManager::releaseSensor(const QString& id, int sessionId)
 {
+    sensordLogD() << "Releasing sensor '" << id << "' for session: " << sessionId;
+
     clearError();
 
     if( id.contains(';') ) // no parameter passing in release
@@ -382,22 +392,35 @@ AbstractChain* SensorManager::requestChain(const QString& id)
 
 void SensorManager::releaseChain(const QString& id)
 {
+    sensordLogD() << "Releasing chain: " << id;
+
     clearError();
 
     QMap<QString, ChainInstanceEntry>::iterator entryIt = chainInstanceMap_.find(id);
-    if (entryIt != chainInstanceMap_.end()) {
-        if (entryIt.value().chain_) {
+    if (entryIt != chainInstanceMap_.end())
+    {
+        if (entryIt.value().chain_)
+        {
             entryIt.value().cnt_--;
 
             if (entryIt.value().cnt_ == 0) {
+                sensordLogD() << "Chain '" << id << "' has no more references. Deleting it.";
                 delete entryIt.value().chain_;
                 entryIt.value().cnt_ = 0;
                 entryIt.value().chain_ = 0;
             }
-        } else {
+            else
+            {
+                sensordLogD() << "Chain '" << id << "' ref count: " << entryIt.value().cnt_;
+            }
+        }
+        else
+        {
             setError( SmNotInstantiated, QString(tr("chain '%1' not instantiated, cannot release").arg(id)) );
         }
-    } else {
+    }
+    else
+    {
         setError( SmIdNotRegistered, QString(tr("unknown chain id '%1'").arg(id)) );
     }
 }
@@ -464,6 +487,8 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 
 void SensorManager::releaseDeviceAdaptor(const QString& id)
 {
+    sensordLogD() << "Releasing adaptor: " << id;
+
     clearError();
     if( id.contains(';') ) // no parameter passing in release
     {
@@ -481,6 +506,8 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
             entryIt.value().cnt_--;
             if ( entryIt.value().cnt_ == 0 )
             {
+                sensordLogD() << "Adaptor '" << id << "' has no more references. Deleting it.";
+
                 Q_ASSERT( entryIt.value().adaptor_ );
 
                 entryIt.value().adaptor_->stopAdaptor();
@@ -488,6 +515,10 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
                 delete entryIt.value().adaptor_;
                 entryIt.value().adaptor_ = 0;
                 entryIt.value().cnt_ = 0;
+            }
+            else
+            {
+                sensordLogD() << "Adaptor '" << id << "' has ref count: " << entryIt.value().cnt_;
             }
         }
         else
@@ -503,6 +534,8 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
 
 FilterBase* SensorManager::instantiateFilter(const QString& id)
 {
+    sensordLogD() << "Instantiating filter: " << id;
+
     QMap<QString, FilterFactoryMethod>::iterator it = filterFactoryMap_.find(id);
     if(it == filterFactoryMap_.end())
     {

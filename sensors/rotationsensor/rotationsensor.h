@@ -27,6 +27,7 @@
 #ifndef ROTATION_SENSOR_CHANNEL_H
 #define ROTATION_SENSOR_CHANNEL_H
 
+#include <QMutex>
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "rotationsensor_a.h"
@@ -104,6 +105,7 @@ private:
     RingBuffer<TimedXyzData>*    outputBuffer_;
     TimedXyzData                 prevRotation_;
     TimedXyzDownsampleBuffer     downsampleBuffer_;
+    QMutex                       mutex_;
 
     void emitData(const TimedXyzData& value);
 };

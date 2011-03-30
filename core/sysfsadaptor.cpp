@@ -44,7 +44,6 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     mode_(mode),
     epollDescriptor_(-1),
     interval_(0),
-    initNotDone(true),
     inStandbyMode_(false),
     running_(false),
     shouldBeRunning_(false),
@@ -82,16 +81,13 @@ bool SysfsAdaptor::isRunning() const
 
 bool SysfsAdaptor::startAdaptor()
 {
-    initNotDone = false;
+    sensordLogD() << "Starting adaptor: " << id();
     return true;
 }
 
 void SysfsAdaptor::stopAdaptor()
 {
-    if(initNotDone)
-        return;
-    initNotDone = true;
-
+    sensordLogD() << "Stopping adaptor: " << id();
     foreach (AdaptedSensorEntry* entry, sensors()) {
         if ( entry->isRunning() ) {
             stopSensor(entry->name());
@@ -101,6 +97,7 @@ void SysfsAdaptor::stopAdaptor()
 
 bool SysfsAdaptor::startSensor(const QString& sensorId)
 {
+    sensordLogD() << "Adaptor '" << id() << "' starting sensor: " << sensorId;
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {
@@ -143,6 +140,7 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
 
 void SysfsAdaptor::stopSensor(const QString& sensorId)
 {
+    sensordLogD() << "Adaptor '" << id() << "' stopping sensor: " << sensorId;
     AdaptedSensorEntry *entry = findAdaptedSensor(sensorId);
 
     if (entry == NULL) {

@@ -26,7 +26,7 @@
 */
 
 #include "rotationsensor.h"
-
+#include <QMutexLocker>
 #include "sensormanager.h"
 #include "bin.h"
 #include "bufferreader.h"
@@ -163,14 +163,15 @@ bool RotationSensorChannel::stop()
 
 void RotationSensorChannel::emitData(const TimedXyzData& value)
 {
+    QMutexLocker locker(&mutex_);
+
     prevRotation_ = value;
     downsampleAndPropagate(value, downsampleBuffer_);
 }
 
 unsigned int RotationSensorChannel::interval() const
 {
-    // Just provide ACC rate as a kludge for now.
-    // This is not precise, as the actual rate depends on both.
+    // Just provide accelerometer rate for now.
     return accelerometerChain_->getInterval();
 }
 
@@ -187,7 +188,7 @@ bool RotationSensorChannel::setInterval(unsigned int value, int sessionId)
 
 void RotationSensorChannel::removeSession(int sessionId)
 {
-    downsampleBuffer_.take(sessionId);
+    downsampleBuffer_.remove(sessionId);
     AbstractSensorChannel::removeSession(sessionId);
 }
 

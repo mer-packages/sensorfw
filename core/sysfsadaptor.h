@@ -245,7 +245,6 @@ private:
     QStringList         paths_;   /**< added paths. */
     QList<int>          pathIds_; /**< added path IDs. */
     unsigned int interval_; /**< used interval */
-    bool initNotDone;       /**< initialization state */
     bool inStandbyMode_;    /**< are we in standby */
     bool running_;          /**< are we running */
     bool shouldBeRunning_;  /**< should we be running */

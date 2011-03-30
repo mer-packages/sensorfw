@@ -168,7 +168,7 @@ bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int session
 
 void MagnetometerSensorChannel::removeSession(int sessionId)
 {
-    downsampleBuffer_.take(sessionId);
+    downsampleBuffer_.remove(sessionId);
     AbstractSensorChannel::removeSession(sessionId);
 }
 

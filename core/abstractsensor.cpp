@@ -98,7 +98,7 @@ bool AbstractSensorChannel::writeToSession(int sessionId, const void* source, in
 bool AbstractSensorChannel::writeToClients(const void* source, int size)
 {
     bool ret = true;
-    foreach(const int& sessionId, activeSessions_) {
+    foreach(int sessionId, activeSessions_) {
         ret &= writeToSession(sessionId, source, size);
     }
     return ret;
@@ -108,11 +108,11 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
 {
     bool ret = true;
     unsigned int currentInterval = getInterval();
-    foreach(const int& sessionId, activeSessions_)
+    foreach(int sessionId, activeSessions_)
     {
         if(!downsamplingEnabled(sessionId))
         {
-            ret &= writeToSession(sessionId, (const void *)& data, sizeof(data));
+            ret &= writeToSession(sessionId, (const void *)& data, sizeof(TimedXyzData));
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
@@ -123,7 +123,6 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
 
         for(QList<TimedXyzData>::iterator it = samples.begin(); it != samples.end(); ++it)
         {
-
             if(samples.size() > bufferSize ||
                data.timestamp_ - it->timestamp_ > 2000000)
             {
@@ -153,7 +152,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
                                  z / samples.count());
         sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
 
-        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
+        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(TimedXyzData)))
         {
             samples.clear();
         }
@@ -170,11 +169,11 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
 {
     bool ret = true;
     unsigned int currentInterval = getInterval();
-    foreach(const int& sessionId, activeSessions_)
+    foreach(int sessionId, activeSessions_)
     {
         if(!downsamplingEnabled(sessionId))
         {
-            ret &= writeToSession(sessionId, (const void *)& data, sizeof(data));
+            ret &= writeToSession(sessionId, (const void *)& data, sizeof(CalibratedMagneticFieldData));
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
@@ -224,7 +223,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
                                                 data.level_);
         sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_ << downsampled.rx_ << ", " << downsampled.ry_ << ", " << downsampled.rz_;
 
-        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(downsampled)))
+        if (writeToSession(sessionId, (const void*)& downsampled, sizeof(CalibratedMagneticFieldData)))
         {
             samples.clear();
         }
