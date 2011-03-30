@@ -37,6 +37,46 @@
 
 #include "clientapitest.h"
 
+void ClientApiTest::calcAverages(QVector<QObject*> data, long& x, long& y,  long& z){
+    int l = data.size();
+    for (int i=0; i<l; i++){
+        XYZ* dataReal = (XYZ*)(data.at(i));
+        x += dataReal->x();
+        y += dataReal->y();
+        z += dataReal->z();
+    }
+    x/=l;
+    y/=l;
+    z/=1;
+}
+
+
+void ClientApiTest::calcMaggeAverages(QVector<QObject*> data, long& x, long& y,  long& z, long& rx, long& ry,  long& rz){
+    int l = data.size();
+    for (int i=0; i<l; i++){
+        MagneticField* dataReal = (MagneticField*)(data.at(i));
+        x += dataReal->x();
+        y += dataReal->y();
+        z += dataReal->z();
+        rx += dataReal->rx();
+        ry += dataReal->ry();
+        rz += dataReal->rz();
+    }
+    x/=l;
+    y/=l;
+    z/=1;
+    rx/=l;
+    ry/=l;
+    rz/=1;
+}
+
+long ClientApiTest::getLimit(AbstractSensorChannelInterface *sensor){
+    QList<DataRange> ranges = sensor->getAvailableDataRanges();
+    if (ranges.size()>0)
+        return  qAbs(ranges.at(0).max - ranges.at(0).min);
+    return 1000;
+}
+
 void ClientApiTest::initTestCase()
 {
     SensorManagerInterface& remoteSensorManager = SensorManagerInterface::instance();
@@ -550,96 +590,83 @@ void ClientApiTest::testAvailableBufferSizes()
 
 void ClientApiTest::testDownsampling()
 {
-    MagnetometerSensorChannelInterface* magnetometer1 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
-    QVERIFY2(magnetometer1 && magnetometer1->isValid(), "Could not get magnetometer sensor channel");
-    SampleCollector client1(*magnetometer1, true);
-    magnetometer1->setInterval(100);
-    magnetometer1->start();
 
-    MagnetometerSensorChannelInterface* magnetometer2 = MagnetometerSensorChannelInterface::interface("magnetometersensor");
-    QVERIFY2(magnetometer2 && magnetometer2->isValid(), "Could not get magnetometer sensor channel");
-    SampleCollector client2(*magnetometer2, true);
-    magnetometer2->setInterval(1000);
-    magnetometer2->setDownsampling(true);
-    magnetometer2->start();
+    QStringList sensorList;
+    sensorList.append("magnetometersensor");
+    sensorList.append("accelerometersensor");
+    sensorList.append("rotationsensor");
 
-    qDebug() << "Magnetometer sensor started, waiting for 2500ms.";
-    QTest::qWait(2500);
+    for (int i=0, l=sensorList.size(); i<l; i++){
+        QString sensorName = sensorList.at(i);
 
-    magnetometer1->stop();
-    magnetometer2->stop();
+        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor2;
+        if (sensorName == "magnetometersensor"){
+            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
+            sensor2 = MagnetometerSensorChannelInterface::interface(sensorName);
+        }
+        else if (sensorName == "accelerometersensor"){
+            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
+            sensor2 = AccelerometerSensorChannelInterface::interface(sensorName);
+        }
+        else if (sensorName == "rotationsensor"){
+            sensor = RotationSensorChannelInterface::interface(sensorName);
+            sensor2 = RotationSensorChannelInterface::interface(sensorName);
+        }
+        QString errorMsg("Could not get");
+        errorMsg.append(sensorName);
+        errorMsg.append(" sensor channel");
+        QVERIFY2(sensor && sensor->isValid(),errorMsg.toAscii());
+        SampleCollector client1(*sensor, true);
+        sensor->setInterval(100);
+        sensor->start();
 
-    QVERIFY(client1.getSamples().size() > 20);
-    QVERIFY(client2.getSamples().size() == 2);
+        QVERIFY2(sensor2 && sensor2->isValid(), errorMsg.toAscii());
+        SampleCollector client2(*sensor2, true);
+        sensor2->setInterval(1000);
+        sensor2->setDownsampling(true);
+        sensor2->start();
 
-    long x1 = 0;
-    long y1 = 0;
-    long z1 = 0;
-    long rx1 = 0;
-    long ry1 = 0;
-    long rz1 = 0;
-    foreach(const MagneticField& data, client1.getSamples())
-    {
-        x1 += data.x();
-        y1 += data.y();
-        z1 += data.z();
-        rx1 += data.rx();
-        ry1 += data.ry();
-        rz1 += data.rz();
+        qDebug() << sensorName<<" started, waiting for 2500ms.";
+        QTest::qWait(2500);
+
+        sensor->stop();
+        sensor2->stop();
+        QVERIFY(client1.getSamples().size() > 20);
+        QVERIFY(client2.getSamples().size() == 2);
+
+        long x1 = 0;
+        long y1 = 0;
+        long z1 = 0;
+        long rx1 = 0;
+        long ry1 = 0;
+        long rz1 = 0;
+        long x2 = 0;
+        long y2 = 0;
+        long z2 = 0;
+        long rx2 = 0;
+        long ry2 = 0;
+        long rz2 = 0;
+
+        if (sensorName!="magnetometersensor") calcAverages(client1.getSamples(), x1, y1, z1);
+        else calcMaggeAverages(client1.getSamples(), x1, y1, z1, rx1, ry1, rz1);
+
+
+        if (sensorName!="magnetometersensor") calcAverages(client2.getSamples(), x2, y2, z2);
+        else calcMaggeAverages(client1.getSamples(), x2, y2, z2, rx2, ry2, rz2);
+
+        long limit = getLimit(sensor);
+
+        //since instances were not started at the same time there may be few samples of difference...
+        QVERIFY(abs(x1 - x2)/limit < 0.1);
+        QVERIFY(abs(y1 - y2)/limit < 0.1);
+        QVERIFY(abs(z1 - z2)/limit < 0.1);
+        QVERIFY(abs(rx1 - rx2)/limit < 0.1);
+        QVERIFY(abs(ry1 - ry2)/limit < 0.1);
+        QVERIFY(abs(rz1 - rz2)/limit < 0.1);
+        delete sensor;
+        delete sensor2;
     }
-    x1 = x1 / client1.getSamples().size();
-    y1 = y1 / client1.getSamples().size();
-    z1 = z1 / client1.getSamples().size();
-    rx1 = rx1 / client1.getSamples().size();
-    ry1 = ry1 / client1.getSamples().size();
-    rz1 = rz1 / client1.getSamples().size();
-
-    qDebug() << "x1=" << x1 << ", "
-             << "y1=" << y1 << ", "
-             << "z1=" << z1 << ", "
-             << "rx1=" << rx1 << ", "
-             << "ry1=" << ry1 << ", "
-             << "rz1=" << rz1;
-
-    long x2 = 0;
-    long y2 = 0;
-    long z2 = 0;
-    long rx2 = 0;
-    long ry2 = 0;
-    long rz2 = 0;
-    foreach(const MagneticField& data, client2.getSamples())
-    {
-        x2 += data.x();
-        y2 += data.y();
-        z2 += data.z();
-        rx2 += data.rx();
-        ry2 += data.ry();
-        rz2 += data.rz();
-    }
-    x2 = x2 / client2.getSamples().size();
-    y2 = y2 / client2.getSamples().size();
-    z2 = z2 / client2.getSamples().size();
-    rx2 = rx2 / client2.getSamples().size();
-    ry2 = ry2 / client2.getSamples().size();
-    rz2 = rz2 / client2.getSamples().size();
-
-    qDebug() << "x2=" << x2 << ", "
-             << "y2=" << y2 << ", "
-             << "z2=" << z2 << ", "
-             << "rx2=" << rx2 << ", "
-             << "ry2=" << ry2 << ", "
-             << "rz2=" << rz2;
-
-    //since instances were not started at the same time there may be few samples of difference...
-    QVERIFY(abs(x1 - x2) < 1000);
-    QVERIFY(abs(y1 - y2) < 1000);
-    QVERIFY(abs(z1 - z2) < 1000);
-    QVERIFY(abs(rx1 - rx2) < 1000);
-    QVERIFY(abs(ry1 - ry2) < 1000);
-    QVERIFY(abs(rz1 - rz2) < 1000);
-
-    delete magnetometer1;
-    delete magnetometer2;
 }
 
 void ClientApiTest::testDownsamplingDisabled()
@@ -670,22 +697,35 @@ void ClientApiTest::testDownsamplingDisabled()
     delete magnetometer2;
 }
 
-TestClient::TestClient(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
-    dataCount(0),
-    frameCount(0),
-    frameDataCount(0)
+
+
+
+
+TestClient::TestClient(AbstractSensorChannelInterface& iface, bool listenFrames) :
+        dataCount(0),
+        frameCount(0),
+        frameDataCount(0)
 {
-    connect(&iface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(dataAvailable(const MagneticField&)));
+    QString id = iface.id();
+    if (id=="magnetometersensor"){
+        connect(&iface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(dataAvailable(const MagneticField&)));
+        if(listenFrames)
+            connect(&iface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(frameAvailable(const QVector<MagneticField>&)));
+        return;
+    }
+
+    connect(&iface, SIGNAL(dataAvailable2(const XYZ&)), this, SLOT(dataAvailable2(const XYZ&)));
     if(listenFrames)
-        connect(&iface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(frameAvailable(const QVector<MagneticField>&)));
+        connect(&iface, SIGNAL(frameAvailable2(const QVector<XYZ>&)), this, SLOT(frameAvailable2(const QVector<XYZ>&)));
+
 }
 
 TestClient::~TestClient()
 {
 }
 
-SampleCollector::SampleCollector(MagnetometerSensorChannelInterface& iface, bool listenFrames) :
-    TestClient(iface, listenFrames)
+SampleCollector::SampleCollector(AbstractSensorChannelInterface& iface, bool listenFrames) :
+        TestClient(iface, listenFrames)
 {
 }
 
@@ -693,9 +733,11 @@ SampleCollector::~SampleCollector()
 {
 }
 
+
+
 void SampleCollector::dataAvailable(const MagneticField& data)
 {
-    samples.push_back(data);
+    samples.push_back((MagneticField*)(&data));
     TestClient::dataAvailable(data);
 }
 
@@ -703,9 +745,23 @@ void SampleCollector::frameAvailable(const QVector<MagneticField>& frame)
 {
     foreach(const MagneticField& data, frame)
     {
-        samples.push_back(data);
+        samples.push_back((MagneticField*)(&data));
     }
     TestClient::frameAvailable(frame);
+}
+void SampleCollector::dataAvailable2(const XYZ& data)
+{
+    samples.push_back((XYZ*)(&data));
+    TestClient::dataAvailable2(data);
+}
+
+void SampleCollector::frameAvailable2(const QVector<XYZ>& frame)
+{
+    foreach(const XYZ& data, frame)
+    {
+        samples.push_back((XYZ*)(&data));
+    }
+    TestClient::frameAvailable2(frame);
 }
 
 QTEST_MAIN(ClientApiTest)
