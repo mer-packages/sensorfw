@@ -37,6 +37,7 @@ sensord (0.6.41) unstable; urgency=low
     - DataEmitter unused exposed source removed.
     - AdaptedSensorEntry is no longer QObject and removed interval handling from it.
     - Removed obsolete signal handling from SysfsAdaptor and SysfsAdaptorReader.
+    - InputDevAdaptor device detection now only tries to locate one compatible device.
   * Downsampling (which works by dropping samples) can be now enabled/disabled.
   * OrientationInterpreter filter orientation_buffer_size is now configurable.
   * Threshold accessors removed from OrientationFilter since those had no effect.

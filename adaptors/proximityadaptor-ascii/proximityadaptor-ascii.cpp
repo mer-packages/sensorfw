@@ -53,7 +53,7 @@ ProximityAdaptorAscii::~ProximityAdaptorAscii()
     delete proximityBuffer_;
 }
 
-void ProximityAdaptorAscii::processSample(int pathId, int fd)
+void ProximityAdaptorAscii::processSample(int, int fd)
 {
     char buf[16];
     lseek(fd, 0, SEEK_SET);

@@ -79,6 +79,7 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
             if (checkInputDevice(deviceName, matchString)) {
                 addPath(deviceName, deviceCount_);
                 ++deviceCount_;
+                break;
             }
             ++deviceNumber;
         }
@@ -158,7 +159,7 @@ bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) co
 {
     pollFile.setFileName(usedDevicePollFilePath_);
     if (!(pollFile.exists() && pollFile.open(mode))) {
-        sensordLogW() << "Unable to locate poll interval setting for " << deviceString_;
+        sensordLogW() << "Unable to locate poll interval setting for '" << deviceString_ << "' from path: " << pollFile.fileName();
         return false;
     }
     return true;

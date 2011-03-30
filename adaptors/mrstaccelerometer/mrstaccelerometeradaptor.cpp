@@ -20,7 +20,7 @@ MRSTAccelAdaptor::~MRSTAccelAdaptor () {
     delete buffer;
 }
 
-void MRSTAccelAdaptor::processSample (int pathId, int fd) {
+void MRSTAccelAdaptor::processSample (int, int fd) {
     char buf[32];
     int x, y, z;
 
