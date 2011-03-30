@@ -498,7 +498,7 @@ void ClientApiTest::testBuffering()
     }
 }
 
-void ClientApiTest::testBufferingHighRate()
+void ClientApiTest::testBufferingAllIntervalRanges()
 {
     QStringList sensorList;
     sensorList.append("magnetometersensor");
@@ -523,23 +523,48 @@ void ClientApiTest::testBufferingHighRate()
         errorMsg.append(" sensor channel");
         QVERIFY2(sensor && sensor->isValid(),errorMsg.toAscii());
         TestClient client(*sensor, true);
-        sensor->setInterval(25);
-        sensor->setBufferSize(100);
-        sensor->setBufferInterval(6000);
-        sensor->setDownsampling(false);
-
-        sensor->start();
 
 
-        int period = 3500;
-        qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
-        QTest::qWait(period);
+        int bufferSize = 100;
+        QList<DataRange> intervals = sensor->getAvailableIntervals();
+        for (int i=0, l= intervals.size(); i<l; i++){
+            qreal intervalMax = ((DataRange)(intervals.at(i))).max;
+            qreal intervalMin =((DataRange)(intervals.at(i))).min;
+            if (intervalMin==0 && intervalMax==0) continue;
+            QList<qreal> intervalTests;
+            if (intervalMin!=0) intervalTests.append(intervalMin);
+            if (intervalMin!=intervalMax){
+                intervalTests.append(intervalMax);
+                intervalTests.append((intervalMin+intervalMax)*0.5);
+            }
+            for (int j=0, l= intervalTests.size(); j<l; i++){
+                qreal interval = intervalTests.at(j);
+                sensor->setInterval(interval);
+                sensor->setBufferSize(bufferSize);
+                sensor->setBufferInterval(interval*bufferSize*2);
+                sensor->setDownsampling(false);
+                sensor->start();
+                int period = interval*bufferSize*1.5;
+                qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+                QTest::qWait(period);
+                errorMsg.clear();
+                errorMsg.append("Errors while buffering: ");
+                errorMsg.append(sensorName);
 
-        QVERIFY(client.getDataCount() < 2); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-        QVERIFY(client.getFrameCount() == 1);
-        QVERIFY(client.getFrameDataCount() == 100);
-
-        sensor->stop();
+                QString errorMsgDataCount(errorMsg);
+                int dataCount = client.getDataCount();
+                errorMsgDataCount.append(" dataCount was ");
+                errorMsgDataCount.append(QString::number(dataCount));
+                QVERIFY2( dataCount< 2, errorMsgDataCount.toAscii()); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
+                int frameCount = client.getFrameCount();
+                QString errorMsgFrameCount(errorMsg);
+                errorMsgFrameCount.append(" frameCount was ");
+                errorMsgFrameCount.append(QString::number(frameCount));
+                QVERIFY2(frameCount == 1, errorMsgFrameCount.toAscii());
+                QVERIFY(client.getFrameDataCount() == bufferSize);
+                sensor->stop();
+            }
+        }
         delete sensor;
     }
 }
