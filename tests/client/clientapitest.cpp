@@ -653,7 +653,7 @@ void ClientApiTest::testDownsampling()
 
 
         if (sensorName!="magnetometersensor") calcAverages(client2.getSamples(), x2, y2, z2);
-        else calcMaggeAverages(client1.getSamples(), x2, y2, z2, rx2, ry2, rz2);
+        else calcMaggeAverages(client2.getSamples(), x2, y2, z2, rx2, ry2, rz2);
 
         long limit = getLimit(sensor);
 
