@@ -302,7 +302,7 @@ void SysfsAdaptor::stopReaderThread()
         write(pipeDescriptors_[1], &dummy, 8);
     }
     else
-        reader_.shouldStop();
+        reader_.stopReader();
     reader_.wait();
 }
 
@@ -314,7 +314,7 @@ bool SysfsAdaptor::startReaderThread()
         return false;
     }
 
-    reader_.start();
+    reader_.startReader();
 
     return true;
 }
@@ -374,14 +374,19 @@ SysfsAdaptorReader::SysfsAdaptorReader(SysfsAdaptor *parent) : running_(false), 
 {
 }
 
-void SysfsAdaptorReader::shouldStop()
+void SysfsAdaptorReader::stopReader()
 {
     running_ = false;
 }
 
-void SysfsAdaptorReader::run()
+void SysfsAdaptorReader::startReader()
 {
     running_ = true;
+    start();
+}
+
+void SysfsAdaptorReader::run()
+{
     while (running_) {
 
         if (parent_->mode_ == SysfsAdaptor::SelectMode) {

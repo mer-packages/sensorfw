@@ -61,7 +61,15 @@ public:
      */
     void run();
 
-    void shouldStop();
+    /**
+     * Initiate reader stopping.
+     */
+    void stopReader();
+
+    /**
+     * Initiate reader starting.
+     */
+    void startReader();
 
 private:
     bool          running_; /**< should thread be running or not */
