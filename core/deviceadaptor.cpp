@@ -79,7 +79,11 @@ RingBufferBase* AdaptedSensorEntry::buffer() const
 DeviceAdaptor::DeviceAdaptor(const QString& id) :
     NodeBase(id),
     standbyOverride_(false),
+#ifdef SENSORFW_MCE_WATCHER
     screenBlanked_(!SensorManager::instance().MCEWatcher()->displayEnabled())
+#else
+    screenBlanked_(false)
+#endif
 {
     setValid(true);
 }

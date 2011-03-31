@@ -38,7 +38,12 @@
 #include "idutils.h"
 #include "parameterparser.h"
 #include "logging.h"
+
+#ifdef SENSORFW_MCE_WATCHER
 #include "mcewatcher.h"
+#else
+class MceWatcher;
+#endif
 
 class QSocketNotifier;
 class SocketHandler;
@@ -308,12 +313,14 @@ public:
      */
     int getAdaptorCount(const QString& type) const;
 
+#ifdef SENSORFW_MCE_WATCHER
     /**
      * Get pointer to MceWatcher instance.
      *
      * @return MceWatcher instance pointer.
      */
     MceWatcher* MCEWatcher() const;
+#endif
 
 private Q_SLOTS:
     /**
