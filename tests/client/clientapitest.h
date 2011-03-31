@@ -96,15 +96,19 @@ public:
     int getFrameDataCount() const { return frameDataCount; }
 
 public Q_SLOTS:
-    virtual void dataAvailable(const MagneticField&) { qDebug() << "dataAvailable()"<< ++dataCount; }
-    virtual void frameAvailable(const QVector<MagneticField>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
+    virtual void dataAvailable(const MagneticField&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
+    virtual void frameAvailable(const QVector<MagneticField>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>0?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
     virtual void dataAvailable2(const XYZ&) { qDebug() << "dataAvailable()"<< ++dataCount; }
     virtual void frameAvailable2(const QVector<XYZ>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
 
 private:
     int dataCount;
+    long dataInterval;
     int frameCount;
+    QTime m_exTimeData;
+    QTime m_exTimeFrame;
     int frameDataCount;
+    long frameInterval;
 };
 
 class SampleCollector : public TestClient
@@ -115,7 +119,6 @@ public:
     SampleCollector(AbstractSensorChannelInterface& iface, bool listenFrames);
     virtual ~SampleCollector();
 
-//    QVector<MagneticField> getSamples() { return samples; }
     QVector<QObject*> getSamples() { return samples; }
 
 public Q_SLOTS:

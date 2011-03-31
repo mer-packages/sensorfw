@@ -476,6 +476,7 @@ void ClientApiTest::testBuffering()
         sensor->setBufferSize(10);
         sensor->setBufferInterval(1500);
         sensor->setDownsampling(false);
+        sensor->setStandbyOverride(true);
 
         sensor->start();
 
@@ -539,6 +540,8 @@ void ClientApiTest::testBufferingAllIntervalRanges()
                 sensor->setBufferSize(bufferSize);
                 sensor->setBufferInterval(interval*bufferSize*2);
                 sensor->setDownsampling(false);
+                sensor->setStandbyOverride(true);
+
                 sensor->start();
                 int period = interval*bufferSize*1.5;
                 qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
@@ -577,6 +580,8 @@ void ClientApiTest::testBufferingCompatibility()
         sensor->setBufferSize(10);
         sensor->setBufferInterval(1500);
         sensor->setDownsampling(false);
+        sensor->setStandbyOverride(true);
+
 
         sensor->start();
 
@@ -622,6 +627,8 @@ void ClientApiTest::testBufferingInterval()
         sensor->setBufferInterval(0);
         sensor->setBufferSize(40);
         sensor->setDownsampling(false);
+        sensor->setStandbyOverride(true);
+
 
         sensor->start();
 
@@ -635,9 +642,11 @@ void ClientApiTest::testBufferingInterval()
         sensor->stop();
         sensor->setBufferInterval(2000);
         sensor->setBufferSize(40);
+        sensor->setStandbyOverride(true);
+
         sensor->start();
 
-        qDebug() << "Magnetometer sensor started, waiting for 2500ms.";
+        qDebug() << sensorName<<" started, waiting for 2500ms.";
         QTest::qWait(2500);
 
         QVERIFY(client.getDataCount() < 8); //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
@@ -727,12 +736,16 @@ void ClientApiTest::testDownsampling()
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         SampleCollector client1(*sensor, true);
         sensor->setInterval(100);
+        sensor->setStandbyOverride(true);
+
         sensor->start();
 
         QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         SampleCollector client2(*sensor2, true);
         sensor2->setInterval(1000);
         sensor2->setDownsampling(true);
+        sensor2->setStandbyOverride(true);
+
         sensor2->start();
 
         qDebug() << sensorName<<" started, waiting for 2500ms.";
@@ -800,14 +813,18 @@ void ClientApiTest::testDownsamplingDisabled()
         QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         SampleCollector client1(*sensor, true);
         sensor->setInterval(100);
+        sensor->setStandbyOverride(true);
+
         sensor->start();
 
         SampleCollector client2(*sensor2, true);
         sensor2->setInterval(1000);
         sensor2->setDownsampling(false);
+        sensor2->setStandbyOverride(true);
+
         sensor2->start();
 
-        qDebug() << "Magnetometer sensor started, waiting for 2200ms.";
+        qDebug() << sensorName <<" started, waiting for 2200ms.";
         QTest::qWait(2200);
 
         sensor->stop();
@@ -856,7 +873,6 @@ SampleCollector::SampleCollector(AbstractSensorChannelInterface& iface, bool lis
 SampleCollector::~SampleCollector()
 {
 }
-
 
 
 void SampleCollector::dataAvailable(const MagneticField& data)
