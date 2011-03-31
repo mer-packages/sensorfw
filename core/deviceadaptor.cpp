@@ -28,6 +28,7 @@
  */
 
 #include "deviceadaptor.h"
+#include "sensormanager.h"
 
 AdaptedSensorEntry::AdaptedSensorEntry(const QString& name, const QString& description, RingBufferBase* buffer) :
     name_(name),
@@ -78,7 +79,7 @@ RingBufferBase* AdaptedSensorEntry::buffer() const
 DeviceAdaptor::DeviceAdaptor(const QString& id) :
     NodeBase(id),
     standbyOverride_(false),
-    screenBlanked_(false)
+    screenBlanked_(!SensorManager::instance().MCEWatcher()->displayEnabled())
 {
     setValid(true);
 }

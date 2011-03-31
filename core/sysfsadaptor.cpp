@@ -166,17 +166,19 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
 
 bool SysfsAdaptor::standby()
 {
+    sensordLogD() << "Adaptor '" << id() << "' requested to go to standby";
     if (deviceStandbyOverride() || inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby or not overriden";
         return true;
     }
     inStandbyMode_ = true;
 
     if (!isRunning()) {
-        sensordLogD() << id() << " not going to standby: not running";
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
         return true;
     }
 
-    sensordLogD() << id() << " going to standby";
+    sensordLogD() << "Adaptor '" << id() << "' going to standby";
     stopReaderThread();
     closeAllFds();
 
@@ -187,22 +189,25 @@ bool SysfsAdaptor::standby()
 
 bool SysfsAdaptor::resume()
 {
+    sensordLogD() << "Adaptor '" << id() << "' requested to resume from standby";
+
     // Don't resume if not in standby
     if (!inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
         return true;
     }
 
     inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
-        sensordLogD() << id() << " not resuming from standby: not running";
+        sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
         return true;
     }
 
-    sensordLogD() << id() << " resuming from standby";
+    sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
 
     if (!startReaderThread()) {
-        sensordLogW() << "Failed to resume " << id() << " from standby!";
+        sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";
         return false;
     }
 

@@ -739,6 +739,11 @@ int SensorManager::getAdaptorCount(const QString& type) const
     return it.value().cnt_;
 }
 
+MceWatcher* SensorManager::MCEWatcher() const
+{
+    return mceWatcher_;
+}
+
 #ifdef SM_PRINT
 void SensorManager::print() const
 {

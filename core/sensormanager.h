@@ -38,10 +38,10 @@
 #include "idutils.h"
 #include "parameterparser.h"
 #include "logging.h"
+#include "mcewatcher.h"
 
 class QSocketNotifier;
 class SocketHandler;
-class MceWatcher;
 
 /**
  * Sensor instance entry. Contains list of connected sessions.
@@ -307,6 +307,13 @@ public:
      * Get list configured of adaptor types.
      */
     int getAdaptorCount(const QString& type) const;
+
+    /**
+     * Get pointer to MceWatcher instance.
+     *
+     * @return MceWatcher instance pointer.
+     */
+    MceWatcher* MCEWatcher() const;
 
 private Q_SLOTS:
     /**

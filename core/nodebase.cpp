@@ -312,11 +312,14 @@ bool NodeBase::standbyOverride() const
 
 bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool override)
 {
+    sensordLogW() << sessionId << " requested standbyoverride for '" << id() << "' :" << override;
     // Only store true requests, id is enough, no need for value
     if (override == false)
     {
         m_standbyRequestList.removeAll(sessionId);
-    } else {
+    }
+    else
+    {
         if (!m_standbyRequestList.contains(sessionId))
         {
             m_standbyRequestList.append(sessionId);
