@@ -63,7 +63,7 @@ sensord (0.6.41) unstable; urgency=low
   * Fix the Proximity metatype registration problem
   * ProximityAdaptor now stores reflectance reading (Fixes: NB#234186)
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 29 Mar 2011 15:30:25 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 31 Mar 2011 17:02:46 +0200
 
 sensord (0.6.40) unstable; urgency=low
 
