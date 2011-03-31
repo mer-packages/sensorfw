@@ -55,7 +55,6 @@ sensord (0.6.41) unstable; urgency=low
   * sensordtestapp improvements.
   * API documentation improvements.
   * Improved dataflowtests.
-  * DeviceAdaptor screenBlanked status is initialized from the last known state of MceWatcher. This will fix the issue when app is started without standbyOverride when screen is blanked.
 
   [Shenghua Liu]
   * Make sensortestapp thread safe in exiting
