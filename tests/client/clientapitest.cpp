@@ -460,7 +460,7 @@ void ClientApiTest::testBuffering()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -507,7 +507,7 @@ void ClientApiTest::testBufferingAllIntervalRanges()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -564,7 +564,7 @@ void ClientApiTest::testBufferingCompatibility()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -611,7 +611,7 @@ void ClientApiTest::testBufferingInterval()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -664,7 +664,7 @@ void ClientApiTest::testAvailableBufferIntervals()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -692,7 +692,7 @@ void ClientApiTest::testAvailableBufferSizes()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
+        AbstractSensorChannelInterface* sensor = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
         }
@@ -719,8 +719,8 @@ void ClientApiTest::testDownsampling()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
-        AbstractSensorChannelInterface* sensor2;
+        AbstractSensorChannelInterface* sensor = NULL;
+        AbstractSensorChannelInterface* sensor2 = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
             sensor2 = MagnetometerSensorChannelInterface::interface(sensorName);
@@ -795,8 +795,8 @@ void ClientApiTest::testDownsamplingDisabled()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor;
-        AbstractSensorChannelInterface* sensor2;
+        AbstractSensorChannelInterface* sensor = NULL;
+        AbstractSensorChannelInterface* sensor2 = NULL;
         if (sensorName == "magnetometersensor"){
             sensor = MagnetometerSensorChannelInterface::interface(sensorName);
             sensor2 = MagnetometerSensorChannelInterface::interface(sensorName);
