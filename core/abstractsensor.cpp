@@ -116,7 +116,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const TimedXyzData& data, Tim
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
-        int bufferSize = (sessionInterval < currentInterval ) ? 1 : sessionInterval / currentInterval;
+        int bufferSize = (sessionInterval < currentInterval || !currentInterval) ? 1 : sessionInterval / currentInterval;
 
         QList<TimedXyzData>& samples(buffer[sessionId]);
         samples.push_back(data);
@@ -177,7 +177,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
             continue;
         }
         unsigned int sessionInterval = getInterval(sessionId);
-        int bufferSize = (sessionInterval < currentInterval ) ? 1 : sessionInterval / currentInterval;
+        int bufferSize = (sessionInterval < currentInterval || !currentInterval) ? 1 : sessionInterval / currentInterval;
 
         QList<CalibratedMagneticFieldData>& samples(buffer[sessionId]);
         samples.push_back(data);
