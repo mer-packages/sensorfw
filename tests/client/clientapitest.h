@@ -38,10 +38,13 @@ class ClientApiTest : public QObject
 {
     Q_OBJECT;
 
+public: ClientApiTest();
+
 private:
     void calcAverages(QVector<QObject*> data, long& x, long& y,  long& z);
     void calcMaggeAverages(QVector<QObject*> data, long& x, long& y,  long& z, long& rx, long& ry,  long& rz);
     long getLimit(AbstractSensorChannelInterface* sensor);
+    static QStringList m_bufferingSensors;
 
 
 private slots:
