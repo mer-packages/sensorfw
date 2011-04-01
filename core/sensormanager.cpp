@@ -42,6 +42,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 typedef struct {
     int id;
@@ -139,14 +140,51 @@ SensorManager::SensorManager() :
 
 SensorManager::~SensorManager()
 {
-    foreach (const QString& key, sensorInstanceMap_.keys())
+    // stop adaptor threads and acquired resources
+    for(QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.begin(); it != deviceAdaptorInstanceMap_.end(); ++it)
     {
-         sensordLogW() << "ERROR: sensor " << key << " not released!";
+        releaseDeviceAdaptor(it.key());
     }
 
-    foreach (const QString& key, deviceAdaptorInstanceMap_.keys())
+    sleep(1); // sleep for seconds so adaptor threads have time to die
+
+    // close open sessions
+    for(QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it)
     {
-         sensordLogW() << "ERROR: device adaptor " << key << " not released!";
+        for(QSet<int>::const_iterator it2 = it.value().sessions_.begin(); it2 != it.value().sessions_.end(); ++it2)
+        {
+            lostClient(*it2);
+        }
+    }
+
+    // delete sensors
+    for(QMap<QString, SensorInstanceEntry>::iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it)
+    {
+        if(it.value().sensor_)
+        {
+            delete it.value().sensor_;
+            it.value().sensor_ = 0;
+        }
+    }
+
+    // delete chains
+    for(QMap<QString, ChainInstanceEntry>::iterator it = chainInstanceMap_.begin(); it != chainInstanceMap_.end(); ++it)
+    {
+        if(it.value().chain_)
+        {
+            delete it.value().chain_;
+            it.value().chain_ = 0;
+        }
+    }
+
+    // delete adaptors
+    for(QMap<QString, DeviceAdaptorInstanceEntry>::iterator it = deviceAdaptorInstanceMap_.begin(); it != deviceAdaptorInstanceMap_.end(); ++it)
+    {
+        if(it.value().adaptor_)
+        {
+            delete it.value().adaptor_;
+            it.value().adaptor_ = 0;
+        }
     }
 
     delete socketHandler_;
@@ -206,7 +244,7 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
     clearError();
 
     QString cleanId = getCleanId(id);
-    QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(cleanId);
+    QMap<QString, SensorInstanceEntry>::const_iterator entryIt = sensorInstanceMap_.find(cleanId);
 
     if (entryIt == sensorInstanceMap_.end()) {
         sensordLogC() << QString("%1 not present").arg(cleanId);
@@ -214,7 +252,7 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
         return NULL;
     }
 
-    QString typeName = entryIt.value().type_;
+    const QString& typeName = entryIt.value().type_;
 
     if ( !sensorFactoryMap_.contains(typeName) )
     {
@@ -239,9 +277,6 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
         delete sensorChannel;
         return NULL;
     }
-
-    Q_ASSERT( entryIt.value().sensor_ == 0 );
-    entryIt.value().sensor_ = sensorChannel;
     return sensorChannel;
 }
 
@@ -285,7 +320,7 @@ int SensorManager::requestSensor(const QString& id)
     }
 
     int sessionId = createNewSessionId();
-    if(entryIt.value().sessions_.empty())
+    if(!entryIt.value().sensor_)
     {
         AbstractSensorChannel* sensor = addSensor(id);
         if ( sensor == NULL )
@@ -293,6 +328,7 @@ int SensorManager::requestSensor(const QString& id)
             setError(SmNotInstantiated, tr("sensor has not been instantiated"));
             return INVALID_SESSION;
         }
+        entryIt.value().sensor_ = sensor;
     }
     entryIt.value().sessions_.insert(sessionId);
 
@@ -332,10 +368,12 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
     if(entryIt.value().sessions_.remove( sessionId ))
     {
+        /** Fix for NB#242237
         if ( entryIt.value().sessions_.empty() )
         {
             removeSensor(id);
         }
+        */
         returnValue = true;
     }
     else
@@ -403,10 +441,13 @@ void SensorManager::releaseChain(const QString& id)
         {
             entryIt.value().cnt_--;
 
-            if (entryIt.value().cnt_ == 0) {
+            /** Fix for NB#242237
+            if (entryIt.value().cnt_ == 0)
+            */
+            if (false)
+            {
                 sensordLogD() << "Chain '" << id << "' has no more references. Deleting it.";
                 delete entryIt.value().chain_;
-                entryIt.value().cnt_ = 0;
                 entryIt.value().chain_ = 0;
             }
             else
@@ -506,15 +547,15 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
             entryIt.value().cnt_--;
             if ( entryIt.value().cnt_ == 0 )
             {
-                sensordLogD() << "Adaptor '" << id << "' has no more references. Deleting it.";
+                sensordLogD() << "Adaptor '" << id << "' has no more references.";
 
                 Q_ASSERT( entryIt.value().adaptor_ );
 
                 entryIt.value().adaptor_->stopAdaptor();
-
+                /** Fix for NB#242237
                 delete entryIt.value().adaptor_;
                 entryIt.value().adaptor_ = 0;
-                entryIt.value().cnt_ = 0;
+                */
             }
             else
             {
