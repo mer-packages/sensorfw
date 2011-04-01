@@ -39,6 +39,7 @@ class ClientApiTest : public QObject
     Q_OBJECT;
 
 public: ClientApiTest();
+    static QByteArray errorMessage(QString sensorName, int interval, int limit, int condition, int value);
 
 private:
     void calcAverages(QVector<QObject*> data, long& x, long& y,  long& z);
@@ -94,21 +95,23 @@ public:
     int getDataCount() const { return dataCount; }
     int getFrameCount() const { return frameCount; }
     int getFrameDataCount() const { return frameDataCount; }
+    void resetTimers();
+    void resetCounters();
 
 public Q_SLOTS:
-    virtual void dataAvailable(const MagneticField&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
-    virtual void frameAvailable(const QVector<MagneticField>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>0?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
-    virtual void dataAvailable2(const XYZ&) { qDebug() << "dataAvailable()"<< ++dataCount; }
-    virtual void frameAvailable2(const QVector<XYZ>& frame) { qDebug() << "frameAvailable(): " << frame.size(); ++frameCount; frameDataCount += frame.size(); }
+    virtual void dataAvailable(const MagneticField&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>-1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
+    virtual void frameAvailable(const QVector<MagneticField>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>-1?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
+    virtual void dataAvailable2(const XYZ&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>-1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
+    virtual void frameAvailable2(const QVector<XYZ>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>-1?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
 
 private:
     int dataCount;
     long dataInterval;
     int frameCount;
-    QTime m_exTimeData;
-    QTime m_exTimeFrame;
     int frameDataCount;
     long frameInterval;
+    QTime m_exTimeData;
+    QTime m_exTimeFrame;
 };
 
 class SampleCollector : public TestClient
