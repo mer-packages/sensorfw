@@ -59,21 +59,21 @@ public:
      *
      * @return buffer size.
      */
-    unsigned int bufferSize() const { return bufferSize_; }
+    unsigned int bufferSize() const;
 
     /**
      * Set buffer size for downsampling.
      *
      * @param size buffer size.
      */
-    void setBufferSize(unsigned int size) { bufferSize_ = size; }
+    void setBufferSize(unsigned int size);
 
     /**
      * Timeout in milliseconds for discarding too old samples from buffer.
      *
      * @return timeout in milliseconds.
      */
-    int timeout() const { return timeout_ / 1000; }
+    int timeout() const;
 
     /**
      * Set timeout in milliseconds for discarding too old samples from
@@ -81,7 +81,7 @@ public:
      *
      * @param ms timeout in milliseconds.
      */
-    void setTimeout(int ms) { timeout_ = static_cast<long>(ms) * 1000; }
+    void setTimeout(int ms);
 
 protected:
     /**

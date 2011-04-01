@@ -33,6 +33,28 @@ DownsampleFilter::DownsampleFilter() :
 {
 }
 
+unsigned int DownsampleFilter::bufferSize() const
+{
+    return bufferSize_;
+}
+
+void DownsampleFilter::setBufferSize(unsigned int size)
+{
+    sensordLogD() << "DownsampleFilter buffer size = " << size;
+    bufferSize_ = size;
+}
+
+int DownsampleFilter::timeout() const
+{
+    return timeout_ / 1000;
+}
+
+void DownsampleFilter::setTimeout(int ms)
+{
+    timeout_ = static_cast<long>(ms) * 1000;
+    sensordLogD() << "DownsampleFilter timeout = " << ms;
+}
+
 void DownsampleFilter::filter(unsigned, const TimedXyzData* data)
 {
     buffer_.push_back(*data);
@@ -72,4 +94,5 @@ void DownsampleFilter::filter(unsigned, const TimedXyzData* data)
     sensordLogT() << "Downsampled: " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
 
     source_.propagate(1, &downsampled);
+    buffer_.clear();
 }
