@@ -14,7 +14,7 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes
 
 SOURCES += sensormanager.cpp \
     sensormanager_a.cpp \
