@@ -2,6 +2,7 @@ sensord (0.6.42) unstable; urgency=low
 
   [Antti Virtanen]
   * Sensor graph shrinking not supported anymore to prevent race conditions between adaptor threads and qt mainloop. Fixes: NB#242237
+  * Implemented downsample filter for XYZ data.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 01 Apr 2011 11:48:34 +0200
 
