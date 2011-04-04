@@ -108,19 +108,16 @@ void AccelerometerAdaptor::commitOutput(struct input_event *ev)
 
 unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) const
 {
-    unsigned int highestValue = 0;
-    int winningSessionId = -1;
-
     if (m_intervalMap.size() == 0)
     {
-        sessionId = winningSessionId;
+        sessionId = -1;
         return defaultInterval();
     }
 
     // Get the smallest positive request, 0 is reserved for HW wakeup
     QMap<int, unsigned int>::const_iterator it = m_intervalMap.constBegin();
-    highestValue = it.value();
-    winningSessionId = it.key();
+    unsigned int highestValue = it.value();
+    int winningSessionId = it.key();
 
     for (++it; it != m_intervalMap.constEnd(); ++it)
     {

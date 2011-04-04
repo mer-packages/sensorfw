@@ -264,7 +264,7 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     // Validate interval request
     if (!isValidIntervalRequest(value))
     {
-        sensordLogW() << "Invalid interval requested for node '" << description() << "' by session '" << sessionId << "': " << value;
+        sensordLogW() << "Invalid interval requested for node '" << id() << "' by session '" << sessionId << "': " << value;
         return false;
     }
 
@@ -279,6 +279,7 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     unsigned int winningRequest = evaluateIntervalRequests(winningSessionId);
 
     if (winningSessionId >= 0) {
+        sensordLogD() << "Setting new interval for node: " << id() << ". Evaluation won by session '" << winningSessionId << "' with request: " << winningRequest;
         setInterval(winningRequest, winningSessionId);
     }
 
