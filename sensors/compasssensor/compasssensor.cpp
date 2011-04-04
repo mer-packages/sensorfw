@@ -33,8 +33,6 @@
 CompassSensorChannel::CompassSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
         DataEmitter<CompassData>(1),
-        declinationCorrection_(false),
-        declinationAngle_(0),
         compassData(0, -1, -1)
 {
     SensorManager& sm = SensorManager::instance();
@@ -56,7 +54,7 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     // Join filterchain buffers
     filterBin_->join("input", "source", "output", "sink");
 
-    connectToSource(compassChain_, "magneticnorth", inputReader_);
+    connectToSource(compassChain_, "truenorth", inputReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -73,34 +71,13 @@ CompassSensorChannel::~CompassSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    if (declinationCorrection_) {
-        disconnectFromSource(compassChain_, "truenorth", inputReader_);
-    } else {
-        disconnectFromSource(compassChain_, "magneticnorth", inputReader_);
-    }
+    disconnectFromSource(compassChain_, "truenorth", inputReader_);
     sm.releaseChain("compasschain");
 
     delete inputReader_;
     delete outputBuffer_;
     delete marshallingBin_;
     delete filterBin_;
-}
-
-void CompassSensorChannel::setDeclination(bool enable)
-{
-    if ( enable == declinationCorrection_ )
-        return;
-
-    //select the correct output buffer from CompassChain.
-    if ( enable ) {
-        compassChain_->findBuffer("magneticnorth")->unjoin(inputReader_);
-        compassChain_->findBuffer("truenorth")->join(inputReader_);
-    } else {
-        compassChain_->findBuffer("truenorth")->unjoin(inputReader_);
-        compassChain_->findBuffer("magneticnorth")->join(inputReader_);
-    }
-    declinationCorrection_ = enable;
-    signalPropertyChanged("usedeclination");
 }
 
 quint16 CompassSensorChannel::declinationValue() const

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -51,7 +52,6 @@ class CompassSensorChannel :
 {
     Q_OBJECT;
 
-    Q_PROPERTY(bool usedeclination READ declination WRITE setDeclination)
     Q_PROPERTY(quint16 declinationvalue READ declinationValue);
     Q_PROPERTY(Compass value READ get);
 
@@ -64,8 +64,6 @@ public:
         return sc;
     }
 
-    bool declination() const { return declinationCorrection_; }
-    void setDeclination(bool enable);
     quint16 declinationValue() const;
 
     Compass get() const { return compassData; }
@@ -82,9 +80,6 @@ protected:
     virtual ~CompassSensorChannel();
 
 private:
-    bool declinationCorrection_;
-    quint16 declinationAngle_;
-
     CompassData compassData;
 
     Bin* filterBin_;

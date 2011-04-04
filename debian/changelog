@@ -5,6 +5,12 @@ sensord (0.6.42) unstable; urgency=low
   * Implemented downsample filter for XYZ data.
   * RotationFilter won't propagate data for compass input. Fixes: NB#242233.
   * TapAdaptor won't try to configure pollrate for accelerometer driver anymore. Fixes: NB#242902.
+  * Fixes to compass declination correction handling (Fixes: NB#241539):
+    - CompassSensorChannelInterface::setUseDeclination() enables it only locally.
+    - CompassData includes both raw and corrected reading.
+    - DeclinationFilter periodically reads value from GConf in case it gets changed.
+    - CompassSensorChannel now only listens "truenorth" output from CompassChain.
+    - CompassSensorChannelAdaptor does not have options anymore to enable/disable declination correction globally.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 01 Apr 2011 11:48:34 +0200
 

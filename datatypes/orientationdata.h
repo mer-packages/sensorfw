@@ -119,7 +119,7 @@ public:
     /**
      * Default constructor.
      */
-    CompassData() : TimedData(0), degrees_(0), level_(0) {}
+    CompassData() : TimedData(0), degrees_(0), correctedDegrees_(0), level_(0) {}
 
     /**
      * Constructor.
@@ -132,6 +132,7 @@ public:
         TimedData(timestamp), degrees_(degrees), level_(level) {}
 
     int degrees_; /**< Angle to north */
+    int correctedDegrees_; /**< Declination corrected angle to north */
     int level_;   /**< Magnetometer calibration level. Higher value means better calibration. */
 };
 

@@ -134,6 +134,10 @@ Q_SIGNALS:
      * @param value Current compass measurement.
      */
     void dataAvailable(const Compass& value);
+
+private:
+
+    bool useDeclination_;
 };
 
 namespace local {

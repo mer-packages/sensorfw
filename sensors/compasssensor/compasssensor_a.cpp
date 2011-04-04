@@ -36,16 +36,6 @@ Compass CompassSensorChannelAdaptor::value() const
     return qvariant_cast<Compass>(parent()->property("value"));
 }
 
-bool CompassSensorChannelAdaptor::useDeclination() const
-{
-    return qvariant_cast<bool>(parent()->property("usedeclination"));
-}
-
-void CompassSensorChannelAdaptor::setUseDeclination(bool enable)
-{
-    parent()->setProperty("usedeclination", enable);
-}
-
 int CompassSensorChannelAdaptor::declinationValue() const
 {
     return qvariant_cast<int>(parent()->property("declinationvalue"));

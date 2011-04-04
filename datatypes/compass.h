@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -52,8 +53,9 @@ public:
      * Copy constructor.
      *
      * @param data Source object.
+     * @param declinationCorrection Use declination corrected value.
      */
-    Compass(const CompassData& data);
+    Compass(const CompassData& data, bool declinationCorrection = true);
 
     /**
      * Copy constructor.
