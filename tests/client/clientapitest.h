@@ -39,12 +39,13 @@ class ClientApiTest : public QObject
     Q_OBJECT;
 
 public: ClientApiTest();
-    static QByteArray errorMessage(QString sensorName, int interval, int limit, int condition, int value);
+    static QByteArray errorMessage(QString sensorName, int interval, int limit, QString compOperator, int value);
 
 private:
     void calcAverages(QVector<QObject*> data, long& x, long& y,  long& z);
     void calcMaggeAverages(QVector<QObject*> data, long& x, long& y,  long& z, long& rx, long& ry,  long& rz);
     long getLimit(AbstractSensorChannelInterface* sensor);
+    static AbstractSensorChannelInterface* getSensor(QString sensorName);
     static QStringList m_bufferingSensors;
 
 

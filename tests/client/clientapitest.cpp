@@ -41,33 +41,9 @@ QStringList ClientApiTest::m_bufferingSensors;
 
 
 
-QByteArray ClientApiTest::errorMessage(QString sensorName, int interval, int value, int condition, int limit){
-    // condition:
-    // 0 == equals
-    // 1 == less than
-    // 2 == greater than
-    // 3 == less than or equal to
-    // 4 == greater than or equal to
-    QString errMsg(QString("Buffering err %1 (%2 Hz): %3").arg(sensorName).arg(QString::number(1000/interval)).arg(QString::number(value)));
-    switch (condition){
-    case 0:
-        errMsg.append(QString("== %1").arg(QString::number(limit)));
-        break;
-    case 1:
-        errMsg.append(QString("< %1").arg(QString::number(limit)));
-        break;
-    case 2:
-        errMsg.append(QString("> %1").arg(QString::number(limit)));
-        break;
-    case 3:
-        errMsg.append(QString("<= %1").arg(QString::number(limit)));
-        break;
-    case 4:
-        errMsg.append(QString(">= %1").arg(QString::number(limit)));
-        break;
-    default:
-        break;
-    }
+QByteArray ClientApiTest::errorMessage(QString sensorName, int interval, int value, QString compOperator, int limit){
+    QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000/interval)));
+    errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
     return errMsg.toAscii();
 }
 
@@ -76,8 +52,18 @@ ClientApiTest::ClientApiTest(){
     m_bufferingSensors.append("magnetometersensor");
 //    m_bufferingSensors.append("accelerometersensor");
 //    m_bufferingSensors.append("rotationsensor");
-
 }
+
+AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
+    if (sensorName == "magnetometersensor")
+        return MagnetometerSensorChannelInterface::interface(sensorName);
+    if (sensorName == "accelerometersensor")
+        return AccelerometerSensorChannelInterface::interface(sensorName);
+    if (sensorName == "rotationsensor")
+        return RotationSensorChannelInterface::interface(sensorName);
+    return NULL;
+}
+
 
 void ClientApiTest::calcAverages(QVector<QObject*> data, long& x, long& y,  long& z){
     int l = data.size();
@@ -491,17 +477,7 @@ void ClientApiTest::testBuffering()
 
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
-
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
         int bufferSize = 10;
@@ -517,21 +493,18 @@ void ClientApiTest::testBuffering()
 
         int dataLimit = 4;
         int frameLimit = 1;
-        int frameDataCountLimit = bufferSize;
 
-        for (int i=0; i<2; i++){
-            // period between the two values
-//            int period = bufferSize* interval * 1.25;
+        for (int i=0; i<3; i++){
             int period = bufferSize* interval * (i+1) + 250;
             qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
             QTest::qWait(period);
             int dataCount = client.getDataCount();
             //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-            QVERIFY2( dataCount<dataLimit*(i+1), errorMessage(sensorName, interval, dataCount, 1, dataLimit*(i+1)));
+            QVERIFY2( dataCount<dataLimit*(i+1), errorMessage(sensorName, interval, dataCount, "<", dataLimit*(i+1)));
             int frameCount =client.getFrameCount();
-            QVERIFY2( frameCount == frameLimit*(i+1), errorMessage(sensorName, interval, frameCount, 0, frameLimit*(i+1)));
+            QVERIFY2( frameCount == frameLimit*(i+1), errorMessage(sensorName, interval, frameCount, "==", frameLimit*(i+1)));
             int frameDataCount = client.getFrameDataCount();
-            QVERIFY2(frameDataCount == frameDataCountLimit*(i+1), errorMessage(sensorName, interval, frameDataCount, 0, frameDataCountLimit*(i+1)));
+            QVERIFY2(frameDataCount == bufferSize*(i+1), errorMessage(sensorName, interval, frameDataCount, "==", bufferSize*(i+1)));
             client.resetCounters();
         }
         sensor->stop();
@@ -545,17 +518,7 @@ void ClientApiTest::testBufferingAllIntervalRanges()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
-
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
 
@@ -591,13 +554,13 @@ void ClientApiTest::testBufferingAllIntervalRanges()
                 QTest::qWait(period);
                 int dataCount = client.getDataCount();
                 //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-                QVERIFY2( dataCount<dataLimit, errorMessage(sensorName, interval, dataCount, 1, dataLimit));
+                QVERIFY2( dataCount<dataLimit, errorMessage(sensorName, interval, dataCount, "<", dataLimit));
 
                 int frameCount = client.getFrameCount();
-                QVERIFY2( frameCount == frameLimit, errorMessage(sensorName, interval, frameCount, 0, frameLimit));
+                QVERIFY2( frameCount == frameLimit, errorMessage(sensorName, interval, frameCount, "==", frameLimit));
 
                 int frameDataCount = client.getFrameDataCount();
-                QVERIFY2( frameDataCount == frameDataCountLimit, errorMessage(sensorName, interval, frameDataCount, 0, frameDataCountLimit));
+                QVERIFY2( frameDataCount == frameDataCountLimit, errorMessage(sensorName, interval, frameDataCount, "==", frameDataCountLimit));
                 sensor->stop();
                 client.resetCounters();
             }
@@ -611,16 +574,7 @@ void ClientApiTest::testBufferingCompatibility()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, false);
         int interval = 100;
@@ -643,26 +597,27 @@ void ClientApiTest::testBufferingCompatibility()
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int dataCount = client.getDataCount();
         int limit = bufferSize;
-        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, 0, limit));
+        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, "==", limit));
 
 
         int frameCount =client.getFrameCount();
-        limit = 0;
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, 0, limit));;
-        QVERIFY(client.getFrameDataCount() == 0);
+//        limit = 0;
+        limit = period / (interval*bufferSize);
+        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));;
 
+
+        client.resetCounters();
         qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         dataCount = client.getDataCount();
-        limit = 2*bufferSize;
-        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, 0, limit));
-
+        limit = bufferSize;
+        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, "==", limit));
 
         frameCount =client.getFrameCount();
-        limit = 0;
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, 0, limit));;
+        limit = period / (interval*bufferSize);
+        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));;
         QVERIFY(client.getFrameDataCount() == 0);
 
         sensor->stop();
@@ -676,21 +631,13 @@ void ClientApiTest::testBufferingInterval()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
         int interval = 100;
         sensor->setInterval(interval);
-        sensor->setBufferInterval(0);
+        int bufferInterval = 0;
+        sensor->setBufferInterval(bufferInterval);
         int bufferSize = 40;
         sensor->setBufferSize(bufferSize);
         sensor->setDownsampling(false);
@@ -706,39 +653,48 @@ void ClientApiTest::testBufferingInterval()
         int dataCount = client.getDataCount();
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int limit = 4;
-        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, 1, limit));
+        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
 
 
         int frameCount =client.getFrameCount();
-        limit = 1;
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, 0, limit));
-        limit = 40;
+        limit = period / (bufferSize*interval);
+//        limit = 1;
+        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));
+
+//        limit = 40;
+        limit = bufferSize;
+
         int frameDataCount = client.getFrameDataCount();
-        QVERIFY2( frameDataCount == limit, errorMessage(sensorName, interval, frameDataCount, 0, limit));
+        QVERIFY2( frameDataCount == limit, errorMessage(sensorName, interval, frameDataCount, "==", limit));
 
 
         sensor->stop();
-        interval = 2000;
-        sensor->setBufferInterval(interval);
+        bufferInterval = interval * bufferSize * 0.5;
+        sensor->setBufferInterval(bufferInterval);
         sensor->setBufferSize(bufferSize);
         sensor->setStandbyOverride(true);
 
         sensor->start();
         client.resetTimers();
 
-        qDebug() << sensorName<<" started, waiting for 2500ms.";
-        QTest::qWait(2500);
 
+        period = interval * bufferSize * 0.7;
+
+        // one more frame should be coming
+        qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+        QTest::qWait(period);
         dataCount = client.getDataCount();
-        limit = 8;
+
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, 1, limit));
+        limit *=2;
+        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
+
         frameCount =client.getFrameCount();
-        limit = 2;
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, 0, limit));
-        limit = 80;
+        limit += 1;
+        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));
+        limit = bufferSize * 2;
         frameDataCount = client.getFrameDataCount();
-        QVERIFY2( frameDataCount < limit, errorMessage(sensorName, interval, frameDataCount, 1, limit));
+        QVERIFY2( frameDataCount <= limit, errorMessage(sensorName, interval, frameDataCount, "<=", limit));
 
         sensor->stop();
         delete sensor;
@@ -751,16 +707,7 @@ void ClientApiTest::testAvailableBufferIntervals()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
 
         IntegerRangeList rangeList = sensor->getAvailableBufferIntervals();
@@ -779,16 +726,7 @@ void ClientApiTest::testAvailableBufferSizes()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-        }
+        AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         IntegerRangeList rangeList = sensor->getAvailableBufferSizes();
         QVERIFY(rangeList.size() == 1);
@@ -806,63 +744,48 @@ void ClientApiTest::testDownsampling()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        AbstractSensorChannelInterface* sensor2 = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-            sensor2 = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-            sensor2 = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-            sensor2 = RotationSensorChannelInterface::interface(sensorName);
-        }
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
-        SampleCollector client1(*sensor, true);
-        sensor->setInterval(100);
-        sensor->setStandbyOverride(true);
+        AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
+        AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
+        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
 
-        sensor->start();
+        SampleCollector client1(*sensor1, true);
+        int interval = 100;
+        sensor1->setInterval(interval);
+        sensor1->setStandbyOverride(true);
+
+        sensor1->start();
         client1.resetTimers();
 
-        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         SampleCollector client2(*sensor2, true);
-        int interval = 1000;
-        sensor2->setInterval(interval);
+        int interval2 = 10*interval;
+        sensor2->setInterval(interval2);
         sensor2->setDownsampling(true);
         sensor2->setStandbyOverride(true);
 
         sensor2->start();
         client2.resetTimers();
 
-        qDebug() << sensorName<<" started, waiting for 2500ms.";
-        QTest::qWait(2500);
 
-        sensor->stop();
+        int period =interval2 * 2 + 500;
+        qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+        QTest::qWait(period);
+
+        sensor1->stop();
         sensor2->stop();
 
-        int limit = 20;
-        int sampleCount = client1.getSamples().size();
-        QVERIFY2( sampleCount>=limit, errorMessage(sensorName, interval, sampleCount, 4, limit));
-        limit = 2;
-        sampleCount = client2.getSamples().size();
-        QVERIFY2( sampleCount==limit, errorMessage(sensorName, interval, sampleCount, 0, limit));
+//        int limit = 20;
 
-        long x1 = 0;
-        long y1 = 0;
-        long z1 = 0;
-        long rx1 = 0;
-        long ry1 = 0;
-        long rz1 = 0;
-        long x2 = 0;
-        long y2 = 0;
-        long z2 = 0;
-        long rx2 = 0;
-        long ry2 = 0;
-        long rz2 = 0;
+        int limit = period / interval * 0.9;    //90% of calculated size
+
+        int sampleCount = client1.getSamples().size();
+        QVERIFY2( sampleCount>=limit, errorMessage(sensorName, interval, sampleCount, ">=", limit));
+        limit = period / interval2 ;
+        sampleCount = client2.getSamples().size();
+        QVERIFY2( sampleCount==limit, errorMessage(sensorName, interval, sampleCount, "==", limit));
+
+        long x1 = 0, y1=0, z1 =0, rx1 = 0, ry1 = 0, rz1 = 0;
+        long x2 = 0,y2 = 0, z2 = 0, rx2 = 0, ry2 = 0, rz2 = 0;
 
         if (sensorName!="magnetometersensor") calcAverages(client1.getSamples(), x1, y1, z1);
         else calcMaggeAverages(client1.getSamples(), x1, y1, z1, rx1, ry1, rz1);
@@ -871,16 +794,17 @@ void ClientApiTest::testDownsampling()
         if (sensorName!="magnetometersensor") calcAverages(client2.getSamples(), x2, y2, z2);
         else calcMaggeAverages(client2.getSamples(), x2, y2, z2, rx2, ry2, rz2);
 
-        long rangeLimit = getLimit(sensor);
+        long rangeLimit = getLimit(sensor1);
 
         //since instances were not started at the same time there may be few samples of difference...
+        // error less than 10% of total range is accepted
         QVERIFY(abs(x1 - x2)/rangeLimit < 0.1);
         QVERIFY(abs(y1 - y2)/rangeLimit < 0.1);
         QVERIFY(abs(z1 - z2)/rangeLimit < 0.1);
         QVERIFY(abs(rx1 - rx2)/rangeLimit < 0.1);
         QVERIFY(abs(ry1 - ry2)/rangeLimit < 0.1);
         QVERIFY(abs(rz1 - rz2)/rangeLimit < 0.1);
-        delete sensor;
+        delete sensor1;
         delete sensor2;
     }
 }
@@ -890,52 +814,47 @@ void ClientApiTest::testDownsamplingDisabled()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
 
-        AbstractSensorChannelInterface* sensor = NULL;
-        AbstractSensorChannelInterface* sensor2 = NULL;
-        if (sensorName == "magnetometersensor"){
-            sensor = MagnetometerSensorChannelInterface::interface(sensorName);
-            sensor2 = MagnetometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "accelerometersensor"){
-            sensor = AccelerometerSensorChannelInterface::interface(sensorName);
-            sensor2 = AccelerometerSensorChannelInterface::interface(sensorName);
-        }
-        else if (sensorName == "rotationsensor"){
-            sensor = RotationSensorChannelInterface::interface(sensorName);
-            sensor2 = RotationSensorChannelInterface::interface(sensorName);
-        }
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
+        AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
+        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
-        SampleCollector client1(*sensor, true);
-        int interval = 100;
-        sensor->setInterval(interval);
-        sensor->setStandbyOverride(true);
 
-        sensor->start();
+        SampleCollector client1(*sensor1, true);
+        int interval = 100;
+        sensor1->setInterval(interval);
+        sensor1->setStandbyOverride(true);
+        sensor1->start();
 
         SampleCollector client2(*sensor2, true);
-        int interval2 = 1000;
+        int interval2 = 10 * interval;
         sensor2->setInterval(interval2);
         sensor2->setDownsampling(false);
         sensor2->setStandbyOverride(true);
         sensor2->start();
 
-        qDebug() << sensorName <<" started, waiting for 2200ms.";
-        QTest::qWait(2200);
 
-        sensor->stop();
+        // waiting for two frames to come
+//        int period = 2200;
+        int period = qMax(interval, interval2) * 2.2;
+        qDebug() << sensorName <<" started, waiting for "<<period<<" ms.";
+        QTest::qWait(period);
+
+        sensor1->stop();
         sensor2->stop();
 
+        // sensor
         int dataCount=client1.getSamples().size();
-        int limit = 20;
-        QVERIFY2( dataCount>=limit, errorMessage(sensorName, interval, dataCount, 4, limit));
+        int limit = period / interval * 0.9;
+        QVERIFY2( dataCount>=limit, errorMessage(sensorName, interval, dataCount, ">=", limit));
 
+
+        // when no downsampling the two sensors should get the about the same amount of samples
         int sampleCountDiff = abs(client1.getSamples().size() - client2.getSamples().size());
-        limit = 2;
-        QVERIFY2( sampleCountDiff<limit, errorMessage(sensorName, interval, sampleCountDiff, 1, limit));
+        limit = 2;  //for leaks
+        QVERIFY2( sampleCountDiff<limit, errorMessage(sensorName, interval, sampleCountDiff, "<", limit));
 
 
-        delete sensor;
+        delete sensor1;
         delete sensor2;
     }
 }
