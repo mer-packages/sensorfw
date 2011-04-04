@@ -221,7 +221,7 @@ bool AbstractSensorChannel::downsampleAndPropagate(const CalibratedMagneticField
                                                 ry / samples.count(),
                                                 rz / samples.count(),
                                                 data.level_);
-        sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_ << downsampled.rx_ << ", " << downsampled.ry_ << ", " << downsampled.rz_;
+        sensordLogT() << "Downsampled for session " << sessionId << ": " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_ << ", " << downsampled.rx_ << ", " << downsampled.ry_ << ", " << downsampled.rz_;
 
         if (writeToSession(sessionId, (const void*)& downsampled, sizeof(CalibratedMagneticFieldData)))
         {
