@@ -40,14 +40,6 @@
 QStringList ClientApiTest::m_bufferingSensors;
 
 
-
-//QByteArray ClientApiTest::errorMessage(QString sensorName, int interval, int value, QString compOperator, int limit){
-//    QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000/interval)));
-//    errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
-//    return errMsg.toAscii();
-//}
-
-
 ClientApiTest::ClientApiTest(){
     if (!m_bufferingSensors.contains("magnetometersensor"))
         m_bufferingSensors.append("magnetometersensor");
@@ -68,7 +60,7 @@ AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
 }
 
 
-void ClientApiTest::calcAverages(QVector<QObject*> data, long& x, long& y,  long& z){
+void ClientApiTest::calcAverages(QVector<QObject*> data, float& x, float& y,  float& z){
     int l = data.size();
     for (int i=0; i<l; i++){
         XYZ* dataReal = (XYZ*)(data.at(i));
@@ -82,7 +74,7 @@ void ClientApiTest::calcAverages(QVector<QObject*> data, long& x, long& y,  long
 }
 
 
-void ClientApiTest::calcMaggeAverages(QVector<QObject*> data, long& x, long& y,  long& z, long& rx, long& ry,  long& rz){
+void ClientApiTest::calcMaggeAverages(QVector<QObject*> data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz){
     int l = data.size();
     for (int i=0; i<l; i++){
         MagneticField* dataReal = (MagneticField*)(data.at(i));
@@ -93,12 +85,12 @@ void ClientApiTest::calcMaggeAverages(QVector<QObject*> data, long& x, long& y, 
         ry += dataReal->ry();
         rz += dataReal->rz();
     }
-    x/=l;
-    y/=l;
-    z/=1;
-    rx/=l;
-    ry/=l;
-    rz/=1;
+    x= (float)x/l;
+    y= (float)y/l;
+    z =(float)z/1;
+    rx =(float)rx/l;
+    ry= (float)ry/l;
+    rz= (float)rz/l;
 }
 
 long ClientApiTest::getLimit(AbstractSensorChannelInterface *sensor){
@@ -776,8 +768,8 @@ void ClientApiTest::testDownsampling()
         sampleCount = client2.getSamples().size();
         QVERIFY2( sampleCount==limit, errorMessage(sensorName, interval, sampleCount, "==", limit));
 
-        long x1 = 0, y1=0, z1 =0, rx1 = 0, ry1 = 0, rz1 = 0;
-        long x2 = 0,y2 = 0, z2 = 0, rx2 = 0, ry2 = 0, rz2 = 0;
+        float x1 = 0, y1=0, z1 =0, rx1 = 0, ry1 = 0, rz1 = 0;
+        float x2 = 0,y2 = 0, z2 = 0, rx2 = 0, ry2 = 0, rz2 = 0;
 
         if (sensorName!="magnetometersensor") calcAverages(client1.getSamples(), x1, y1, z1);
         else calcMaggeAverages(client1.getSamples(), x1, y1, z1, rx1, ry1, rz1);
@@ -786,25 +778,19 @@ void ClientApiTest::testDownsampling()
         if (sensorName!="magnetometersensor") calcAverages(client2.getSamples(), x2, y2, z2);
         else calcMaggeAverages(client2.getSamples(), x2, y2, z2, rx2, ry2, rz2);
 
+
         long rangeLimit = getLimit(sensor1);
-//        qDebug()<<" rangeLimit = "<<rangeLimit;
+        qDebug()<<sensorName<<"range = "<<rangeLimit<<" x1="<<x1<<" y1="<<y1<<" z1="<<z1<<" x2="<<x2<<" y2="<<y2<<" z2="<<z2<<" rx1="<<rx1<<" ry1="<<ry1<<" rz1="<<rz1<<" rx2="<<rx2<<" ry2="<<ry2<<" rz2="<<rz2;
 
         //since instances were not started at the same time there may be few samples of difference...
         // error less than 10% of total range is accepted
-        float result = abs(x1 - x2)/rangeLimit;
         float limitF = 0.1f;
-
-        QVERIFY2((float)abs(x1 - x2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
-        result = abs(y1 - y2)/rangeLimit;
-        QVERIFY2((float)abs(y1 - y2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
-        result = abs(z1 - z2)/rangeLimit;
-        QVERIFY2((float)abs(z1 - z2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF));
-        result = abs(rx1 - rx2)/rangeLimit;
-        QVERIFY2((float)abs(rx1 - rx2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
-        result = abs(ry1 - ry2)/rangeLimit;
-        QVERIFY2((float)abs(ry1 - ry2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
-        result = abs(rz1 - rz2)/rangeLimit;
-        QVERIFY2((float)abs(rz1 - rz2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
+        QVERIFY2((float)abs(x1 - x2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(x1 - x2)/rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(y1 - y2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(y1 - y2)/rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(z1 - z2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(z1 - z2)/rangeLimit,"<", limitF));
+        QVERIFY2((float)abs(rx1 - rx2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(rx1 - rx2)/rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(ry1 - ry2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(ry1 - ry2)/rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(rz1 - rz2)/rangeLimit < limitF, errorMessage(sensorName,interval, (float)abs(rz1 - rz2)/rangeLimit,"<", limitF ));
     }
 }
 

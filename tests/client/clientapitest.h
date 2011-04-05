@@ -51,8 +51,8 @@ public:
 
 
 private:
-    void calcAverages(QVector<QObject*> data, long& x, long& y,  long& z);
-    void calcMaggeAverages(QVector<QObject*> data, long& x, long& y,  long& z, long& rx, long& ry,  long& rz);
+    void calcAverages(QVector<QObject*> data, float& x, float& y,  float& z);
+    void calcMaggeAverages(QVector<QObject*> data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz);
     long getLimit(AbstractSensorChannelInterface* sensor);
     static AbstractSensorChannelInterface* getSensor(QString sensorName);
     static QStringList m_bufferingSensors;
