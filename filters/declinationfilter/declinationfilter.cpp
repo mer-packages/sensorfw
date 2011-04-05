@@ -47,12 +47,12 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
         loadSettings();
         lastUpdate_ = newOrientation.timestamp_;
     }
+    newOrientation.correctedDegrees_ = newOrientation.degrees_;
     if(declinationCorrection_)
     {
-        newOrientation.correctedDegrees_ = newOrientation.degrees_;
         newOrientation.correctedDegrees_ += declinationCorrection_;
         newOrientation.correctedDegrees_ %= 360;
-        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_;
+        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_ << ". Level: " << newOrientation.level_;
     }
     orientation_ = newOrientation;
     source_.propagate(1, &orientation_);

@@ -125,7 +125,7 @@ Q_DECLARE_METATYPE( Compass )
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
-    argument << data.data().timestamp_ << data.data().degrees_ << data.data().level_;
+    argument << data.data().timestamp_ << data.data().degrees_ << data.data().correctedDegrees_ << data.data().level_;
     argument.endStructure();
     return argument;
 }
@@ -140,7 +140,7 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
 {
     argument.beginStructure();
-    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.level_;
+    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.correctedDegrees_ >> data.data_.level_;
     argument.endStructure();
     return argument;
 }
