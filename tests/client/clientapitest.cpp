@@ -49,9 +49,12 @@ QByteArray ClientApiTest::errorMessage(QString sensorName, int interval, int val
 
 
 ClientApiTest::ClientApiTest(){
-    m_bufferingSensors.append("magnetometersensor");
-//    m_bufferingSensors.append("accelerometersensor");
-//    m_bufferingSensors.append("rotationsensor");
+    if (!m_bufferingSensors.contains("magnetometersensor"))
+        m_bufferingSensors.append("magnetometersensor");
+//    if (!m_bufferingSensors.contains("accelerometersensor"))
+//        m_bufferingSensors.append("accelerometersensor");
+//    if (!m_bufferingSensors.contains("rotationsensor"))
+//        m_bufferingSensors.append("rotationsensor");
 }
 
 AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
@@ -151,12 +154,14 @@ void ClientApiTest::testOrientationSensor()
 
     // Get session
     OrientationSensorChannelInterface* sensorIfc = OrientationSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
+
 
     // Attempt to get another session
     OrientationSensorChannelInterface* sensorIfc2 = OrientationSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -171,7 +176,6 @@ void ClientApiTest::testOrientationSensor()
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
 
-    delete sensorIfc;
 }
 
 void ClientApiTest::testAccelerometerSensor()
@@ -182,12 +186,13 @@ void ClientApiTest::testAccelerometerSensor()
 
     // Get session
     AccelerometerSensorChannelInterface* sensorIfc = AccelerometerSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get control session");
 
     // Attempt to get another session
     AccelerometerSensorChannelInterface* sensorIfc2 = AccelerometerSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -204,7 +209,6 @@ void ClientApiTest::testAccelerometerSensor()
     XYZ sample2 = qvariant_cast<XYZ>(sensorIfc->property("value"));
     QVERIFY(sample1 == sample2);
 
-    delete sensorIfc;
 }
 
 void ClientApiTest::testMagnetometerSensor()
@@ -215,12 +219,13 @@ void ClientApiTest::testMagnetometerSensor()
 
     // Get session
     MagnetometerSensorChannelInterface* sensorIfc = MagnetometerSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Attempt to get another session
     MagnetometerSensorChannelInterface* sensorIfc2 = MagnetometerSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -240,7 +245,6 @@ void ClientApiTest::testMagnetometerSensor()
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
 
-    delete sensorIfc;
 }
 
 void ClientApiTest::testCompassSensor()
@@ -251,12 +255,13 @@ void ClientApiTest::testCompassSensor()
 
     // Get session
     CompassSensorChannelInterface* sensorIfc = CompassSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Attempt to get another session
     CompassSensorChannelInterface* sensorIfc2 = CompassSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -281,7 +286,6 @@ void ClientApiTest::testCompassSensor()
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
 
-    delete sensorIfc;
 }
 
 void ClientApiTest::testTapSensor()
@@ -292,12 +296,13 @@ void ClientApiTest::testTapSensor()
 
     // Get session
     TapSensorChannelInterface* sensorIfc = TapSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Attempt to get another session
     TapSensorChannelInterface* sensorIfc2 = TapSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -316,8 +321,6 @@ void ClientApiTest::testTapSensor()
     // test stop
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
-
-    delete sensorIfc;
 }
 
 void ClientApiTest::testALSSensor()
@@ -332,41 +335,13 @@ void ClientApiTest::testALSSensor()
     //       sessions too...)
 
     ALSSensorChannelInterface* sensorIfc = ALSSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Get another session
     ALSSensorChannelInterface* sensorIfc2 = ALSSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
-
-    // Test properties
-    //sensorIfc->setInterval(100);
-
-    // test start
-    QDBusReply<void> reply = sensorIfc->start();
-    QVERIFY(reply.isValid());
-
-    // test stop
-    reply = sensorIfc->stop();
-    QVERIFY(reply.isValid());
-
-    delete sensorIfc;
-}
-
-void ClientApiTest::testProximitySensor()
-{
-    QString sensorName("proximitysensor");
-    SensorManagerInterface& sm = SensorManagerInterface::instance();
-    QVERIFY( sm.isValid() );
-
-    // Get session
-    ProximitySensorChannelInterface* sensorIfc = ProximitySensorChannelInterface::interface(sensorName);
-    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
-
-    // Attempt to get another session
-    ProximitySensorChannelInterface* sensorIfc2 = ProximitySensorChannelInterface::interface(sensorName);
-    QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -378,8 +353,34 @@ void ClientApiTest::testProximitySensor()
     // test stop
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
+}
 
-    delete sensorIfc;
+void ClientApiTest::testProximitySensor()
+{
+    QString sensorName("proximitysensor");
+    SensorManagerInterface& sm = SensorManagerInterface::instance();
+    QVERIFY( sm.isValid() );
+
+    // Get session
+    ProximitySensorChannelInterface* sensorIfc = ProximitySensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
+    QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
+
+    // Attempt to get another session
+    ProximitySensorChannelInterface* sensorIfc2 = ProximitySensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
+    QVERIFY2(sensorIfc2, "Failed to get another session");
+
+    // Test properties
+    sensorIfc->setInterval(100);
+
+    // test start
+    QDBusReply<void> reply = sensorIfc->start();
+    QVERIFY(reply.isValid());
+
+    // test stop
+    reply = sensorIfc->stop();
+    QVERIFY(reply.isValid());
 }
 
 void ClientApiTest::testRotationSensor()
@@ -390,12 +391,14 @@ void ClientApiTest::testRotationSensor()
 
     // Get session
     RotationSensorChannelInterface* sensorIfc = RotationSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensorIfc);
     QVERIFY2(sensorIfc && sensorIfc->isValid(), "Failed to get session");
 
     // Attempt to get another session
     RotationSensorChannelInterface* sensorIfc2 = RotationSensorChannelInterface::interface(sensorName);
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensorIfc2);
     QVERIFY2(sensorIfc2, "Failed to get another session");
-    delete sensorIfc2;
+
 
     // Test properties
     sensorIfc->setInterval(100);
@@ -416,7 +419,6 @@ void ClientApiTest::testRotationSensor()
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
 
-    delete sensorIfc;
 }
 
 /**
@@ -435,6 +437,7 @@ void ClientApiTest::testCommonAdaptorPipeline()
     AccelerometerSensorChannelInterface *accelerometer;
 
     orientation = OrientationSensorChannelInterface::interface("orientationsensor");
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp(orientation);
     QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor channel");
     orientation->setInterval(100);
 
@@ -443,6 +446,7 @@ void ClientApiTest::testCommonAdaptorPipeline()
     QTest::qWait(DELAY);
 
     accelerometer = AccelerometerSensorChannelInterface::interface("accelerometersensor");
+    QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(accelerometer);
     QVERIFY2(accelerometer && accelerometer->isValid(), "Could not get accelerometer sensor channel");
     accelerometer->setInterval(100);
 
@@ -454,14 +458,11 @@ void ClientApiTest::testCommonAdaptorPipeline()
     qDebug() << "Orientation sensor stopped, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);
 
-    delete orientation;
     qDebug() << "Orientation sensor destroyed, waiting for" << DELAY << "ms.";
     QTest::qWait(DELAY);
 
     accelerometer->stop();
     qDebug() << "Accelerometer sensor stopped.";
-
-    delete accelerometer;
 }
 
 void ClientApiTest::testSessionInitiation()
@@ -469,6 +470,7 @@ void ClientApiTest::testSessionInitiation()
     const OrientationSensorChannelInterface *orientation;
 
     orientation = OrientationSensorChannelInterface::interface("orientationsensor");
+    QScopedPointer<const OrientationSensorChannelInterface> sensorTmp(orientation);
     QVERIFY2(orientation && orientation->isValid(), "Could not get orientation sensor channel");
 }
 
@@ -478,6 +480,7 @@ void ClientApiTest::testBuffering()
     for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
         QString sensorName = m_bufferingSensors.at(i);
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
         int bufferSize = 10;
@@ -494,8 +497,10 @@ void ClientApiTest::testBuffering()
         int dataLimit = 4;
         int frameLimit = 1;
 
+        int period = bufferSize * interval * 1.2;   // within [bufferSize * interval, bufferingInterval]
+
         for (int i=0; i<3; i++){
-            int period = bufferSize* interval * (i+1) + 250;
+            //            int period = bufferSize* interval * (i+1);
             qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
             QTest::qWait(period);
             int dataCount = client.getDataCount();
@@ -506,9 +511,9 @@ void ClientApiTest::testBuffering()
             int frameDataCount = client.getFrameDataCount();
             QVERIFY2(frameDataCount == bufferSize*(i+1), errorMessage(sensorName, interval, frameDataCount, "==", bufferSize*(i+1)));
             client.resetCounters();
+            period += (bufferSize * interval);
         }
         sensor->stop();
-        delete sensor;
     }
 }
 
@@ -519,6 +524,7 @@ void ClientApiTest::testBufferingAllIntervalRanges()
         QString sensorName = m_bufferingSensors.at(i);
 
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
 
@@ -526,13 +532,15 @@ void ClientApiTest::testBufferingAllIntervalRanges()
         int bufferSize = 100;
         int dataLimit =2;
         int frameLimit = 1;
-        int frameDataCountLimit = bufferSize;
         
         QList<DataRange> intervals = sensor->getAvailableIntervals();
         for (int i=0, l= intervals.size(); i<l; i++){
+
             qreal intervalMax = ((DataRange)(intervals.at(i))).max;
             qreal intervalMin =((DataRange)(intervals.at(i))).min;
+
             if (intervalMin==0 && intervalMax==0) continue;
+            if (intervalMax>=200) continue; //let's stop to 5Hz
             QList<qreal> intervalTests;
             if (intervalMin!=0) intervalTests.append(intervalMin);
             if (intervalMin!=intervalMax){
@@ -543,13 +551,13 @@ void ClientApiTest::testBufferingAllIntervalRanges()
                 qreal interval = intervalTests.at(j);
                 sensor->setInterval(interval);
                 sensor->setBufferSize(bufferSize);
-                sensor->setBufferInterval(interval*bufferSize*2);
+                sensor->setBufferInterval(interval*bufferSize*3);
                 sensor->setDownsampling(false);
                 sensor->setStandbyOverride(true);
                 sensor->start();
                 client.resetTimers();
 
-                int period = interval*bufferSize*1.5;
+                int period = interval*bufferSize*1.25;
                 qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
                 QTest::qWait(period);
                 int dataCount = client.getDataCount();
@@ -560,12 +568,11 @@ void ClientApiTest::testBufferingAllIntervalRanges()
                 QVERIFY2( frameCount == frameLimit, errorMessage(sensorName, interval, frameCount, "==", frameLimit));
 
                 int frameDataCount = client.getFrameDataCount();
-                QVERIFY2( frameDataCount == frameDataCountLimit, errorMessage(sensorName, interval, frameDataCount, "==", frameDataCountLimit));
+                QVERIFY2( frameDataCount == bufferSize, errorMessage(sensorName, interval, frameDataCount, "==", bufferSize));
                 sensor->stop();
                 client.resetCounters();
             }
         }
-        delete sensor;
     }
 }
 
@@ -575,53 +582,46 @@ void ClientApiTest::testBufferingCompatibility()
         QString sensorName = m_bufferingSensors.at(i);
 
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, false);
         int interval = 100;
         int bufferSize = 10;
         sensor->setInterval(interval);
         sensor->setBufferSize(bufferSize);
-        sensor->setBufferInterval(1.5 * interval * bufferSize);
+        sensor->setBufferInterval(2 * interval * bufferSize);
         sensor->setDownsampling(false);
         sensor->setStandbyOverride(true);
-
-
         sensor->start();
         client.resetTimers();
 
-        int period = 1.25 * interval * bufferSize;
+        int period = 1.5 * interval * bufferSize;
         qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
 
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int dataCount = client.getDataCount();
-        int limit = bufferSize;
-        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, "==", limit));
+        QVERIFY2( dataCount==bufferSize, errorMessage(sensorName, interval, dataCount, "==", bufferSize));
 
 
         int frameCount =client.getFrameCount();
-//        limit = 0;
-        limit = period / (interval*bufferSize);
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));;
-
-
+        QVERIFY2( frameCount == 0, errorMessage(sensorName, interval, frameCount, "==",0));
         client.resetCounters();
+
+        period  =  interval * bufferSize * 1.1;
         qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         dataCount = client.getDataCount();
-        limit = bufferSize;
-        QVERIFY2( dataCount==limit, errorMessage(sensorName, interval, dataCount, "==", limit));
+        QVERIFY2( dataCount==bufferSize, errorMessage(sensorName, interval, dataCount, "==", bufferSize));
 
         frameCount =client.getFrameCount();
-        limit = period / (interval*bufferSize);
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));;
-        QVERIFY(client.getFrameDataCount() == 0);
+        QVERIFY2( frameCount == 0, errorMessage(sensorName, interval, frameCount, "==",0));
+//        QVERIFY(client.getFrameDataCount() == 0);
 
         sensor->stop();
-        delete sensor;
     }
 }
 
@@ -632,6 +632,7 @@ void ClientApiTest::testBufferingInterval()
         QString sensorName = m_bufferingSensors.at(i);
 
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
         int interval = 100;
@@ -646,7 +647,7 @@ void ClientApiTest::testBufferingInterval()
         sensor->start();
         client.resetTimers();
 
-        int period = interval * bufferSize + 500;
+        int period = interval * bufferSize * 1.2;
         qDebug() << sensorName<< " started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
 
@@ -654,21 +655,15 @@ void ClientApiTest::testBufferingInterval()
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int limit = 4;
         QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
-
-
         int frameCount =client.getFrameCount();
         limit = period / (bufferSize*interval);
-//        limit = 1;
         QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));
-
-//        limit = 40;
-        limit = bufferSize;
-
         int frameDataCount = client.getFrameDataCount();
-        QVERIFY2( frameDataCount == limit, errorMessage(sensorName, interval, frameDataCount, "==", limit));
-
+        QVERIFY2( frameDataCount == bufferSize, errorMessage(sensorName, interval, frameDataCount, "==", bufferSize));
 
         sensor->stop();
+        client.resetCounters();
+
         bufferInterval = interval * bufferSize * 0.5;
         sensor->setBufferInterval(bufferInterval);
         sensor->setBufferSize(bufferSize);
@@ -676,7 +671,6 @@ void ClientApiTest::testBufferingInterval()
 
         sensor->start();
         client.resetTimers();
-
 
         period = interval * bufferSize * 0.7;
 
@@ -686,18 +680,15 @@ void ClientApiTest::testBufferingInterval()
         dataCount = client.getDataCount();
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-        limit *=2;
+        limit =4;
         QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
-
         frameCount =client.getFrameCount();
-        limit += 1;
-        QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));
-        limit = bufferSize * 2;
+        QVERIFY2( frameCount == 1, errorMessage(sensorName, interval, frameCount, "==", 1));
+
         frameDataCount = client.getFrameDataCount();
-        QVERIFY2( frameDataCount <= limit, errorMessage(sensorName, interval, frameDataCount, "<=", limit));
+        QVERIFY2( frameDataCount < bufferSize, errorMessage(sensorName, interval, frameDataCount, "<=", bufferSize));
 
         sensor->stop();
-        delete sensor;
     }
 }
 
@@ -708,6 +699,7 @@ void ClientApiTest::testAvailableBufferIntervals()
         QString sensorName = m_bufferingSensors.at(i);
 
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
 
         IntegerRangeList rangeList = sensor->getAvailableBufferIntervals();
@@ -716,7 +708,6 @@ void ClientApiTest::testAvailableBufferIntervals()
         QVERIFY(rangeList.front().second == 60000); //default max value for buffer if no hw buffering, see nodebase.cpp
 
         sensor->stop();
-        delete sensor;
     }
 }
 
@@ -727,6 +718,7 @@ void ClientApiTest::testAvailableBufferSizes()
         QString sensorName = m_bufferingSensors.at(i);
 
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         IntegerRangeList rangeList = sensor->getAvailableBufferSizes();
         QVERIFY(rangeList.size() == 1);
@@ -734,7 +726,6 @@ void ClientApiTest::testAvailableBufferSizes()
         QVERIFY(rangeList.front().second == 256);
 
         sensor->stop();
-        delete sensor;
     }
 }
 
@@ -746,6 +737,8 @@ void ClientApiTest::testDownsampling()
 
         AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
         AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensor2);
         QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
 
@@ -774,7 +767,7 @@ void ClientApiTest::testDownsampling()
         sensor1->stop();
         sensor2->stop();
 
-//        int limit = 20;
+        //        int limit = 20;
 
         int limit = period / interval * 0.9;    //90% of calculated size
 
@@ -804,8 +797,6 @@ void ClientApiTest::testDownsampling()
         QVERIFY(abs(rx1 - rx2)/rangeLimit < 0.1);
         QVERIFY(abs(ry1 - ry2)/rangeLimit < 0.1);
         QVERIFY(abs(rz1 - rz2)/rangeLimit < 0.1);
-        delete sensor1;
-        delete sensor2;
     }
 }
 
@@ -816,6 +807,9 @@ void ClientApiTest::testDownsamplingDisabled()
 
         AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
         AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
+        QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensor2);
+
         QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
 
@@ -834,7 +828,7 @@ void ClientApiTest::testDownsamplingDisabled()
 
 
         // waiting for two frames to come
-//        int period = 2200;
+        //        int period = 2200;
         int period = qMax(interval, interval2) * 2.2;
         qDebug() << sensorName <<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
@@ -852,10 +846,6 @@ void ClientApiTest::testDownsamplingDisabled()
         int sampleCountDiff = abs(client1.getSamples().size() - client2.getSamples().size());
         limit = 2;  //for leaks
         QVERIFY2( sampleCountDiff<limit, errorMessage(sensorName, interval, sampleCountDiff, "<", limit));
-
-
-        delete sensor1;
-        delete sensor2;
     }
 }
 
