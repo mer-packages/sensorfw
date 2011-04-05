@@ -131,6 +131,7 @@ private:
     int deviceCount_;                /**< number of available input devices */
     const int maxDeviceCount_;       /**< maximum number of supported devices */
     input_event evlist_[64];         /**< input event buffer */
+    unsigned int cachedInterval_;    /**< cached interval reading */
 };
 
 #endif
