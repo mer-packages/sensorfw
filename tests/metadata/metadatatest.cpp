@@ -251,6 +251,18 @@ void MetaDataTest::testAvailableBufferSizes()
     QVERIFY2(sizeList.size() > 0, "No buffer sizes received from sensor");
 }
 
+void MetaDataTest::testCompassDeclination()
+{
+    CompassSensorChannelInterface* compass = CompassSensorChannelInterface::interface("compasssensor");
+    compass->start();
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 50");
+    QCOMPARE(compass->declinationValue(), 50);
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 0");
+    QCOMPARE(compass->declinationValue(), 0);
+    compass->stop();
+    delete compass;
+}
+
 void MetaDataTest::printMetaData()
 {
     QList<QString> sensorNameList;

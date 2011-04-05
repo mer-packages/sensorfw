@@ -77,6 +77,8 @@ private slots:
     void testAvailableIntervals();
     void testAvailableBufferIntervals();
     void testAvailableBufferSizes();
+
+    void testCompassDeclination();
 };
 
 #endif // METADATA_TEST_H
