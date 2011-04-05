@@ -41,7 +41,7 @@ CalibrationHandler::CalibrationHandler(QObject* parent) :
 {
     m_timer.setSingleShot(true);
 
-    m_calibRate = Config::configuration()->value<int>("m_calibRate", 100);
+    m_calibRate = Config::configuration()->value<int>("calibration_rate", 100);
     m_calibTimeout = Config::configuration()->value<int>("calibration_timeout", 60000);
 }
 

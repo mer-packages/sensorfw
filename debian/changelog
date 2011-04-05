@@ -13,6 +13,7 @@ sensord (0.6.42) unstable; urgency=low
     - CompassSensorChannelAdaptor does not have options anymore to enable/disable declination correction globally.
     - DeclinationFilter can be forced to read and update declination value from gconf with declinationValue().
   * Improved FilterApiTests.
+  * Fixed regression from CalibrationHandler: calibration_rate config entry didn't have any effect.
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 05 Apr 2011 15:01:35 +0200
 
