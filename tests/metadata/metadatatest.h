@@ -53,13 +53,12 @@ private:
     QList<QString> m_changedProperties;
 };
 
-
 class MetaDataTest : public QObject
 {
     Q_OBJECT;
 
 private slots:
-    // Setup tests
+
     void initTestCase();
     void init();
     void cleanup();

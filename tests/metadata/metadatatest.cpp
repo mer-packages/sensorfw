@@ -67,19 +67,14 @@ void MetaDataTest::initTestCase()
 
 void MetaDataTest::init()
 {
-    //qDebug() << "Run before each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void MetaDataTest::cleanup()
 {
-    //qDebug() << "Run after each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void MetaDataTest::cleanupTestCase()
 {
-    //qDebug() << "Run after all test cases";
 }
 
 void MetaDataTest::testDescription()
@@ -99,7 +94,6 @@ void MetaDataTest::testDescription()
 
     delete sensorIfc;
 }
-
 
 void MetaDataTest::testAvailableRanges()
 {
