@@ -43,7 +43,8 @@
 InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     deviceCount_(0),
-    maxDeviceCount_(maxDeviceCount)
+    maxDeviceCount_(maxDeviceCount),
+    cachedInterval_(0)
 {
     memset(evlist_, 0x0, sizeof(input_event)*64);
 }
@@ -91,6 +92,17 @@ int InputDevAdaptor::getInputDevices(const QString& matchString)
     if (deviceCount_ == 0) {
         sensordLogW() << id() << " cannot find any device for: " << matchString;
         setValid(false);
+    }
+    else
+    {
+        QFile pollFile;
+        if(openPollFile(pollFile, QIODevice::ReadOnly))
+        {
+            char buf[16];
+            if (pollFile.readLine(buf, sizeof(buf)) > 0) {
+                cachedInterval_ = QString(buf).toUInt();
+            }
+        }
     }
 
     return deviceCount_;
@@ -167,19 +179,7 @@ bool InputDevAdaptor::openPollFile(QFile& pollFile, QIODevice::OpenMode mode) co
 
 unsigned int InputDevAdaptor::interval() const
 {
-    if (!deviceCount_) {
-        return -1;
-    }
-
-    QFile pollFile;
-    if(!openPollFile(pollFile, QIODevice::ReadOnly))
-        return 0;
-
-    char buf[16];
-    if (pollFile.readLine(buf, sizeof(buf)) > 0) {
-        return QString(buf).toUInt();
-    }
-    return 0;
+    return cachedInterval_;
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
@@ -198,6 +198,7 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
         sensordLogW() << "Unable to set poll interval setting for " << deviceString_ << ": " << pollFile.error();
         return false;
     }
+    cachedInterval_ = value;
     return true;
 }
 
