@@ -12,7 +12,7 @@ sensord (0.6.42) unstable; urgency=low
     - CompassSensorChannel now only listens "truenorth" output from CompassChain.
     - CompassSensorChannelAdaptor does not have options anymore to enable/disable declination correction globally.
     - DeclinationFilter can be forced to read and update declination value from gconf with declinationValue().
-  * Improved FilterApiTests.
+  * Improved FilterApiTests and MetadataTests.
   * Fixed regression from CalibrationHandler: calibration_rate config entry didn't have any effect.
   * Optimized InputDevAdaptor interval handling.
 
