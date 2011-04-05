@@ -8,11 +8,13 @@ sensord (0.6.42) unstable; urgency=low
   * Fixes to compass declination correction handling (Fixes: NB#241539):
     - CompassSensorChannelInterface::setUseDeclination() enables it only locally.
     - CompassData includes both raw and corrected reading.
-    - DeclinationFilter periodically reads value from GConf in case it gets changed.
+    - DeclinationFilter periodically reads value from GConf in case it gets changed. Interval is configurable. 
     - CompassSensorChannel now only listens "truenorth" output from CompassChain.
     - CompassSensorChannelAdaptor does not have options anymore to enable/disable declination correction globally.
+    - DeclinationFilter can be forced to read and update declination value from gconf with declinationValue().
+  * Improved FilterApiTests.
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 01 Apr 2011 11:48:34 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Tue, 05 Apr 2011 15:01:35 +0200
 
 sensord (0.6.41) unstable; urgency=low
 

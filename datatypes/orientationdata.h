@@ -129,7 +129,18 @@ public:
      * @param level Magnetometer calibration level.
      */
     CompassData(const quint64& timestamp, int degrees, int level) :
-        TimedData(timestamp), degrees_(degrees), level_(level) {}
+        TimedData(timestamp), degrees_(degrees), correctedDegrees_(0), level_(level) {}
+
+    /**
+     * Constructor.
+     *
+     * @param timestamp timestamp as monotonic time (microsec).
+     * @param degrees Angle to north.
+     * @param level Magnetometer calibration level.
+     * @param correctedDegrees Declination corrected angle to north.
+     */
+    CompassData(const quint64& timestamp, int degrees, int level, int correctedDegrees) :
+        TimedData(timestamp), degrees_(degrees), correctedDegrees_(correctedDegrees), level_(level) {}
 
     int degrees_; /**< Angle to north */
     int correctedDegrees_; /**< Declination corrected angle to north */

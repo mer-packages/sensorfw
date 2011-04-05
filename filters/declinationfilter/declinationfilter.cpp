@@ -26,30 +26,34 @@
 
 #include <gconf/gconf-client.h>
 #include "declinationfilter.h"
+#include "config.h"
 #include "logging.h"
 
 const char* DeclinationFilter::declinationKey = "/system/osso/location/settings/magneticvariation";
-quint64 DeclinationFilter::updateInterval((quint64)1000000 * (quint64)60 * (quint64)60); // 1 hour
 
 DeclinationFilter::DeclinationFilter() :
         Filter<CompassData, DeclinationFilter, CompassData>(this, &DeclinationFilter::correct),
         declinationCorrection_(0)
 {
     g_type_init();
+    updateInterval_ = Config::configuration()->value<quint64>("declination_update_interval", 1000 * 60 * 60) * 1000;
 }
 
 void DeclinationFilter::correct(unsigned, const CompassData* data)
 {
     CompassData newOrientation(*data);
-    if(newOrientation.timestamp_ - lastUpdate_ > updateInterval)
+    if(newOrientation.timestamp_ - lastUpdate_ > updateInterval_)
     {
         loadSettings();
         lastUpdate_ = newOrientation.timestamp_;
-        sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;
     }
-    newOrientation.correctedDegrees_ = newOrientation.degrees_;
-    newOrientation.correctedDegrees_ += declinationCorrection_;
-    newOrientation.correctedDegrees_ %= 359;
+    if(declinationCorrection_)
+    {
+        newOrientation.correctedDegrees_ = newOrientation.degrees_;
+        newOrientation.correctedDegrees_ += declinationCorrection_;
+        newOrientation.correctedDegrees_ %= 360;
+        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_;
+    }
     orientation_ = newOrientation;
     source_.propagate(1, &orientation_);
 }
@@ -75,6 +79,12 @@ void DeclinationFilter::loadSettings()
     }
 
     declinationCorrection_ = value;
-
+    sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;
     g_object_unref(client);
+}
+
+int DeclinationFilter::declinationCorrection()
+{
+    loadSettings();
+    return declinationCorrection_;
 }

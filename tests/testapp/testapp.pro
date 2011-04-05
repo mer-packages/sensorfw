@@ -1,6 +1,8 @@
 QT += core dbus network
 QT -= gui
 
+include(../common-install.pri)
+
 CONFIG += debug
 TEMPLATE = app
 TARGET = sensortestapp
@@ -57,7 +59,3 @@ equals(TARGET_LIB,qtmob) {
 
 testconf.path = /usr/share/sensord-tests/
 testconf.files = testapp.conf
-
-target.path = /usr/bin
-
-INSTALLS += target testconf

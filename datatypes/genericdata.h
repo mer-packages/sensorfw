@@ -52,7 +52,19 @@ public:
 class TimedXyzData : public TimedData
 {
 public:
+    /**
+     * Constructor.
+     */
     TimedXyzData() : TimedData(0), x_(0), y_(0), z_(0) {}
+
+    /**
+     * Constructor.
+     *
+     * @param timestamp monotonic time (microsec)
+     * @param x X coordinate.
+     * @param y Y coordinate.
+     * @param z Z coordinate.
+     */
     TimedXyzData(const quint64& timestamp, int x, int y, int z) : TimedData(timestamp), x_(x), y_(y), z_(z) {}
 
     int x_; /**< X value */
