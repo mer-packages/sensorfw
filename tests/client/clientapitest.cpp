@@ -499,8 +499,7 @@ void ClientApiTest::testBuffering()
 
         int period = bufferSize * interval * 1.2;   // within [bufferSize * interval, bufferingInterval]
 
-        for (int i=0; i<3; i++){
-            //            int period = bufferSize* interval * (i+1);
+        for (int i=0; i<2; i++){
             qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
             QTest::qWait(period);
             int dataCount = client.getDataCount();
@@ -771,7 +770,6 @@ void ClientApiTest::testDownsampling()
         //        int limit = 20;
 
         int limit = period / interval * 0.9;    //90% of calculated size
-
         int sampleCount = client1.getSamples().size();
         QVERIFY2( sampleCount>=limit, errorMessage(sensorName, interval, sampleCount, ">=", limit));
         limit = period / interval2 ;
@@ -789,22 +787,24 @@ void ClientApiTest::testDownsampling()
         else calcMaggeAverages(client2.getSamples(), x2, y2, z2, rx2, ry2, rz2);
 
         long rangeLimit = getLimit(sensor1);
+//        qDebug()<<" rangeLimit = "<<rangeLimit;
 
         //since instances were not started at the same time there may be few samples of difference...
         // error less than 10% of total range is accepted
-        double result = abs(x1 - x2)/rangeLimit;
-        QVERIFY2(abs(x1 - x2)/rangeLimit < 0.1, errorMessage(sensorName,interval,result,"<", 0.1 ));
-        result = abs(y1 - y2)/rangeLimit;
-        QVERIFY2(abs(y1 - y2)/rangeLimit < 0.1, errorMessage(sensorName,interval,result,"<", 0.1 ));
-        result = abs(z1 - z2)/rangeLimit;
-        QVERIFY2(abs(z1 - z2)/rangeLimit < 0.1, errorMessage(sensorName,interval,result,"<", 0.1 ));
-        result = abs(rx1 - rx2)/rangeLimit;
-        QVERIFY2(abs(rx1 - rx2)/rangeLimit < 0.1, errorMessage(sensorName,interval, result,"<", 0.1 ));
-        result = abs(ry1 - ry2)/rangeLimit;
-        QVERIFY2(abs(ry1 - ry2)/rangeLimit < 0.1, errorMessage(sensorName,interval, result,"<", 0.1 ));
-        result = abs(rz1 - rz2)/rangeLimit;
-        QVERIFY2(abs(rz1 - rz2)/rangeLimit < 0.1, errorMessage(sensorName,interval, result,"<", 0.1 ));
+        float result = abs(x1 - x2)/rangeLimit;
+        float limitF = 0.1f;
 
+        QVERIFY2((float)abs(x1 - x2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
+        result = abs(y1 - y2)/rangeLimit;
+        QVERIFY2((float)abs(y1 - y2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
+        result = abs(z1 - z2)/rangeLimit;
+        QVERIFY2((float)abs(z1 - z2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF));
+        result = abs(rx1 - rx2)/rangeLimit;
+        QVERIFY2((float)abs(rx1 - rx2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
+        result = abs(ry1 - ry2)/rangeLimit;
+        QVERIFY2((float)abs(ry1 - ry2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
+        result = abs(rz1 - rz2)/rangeLimit;
+        QVERIFY2((float)abs(rz1 - rz2)/rangeLimit < limitF, errorMessage(sensorName,interval, result,"<", limitF ));
     }
 }
 

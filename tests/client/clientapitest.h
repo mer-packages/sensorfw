@@ -43,13 +43,12 @@ public:
     ClientApiTest();
 
     template<typename T>
-    QByteArray errorMessage(QString sensorName, int interval, T limit, QString compOperator, T value){
+    QByteArray errorMessage(QString sensorName, int interval, T value, QString compOperator, T limit){
         QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000/interval)));
         errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
         return errMsg.toAscii();
     }
 
-//    static QByteArray errorMessage(QString sensorName, int interval, int limit, QString compOperator, int value);
 
 private:
     void calcAverages(QVector<QObject*> data, long& x, long& y,  long& z);
