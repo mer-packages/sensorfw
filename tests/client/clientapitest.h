@@ -51,8 +51,8 @@ public:
 
 
 private:
-    void calcAverages(QVector<QObject*> data, float& x, float& y,  float& z);
-    void calcMaggeAverages(QVector<QObject*> data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz);
+    void calcAverages(QVector<XYZ> data, float& x, float& y,  float& z);
+    void calcMaggeAverages(QVector<MagneticField> data, float& x, float& y,  float& z, float& rx, float& ry, float& rz);
     long getLimit(AbstractSensorChannelInterface* sensor);
     static AbstractSensorChannelInterface* getSensor(QString sensorName);
     static QStringList m_bufferingSensors;
@@ -132,7 +132,13 @@ public:
     SampleCollector(AbstractSensorChannelInterface& iface, bool listenFrames);
     virtual ~SampleCollector();
 
-    QVector<QObject*> getSamples() { return samples; }
+//    QVector<QObject*> getSamples() { return samples; }
+//    template<typename T>
+//    QVector<T> getSamples() { if (samples1.size()>0) return samples1; return samples2; }
+//    template<typename T>
+//    QVector<T> samples;
+    QVector<MagneticField> getSamples1() { return samples1; }
+    QVector<XYZ> getSamples2() { return samples2; }
 
 public Q_SLOTS:
     virtual void dataAvailable(const MagneticField&);
@@ -141,7 +147,9 @@ public Q_SLOTS:
     virtual void frameAvailable2(const QVector<XYZ>& frame);
 
 private:
-    QVector<QObject*> samples;
+
+    QVector<MagneticField> samples1;
+    QVector<XYZ> samples2;
 };
 
 #endif // CLIENT_API_TEST_H
