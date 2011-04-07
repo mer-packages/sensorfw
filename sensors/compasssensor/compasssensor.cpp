@@ -113,9 +113,6 @@ bool CompassSensorChannel::stop()
 
 void CompassSensorChannel::emitData(const CompassData& value)
 {
-    compassData.timestamp_ = value.timestamp_;
-    compassData.level_ = value.level_;
-    compassData.degrees_ = value.degrees_;
-
+    compassData = value;
     writeToClients((const void*)(&value), sizeof(CompassData));
 }
