@@ -344,14 +344,14 @@ void FilterApiTest::testDeclinationFilter()
 
     // Expected output data
     CompassData expectedResult[] = {
-        CompassData(0, 0, 0, 0 + key),
-        CompassData(0, 1, 0, 1 + key),
-        CompassData(0, 0, 2, 0 + key),
-        CompassData(0, 0, 0, 0 + key),
-        CompassData(0, 340, 5, 30),
-        CompassData(0, 359, 0, 49),
-        CompassData(0, 0, 8, 0 + key),
-        CompassData(0, 1, 1, 1 + key)
+        CompassData(0, 0, 0, 0 + key, 0),
+        CompassData(0, 1, 0, 1 + key, 1),
+        CompassData(0, 0, 2, 0 + key, 0),
+        CompassData(0, 0, 0, 0 + key, 0),
+        CompassData(0, 340, 5, 30, 340),
+        CompassData(0, 359, 0, 49, 359),
+        CompassData(0, 0, 8, 0 + key, 0),
+        CompassData(0, 1, 1, 1 + key, 1)
     };
 
     QVERIFY2((sizeof(inputData)) == (sizeof(expectedResult)),
