@@ -1,7 +1,7 @@
 sensord (0.6.42) unstable; urgency=low
 
   [Timo Rongas]
-  * Added trigger to raise cpu freq. when a change in orientation is detected.
+  * Added trigger to raise cpu freq. when a change in orientation is detected. Fixes: NB#244543
 
   [Antti Virtanen]
   * Sensor graph shrinking not supported anymore to prevent race conditions between adaptor threads and qt mainloop. Fixes: NB#242237
