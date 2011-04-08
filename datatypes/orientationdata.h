@@ -119,7 +119,7 @@ public:
     /**
      * Default constructor.
      */
-    CompassData() : TimedData(0), degrees_(0), correctedDegrees_(0), level_(0) {}
+    CompassData() : TimedData(0), degrees_(0), rawDegrees_(0), correctedDegrees_(0), level_(0) {}
 
     /**
      * Constructor.
@@ -129,7 +129,7 @@ public:
      * @param level Magnetometer calibration level.
      */
     CompassData(const quint64& timestamp, int degrees, int level) :
-        TimedData(timestamp), degrees_(degrees), correctedDegrees_(0), level_(level) {}
+        TimedData(timestamp), degrees_(degrees), rawDegrees_(degrees), correctedDegrees_(0), level_(level) {}
 
     /**
      * Constructor.
@@ -138,11 +138,13 @@ public:
      * @param degrees Angle to north.
      * @param level Magnetometer calibration level.
      * @param correctedDegrees Declination corrected angle to north.
+     * @param rawDegrees Not declination corrected angle to north.
      */
-    CompassData(const quint64& timestamp, int degrees, int level, int correctedDegrees) :
-        TimedData(timestamp), degrees_(degrees), correctedDegrees_(correctedDegrees), level_(level) {}
+    CompassData(const quint64& timestamp, int degrees, int level, int correctedDegrees, int rawDegrees) :
+        TimedData(timestamp), degrees_(degrees), rawDegrees_(rawDegrees), correctedDegrees_(correctedDegrees), level_(level) {}
 
-    int degrees_; /**< Angle to north */
+    int degrees_; /**< Angle to north which may be declination corrected or not. This is the value apps should use */
+    int rawDegrees_; /**< Angle to north without declination correction */
     int correctedDegrees_; /**< Declination corrected angle to north */
     int level_;   /**< Magnetometer calibration level. Higher value means better calibration. */
 };

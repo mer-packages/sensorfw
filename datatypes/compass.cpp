@@ -29,15 +29,25 @@
 Compass::Compass(const CompassData& data, bool declinationCorrection)
     : QObject(),
       data_(data.timestamp_,
-            declinationCorrection ? data.correctedDegrees_ : data.degrees_,
-            data.level_)
+            declinationCorrection ? data.correctedDegrees_ : data.rawDegrees_,
+            data.level_,
+            data.correctedDegrees_,
+            data.rawDegrees_)
 {
 }
 
 Compass::Compass(const Compass& data)
     : QObject(),
+      data_(data.data())
+{
+}
+
+Compass::Compass(const Compass& data, bool declinationCorrection)
+    : QObject(),
       data_(data.data().timestamp_,
-            data.data().degrees_,
-            data.data().level_)
+            declinationCorrection ? data.data().correctedDegrees_ : data.data().rawDegrees_,
+            data.data().level_,
+            data.data().correctedDegrees_,
+            data.data().rawDegrees_)
 {
 }

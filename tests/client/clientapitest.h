@@ -49,14 +49,12 @@ public:
         return errMsg.toAscii();
     }
 
-
 private:
     void calcAverages(QVector<XYZ> data, float& x, float& y,  float& z);
     void calcMaggeAverages(QVector<MagneticField> data, float& x, float& y,  float& z, float& rx, float& ry, float& rz);
     long getLimit(AbstractSensorChannelInterface* sensor);
     static AbstractSensorChannelInterface* getSensor(QString sensorName);
     static QStringList m_bufferingSensors;
-
 
 private slots:
     // Setup tests
@@ -90,8 +88,6 @@ private slots:
     // Downsampling
     void testDownsampling();
     void testDownsamplingDisabled();
-
-
 };
 
 class TestClient : public QObject
@@ -109,10 +105,10 @@ public:
     void resetCounters();
 
 public Q_SLOTS:
-    virtual void dataAvailable(const MagneticField&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>-1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
-    virtual void frameAvailable(const QVector<MagneticField>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>-1?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
-    virtual void dataAvailable2(const XYZ&) { QTime now = QTime::currentTime(); qDebug() << "dataAvailable() "<< ++dataCount<<" in "<< (dataCount>-1?m_exTimeData.msecsTo(now):0)<< " ms"; m_exTimeData = now;}
-    virtual void frameAvailable2(const QVector<XYZ>& frame) { QTime now = QTime::currentTime(); qDebug() << "frameAvailable(): " << frame.size()<< " in "<<(frameCount>-1?m_exTimeFrame.msecsTo(now):0)<< " ms"; m_exTimeFrame = now;; ++frameCount; frameDataCount += frame.size(); }
+    virtual void dataAvailable(const MagneticField&);
+    virtual void frameAvailable(const QVector<MagneticField>& frame);
+    virtual void dataAvailable2(const XYZ&);
+    virtual void frameAvailable2(const QVector<XYZ>& frame);
 
 private:
     int dataCount;
@@ -132,11 +128,6 @@ public:
     SampleCollector(AbstractSensorChannelInterface& iface, bool listenFrames);
     virtual ~SampleCollector();
 
-//    QVector<QObject*> getSamples() { return samples; }
-//    template<typename T>
-//    QVector<T> getSamples() { if (samples1.size()>0) return samples1; return samples2; }
-//    template<typename T>
-//    QVector<T> samples;
     QVector<MagneticField> getSamples1() { return samples1; }
     QVector<XYZ> getSamples2() { return samples2; }
 

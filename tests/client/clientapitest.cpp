@@ -39,7 +39,6 @@
 
 QStringList ClientApiTest::m_bufferingSensors;
 
-
 ClientApiTest::ClientApiTest(){
     if (!m_bufferingSensors.contains("magnetometersensor"))
         m_bufferingSensors.append("magnetometersensor");
@@ -59,7 +58,6 @@ AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
     return NULL;
 }
 
-
 void ClientApiTest::calcAverages(QVector<XYZ> data, float& x, float& y,  float& z){
     int l = data.size();
     for (int i=0; i<l; i++){
@@ -72,7 +70,6 @@ void ClientApiTest::calcAverages(QVector<XYZ> data, float& x, float& y,  float& 
     y/=l;
     z/=1;
 }
-
 
 void ClientApiTest::calcMaggeAverages(QVector<MagneticField> data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz){
     int l = data.size();
@@ -268,16 +265,32 @@ void ClientApiTest::testCompassSensor()
     QVERIFY(declinationInUse != sensorIfc->useDeclination());
     sensorIfc->setUseDeclination(!declinationInUse);
 
-    // TODO: Compare declination value against value in gconf
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 50");
+    sensorIfc->setUseDeclination(true);
+    QVERIFY(sensorIfc->declinationValue() == 50);
+    sensorIfc2->setUseDeclination(false);
 
     // test start
     QDBusReply<void> reply = sensorIfc->start();
     QVERIFY(reply.isValid());
+    reply = sensorIfc2->start();
+    QVERIFY(reply.isValid());
+
+    QTest::qWait(2000);
+
+    Compass value1(sensorIfc->get());
+    Compass value2(sensorIfc2->get());
+
+    QVERIFY(value1.degrees() != value2.degrees());
+    QVERIFY((value2.degrees() + 50 % 360) == value1.degrees());
 
     // test stop
     reply = sensorIfc->stop();
     QVERIFY(reply.isValid());
+    reply = sensorIfc2->stop();
+    QVERIFY(reply.isValid());
 
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 0");
 }
 
 void ClientApiTest::testTapSensor()
@@ -523,7 +536,7 @@ void ClientApiTest::testBufferingAllIntervalRanges()
         int bufferSize = 100;
         int dataLimit =2;
         int frameLimit = 1;
-        
+
         QList<DataRange> intervals = sensor->getAvailableIntervals();
         for (int i=0, l= intervals.size(); i<l; i++){
 
@@ -850,10 +863,6 @@ void ClientApiTest::testDownsamplingDisabled()
     }
 }
 
-
-
-
-
 TestClient::TestClient(AbstractSensorChannelInterface& iface, bool listenFrames) :
         dataCount(0),
         frameCount(0),
@@ -888,6 +897,53 @@ TestClient::~TestClient()
 {
 }
 
+void TestClient::dataAvailable(const MagneticField&)
+{
+    QTime now = QTime::currentTime();
+    qDebug() << "dataAvailable() "
+             << ++dataCount << " in "
+             << (dataCount > -1 ? m_exTimeData.msecsTo(now) : 0)
+             << " ms" ;
+    m_exTimeData = now;
+}
+
+void TestClient::frameAvailable(const QVector<MagneticField>& frame)
+{
+    QTime now = QTime::currentTime();
+    qDebug() << "frameAvailable(): "
+             << frame.size()
+             << " in "
+             << (frameCount >-1 ? m_exTimeFrame.msecsTo(now) : 0)
+             << " ms";
+    m_exTimeFrame = now;
+    ++frameCount;
+    frameDataCount += frame.size();
+}
+
+void TestClient::dataAvailable2(const XYZ&)
+{
+    QTime now = QTime::currentTime();
+    qDebug() << "dataAvailable() "
+             << ++dataCount
+             << " in "
+             << (dataCount > -1 ? m_exTimeData.msecsTo(now) : 0)
+             << " ms";
+    m_exTimeData = now;
+}
+
+void TestClient::frameAvailable2(const QVector<XYZ>& frame)
+{
+    QTime now = QTime::currentTime();
+    qDebug() << "frameAvailable(): "
+             << frame.size()
+             << " in "
+             << (frameCount > -1 ? m_exTimeFrame.msecsTo(now) : 0)
+             << " ms";
+    m_exTimeFrame = now;
+    ++frameCount;
+    frameDataCount += frame.size();
+}
+
 SampleCollector::SampleCollector(AbstractSensorChannelInterface& iface, bool listenFrames) :
         TestClient(iface, listenFrames)
 {
@@ -912,6 +968,7 @@ void SampleCollector::frameAvailable(const QVector<MagneticField>& frame)
     }
     TestClient::frameAvailable(frame);
 }
+
 void SampleCollector::dataAvailable2(const XYZ& data)
 {
     samples2.push_back(data);

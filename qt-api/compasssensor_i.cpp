@@ -72,7 +72,7 @@ bool CompassSensorChannelInterface::dataReceivedImpl()
 
 Compass CompassSensorChannelInterface::get()
 {
-    return getAccessor<Compass>("value");
+    return Compass(getAccessor<Compass>("value").data(), useDeclination_);
 }
 
 bool CompassSensorChannelInterface::useDeclination()

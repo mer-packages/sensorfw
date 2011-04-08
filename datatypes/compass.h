@@ -65,6 +65,14 @@ public:
     Compass(const Compass& data);
 
     /**
+     * Copy constructor.
+     *
+     * @param data Source object.
+     * @param declinationCorrection Use declination corrected value.
+     */
+    Compass(const Compass& data, bool declinationCorrection);
+
+    /**
      * Returns the contained #CompassData
      * @return Contained CompassData
      */
@@ -125,7 +133,7 @@ Q_DECLARE_METATYPE( Compass )
 inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
-    argument << data.data().timestamp_ << data.data().degrees_ << data.data().correctedDegrees_ << data.data().level_;
+    argument << data.data().timestamp_ << data.data().degrees_ << data.data().rawDegrees_ << data.data().correctedDegrees_ << data.data().level_;
     argument.endStructure();
     return argument;
 }
@@ -140,7 +148,7 @@ inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 inline const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
 {
     argument.beginStructure();
-    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.correctedDegrees_ >> data.data_.level_;
+    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.rawDegrees_ >> data.data_.correctedDegrees_ >> data.data_.level_;
     argument.endStructure();
     return argument;
 }
