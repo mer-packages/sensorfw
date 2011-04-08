@@ -42,6 +42,7 @@ const int OrientationInterpreter::THRESHOLD_LANDSCAPE = 25;
 const int OrientationInterpreter::THRESHOLD_PORTRAIT = 20;
 const int OrientationInterpreter::DISCARD_TIME = 750000;
 const int OrientationInterpreter::AVG_BUFFER_MAX_SIZE = 10;
+const char* OrientationInterpreter::CPU_BOOST_PATH = "/sys/power/pm_optimizer_rotation";
 typedef PoseData (OrientationInterpreter::*ptrFUN)(int);
 
 OrientationInterpreter::OrientationInterpreter() :
@@ -49,7 +50,8 @@ OrientationInterpreter::OrientationInterpreter() :
         topEdge(PoseData::Undefined),
         face(PoseData::Undefined),
         previousFace(PoseData::Undefined),
-        orientationData(PoseData::Undefined)
+        orientationData(PoseData::Undefined),
+        cpuBoostFile(CPU_BOOST_PATH)
 
 {
     addSink(&accDataSink, "accsink");
@@ -66,6 +68,12 @@ OrientationInterpreter::OrientationInterpreter() :
     discardTime = Config::configuration()->value("orientation_discard_time", QVariant(DISCARD_TIME)).toUInt();
 
     maxBufferSize = Config::configuration()->value("orientation_buffer_size", QVariant(AVG_BUFFER_MAX_SIZE)).toInt();
+
+    // Open the handle for boosting cpu on changes that affect orientation
+    if (!cpuBoostFile.exists() || !cpuBoostFile.open(QIODevice::WriteOnly))
+    {
+        sensordLogW() << "Failed to open" << CPU_BOOST_PATH << "for adjusting cpu freq for orientation.";
+    }
 }
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* pdata)
@@ -197,6 +205,13 @@ void OrientationInterpreter::processTopEdge()
     // Propagate if changed
     if (topEdge.orientation_ != newTopEdge.orientation_)
     {
+        // Request CPU clock raise to get smooth desktop rotation
+        if (cpuBoostFile.isOpen())
+        {
+            cpuBoostFile.write("1", 1);
+            cpuBoostFile.flush();
+        }
+
         topEdge.orientation_ = newTopEdge.orientation_;
         sensordLogT() << "new TopEdge value: " << topEdge.orientation_;
         topEdge.timestamp_ = data.timestamp_;

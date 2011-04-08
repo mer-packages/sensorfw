@@ -30,6 +30,7 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
+#include <QFile>
 #include "filter.h"
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
@@ -79,6 +80,8 @@ private:
 
     PoseData orientationData;
 
+    QFile cpuBoostFile;
+
     enum OrientationMode
     {
         Portrait = 0, /**< Orientation mode is portrait. */
@@ -101,6 +104,8 @@ private:
 
     static const int DISCARD_TIME;
     static const int AVG_BUFFER_MAX_SIZE;
+
+    static const char* CPU_BOOST_PATH;
 
 public:
     /**
