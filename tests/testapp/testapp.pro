@@ -59,3 +59,5 @@ equals(TARGET_LIB,qtmob) {
 
 testconf.path = /usr/share/sensord-tests/
 testconf.files = testapp.conf
+
+INSTALLS += testconf

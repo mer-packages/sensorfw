@@ -1,6 +1,7 @@
 sensord (0.6.43) unstable; urgency=low
 
-  *
+  [Timo Rongas]
+  * TestApp configuration file is now included by default.
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Fri, 15 Apr 2011 14:05:34 +0300
 
