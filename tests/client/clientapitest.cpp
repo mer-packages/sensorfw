@@ -24,31 +24,25 @@
    </p>
 */
 
-#include "qt-api/sensormanagerinterface.h"
-
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
+#include "sensormanagerinterface.h"
+#include "orientationsensor_i.h"
+#include "accelerometersensor_i.h"
+#include "compasssensor_i.h"
+#include "tapsensor_i.h"
+#include "alssensor_i.h"
+#include "proximitysensor_i.h"
+#include "rotationsensor_i.h"
+#include "magnetometersensor_i.h"
 
 #include "clientapitest.h"
 
-QStringList ClientApiTest::m_bufferingSensors;
-
-ClientApiTest::ClientApiTest(){
-    if (!m_bufferingSensors.contains("magnetometersensor"))
-        m_bufferingSensors.append("magnetometersensor");
-//    if (!m_bufferingSensors.contains("accelerometersensor"))
-//        m_bufferingSensors.append("accelerometersensor");
-//    if (!m_bufferingSensors.contains("rotationsensor"))
-//        m_bufferingSensors.append("rotationsensor");
+ClientApiTest::ClientApiTest()
+{
+    bufferingSensors.append("magnetometersensor");
 }
 
-AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
+AbstractSensorChannelInterface* ClientApiTest::getSensor(const QString& sensorName)
+{
     if (sensorName == "magnetometersensor")
         return MagnetometerSensorChannelInterface::interface(sensorName);
     if (sensorName == "accelerometersensor")
@@ -58,23 +52,23 @@ AbstractSensorChannelInterface* ClientApiTest::getSensor(QString sensorName){
     return NULL;
 }
 
-void ClientApiTest::calcAverages(QVector<XYZ> data, float& x, float& y,  float& z){
-    int l = data.size();
-    for (int i=0; i<l; i++){
-        XYZ dataReal = data.at(i);
+void ClientApiTest::calcAverages(const QVector<XYZ>& data, float& x, float& y,  float& z) const
+{
+    foreach(const XYZ& dataReal, data)
+    {
         x += dataReal.x();
         y += dataReal.y();
         z += dataReal.z();
     }
-    x/=l;
-    y/=l;
-    z/=1;
+    x /= data.size();
+    y /= data.size();
+    z /= data.size();
 }
 
-void ClientApiTest::calcMaggeAverages(QVector<MagneticField> data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz){
-    int l = data.size();
-    for (int i=0; i<l; i++){
-        MagneticField dataReal = data.at(i);
+void ClientApiTest::calcMaggeAverages(const QVector<MagneticField>& data, float& x, float& y,  float& z, float& rx, float& ry,  float& rz) const
+{
+    foreach(const MagneticField& dataReal, data)
+    {
         x += dataReal.x();
         y += dataReal.y();
         z += dataReal.z();
@@ -82,18 +76,19 @@ void ClientApiTest::calcMaggeAverages(QVector<MagneticField> data, float& x, flo
         ry += dataReal.ry();
         rz += dataReal.rz();
     }
-    x= (float)x/l;
-    y= (float)y/l;
-    z =(float)z/1;
-    rx =(float)rx/l;
-    ry= (float)ry/l;
-    rz= (float)rz/l;
+    x = (float)x / data.size();
+    y = (float)y / data.size();
+    z = (float)z / data.size();
+    rx = (float)rx / data.size();
+    ry = (float)ry / data.size();
+    rz = (float)rz / data.size();
 }
 
-long ClientApiTest::getLimit(AbstractSensorChannelInterface *sensor){
+long ClientApiTest::getLimit(AbstractSensorChannelInterface *sensor) const
+{
     QList<DataRange> ranges = sensor->getAvailableDataRanges();
-    if (ranges.size()>0)
-        return  qAbs(ranges.at(0).max - ranges.at(0).min);
+    if (ranges.size() > 0)
+        return qAbs(ranges.at(0).max - ranges.at(0).min);
     return 1000;
 }
 
@@ -481,9 +476,8 @@ void ClientApiTest::testSessionInitiation()
 
 void ClientApiTest::testBuffering()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
@@ -504,16 +498,18 @@ void ClientApiTest::testBuffering()
 
         int period = bufferSize * interval * 1.2;   // within [bufferSize * interval, bufferingInterval]
 
-        for (int i=0; i<2; i++){
-            qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+        for (int i = 0; i < 2; i++)
+        {
+            qDebug() << sensorName << " started, waiting for " << period << " ms.";
             QTest::qWait(period);
             int dataCount = client.getDataCount();
+
             //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-            QVERIFY2( dataCount<dataLimit*(i+1), errorMessage(sensorName, interval, dataCount, "<", dataLimit*(i+1)));
-            int frameCount =client.getFrameCount();
-            QVERIFY2( frameCount == frameLimit*(i+1), errorMessage(sensorName, interval, frameCount, "==", frameLimit*(i+1)));
+            QVERIFY2( dataCount < dataLimit * (i + 1), errorMessage(sensorName, interval, dataCount, "<", dataLimit * (i + 1)));
+            int frameCount = client.getFrameCount();
+            QVERIFY2( frameCount == frameLimit * (i + 1), errorMessage(sensorName, interval, frameCount, "==", frameLimit * (i + 1)));
             int frameDataCount = client.getFrameDataCount();
-            QVERIFY2(frameDataCount == bufferSize*(i+1), errorMessage(sensorName, interval, frameDataCount, "==", bufferSize*(i+1)));
+            QVERIFY2(frameDataCount == bufferSize * (i + 1), errorMessage(sensorName, interval, frameDataCount, "==", bufferSize * (i + 1)));
             client.resetCounters();
             period += (bufferSize * interval);
         }
@@ -523,46 +519,45 @@ void ClientApiTest::testBuffering()
 
 void ClientApiTest::testBufferingAllIntervalRanges()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
         TestClient client(*sensor, true);
 
-
         int bufferSize = 100;
-        int dataLimit =2;
+        int dataLimit = 2;
         int frameLimit = 1;
 
-        QList<DataRange> intervals = sensor->getAvailableIntervals();
-        for (int i=0, l= intervals.size(); i<l; i++){
+        foreach(const DataRange& range, sensor->getAvailableIntervals())
+        {
+            qreal intervalMax = range.max;
+            qreal intervalMin = range.min;
 
-            qreal intervalMax = ((DataRange)(intervals.at(i))).max;
-            qreal intervalMin =((DataRange)(intervals.at(i))).min;
-
-            if (intervalMin==0 && intervalMax==0) continue;
-            if (intervalMax>=100) continue; //let's stop to 10Hz
+            if (intervalMin == 0 && intervalMax == 0)
+                continue;
+            if (intervalMax >= 100)
+                continue; //let's stop to 10Hz
             QList<qreal> intervalTests;
-            if (intervalMin!=0) intervalTests.append(intervalMin);
-            if (intervalMin!=intervalMax){
+            if (intervalMin != 0)
+                intervalTests.append(intervalMin);
+            if (intervalMin != intervalMax) {
                 intervalTests.append(intervalMax);
-                intervalTests.append((intervalMin+intervalMax)*0.5);
+                intervalTests.append((intervalMin + intervalMax) * 0.5);
             }
-            for (int j=0, l= intervalTests.size(); j<l; j++){
-                qreal interval = intervalTests.at(j);
+            foreach(qreal interval, intervalTests)
+            {
                 sensor->setInterval(interval);
                 sensor->setBufferSize(bufferSize);
-                sensor->setBufferInterval(interval*bufferSize*3);
+                sensor->setBufferInterval(interval * bufferSize * 3);
                 sensor->setDownsampling(false);
                 sensor->setStandbyOverride(true);
                 sensor->start();
                 client.resetTimers();
 
-                int period = interval*bufferSize*1.25;
-                qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+                int period = interval * bufferSize * 1.25;
+                qDebug() << sensorName << " started, waiting for " << period << " ms.";
                 QTest::qWait(period);
                 int dataCount = client.getDataCount();
                 //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
@@ -582,9 +577,8 @@ void ClientApiTest::testBufferingAllIntervalRanges()
 
 void ClientApiTest::testBufferingCompatibility()
 {
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
@@ -603,27 +597,25 @@ void ClientApiTest::testBufferingCompatibility()
         qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
 
-
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int dataCount = client.getDataCount();
-        QVERIFY2( dataCount==bufferSize, errorMessage(sensorName, interval, dataCount, "==", bufferSize));
+        QVERIFY2( dataCount == bufferSize, errorMessage(sensorName, interval, dataCount, "==", bufferSize));
 
-
-        int frameCount =client.getFrameCount();
+        int frameCount = client.getFrameCount();
         QVERIFY2( frameCount == 0, errorMessage(sensorName, interval, frameCount, "==",0));
         client.resetCounters();
 
         period  =  interval * bufferSize * 1.1;
-        qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+        qDebug() << sensorName << " started, waiting for " << period << " ms.";
         QTest::qWait(period);
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         dataCount = client.getDataCount();
         QVERIFY2( dataCount==bufferSize, errorMessage(sensorName, interval, dataCount, "==", bufferSize));
 
-        frameCount =client.getFrameCount();
+        frameCount = client.getFrameCount();
         QVERIFY2( frameCount == 0, errorMessage(sensorName, interval, frameCount, "==",0));
-//        QVERIFY(client.getFrameDataCount() == 0);
+        QVERIFY(client.getFrameDataCount() == 0);
 
         sensor->stop();
     }
@@ -631,10 +623,8 @@ void ClientApiTest::testBufferingCompatibility()
 
 void ClientApiTest::testBufferingInterval()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
@@ -645,7 +635,6 @@ void ClientApiTest::testBufferingInterval()
         sensor->setBufferInterval(bufferInterval);
         int bufferSize = 40;
         sensor->setBufferSize(bufferSize);
-//        sensor->setDownsampling(false);
         sensor->setDownsampling(true);
         sensor->setStandbyOverride(true);
 
@@ -653,15 +642,15 @@ void ClientApiTest::testBufferingInterval()
         client.resetTimers();
 
         int period = interval * bufferSize * 1.2;
-        qDebug() << sensorName<< " started, waiting for "<<period<<" ms.";
+        qDebug() << sensorName << " started, waiting for " << period << " ms.";
         QTest::qWait(period);
 
         int dataCount = client.getDataCount();
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
         int limit = 4;
-        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
+        QVERIFY2( dataCount < limit, errorMessage(sensorName, interval, dataCount, "<", limit));
         int frameCount =client.getFrameCount();
-        limit = period / (bufferSize*interval);
+        limit = period / (bufferSize * interval);
         QVERIFY2( frameCount == limit, errorMessage(sensorName, interval, frameCount, "==", limit));
         int frameDataCount = client.getFrameDataCount();
         QVERIFY2( frameDataCount == bufferSize, errorMessage(sensorName, interval, frameDataCount, "==", bufferSize));
@@ -685,9 +674,9 @@ void ClientApiTest::testBufferingInterval()
         dataCount = client.getDataCount();
 
         //NOTE: because how sensors are configured (sensor started then configured) it is possible that few values can leak.
-        limit =4;
-        QVERIFY2( dataCount<limit, errorMessage(sensorName, interval, dataCount, "<", limit));
-        frameCount =client.getFrameCount();
+        limit = 4;
+        QVERIFY2( dataCount < limit, errorMessage(sensorName, interval, dataCount, "<", limit));
+        frameCount = client.getFrameCount();
         QVERIFY2( frameCount == 1, errorMessage(sensorName, interval, frameCount, "==", 1));
 
         frameDataCount = client.getFrameDataCount();
@@ -699,10 +688,8 @@ void ClientApiTest::testBufferingInterval()
 
 void ClientApiTest::testAvailableBufferIntervals()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
@@ -718,10 +705,8 @@ void ClientApiTest::testAvailableBufferIntervals()
 
 void ClientApiTest::testAvailableBufferSizes()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
         QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
@@ -736,10 +721,8 @@ void ClientApiTest::testAvailableBufferSizes()
 
 void ClientApiTest::testDownsampling()
 {
-
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
         AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
@@ -764,59 +747,56 @@ void ClientApiTest::testDownsampling()
         sensor2->start();
         client2.resetTimers();
 
-
         int period =interval2 * 2 + 500;
-        qDebug() << sensorName<<" started, waiting for "<<period<<" ms.";
+        qDebug() << sensorName << " started, waiting for " << period << " ms.";
         QTest::qWait(period);
 
         sensor1->stop();
         sensor2->stop();
 
-        //        int limit = 20;
         int limit = period / interval * 0.9;    //90% of calculated size
-        int sampleCount = sensorName=="magnetometersensor"?client1.getSamples1().size():client1.getSamples2().size();
-        QVERIFY2( sampleCount>=limit, errorMessage(sensorName, interval, sampleCount, ">=", limit));
-
+        int sampleCount = sensorName == "magnetometersensor" ? client1.getSamples1().size() : client1.getSamples2().size();
+        QVERIFY2( sampleCount >= limit, errorMessage(sensorName, interval, sampleCount, ">=", limit));
 
         limit = period / interval2 ;
-        sampleCount = sensorName=="magnetometersensor"?client2.getSamples1().size():client2.getSamples2().size();
-        QVERIFY2( sampleCount==limit, errorMessage(sensorName, interval, sampleCount, "==", limit));
+        sampleCount = sensorName == "magnetometersensor" ? client2.getSamples1().size() : client2.getSamples2().size();
+        QVERIFY2( sampleCount == limit, errorMessage(sensorName, interval, sampleCount, "==", limit));
 
-        float x1 = 0, y1=0, z1 =0, rx1 = 0, ry1 = 0, rz1 = 0;
-        float x2 = 0,y2 = 0, z2 = 0, rx2 = 0, ry2 = 0, rz2 = 0;
+        float x1 = 0, y1 = 0, z1 = 0, rx1 = 0, ry1 = 0, rz1 = 0;
+        float x2 = 0, y2 = 0, z2 = 0, rx2 = 0, ry2 = 0, rz2 = 0;
 
-        if (sensorName!="magnetometersensor") calcAverages(client1.getSamples2(), x1, y1, z1);
-        else calcMaggeAverages(client1.getSamples1(), x1, y1, z1, rx1, ry1, rz1);
+        if (sensorName != "magnetometersensor")
+            calcAverages(client1.getSamples2(), x1, y1, z1);
+        else
+            calcMaggeAverages(client1.getSamples1(), x1, y1, z1, rx1, ry1, rz1);
 
 //        qDebug()<<"calcMaggeAverages - after calculation:  x1 = "<<x1 <<" y1="<<y1<<" z1="<<z1<< " rx1="<<rx1<<" ry1="<<ry1<<" rz1="<<rz1;
 
-        if (sensorName!="magnetometersensor") calcAverages(client2.getSamples2(), x2, y2, z2);
-        else calcMaggeAverages(client2.getSamples1(), x2, y2, z2, rx2, ry2, rz2);
+        if (sensorName != "magnetometersensor")
+            calcAverages(client2.getSamples2(), x2, y2, z2);
+        else
+            calcMaggeAverages(client2.getSamples1(), x2, y2, z2, rx2, ry2, rz2);
 
 //        qDebug()<<"calcMaggeAverages - after calculation:  x2 = "<<x2 <<" y2="<<y2<<" z2="<<z2<< " rx2="<<rx2<<" ry2="<<ry2<<" rz2="<<rz2;
-
 
         long rangeLimit = getLimit(sensor1);
 //        qDebug()<<sensorName<<"range = "<<rangeLimit<<" x1="<<x1<<" y1="<<y1<<" z1="<<z1<<" x2="<<x2<<" y2="<<y2<<" z2="<<z2<<" rx1="<<rx1<<" ry1="<<ry1<<" rz1="<<rz1<<" rx2="<<rx2<<" ry2="<<ry2<<" rz2="<<rz2;
 
         //since instances were not started at the same time there may be few samples of difference...
-        // error less than 10% of total range is accepted
-//        float limitF = 0.1f;
+        // error less than 30% of total range is accepted
         float limitF = 0.3f;
-        QVERIFY2((float)abs(x1 - x2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(x1 - x2)/rangeLimit,"<", limitF ));
-        QVERIFY2((float)abs(y1 - y2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(y1 - y2)/rangeLimit,"<", limitF ));
-//        QVERIFY2((float)abs(z1 - z2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(z1 - z2)/rangeLimit,"<", limitF));
-        QVERIFY2((float)abs(rx1 - rx2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(rx1 - rx2)/rangeLimit,"<", limitF ));
-        QVERIFY2((float)abs(ry1 - ry2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(ry1 - ry2)/rangeLimit,"<", limitF ));
-//        QVERIFY2((float)abs(rz1 - rz2)/rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(rz1 - rz2)/rangeLimit,"<", limitF ));
+
+        QVERIFY2((float)abs(x1 - x2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(x1 - x2) / rangeLimit, "<", limitF ));
+        QVERIFY2((float)abs(y1 - y2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(y1 - y2) / rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(rx1 - rx2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(rx1 - rx2) / rangeLimit,"<", limitF ));
+        QVERIFY2((float)abs(ry1 - ry2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(ry1 - ry2) / rangeLimit,"<", limitF ));
     }
 }
 
 void ClientApiTest::testDownsamplingDisabled()
 {
-    for (int i=0, l=m_bufferingSensors.size(); i<l; i++){
-        QString sensorName = m_bufferingSensors.at(i);
-
+    foreach(const QString& sensorName, bufferingSensors)
+    {
         AbstractSensorChannelInterface* sensor1 = getSensor(sensorName);
         AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
@@ -838,9 +818,7 @@ void ClientApiTest::testDownsamplingDisabled()
         sensor2->setStandbyOverride(true);
         sensor2->start();
 
-
         // waiting for two frames to come
-        //        int period = 2200;
         int period = qMax(interval, interval2) * 2.2;
         qDebug() << sensorName <<" started, waiting for "<<period<<" ms.";
         QTest::qWait(period);
@@ -849,27 +827,26 @@ void ClientApiTest::testDownsamplingDisabled()
         sensor2->stop();
 
         // sensor
-        int dataCount = sensorName=="magnetometersensor"?client1.getSamples1().size():client1.getSamples2().size();
+        int dataCount = sensorName == "magnetometersensor" ? client1.getSamples1().size() : client1.getSamples2().size();
         int limit = period / interval * 0.9;
-        QVERIFY2( dataCount>=limit, errorMessage(sensorName, interval, dataCount, ">=", limit));
-
+        QVERIFY2( dataCount >= limit, errorMessage(sensorName, interval, dataCount, ">=", limit));
 
         // when no downsampling the two sensors should get the about the same amount of samples
-        int dataCount2 = sensorName=="magnetometersensor"?client2.getSamples1().size():client2.getSamples2().size();
-//        int sampleCountDiff = abs(client1.getSamples().size() - client2.getSamples().size());
+        int dataCount2 = sensorName == "magnetometersensor"?client2.getSamples1().size():client2.getSamples2().size();
+
         int sampleCountDiff = abs(dataCount - dataCount2);
         limit = 2;  //for leaks
-        QVERIFY2( sampleCountDiff<limit, errorMessage(sensorName, interval, sampleCountDiff, "<", limit));
+        QVERIFY2( sampleCountDiff < limit, errorMessage(sensorName, interval, sampleCountDiff, "<", limit));
     }
 }
 
 TestClient::TestClient(AbstractSensorChannelInterface& iface, bool listenFrames) :
-        dataCount(0),
-        frameCount(0),
-        frameDataCount(0)
+    dataCount(0),
+    frameCount(0),
+    frameDataCount(0)
 {
     QString id = iface.id();
-    if (id=="magnetometersensor"){
+    if (id == "magnetometersensor"){
         connect(&iface, SIGNAL(dataAvailable(const MagneticField&)), this, SLOT(dataAvailable(const MagneticField&)));
         if(listenFrames)
             connect(&iface, SIGNAL(frameAvailable(const QVector<MagneticField>&)), this, SLOT(frameAvailable(const QVector<MagneticField>&)));
@@ -888,9 +865,9 @@ void TestClient::resetTimers(){
 }
 
 void TestClient::resetCounters(){
-    dataCount=0;
-    frameCount=0;
-    frameDataCount=0;
+    dataCount = 0;
+    frameCount = 0;
+    frameDataCount = 0;
 }
 
 TestClient::~TestClient()
@@ -952,7 +929,6 @@ SampleCollector::SampleCollector(AbstractSensorChannelInterface& iface, bool lis
 SampleCollector::~SampleCollector()
 {
 }
-
 
 void SampleCollector::dataAvailable(const MagneticField& data)
 {

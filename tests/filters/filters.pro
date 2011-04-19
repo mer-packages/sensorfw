@@ -22,10 +22,8 @@ SOURCES += filtertests.cpp \
     ../../filters/declinationfilter/declinationfilter.cpp \
     ../../filters/rotationfilter/rotationfilter.cpp
 
-
-    
-INCLUDEPATH += ../.. \
-    ../../include \
+INCLUDEPATH += ../../include \
+    ../../ \
     ../../filters/orientationinterpreter \
     ../../filters/coordinatealignfilter \
     ../../filters/declinationfilter \
@@ -35,4 +33,3 @@ INCLUDEPATH += ../.. \
     
 QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
 QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
-

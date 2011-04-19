@@ -29,12 +29,11 @@
 
 #include <QObject>
 #include <QAtomicInt>
-#include "orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include "filter.h"
 
 /**
- * @brief Filter for calculating declination correction for Compass data..
- *
+ * Filter for calculating declination correction for Compass data.
  */
 class DeclinationFilter : public QObject, public Filter<CompassData, DeclinationFilter, CompassData>
 {

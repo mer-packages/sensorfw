@@ -1,4 +1,3 @@
-
 include(../common-install.pri)
 
 TEMPLATE = app

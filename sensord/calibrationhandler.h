@@ -31,7 +31,7 @@
 #include <QString>
 #include <QTimer>
 #include "datatypes/magneticfield.h"
-#include "sensors/magnetometersensor/magnetometersensor.h"
+#include "magnetometersensor.h"
 
 /**
  * @brief Helper class for maintaining magnetometer calibration.

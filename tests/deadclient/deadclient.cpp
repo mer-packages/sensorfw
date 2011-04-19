@@ -31,7 +31,7 @@
 #include <rotationsensor_i.h>
 #include <magnetometersensor_i.h>
 #include <sensormanagerinterface.h>
-#include <xyz.h>
+#include <datatypes/xyz.h>
 #include "testwindow.h"
 
 int main(int argc, char **argv)

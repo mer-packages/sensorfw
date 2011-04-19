@@ -26,15 +26,6 @@
 
 #include "sensorhandler_qtapi.h"
 #include "logging.h"
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
 
 SensorHandler::SensorHandler(const QString& sensorName, QObject *parent) :
     AbstractSensorHandler(sensorName, parent),

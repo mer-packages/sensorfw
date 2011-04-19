@@ -41,5 +41,4 @@ INCLUDEPATH += ../.. \
     ../../adaptors/kbslideradaptor \
     ../../adaptors/proximityadaptor
 
-QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
-    
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw 

@@ -29,8 +29,8 @@
 
 #include "abstractsensor.h"
 #include "abstractchain.h"
-#include "accelerometeradaptor/accelerometeradaptor.h"
-#include "coordinatealignfilter/coordinatealignfilter.h"
+#include "coordinatealignfilter.h"
+#include "deviceadaptor.h"
 
 class Bin;
 template <class TYPE> class BufferReader;

@@ -34,7 +34,7 @@
 #include "config.h"
 #include "logging.h"
 
-#include "coordinatealignfilter/coordinatealignfilter.h"
+#include "coordinatealignfilter.h"
 
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)

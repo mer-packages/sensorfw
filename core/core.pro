@@ -11,6 +11,7 @@ SENSORFW_INCLUDEPATHS = .. \
                         ../include \
                         ../filters \
                         ../datatypes
+
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
@@ -37,7 +38,6 @@ SOURCES += sensormanager.cpp \
     sockethandler.cpp \
     inputdevadaptor.cpp \
     config.cpp \
-    calibrationhandler.cpp \
     nodebase.cpp
 
 HEADERS += sensormanager.h \
@@ -66,7 +66,6 @@ HEADERS += sensormanager.h \
     sockethandler.h \
     inputdevadaptor.h \
     config.h \
-    calibrationhandler.h \
     nodebase.h
 
 !mce_disable {

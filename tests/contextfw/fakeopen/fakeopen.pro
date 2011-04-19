@@ -1,7 +1,5 @@
 TEMPLATE = lib
 TARGET = fakeopen
-DEPENDPATH += .
-INCLUDEPATH += .
 QT -= gui
 
 # Input

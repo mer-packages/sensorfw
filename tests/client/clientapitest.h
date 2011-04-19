@@ -30,7 +30,7 @@
 #include <QTest>
 #include <QVector>
 #include <QStringList>
-#include "qt-api/magnetometersensor_i.h"
+#include "magnetometersensor_i.h"
 #include "datatypes/magneticfield.h"
 #include "datatypes/xyz.h"
 
@@ -42,19 +42,14 @@ public:
 
     ClientApiTest();
 
-    template<typename T>
-    QByteArray errorMessage(QString sensorName, int interval, T value, QString compOperator, T limit){
-        QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000/interval)));
-        errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
-        return errMsg.toAscii();
-    }
-
 private:
-    void calcAverages(QVector<XYZ> data, float& x, float& y,  float& z);
-    void calcMaggeAverages(QVector<MagneticField> data, float& x, float& y,  float& z, float& rx, float& ry, float& rz);
-    long getLimit(AbstractSensorChannelInterface* sensor);
-    static AbstractSensorChannelInterface* getSensor(QString sensorName);
-    static QStringList m_bufferingSensors;
+    void calcAverages(const QVector<XYZ>& data, float& x, float& y,  float& z) const;
+    void calcMaggeAverages(const QVector<MagneticField>& data, float& x, float& y,  float& z, float& rx, float& ry, float& rz) const;
+    long getLimit(AbstractSensorChannelInterface* sensor) const;
+    static AbstractSensorChannelInterface* getSensor(const QString& sensorName);
+    QStringList bufferingSensors;
+    template<typename T>
+    QByteArray errorMessage(const QString& sensorName, int interval, const T& value, const QString& compOperator, const T& limit) const;
 
 private slots:
     // Setup tests
@@ -138,9 +133,16 @@ public Q_SLOTS:
     virtual void frameAvailable2(const QVector<XYZ>& frame);
 
 private:
-
     QVector<MagneticField> samples1;
     QVector<XYZ> samples2;
 };
+
+template<typename T>
+QByteArray ClientApiTest::errorMessage(const QString& sensorName, int interval, const T& value, const QString& compOperator, const T& limit) const
+{
+    QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000 / interval)));
+    errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
+    return errMsg.toAscii();
+}
 
 #endif // CLIENT_API_TEST_H

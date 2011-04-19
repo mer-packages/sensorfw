@@ -11,10 +11,11 @@ TARGET = sensorbenchmark-test
 HEADERS += benchmarktests.h signaldump.h
 SOURCES += benchmarktests.cpp
 
-SENSORFW_INCLUDEPATHS = ../../.. \
-                        ../../../include \
+SENSORFW_INCLUDEPATHS = ../../../include \
                         ../../../filters \
-                        ../../../datatypes
+                        ../../../datatypes \
+			../../../qt-api \
+                        ../../..
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS

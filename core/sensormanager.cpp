@@ -34,7 +34,6 @@
 #include "idutils.h"
 #include "logging.h"
 #include "mcewatcher.h"
-#include "calibrationhandler.h"
 
 #include <QSocketNotifier>
 #include <errno.h>

@@ -11,11 +11,11 @@ HEADERS += fakeadaptor.h \
 SOURCES += fakeadaptor.cpp \
            fakeadaptorplugin.cpp
 
-SENSORFW_INCLUDEPATHS = ../../../ \
-                        ../../../include \
+SENSORFW_INCLUDEPATHS = ../../../include \
                         ../../../core \
                         ../../../datatypes \
-                        ../../../filters
+                        ../../../filters \
+                        ../../..
 
 DEPENDPATH  += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS

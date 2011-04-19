@@ -23,8 +23,8 @@
    </p>
 */
 
-#include "qt-api/gyroscopesensor_i.h"
-#include "qt-api/sensormanagerinterface.h"
+#include "gyroscopesensor_i.h"
+#include "sensormanagerinterface.h"
 #include "datatypes/xyz.h"
 
 class GyroClient : public QObject

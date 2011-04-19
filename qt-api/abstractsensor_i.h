@@ -141,7 +141,7 @@ public:
      * Standby-override is used to keep sensor enabled when display
      * is blanked.
      *
-     * @param standby-override state
+     * @param override standby-override state
      * @return true if succesfully set.
      */
     bool setStandbyOverride(bool override);
@@ -261,7 +261,7 @@ public:
      * Request data range. Usable ranges are listed by
      * #getAvailableDataRanges().
      *
-     * @param requested range.
+     * @param range requested range.
      */
     void requestDataRange(DataRange range);
 

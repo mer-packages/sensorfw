@@ -12,7 +12,9 @@ SENSORFW_INCLUDEPATHS = .. \
                         ../include \
                         ../filters \
                         ../datatypes \
-                        ../core
+                        ../core \
+                        ../sensors/magnetometersensor
+
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
@@ -22,9 +24,11 @@ QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes \
 QMAKE_RPATHDIR += /usr/lib/sensord
 
 SOURCES += main.cpp \
-           parser.cpp
+           parser.cpp \
+           calibrationhandler.cpp
 
-HEADERS += parser.h
+HEADERS += parser.h \
+           calibrationhandler.h
 
 contextprovider {
     DEFINES += PROVIDE_CONTEXT_INFO

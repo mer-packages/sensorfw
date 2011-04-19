@@ -25,7 +25,7 @@
 
 #include <QtCore>
 
-#include "qt-api/sensormanagerinterface.h"
+#include "sensormanagerinterface.h"
 #include "gyroclient.h"
 
 GyroClient::GyroClient()

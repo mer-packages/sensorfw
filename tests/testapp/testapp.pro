@@ -23,11 +23,11 @@ SOURCES += main.cpp \
            abstractsensorhandler.cpp \
            clientadmin.cpp
 
-SENSORFW_INCLUDEPATHS = ../.. \
-                        ../../include \
+SENSORFW_INCLUDEPATHS = ../../include \
                         ../../filters \
                         ../../datatypes \
-                        ../../core
+                        ../../core \
+			../..
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
@@ -42,6 +42,7 @@ message("Compiling testapp for $$TARGET_LIB")
 equals(TARGET_LIB,qtapi) {
     HEADERS += sensorhandler_qtapi.h
     SOURCES += sensorhandler_qtapi.cpp
+    INCLUDEPATH += ../../qt-api
 }
 equals(TARGET_LIB,qmsystem2) {
     HEADERS += sensorhandler_qmsystem2.h

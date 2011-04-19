@@ -23,8 +23,8 @@
    </p>
 */
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/alssensor_i.h"
+#include "sensormanagerinterface.h"
+#include "alssensor_i.h"
 
 #include "benchmarktests.h"
 #include "signaldump.h"

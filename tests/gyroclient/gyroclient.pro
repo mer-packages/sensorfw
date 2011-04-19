@@ -11,14 +11,13 @@ TARGET = sensorgyroclient
 HEADERS += gyroclient.h
 SOURCES += gyroclient.cpp
 
-SENSORFW_INCLUDEPATHS = ../.. \
+SENSORFW_INCLUDEPATHS = ../../ \
                         ../../include \
                         ../../filters \
-                        ../../datatypes
+                        ../../qt-api			
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \
                       -L../../datatypes -lsensordatatypes
-

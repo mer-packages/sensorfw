@@ -11,11 +11,11 @@ TARGET = sensorstandbyoverride-test
 HEADERS += standbyoverridetests.h helpslot.h
 SOURCES += standbyoverridetests.cpp
 
-SENSORFW_INCLUDEPATHS = ../../.. \
-                        ../../../qt-api \
+SENSORFW_INCLUDEPATHS = ../../../qt-api \
                         ../../../include \
                         ../../../filters \
-                        ../../../datatypes
+                        ../../../datatypes \
+                        ../../..
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
