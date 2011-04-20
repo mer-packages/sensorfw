@@ -126,7 +126,7 @@ public:
      *
      * @return was adaptor started succesfully.
      */
-    bool startAdaptor();
+    virtual bool startAdaptor();
 
     /**
      * Is adaptor running.
@@ -138,7 +138,7 @@ public:
     /**
      * Stop adaptor and close acquired resources.
      */
-    void stopAdaptor();
+    virtual void stopAdaptor();
 
     /**
      * Start sensor from adaptor. This will start the measurement loop.

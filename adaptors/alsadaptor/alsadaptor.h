@@ -71,6 +71,7 @@ public:
     {
         return new ALSAdaptor(id);
     }
+
     /**
      * Start measuring loop. Opens file descriptors and set streaming mode
      */
