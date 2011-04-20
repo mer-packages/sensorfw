@@ -34,14 +34,9 @@
 #include <datatypes/xyz.h>
 
 /**
- * @brief DBus-interface for accessing raw gyroscope values.
- *
- * GyroscopeSensorChannelInterface acts as a proxy class for interface
- * \e local.GyroscopeSensor.
- *
- * For details of measurement process, see #GyroscopeSensorChannel.
+ * Client interface for accessing gyroscope sensor.
  */
-class GyroscopeSensorChannelInterface: public AbstractSensorChannelInterface
+class GyroscopeSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT;
     Q_DISABLE_COPY(GyroscopeSensorChannelInterface)
@@ -54,15 +49,24 @@ public:
     static const char* staticInterfaceName;
 
     /**
-     * Get an instance of the class.
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
      * @return Pointer to new instance of the class.
      */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest gyroscope reading from sensor daemon.
+     *
+     * @return gyroscope reading.
+     */
     XYZ get();
 
     /**
      * Constructor.
+     *
      * @param path      path.
      * @param sessionId session id.
      */
@@ -70,21 +74,26 @@ public:
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const GyroscopeSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static GyroscopeSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static GyroscopeSensorChannelInterface* interface(const QString& id);
@@ -94,14 +103,12 @@ protected:
     virtual bool dataReceivedImpl();
 
 private:
-    bool frameAvailableConnected;
+    bool frameAvailableConnected; /**< has applicaiton connected slot for frameAvailable signal. */
 
-public Q_SLOTS: // METHODS
-    QDBusReply<void> reset();
-
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when new measurement data has become available.
+     *
      * @param data New measurement data.
      */
     void dataAvailable(const XYZ& data);
@@ -110,10 +117,10 @@ Q_SIGNALS: // SIGNALS
      * Sent when new measurement frame has become available.
      * If app doesn't connect to this signal content of frames
      * will be sent through dataAvailable signal.
+     *
      * @param frame New measurement frame.
      */
     void frameAvailable(const QVector<XYZ>& frame);
-
 };
 
 namespace local {

@@ -8,6 +8,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -122,15 +123,6 @@ void TouchAdaptor::interpretEvent(int src, struct input_event *ev)
                 case ABS_Z:
                     touchValues_[src].z = ev->value;
                     break;
-                /* These aren't passed on as they are rather synaptic specific.
-                   No point in processing them either.
-                case ABS_VOLUME:
-                    touchValues_[src].volume = ev->value;
-                    break;
-                case ABS_TOOL_WIDTH:
-                    touchValues_[src].toolWidth = ev->value;
-                    break;
-                */
             }
             break;
 
@@ -167,8 +159,8 @@ void TouchAdaptor::commitOutput(int src, struct input_event *ev)
     d->x_ = touchValues_[src].x;
     d->y_ = touchValues_[src].y;
     d->z_ = touchValues_[src].z;
-    d->tp_ = src;
-    d->st_ = touchValues_[src].fingerState;
+    d->object_ = src;
+    d->state_ = touchValues_[src].fingerState;
 
     outputBuffer_->commit();
     outputBuffer_->wakeUpReaders();

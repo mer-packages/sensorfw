@@ -29,7 +29,7 @@
 #include <QString>
 #include <QDebug>
 
-StatPrinter::StatPrinter(QList<SensorHandler*> handlers, int interval, QObject *parent) :
+StatPrinter::StatPrinter(QList<AbstractSensorHandler*> handlers, int interval, QObject *parent) :
     QObject(parent),
     handlers(handlers),
     first(true)
@@ -40,28 +40,29 @@ StatPrinter::StatPrinter(QList<SensorHandler*> handlers, int interval, QObject *
 void StatPrinter::timerEvent(QTimerEvent*)
 {
     QMap<QString, int> summary;
-    foreach(SensorHandler* handler, handlers)
+    foreach(AbstractSensorHandler* handler, handlers)
     {
         summary[handler->sensorName()] += handler->dataCount();
     }
-    QList<QString> keys(summary.keys());
-    qSort(keys.begin(), keys.end());
-    bool firstKey = true;
-    QString prefixLine;
-    QString dataLine;
-    foreach(QString key, keys)
+
+    QString prefixLine, dataLine;
+    foreach(QString key, summary.keys())
     {
-        if(!firstKey)
+        if (first)
         {
+            prefixLine.append(key);
             prefixLine.append('\t');
-            dataLine.append('\t');
         }
-        prefixLine.append(key);
+
         dataLine.append(QString::number(summary[key]));
-        firstKey = false;
+
+        dataLine.append('\t');
     }
+
     if(first)
-        qDebug()<< prefixLine;
-    first = false;
-    qDebug() << dataLine;
+    {
+        qDebug()<< prefixLine.trimmed();
+        first = false;
+    }
+    qDebug() << dataLine.trimmed();
 }

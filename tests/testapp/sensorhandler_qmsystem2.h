@@ -47,10 +47,10 @@ public:
 
     SensorHandler(const QString& sensorName, QObject *parent = 0);
 
+    static bool init(const QStringList& sensors);
+
     virtual bool startClient();
     virtual bool stopClient();
-
-    static void init(const QStringList& sensors);
 
 public Q_SLOTS:
     void receivedData(const MeeGo::QmAccelerometerReading& data);

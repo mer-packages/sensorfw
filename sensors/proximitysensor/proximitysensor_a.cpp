@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,4 +34,9 @@ ProximitySensorChannelAdaptor::ProximitySensorChannelAdaptor(QObject* parent) :
 Unsigned ProximitySensorChannelAdaptor::proximity() const
 {
     return qvariant_cast<Unsigned>(parent()->property("proximity"));
+}
+
+Proximity ProximitySensorChannelAdaptor::proximityReflectance() const
+{
+    return qvariant_cast<Proximity>(parent()->property("proximityReflectance"));
 }

@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,7 +46,6 @@ SysfsAdaptor::SysfsAdaptor(const QString& id,
     mode_(mode),
     epollDescriptor_(-1),
     interval_(0),
-    initNotDone(true),
     inStandbyMode_(false),
     running_(false),
     shouldBeRunning_(false),
@@ -76,34 +76,22 @@ bool SysfsAdaptor::addPath(const QString& path, const int id)
     return true;
 }
 
-bool SysfsAdaptor::isRunning()
+bool SysfsAdaptor::isRunning() const
 {
     return running_;
 }
 
 bool SysfsAdaptor::startAdaptor()
 {
-    if (initNotDone) {
-        connect(&reader_, SIGNAL(readyRead(int, int)),
-                this, SLOT(dataAvailable(int, int)));
-        initNotDone = false;
-    }
-    // Nothing to initialize. File handles are opened on HW sensor start,
-    // otherwise we might not get data on restart.
+    sensordLogD() << "Starting adaptor: " << id();
     return true;
 }
 
 void SysfsAdaptor::stopAdaptor()
 {
-    if(initNotDone)
-        return;
-    initNotDone = true;
-    disconnect(&reader_, SIGNAL(readyRead(int,int)), this, SLOT(dataAvailable(int,int)));
-
-    if ( getAdaptedSensor()->isRunning() ) {
-        //TODO: Drop refcount, so that we will definitely stop.
+    sensordLogD() << "Stopping adaptor: " << id();
+    if ( getAdaptedSensor()->isRunning() )
         stopSensor();
-    }
 }
 
 bool SysfsAdaptor::startSensor()
@@ -175,17 +163,19 @@ void SysfsAdaptor::stopSensor()
 
 bool SysfsAdaptor::standby()
 {
+    sensordLogD() << "Adaptor '" << id() << "' requested to go to standby";
     if (deviceStandbyOverride() || inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby or not overriden";
         return true;
     }
     inStandbyMode_ = true;
 
     if (!isRunning()) {
-        sensordLogD() << id() << " not going to standby: not running";
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
         return true;
     }
 
-    sensordLogD() << id() << " going to standby";
+    sensordLogD() << "Adaptor '" << id() << "' going to standby";
     stopReaderThread();
     closeAllFds();
 
@@ -196,22 +186,25 @@ bool SysfsAdaptor::standby()
 
 bool SysfsAdaptor::resume()
 {
+    sensordLogD() << "Adaptor '" << id() << "' requested to resume from standby";
+
     // Don't resume if not in standby
     if (!inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
         return true;
     }
 
     inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
-        sensordLogD() << id() << " not resuming from standby: not running";
+        sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
         return true;
     }
 
-    sensordLogD() << id() << " resuming from standby";
+    sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
 
     if (!startReaderThread()) {
-        sensordLogW() << "Failed to resume " << id() << " from standby!";
+        sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";
         return false;
     }
 
@@ -307,10 +300,9 @@ void SysfsAdaptor::stopReaderThread()
     if (mode_ == SelectMode) {
         quint64 dummy = 1;
         write(pipeDescriptors_[1], &dummy, 8);
-    } else {
-        reader_.running_= false;
     }
-
+    else
+        reader_.stopReader();
     reader_.wait();
 }
 
@@ -322,8 +314,7 @@ bool SysfsAdaptor::startReaderThread()
         return false;
     }
 
-    reader_.running_ = true;
-    reader_.start();
+    reader_.startReader();
 
     return true;
 }
@@ -367,11 +358,6 @@ QByteArray SysfsAdaptor::readFromFile(const QByteArray& path)
     return data;
 }
 
-void SysfsAdaptor::dataAvailable(int pathId, int fd)
-{
-    processSample(pathId, fd);
-}
-
 bool SysfsAdaptor::checkIntervalUsage() const
 {
     if (mode_ == SysfsAdaptor::SelectMode)
@@ -411,6 +397,17 @@ SysfsAdaptorReader::SysfsAdaptorReader(SysfsAdaptor *parent) : running_(false), 
 {
 }
 
+void SysfsAdaptorReader::stopReader()
+{
+    running_ = false;
+}
+
+void SysfsAdaptorReader::startReader()
+{
+    running_ = true;
+    start();
+}
+
 void SysfsAdaptorReader::run()
 {
     while (running_) {
@@ -423,13 +420,13 @@ void SysfsAdaptorReader::run()
             int descriptors = epoll_wait(parent_->epollDescriptor_, events, parent_->sysfsDescriptors_.size() + 1, -1);
 
             if (descriptors == -1) {
-                // TODO: deal with errors
                 sensordLogD() << "epoll_wait(): " << strerror(errno);
                 QThread::msleep(1000);
             } else {
                 bool errorInInput = false;
                 for (int i = 0; i < descriptors; ++i) {
-                    if (events[i].events & (EPOLLHUP | EPOLLERR)) { //TODO: we sort of ignore these type of errors to get sensordiverter.sh working
+                    if (events[i].events & (EPOLLHUP | EPOLLERR)) {
+                        //Note: we ignore error so the sensordiverter.sh works. This should be handled better when testcases are improved.
                         sensordLogD() << "epoll_wait(): error in input fd";
                         errorInInput = true;
                     }
@@ -456,7 +453,6 @@ void SysfsAdaptorReader::run()
 
             // Read through all fds.
             for (int i = 0; i < parent_->sysfsDescriptors_.size(); ++i) {
-
                 parent_->processSample(parent_->pathIds_.at(i), parent_->sysfsDescriptors_.at(i));
 
                 if (parent_->doSeek_)
@@ -486,10 +482,10 @@ void SysfsAdaptor::init()
     {
         sensordLogW() << "No sysfs path defined for: " << name();
     }
-    mode_ = (PollMode)Config::configuration()->value(name() + "/mode", mode_).toInt();
-    doSeek_ = Config::configuration()->value(name() + "/seek", doSeek_).toBool();
+    mode_ = (PollMode)Config::configuration()->value<int>(name() + "/mode", mode_);
+    doSeek_ = Config::configuration()->value<bool>(name() + "/seek", doSeek_);
 
     introduceAvailableDataRanges(name());
     introduceAvailableIntervals(name());
-    setDefaultInterval(Config::configuration()->value(name() + "/default_interval", "0").toInt());
+    setDefaultInterval(Config::configuration()->value<int>(name() + "/default_interval", 0));
 }

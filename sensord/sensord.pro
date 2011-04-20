@@ -7,25 +7,28 @@ include( ../common-config.pri )
 
 CONFIG += console \
           link_pkgconfig
-CONFIG -= app_bundle
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
                         ../filters \
                         ../datatypes \
-                        ../core
+                        ../core \
+                        ../sensors/magnetometersensor
+
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -Wl,-rpath,/usr/lib/sensord
-LIBS += -Wl,-E
-LIBS += -L../datatypes -lsensordatatypes
-LIBS += -L../core -lsensorfw
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes \
+                      -L../core -lsensorfw
+
+QMAKE_RPATHDIR += /usr/lib/sensord
 
 SOURCES += main.cpp \
-    parser.cpp
+           parser.cpp \
+           calibrationhandler.cpp
 
-HEADERS += parser.h
+HEADERS += parser.h \
+           calibrationhandler.h
 
 contextprovider {
     DEFINES += PROVIDE_CONTEXT_INFO

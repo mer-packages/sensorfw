@@ -1,8 +1,8 @@
 Source: sensord
 Section: misc
 Priority: optional
-Maintainer: Timo Rongas <ext-timo.rongas@nokia.com> 
-Uploaders: Philippe De Swert <philippe.de-swert@nokia.com>
+Maintainer: Antti Virtanen <antti.i.virtanen@nokia.com>
+Uploaders: Timo Rongas <ext-timo.2.rongas@nokia.com>, Pia Niemelä <pia.s.niemela@nokia.com>, Markus Lehtonen <markus.lehtonen@nokia.com>, Semi Malinen <semi.malinen@nokia.com>
 Build-Depends: debhelper (>=5), libqt4-dev (>= 4.5), doxygen, libcontextprovider-dev (>= 0.3), libgconf2-dev, mce-dev (>= 1.10.16), aegis-builder (>= 1.4)
 Standards-Version: 3.7.3
 

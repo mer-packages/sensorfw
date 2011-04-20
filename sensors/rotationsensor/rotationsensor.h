@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,6 +27,7 @@
 #ifndef ROTATION_SENSOR_CHANNEL_H
 #define ROTATION_SENSOR_CHANNEL_H
 
+#include <QMutex>
 #include "abstractsensor.h"
 #include "abstractchain.h"
 #include "rotationsensor_a.h"
@@ -67,11 +69,15 @@ public:
 
     bool hasZ() const
     {
-        return hasZ_;
+        return compassReader_;
     }
 
     virtual unsigned int interval() const;
     virtual bool setInterval(unsigned int value, int sessionId);
+
+    virtual void removeSession(int sessionId);
+
+    virtual bool downsamplingSupported() const;
 
 public Q_SLOTS:
     bool start();
@@ -98,7 +104,8 @@ private:
     FilterBase*                  rotationFilter_;
     RingBuffer<TimedXyzData>*    outputBuffer_;
     TimedXyzData                 prevRotation_;
-    bool                         hasZ_;
+    TimedXyzDownsampleBuffer     downsampleBuffer_;
+    QMutex                       mutex_;
 
     void emitData(const TimedXyzData& value);
 };

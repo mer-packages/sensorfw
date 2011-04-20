@@ -1,14 +1,14 @@
 ###
 ### INSTRUCTIONS FOR WRITING PLUG-INS FOR SENSOR FRAMEWORK
 ###
-### 25.10.2010
+### 10.03.2011
 ###
 
 ##
 ## DISCLAIMER
 ##
 
-These instructions apply to sensord-0.6.28 tagged in
+These instructions apply to sensord-0.6.41 tagged in
 
   http://meego.gitorious.org/meego-middleware/sensorfw/
 
@@ -56,7 +56,7 @@ See the commented codes in examples/*/*plugin.[h|cpp] for plug-in construction.
 ## WRITING AN ADAPTOR
 ##
 
-Device adaptors are responsible for reading data from a source (usually a device driver interface) and pushing it into the processing chain in sensor framework.
+A device adaptors is responsible for reading data from a source (usually a device driver interface) and pushing it into the processing chain in sensor framework.
 
 The easiest way to create a new device adaptor is to extend SysfsAdaptor. The base class will then handle most things as long as the adaptor class itself provides the interface specific details.
 
@@ -80,7 +80,7 @@ An adaptor can have any number of output buffers. Usually there is only one, but
 
 ## Reading data from driver
 
-SysfsAdaptor provides method addPath() for registering filehandles for listening. The path can also be set as constructor parameter. There can any number of paths added, but mode of the adaptor will be the same for all of them, as well as the interval setting.
+SysfsAdaptor provides method addPath() for registering filehandles for listening. The path can also be set as constructor parameter. There can be any number of paths added, but mode of the adaptor will be the same for all of them, as well as the interval setting.
 
 Whenever a registered filehandle has new data (signalled either by interrupt or by timeout), processSample(int pathId, int fd) gets called. Data can be read from fd, and pathId is used to separate which file the handle points to.
 
@@ -99,7 +99,15 @@ See examples/sampleadaptor/* for adaptor construction.
 ## WRITING A FILTER
 ##
 
-TBD.
+A filter is responsible for processing data.
+
+A new filter should be created by inheriting from QObject and Filter.
+
+Then what need to be implemented are:
+  * In the header file
+	- Override the static factoryMethod() function and return a new instance of the filter
+	- Define a private filter() function which can be called anything, as long as it matches the name in class constructor
+  * Implement the filter() function in the source file and do the necessary filtering operation there
 
 See examples/samplefilter/* for filter construction.
 
@@ -108,16 +116,43 @@ See examples/samplefilter/* for filter construction.
 ## WRITING A SENSOR
 ##
 
-TDB.
+To create a new sensor, the following four steps should be done
+  * implementation of AbstractSensorChannel
+  * implementation of AbstractSensorChannelAdaptor
+  * implementation of AbstractSensorChannelInterface
+  * implementation of datatypes if sensor introduces new ones
 
-See examples/samplesensor/* for sensor construction.
+AbstractSensorChannel is the end-node in the sensor graph.
+
+AbstractSensorChannelAdaptor is the DBus interface of the sensor.
+
+AbstractSensorChannelInterface is the client API for managing sensor through DBus and reading datastream from the socket.
+
+See examples/samplesensor/* for sensor channel construction.
 
 
 ##
 ## WRITING A CHAIN
 ##
 
-TBD.
+A chain is responsible for adapting filters into the data flow between an adaptor and a sensor.
+A new chain is created by inheriting from AbstractChain.
+
+Then what need to be implemented are:
+  * In the header file
+	- Override the static factoryMethod() function and return a new instance of the chain
+  * In the constructor
+  	- Get an instance of SensorManager
+  	- Get a pointer (refcounted) to the adaptor from sensor manager
+  	- Create a reader for the adaptor
+	- Create and name output buffer
+	- Create a new bin and add elements into it with names
+	- Make connections between the elements in the Bin
+	- Connect the reader to the adaptor
+	- Setup metadata
+  * Do the cleaning up in the destructor
+  * Override start() function to start chain
+  * Override stop() function to stop chain
 
 See examples/samplechain/* for chain construction.
 
@@ -132,6 +167,8 @@ Each node (adaptor/chain/sensor, not filters) should define metadata for itself.
   * Interval range(s)
   * Data range(s)
   * Standby override sources (sort of metadata)
+  * Buffer size
+  * Buffer interval
 
 ## Description
 
@@ -165,6 +202,15 @@ In adaptors, display blank will result in all filehandles being released. Settin
 
 The property should be used with care and only when required in order to minimize power consumption.
 
+## Buffer size and interval
+
+Buffering means two things:
+  * sensor driver of chip may have internal buffer for storing data. In that case adaptor will implement setBufferSize() virtual function to configure the driver and implement getAvailableBufferSizes() virtual function to list available buffer sizes.
+  * if adaptor doesn't support buffering then sensorfw uses internal buffering to send data in bursts to the clients. These modes are mutually exclusive for single sensor.
+
+Buffer interval can be used to configure the time limit for long we will wait for buffer to get full before flushing the content to the user. For driver/chip supported interval handling adaptor will implement setBufferInterval() virtual function to configure the driver and implement getAvailableBufferIntervals() virtual function to list available intervals.
+
+By default buffering is disabled for client sessions.
 
 ##
 ## CONFIGURATION FILES
@@ -175,9 +221,9 @@ Sensorfw supports multiple configuration files. There are two locations:
   (1) /etc/sensorfw/sensord.conf
   (2) /etc/sensorfw/sensord.conf.d/
 
-Any option set in (1) will override options set in any of the files in (2). Files in (2) are given priority based on alphanumeric order. Using doubledigits as the beginning of the filename for clarity is encouraged.
+Any option set in (1) will override options set in any of the files in (2). Files in (2) are given priority based on alphanumeric order. Using double-digits as the beginning of the filename for clarity is encouraged.
 
-Configuration files contain sections for different HW. These sections should connect plugin metanames (sampleadaptor) with the real plugin that should be used (sampleadaptor-inputdev). The configuratino file also contains option 'deviceId', which specifies which section should be used. This will be removed once we have automatic detection of underlying HW in place.
+Configuration files contain sections for different HW. These sections should connect plugin metanames (sampleadaptor) with the real plugin that should be used (sampleadaptor-inputdev). The configuration file also contains option 'deviceId', which specifies which section should be used. This will be removed once we have automatic detection of underlying HW in place.
 
 The structure of the configuration files is likely to change in the future to contain better separation between different platforms.
 
@@ -186,8 +232,9 @@ The structure of the configuration files is likely to change in the future to co
 ## FURTHER INFORMATION
 ##
 
-If you have questions that are not clear from the text and code, don't hesitate to ask us.
+If you have questions that are not clear from the text and codes, please don't hesitate to ask us.
 
 Cheerios,
 
   Timo Rongas <ext-timo.2.rongas@nokia.com>
+  Shenghua Liu <ext-shenghua.1.liu@nokia.com>

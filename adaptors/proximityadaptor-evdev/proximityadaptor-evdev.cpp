@@ -43,7 +43,7 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
     InputDevAdaptor(id, 1),
     currentState_(ProximityStateUnknown)
 {
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
 }
 
@@ -94,10 +94,10 @@ void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
     if (currentState_ != oldState) {
         sensordLogD() << "Proximity state change detected: " << currentState_;
 
-        TimedUnsigned *proximityData = proximityBuffer_->nextSlot();
+        ProximityData *proximityData = proximityBuffer_->nextSlot();
 
         proximityData->timestamp_ = Utils::getTimeStamp(&(ev->time));
-        proximityData->value_ = currentState_;
+        proximityData->withinProximity_ = currentState_;
 
         oldState = currentState_;
 

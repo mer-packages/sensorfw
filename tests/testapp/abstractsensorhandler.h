@@ -28,7 +28,6 @@
 
 #include <QThread>
 #include <QString>
-#include "qt-api/abstractsensor_i.h"
 
 class AbstractSensorHandler : public QThread
 {
@@ -52,6 +51,7 @@ protected:
     int buffersize_;
     int dataCount_;
     int frameCount_;
+    bool downsample_;
 };
 
 #endif // ABSTRACTSENSORHANDLER_H

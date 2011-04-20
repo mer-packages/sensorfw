@@ -44,7 +44,7 @@ struct ak8974_data {
 MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
-    intervalCompensation_ = Config::configuration()->value("magnetometer/interval_compensation", "0").toInt();
+    intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Input device Magnetometer adaptor (ak897x)");
@@ -73,7 +73,7 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
         sensordLogD() << "Invalid sample received from magnetometer";
     }
 
-    sensordLogT() << "Magnetometer Reading: " << mag_data.x << ", " << mag_data.y << ", " << mag_data.z;
+    sensordLogT() << "Magnetometer reading: " << mag_data.x << ", " << mag_data.y << ", " << mag_data.z;
 
     TimedXyzData* sample = magnetometerBuffer_->nextSlot();
 

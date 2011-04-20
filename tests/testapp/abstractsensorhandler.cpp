@@ -25,6 +25,7 @@
 
 #include "abstractsensorhandler.h"
 #include "config.h"
+#include "logging.h"
 
 AbstractSensorHandler::AbstractSensorHandler(const QString& sensorName, QObject *parent) :
     QThread(parent),
@@ -34,14 +35,16 @@ AbstractSensorHandler::AbstractSensorHandler(const QString& sensorName, QObject 
     standbyoverride_(false),
     buffersize_(0),
     dataCount_(0),
-    frameCount_(0)
+    frameCount_(0),
+    downsample_(false)
 {
     if (Config::configuration() != NULL)
     {
-        interval_ = Config::configuration()->value(sensorName_ + "/interval", "100").toInt();
-        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", "0").toInt();
-        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", "false").toBool();
-        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", "0").toInt();
+        interval_ = Config::configuration()->value(sensorName_ + "/interval", 100);
+        bufferinterval_ = Config::configuration()->value(sensorName_ + "/bufferinterval", 0);
+        standbyoverride_ = Config::configuration()->value(sensorName_ + "/standbyoverride", false);
+        buffersize_ = Config::configuration()->value(sensorName_ + "/buffersize", 0);
+        downsample_ = Config::configuration()->value(sensorName_ + "/downsample", false);
     }
 }
 

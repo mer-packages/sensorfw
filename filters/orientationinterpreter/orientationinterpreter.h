@@ -30,7 +30,7 @@
 #define ORIENTATIONINTERPRETER_H
 
 #include <QObject>
-#include <QAtomicInt>
+#include <QFile>
 #include "filter.h"
 #include <datatypes/orientationdata.h>
 #include <datatypes/posedata.h>
@@ -42,13 +42,11 @@
  * #AccelerometerChain is used.
  *
  */
-
 class OrientationInterpreter : public QObject, public FilterBase
 {
     Q_OBJECT;
 
     Q_PROPERTY(PoseData orientation READ orientation);
-    Q_PROPERTY(int threshold READ threshold WRITE setThreshold);
 
 private:
     Sink<OrientationInterpreter, AccelerationData> accDataSink;
@@ -65,8 +63,6 @@ private:
 
     OrientationInterpreter();
 
-    QAtomicInt threshold_;
-
     PoseData topEdge;
     PoseData face;
     PoseData previousFace;
@@ -75,13 +71,17 @@ private:
     AccelerationData data;
     QList<AccelerationData> dataBuffer;
 
-    int minlimit;
-    int maxlimit;
+    int minLimit;
+    int maxLimit;
     int angleThresholdPortrait;
     int angleThresholdLandscape;
     unsigned long discardTime;
+    int maxBufferSize;
 
-    PoseData o_;
+    PoseData orientationData;
+
+    QFile cpuBoostFile;
+
     enum OrientationMode
     {
         Portrait = 0, /**< Orientation mode is portrait. */
@@ -93,9 +93,7 @@ private:
     int orientationCheck(const AccelerationData&, OrientationMode) const;
     PoseData orientationRotation(const AccelerationData&, OrientationMode, PoseData (OrientationInterpreter::*)(int));
 
-    static const int DEFAULT_THRESHOLD;
     static const float RADIANS_TO_DEGREES;
-    static const int ANGLE_LIMIT;
     static const int SAME_AXIS_LIMIT;
 
     static const int OVERFLOW_MIN;
@@ -107,6 +105,8 @@ private:
     static const int DISCARD_TIME;
     static const int AVG_BUFFER_MAX_SIZE;
 
+    static const char* CPU_BOOST_PATH;
+
 public:
     /**
      * Factory method.
@@ -117,13 +117,7 @@ public:
         return new OrientationInterpreter();
     }
 
-    PoseData orientation() const {
-        return o_;
-    }
-
-    int threshold() const { return threshold_; }
-
-    void setThreshold(int threshold) { threshold_ = threshold; }
+    PoseData orientation() const { return orientationData; }
 };
 
 #endif

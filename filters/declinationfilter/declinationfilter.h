@@ -29,20 +29,15 @@
 
 #include <QObject>
 #include <QAtomicInt>
-#include "orientationdata.h"
+#include "datatypes/orientationdata.h"
 #include "filter.h"
 
 /**
- * @brief Filter for calculating declination correction for Compass data..
- *
+ * Filter for calculating declination correction for Compass data.
  */
 class DeclinationFilter : public QObject, public Filter<CompassData, DeclinationFilter, CompassData>
 {
     Q_OBJECT;
-    /**
-     * Holds the declination correction amount applied in the calculation.
-     * The value is read from GConf key \c /system/osso/location/settings/magneticvariation.
-     */
     Q_PROPERTY(int declinationCorrection READ declinationCorrection);
 
 public:
@@ -55,16 +50,23 @@ public:
         return new DeclinationFilter();
     }
 
-    int declinationCorrection() const { return declinationCorrection_; }
+    /**
+     * Holds the declination correction amount applied in the calculation.
+     * The value is read from GConf key \c /system/osso/location/settings/magneticvariation.
+     */
+    int declinationCorrection();
 
 private:
     DeclinationFilter();
 
     void correct(unsigned, const CompassData*);
+
     void loadSettings();
-    CompassData orientation;
-    CompassData newOrientation;
+
+    CompassData orientation_;
     QAtomicInt declinationCorrection_;
+    quint64 lastUpdate_;
+    quint64 updateInterval_;
 
     static const char* declinationKey;
 };

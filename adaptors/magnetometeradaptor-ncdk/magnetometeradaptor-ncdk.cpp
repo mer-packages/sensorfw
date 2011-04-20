@@ -33,9 +33,9 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode),
     powerState_(false)
 {
-    intervalCompensation_ = Config::configuration()->value("magnetometer/interval_compensation", "0").toInt();
-    powerStateFilePath_ = Config::configuration()->value("magnetometer/path_power_state", "").toByteArray();
-    sensAdjFilePath_ = Config::configuration()->value("magnetometer/path_sens_adjust", "").toByteArray();
+    intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
+    powerStateFilePath_ = Config::configuration()->value<QByteArray>("magnetometer/path_power_state", "");
+    sensAdjFilePath_ = Config::configuration()->value<QByteArray>("magnetometer/path_sens_adjust", "");
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Magnetometer adaptor (ak8975) for NCDK");

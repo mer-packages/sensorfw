@@ -53,13 +53,12 @@ private:
     QList<QString> m_changedProperties;
 };
 
-
 class MetaDataTest : public QObject
 {
     Q_OBJECT;
 
 private slots:
-    // Setup tests
+
     void initTestCase();
     void init();
     void cleanup();
@@ -77,6 +76,8 @@ private slots:
     void testAvailableIntervals();
     void testAvailableBufferIntervals();
     void testAvailableBufferSizes();
+
+    void testCompassDeclination();
 };
 
 #endif // METADATA_TEST_H

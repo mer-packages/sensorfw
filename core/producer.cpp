@@ -26,6 +26,10 @@
 
 #include "producer.h"
 
+Producer::~Producer()
+{
+}
+
 void Producer::addSource(SourceBase* source, const QString& name)
 {
     sources_.insert(name, source);

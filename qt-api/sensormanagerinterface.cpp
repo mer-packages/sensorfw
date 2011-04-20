@@ -40,10 +40,10 @@ SensorManagerInterface& SensorManagerInterface::instance()
 {
     if ( !ifc_ )
     {
-        ifc_ = new SensorManagerInterface;
+        ifc_ = new SensorManagerInterface();
         if ( !ifc_->isValid() )
         {
-            qDebug() << "ERROR:" << ifc_->lastError().message();
+            qDebug() << "Failed to get sensor manager interface: " << ifc_->lastError().message();
         }
     }
 
@@ -60,11 +60,10 @@ AbstractSensorChannelInterface* SensorManagerInterface::interface(const QString&
 {
     if ( !sensorInterfaceMap_.contains(id) )
     {
-        qDebug() << "Requested sensor id " << id << "interface not known";
+        qDebug() << "Requested sensor id '" << id << "' interface not known";
         return 0;
     }
 
-    // TODO: who owns this interface and how to deal with derived Sensors?
     SensorManagerInterface& sm = SensorManagerInterface::instance();
     AbstractSensorChannelInterface* ifc = 0;
     int sessionId = sm.requestSensor(id);
@@ -75,7 +74,7 @@ AbstractSensorChannelInterface* SensorManagerInterface::interface(const QString&
     }
     else
     {
-        qDebug( "Request for interface not granted..." );
+        qDebug() << "Requested sensor id '" << id << "' interface not granted";
     }
 
     return ifc;
@@ -88,7 +87,8 @@ bool SensorManagerInterface::releaseInterface(const QString& id, int sessionId)
     QDBusReply<bool> reply = LocalSensorManagerInterface::releaseSensor(cleanId, sessionId);
     if ( !reply.isValid() )
     {
-        qDebug() << "Error: " << reply.error().message();
+        qDebug() << "Failed to release sensor '" << id << "' interface for session '" << sessionId << "'. Error: " << reply.error().message();
+        return false;
     }
     return reply.value();
 }

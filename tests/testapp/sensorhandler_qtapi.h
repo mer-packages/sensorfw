@@ -29,35 +29,31 @@
 #define SENSORHANDLER_H
 
 #include <QVector>
-#include "qt-api/abstractsensor_i.h"
+#include "abstractsensor_i.h"
 #include "datatypes/xyz.h"
 #include "config.h"
 #include "abstractsensorhandler.h"
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/orientationsensor_i.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
+#include "sensormanagerinterface.h"
+#include "orientationsensor_i.h"
+#include "accelerometersensor_i.h"
+#include "compasssensor_i.h"
+#include "tapsensor_i.h"
+#include "alssensor_i.h"
+#include "proximitysensor_i.h"
+#include "rotationsensor_i.h"
+#include "magnetometersensor_i.h"
 
 class SensorHandler : public AbstractSensorHandler
 {
     Q_OBJECT
 public:
-
     SensorHandler(const QString& sensorName, QObject *parent = 0);
+
+    static bool init(const QStringList& sensors);
 
     virtual bool startClient();
     virtual bool stopClient();
-
-    static void init(const QStringList& sensors);
-
-private:
-    void createSensorInterface();
 
 public Q_SLOTS:
     void receivedData(const MagneticField& data);
@@ -67,8 +63,13 @@ public Q_SLOTS:
     void receivedData(const Tap& data);
     void receivedFrame(const QVector<MagneticField>& frame);
     void receivedFrame(const QVector<XYZ>& frame);
+    void receivedData(const Proximity& data);
 
 private:
+    void createSensorInterface();
+
+    static QString toString(const DataRangeList& ranges);
+
     AbstractSensorChannelInterface* sensorChannelInterface_;
 };
 

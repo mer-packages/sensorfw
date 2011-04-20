@@ -28,10 +28,9 @@
 
 #include "loader.h"
 #include "plugin.h"
-#include "logging.h"
-#include "config.h"
 #include <QLibrary>
-#include <QPluginLoader>
+#include <QStringList>
+#include <QList>
 #include <QCoreApplication>
 
 #include "logging.h"
@@ -39,6 +38,7 @@
 
 Loader::Loader()
 {
+    QCoreApplication::addLibraryPath("/usr/lib/sensord/");
 }
 
 Loader& Loader::instance()
@@ -50,11 +50,8 @@ Loader& Loader::instance()
 
 bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringList& newPluginNames, QList<PluginBase*>& newPlugins) const
 {
-    bool    loaded = true;
-
     sensordLogT() << "Loading plugin:" << name;
 
-    QCoreApplication::addLibraryPath("/usr/lib/sensord/");
     QLibrary ql(name);
     ql.setLoadHints(QLibrary::ExportExternalSymbolsHint);
     if (!ql.load()) {
@@ -93,7 +90,8 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringLi
     QStringList requiredPlugins(plugin->Dependencies());
     sensordLogT() << name << " requires: " << requiredPlugins;
 
-    for (int i = 0; i < requiredPlugins.size() && loaded; i++) {
+    bool loaded = true;
+    for (int i = 0; i < requiredPlugins.size() && loaded; ++i) {
         if (!(loadedPluginNames_.contains(requiredPlugins.at(i)) ||
               newPluginNames.contains(requiredPlugins.at(i))))
         {

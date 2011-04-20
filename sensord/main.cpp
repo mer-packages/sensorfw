@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
-    SensordLogger::init(parser.logTarget(), parser.logFilePath());
+    SensordLogger::init(parser.logTarget(), parser.logFilePath(), "sensord");
 
     if (parser.printHelp())
     {
@@ -161,7 +161,7 @@ int main(int argc, char *argv[])
     }
 
     int ret = app.exec();
-    sensordLogD() << "Exitting...";
+    sensordLogD() << "Exiting...";
     Config::close();
     SensordLogger::close();
     return ret;

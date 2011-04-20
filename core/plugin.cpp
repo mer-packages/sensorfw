@@ -32,3 +32,12 @@ PluginBase::~PluginBase()
 Plugin::~Plugin()
 {
 }
+
+void PluginBase::Init(Loader&)
+{
+}
+
+QStringList PluginBase::Dependencies()
+{
+    return QStringList();
+}

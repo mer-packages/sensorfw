@@ -25,17 +25,15 @@
 */
 
 #include <QCoreApplication>
-#include <QTest>
 #include <QList>
 #include <QString>
 #include <QDebug>
 #include <signal.h>
 
-#include "sensorhandler.h"
 #include "parser.h"
 #include "config.h"
 #include "logging.h"
-#include "statprinter.h"
+#include "clientadmin.h"
 
 void printUsage();
 
@@ -49,8 +47,6 @@ int main(int argc, char *argv[])
 {
     QCoreApplication app(argc, argv);
 
-    const char* CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
-
     Parser parser(app.arguments());
 
     if (parser.printHelp())
@@ -62,70 +58,11 @@ int main(int argc, char *argv[])
 
     signal(SIGINT, sigIntHandler);
 
-    SensordLogger::init(parser.logTarget(), parser.logFilePath());
+    ClientAdmin clientAdmin(parser);
+    clientAdmin.runClients();
 
-    if (parser.changeLogLevel())
-    {
-        SensordLogger::setOutputLevel(parser.getLogLevel());
-    }
-
-    if (parser.configFileInput())
-    {
-        QString defConfigFile = parser.configFilePath();
-        if (Config::loadConfig(defConfigFile, ""))
-            sensordLogT() << "Config file is loading successfully.";
-        else
-        {
-            sensordLogW() << "Config file error! Load using default path.";
-            Config::loadConfig(CONFIG_FILE_PATH, "");
-        }
-    } else {
-        Config::loadConfig(CONFIG_FILE_PATH, "");
-    }
-
-    if (Config::configuration() == NULL)
-    {
-        sensordLogC() << "Failed to load configuration. Aborting.";
-        exit(EXIT_FAILURE);
-    }
-
-    SensorHandler::init(Config::configuration()->groups());
-
-    QList<SensorHandler*> handlers;
-    foreach (const QString& sensorName, Config::configuration()->groups())
-    {
-        int count = Config::configuration()->value(sensorName + "/instances", "0").toInt();
-        for(int i = 0; i < count; ++i)
-        {
-            SensorHandler* handler = new SensorHandler(sensorName, &app);
-            if (parser.singleThread()) {
-                handler->startClient();
-            } else {
-                handler->start();
-            }
-            handlers << handler;
-        }
-    }
-    StatPrinter* printer = 0;
-    if(parser.statInterval())
-    {
-        printer = new StatPrinter(handlers, parser.statInterval(), &app);
-    }
-    sensordLogD() << "Threads are waiting.";
     int ret = app.exec();
-    if(!parser.gracefulShutdown())
-        return ret;
-    sensordLogD() << "Exiting...";
-    delete printer;
-    foreach(SensorHandler* handler, handlers)
-    {
-        handler->stopClient();
-        if (!parser.singleThread() && handler->isRunning())
-            handler->quit();
-        delete handler;
-    }
-    Config::close();
-    SensordLogger::close();
+
     return ret;
 }
 
@@ -141,8 +78,8 @@ void printUsage()
     qDebug() << " --log-file-path=P                Log file path\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /usr/share/sensord-tests/testapp.conf is used.\n";
-    qDebug() << " -m=N  --model=N                  Start clients in single thread model or multithread mode. (1(default)=single thread, 2=multithread)\n";
+    qDebug() << " -m=N  --model=N                  Start clients in single thread model or multithread mode. (1=single thread(default), 2=multithread)\n";
     qDebug() << " -i=N, --stat-interval=N          Interval for statistics printing.\n";
-    qDebug() << " -g=N                             Perform graceful shutdown (1(default)=yes, 0=no).\n";
+    qDebug() << " -g=N                             Perform graceful shutdown (1=yes(default), 0=no).\n";
     qDebug() << " -h, --help                       Show usage info and exit.";
 }

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -30,36 +31,73 @@
 
 #include <QObject>
 #include <QDBusInterface>
-#include <QDBusConnection>
+#include <QString>
 
 /**
- * Class for monitoring MCE signals. Currently only monitors the
- * display state changed.
+ * Class for monitoring various MCE signals.
  */
-class MceWatcher : public QObject {
-
-    Q_OBJECT;
+class MceWatcher : public QObject
+{
+    Q_OBJECT
+    Q_DISABLE_COPY(MceWatcher)
 
 public:
+    /**
+     * Constructor.
+     *
+     * @param parent Parent object.
+     */
     MceWatcher(QObject* parent = 0);
+
+    /**
+     * Get display state.
+     *
+     * @return display state.
+     */
+    bool displayEnabled() const;
+
+    /**
+     * Get powersave-mode state.
+     *
+     * @return powersave-mode state.
+     */
+    bool PSMEnabled() const;
 
 signals:
     /**
-     * Sent when display state has changed.
+     * Emitted when display state has changed.
+     *
      * @param displayOn \c true if display went to 'on' or 'dimmed',
      *                  \c false if 'off'.
      */
-    void displayStateChanged(const bool displayOn);
-    void devicePSMStateChanged(const bool PSM);
+    void displayStateChanged(bool displayOn);
+
+    /**
+     * Emitted when powersave-mode has changed.
+     *
+     * @param PSM is powersave-mode enabled or not.
+     */
+    void devicePSMStateChanged(bool PSM);
 
 private slots:
-    void slotDisplayStateChanged(const QString state);
-    void slotPSMStateChanged(const bool mode);
+    /**
+     * Slot for MCE display state change signals.
+     *
+     * @param state name of the state.
+     */
+    void slotDisplayStateChanged(const QString& state);
+
+    /**
+     * Slot for MCE powersave-mode state change signals.
+     *
+     * @param mode is powersave-mode enabled or not.
+     */
+    void slotPSMStateChanged(bool mode);
 
 private:
-    QDBusInterface* dbusIfc;
-    bool m_state;
-    bool m_powerSave;
+    QDBusInterface* dbusIfc; /**< DBus iface to MCE */
+    bool displayState;       /**< current display state */
+    bool powerSave;          /**< current powersave-mode state */
 
 };
 

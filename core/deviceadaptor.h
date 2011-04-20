@@ -42,45 +42,73 @@ class RingBufferBase;
 /**
  * Represents a single adapted sensor.
  */
-class AdaptedSensorEntry : public QObject {
-    Q_OBJECT
-
-    Q_PROPERTY(QString name READ name)
-    Q_PROPERTY(QString description READ description)
-
-    Q_PROPERTY(unsigned interval READ interval WRITE setInterval)
-
-    Q_PROPERTY(bool isRunning READ isRunning WRITE setIsRunning)
-
+class AdaptedSensorEntry
+{
 public:
-    AdaptedSensorEntry(const QString& name, const QString& description, RingBufferBase* buffer)
-        : name_(name), description_(description), interval_(0), buffer_(buffer), running_(false), count_(0) {}
+    /**
+     * Constructor.
+     *
+     * @param name Name of the sensor.
+     * @param description Description of the sensor.
+     * @param buffer Buffer of the sensor.
+     */
+    AdaptedSensorEntry(const QString& name, const QString& description, RingBufferBase* buffer);
 
-    const QString& name() const { return name_; }
-    const QString& description() const { return description_; }
+    /**
+     * Get name of the sensor.
+     *
+     * @return name of the sensor.
+     */
+    const QString& name() const;
 
-    // sensor subsystem "parameters"
-    virtual unsigned interval() const { return interval_; }
-    virtual void setInterval(unsigned interval) { interval_ = interval; }
+    /**
+     * Is sensor running.
+     *
+     * @return is sensor running.
+     */
+    bool isRunning() const;
 
-    bool isRunning() const { return running_; }
-    void setIsRunning(bool isRunning) { running_ = isRunning; }
+    /**
+     * Set sensor running state.
+     *
+     * @param running state.
+     */
+    void setIsRunning(bool isRunning);
 
-    RingBufferBase* buffer() { return buffer_; }
+    /**
+     * Get sensor reference count.
+     *
+     * @return reference count.
+     */
+    int referenceCount() const;
 
-    int referenceCount() const { return count_; }
-    int addReference() { count_ += 1; return count_; }
-    int removeReference() { count_ -= 1; return count_; }
+    /**
+     * Increment sensor reference count.
+     *
+     * @return new count.
+     */
+    int addReference();
+
+    /**
+     * Decrement sensor reference count.
+     *
+     * @return new count.
+     */
+    int removeReference();
+
+    /**
+     * Get output buffer.
+     *
+     * @return output buffer.
+     */
+    RingBufferBase* buffer() const;
 
 private:
-    QString         name_; // note that name is also stored as key of the QHash entry
-    QString         description_;
-
-    unsigned        interval_; // perhaps this should be a proxy to the sensor subsystem
-
-    RingBufferBase* buffer_;
-    bool            running_;
-    int             count_;
+    QString         name_;        /**< unique name of the sensor */
+    QString         description_; /**< decription of the sensor */
+    bool            running_;     /**< is sensor running */
+    int             count_;       /**< reference count */
+    RingBufferBase* buffer_;      /**< sensor output buffer */
 };
 
 /**
@@ -88,42 +116,87 @@ private:
  */
 class DeviceAdaptor : public NodeBase
 {
-    Q_OBJECT;
-
-    Q_PROPERTY(QString id READ id);
-    Q_PROPERTY(bool isValid READ isValid);
+    Q_OBJECT
+    Q_DISABLE_COPY(DeviceAdaptor)
 
 public:
+    /**
+     * Constructor.
+     *
+     * @param id Sensor ID.
+     */
+    DeviceAdaptor(const QString& id);
 
-    DeviceAdaptor(const QString id) : id_(id), isValid_(true), standbyOverride_(false), screenBlanked(false) {}
+    /**
+     * Destructor.
+     */
     virtual ~DeviceAdaptor();
 
-    void setScreenBlanked(bool status)
-    {
-        screenBlanked = status;
-    }
-
-    virtual bool isValid() const {return isValid_;}
+    /**
+     * Inform adaptor about display state.
+     *
+     * @param display state.
+     */
+    void setScreenBlanked(bool status);
 
     virtual bool setStandbyOverride(bool override);
 
-    bool deviceStandbyOverride() const { return standbyOverride_; }
-
-    const QString& id() const { return id_; }
-
     AdaptedSensorEntry* getAdaptedSensor() const;
-    virtual RingBufferBase* findBuffer(const QString& name) const;
 
+    /**
+     * Start sensor.
+     *
+     * @return was sensor started.
+     */
     virtual bool startSensor() = 0;
-    virtual void stopSensor() = 0;
 
-    virtual bool startAdaptor() = 0;
-    virtual void stopAdaptor() = 0;
+    /**
+     * Stop sensor.
+     */
+    virtual void stopSensor() = 0;
 
     virtual void init() = 0;
 
-    virtual bool standby() { return false; }
-    virtual bool resume() { return false; }
+    /**
+     * Device standbyoverride state.
+     *
+     * @return standbyoverride state.
+     */
+    bool deviceStandbyOverride() const;
+
+    /**
+     * Find buffer of given sensor.
+     *
+     * @param name Sensor ID.
+     * @return buffer.
+     */
+    virtual RingBufferBase* findBuffer(const QString& name) const;
+
+    /**
+     * Start adaptor.
+     *
+     * @return was adaptor started.
+     */
+    virtual bool startAdaptor() = 0;
+
+    /**
+     * Stop adaptor.
+     */
+    virtual void stopAdaptor() = 0;
+
+    /**
+     * Go into standby mode.
+     *
+     * @return did we go into standby mode.
+     */
+    virtual bool standby();
+
+    /**
+     * Return from standby mode.
+     *
+     * @return did we resume from standby mode.
+     */
+    virtual bool resume();
 
     const QString& name() { return sensor_.first; }
 
@@ -132,18 +205,17 @@ protected:
 
     const QPair<QString, AdaptedSensorEntry*>& sensor() const { return sensor_; }
 
-    virtual void setValid(bool valid) { isValid_ = valid; }
-
 private:
     void setAdaptedSensor(const QString& name, AdaptedSensorEntry* newAdaptedSensor);
 
-    const QString id_;
-    bool isValid_;
-    bool standbyOverride_;
     QPair<QString, AdaptedSensorEntry*> sensor_;
-    bool screenBlanked;
+    bool standbyOverride_;                        /**< standby override state */
+    bool screenBlanked_;                          /**< is display blanked */
 };
 
+/**
+ * Factory type for device adaptors
+ */
 typedef DeviceAdaptor* (*DeviceAdaptorFactoryMethod)(const QString& id);
 
 #endif

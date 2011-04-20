@@ -37,7 +37,6 @@ class CompassSensorChannelAdaptor : public AbstractSensorChannelAdaptor
     Q_DISABLE_COPY(CompassSensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.CompassSensor")
     Q_PROPERTY(Compass value READ value)
-    Q_PROPERTY(bool useDeclination READ useDeclination WRITE setUseDeclination)
     Q_PROPERTY(int declinationValue READ declinationValue)
 
 public:
@@ -45,8 +44,6 @@ public:
 
 public Q_SLOTS:
     Compass value() const;
-    bool useDeclination() const;
-    void setUseDeclination(bool enable);
     int declinationValue() const;
 
 Q_SIGNALS:

@@ -31,7 +31,7 @@
 #include <QString>
 #include <QTimer>
 #include "datatypes/magneticfield.h"
-#include "sensors/magnetometersensor/magnetometersensor.h"
+#include "magnetometersensor.h"
 
 /**
  * @brief Helper class for maintaining magnetometer calibration.
@@ -50,27 +50,50 @@ public:
      * @param parent Parent QObject.
      */
     CalibrationHandler(QObject* parent = 0);
+
+    /**
+     * Destructor.
+     */
     ~CalibrationHandler();
 
     /**
-     * @return \c true on success, \c false on failure.
+     * Initialize object and start background calibration.
+     *
+     * @return true on success.
      */
     bool initiateSession();
 
 public slots:
+    /**
+     * Callback when new sample is received from magnetometer.
+     */
     void sampleReceived(const MagneticField&);
+
+    /**
+     * Stop calibration.
+     */
     void stopCalibration();
+
+    /**
+     * Resume calibration.
+     */
     void resumeCalibration();
+
+private slots:
+    /**
+     * Callback for calibration.
+     */
     void calibrationTimeout();
 
 private:
-    MagnetometerSensorChannel* m_sensor;
-    int                        m_sessionId;
-    QString                    m_sensorName;
-    int                        m_level;
-    QTimer                     m_timer;
-    int                        calibration_rate;
-    int                        calib_timeout;
+    static const QString       SENSOR_NAME;    /**< magnetometer sensor name */
+
+    MagnetometerSensorChannel* m_sensor;       /**< magnetometer sensor channel */
+    int                        m_sessionId;    /**< session ID */
+    int                        m_level;        /**< calibration level */
+    QTimer                     m_timer;        /**< calibration timer */
+    int                        m_calibRate;    /**< calibration rate */
+    int                        m_calibTimeout; /**< calibration timeout */
 };
 
 #endif // CALIBRATION_HANDLER

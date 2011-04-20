@@ -5,22 +5,21 @@ TARGET = sensorfw
 
 include( ../common-config.pri )
 
-CONFIG += console \
-          link_pkgconfig
+CONFIG += link_pkgconfig
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
                         ../filters \
                         ../datatypes
+
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-LIBS += -Wl,-rpath,/usr/lib/sensord
-LIBS += -Wl,-E
-LIBS += -L../datatypes -lsensordatatypes
+QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes
 
 SOURCES += sensormanager.cpp \
     sensormanager_a.cpp \
+    pusher.cpp \
     ringbuffer.cpp \
     producer.cpp \
     source.cpp \
@@ -34,11 +33,11 @@ SOURCES += sensormanager.cpp \
     abstractsensor.cpp \
     logging.cpp \
     parameterparser.cpp \
+    abstractchain.cpp \
     sysfsadaptor.cpp \
     sockethandler.cpp \
     inputdevadaptor.cpp \
     config.cpp \
-    calibrationhandler.cpp \
     nodebase.cpp
 
 HEADERS += sensormanager.h \
@@ -67,7 +66,6 @@ HEADERS += sensormanager.h \
     sockethandler.h \
     inputdevadaptor.h \
     config.h \
-    calibrationhandler.h \
     nodebase.h
 
 !mce_disable {
@@ -75,7 +73,6 @@ HEADERS += sensormanager.h \
     HEADERS += mcewatcher.h
     DEFINES += SENSORFW_MCE_WATCHER
 }
-
 
 publicheaders.path  = $${publicheaders.path}/core
 publicheaders.files = $$HEADERS

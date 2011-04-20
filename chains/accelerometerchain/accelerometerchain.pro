@@ -6,4 +6,6 @@ HEADERS += accelerometerchain.h   \
 SOURCES += accelerometerchain.cpp   \
            accelerometerchainplugin.cpp
 
+INCLUDEPATH += ../../filters/coordinatealignfilter
+
 include( ../chain-config.pri )

@@ -29,9 +29,7 @@
 #include <datatypes/genericdata.h>
 
 /**
- * Container for device pose interpretation.
- * @todo Rename from PoseData to OrientationData when other uses of OrientationData
- *       have been cleared. Not critical, not really visible to end-user.
+ * Datatype for device pose interpretation.
  */
 class PoseData : public TimedData {
 public:
@@ -68,6 +66,10 @@ public:
 
        @endverbatim
      */
+
+    /**
+     * Device orientation.
+     */
     enum Orientation
     {
         Undefined = 0, /**< Orientation is unknown. */
@@ -97,7 +99,7 @@ public:
      * @param timestamp Initial value for timestamp.
      * @param orientation Initial value for orientation.
      */
-    PoseData(quint64 timestamp, Orientation orientation) : TimedData(timestamp), orientation_(orientation) {}
+    PoseData(const quint64& timestamp, Orientation orientation) : TimedData(timestamp), orientation_(orientation) {}
 };
 
 Q_DECLARE_METATYPE(PoseData)

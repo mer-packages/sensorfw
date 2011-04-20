@@ -63,15 +63,24 @@ ProximitySensorChannelInterface* ProximitySensorChannelInterface::interface(cons
 
 bool ProximitySensorChannelInterface::dataReceivedImpl()
 {
-    QVector<TimedUnsigned> values;
-    if(!read<TimedUnsigned>(values))
+    QVector<ProximityData> values;
+    if(!read<ProximityData>(values))
         return false;
-    foreach(const TimedUnsigned& data, values)
-        emit dataAvailable(data);
+    foreach(const ProximityData& data, values)
+    {
+        Proximity proximity(data);
+        emit dataAvailable(proximity);
+        emit reflectanceDataAvailable(proximity);
+    }
     return true;
 }
 
 Unsigned ProximitySensorChannelInterface::proximity()
 {
     return getAccessor<Unsigned>("proximity");
+}
+
+Proximity ProximitySensorChannelInterface::proximityReflectance()
+{
+    return getAccessor<Proximity>("proximityReflectance");
 }

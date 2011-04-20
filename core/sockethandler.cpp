@@ -8,6 +8,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -40,7 +41,8 @@ SessionData::SessionData(QLocalSocket* socket, QObject* parent) : QObject(parent
                                                                   size(0),
                                                                   count(0),
                                                                   bufferSize(1),
-                                                                  bufferInterval(0)
+                                                                  bufferInterval(0),
+                                                                  downsampling(false)
 {
     lastWrite.tv_sec = 0;
     lastWrite.tv_usec = 0;
@@ -102,9 +104,9 @@ bool SessionData::write(const void* source, int size)
     if(bufferSize <= 1)
     {
         memcpy(buffer + sizeof(unsigned int), source, size);
-        if(since >= interval)
+        if(!downsampling || (downsampling && since >= interval))
         {
-            sensordLogT() << "[SocketHandler]: writing, since > interval";
+            sensordLogT() << "[SocketHandler]: writing, since > interval or downsampling disabled";
             gettimeofday(&lastWrite, 0);
             return write(buffer, size, 1);
         }
@@ -156,6 +158,11 @@ QLocalSocket* SessionData::stealSocket()
     return tmpsocket;
 }
 
+QLocalSocket* SessionData::getSocket() const
+{
+    return socket;
+}
+
 void SessionData::setInterval(int interval)
 {
     this->interval = interval;
@@ -198,6 +205,21 @@ unsigned int SessionData::getBufferSize() const
     return bufferSize;
 }
 
+void SessionData::setDownsampling(bool value)
+{
+    if(value != downsampling)
+    {
+        downsampling = value;
+        if(timer.isActive())
+            timer.stop();
+    }
+}
+
+bool SessionData::getDownsampling() const
+{
+    return downsampling;
+}
+
 SocketHandler::SocketHandler(QObject* parent) : QObject(parent), m_server(NULL)
 {
     m_server = new QLocalServer(this);
@@ -211,7 +233,7 @@ SocketHandler::~SocketHandler()
     }
 }
 
-bool SocketHandler::listen(QString serverName)
+bool SocketHandler::listen(const QString& serverName)
 {
     if (m_server->isListening()) {
         sensordLogW() << "[SocketHandler]: Already listening";
@@ -293,9 +315,8 @@ void SocketHandler::socketReadable()
         if(!m_idMap.contains(sessionId))
             m_idMap.insert(sessionId, new SessionData((QLocalSocket*)sender(), this));
     } else {
-        // TODO: Handle in a clean way, don't die.
-        sensordLogC() << "[SocketHandler]: Failed to read valid session ID from client.";
-        Q_ASSERT(false);
+        sensordLogC() << "[SocketHandler]: Failed to read valid session ID from client. Closing socket.";
+        socket->abort();
     }
 }
 
@@ -393,4 +414,19 @@ unsigned int SocketHandler::bufferInterval(int sessionId) const
     if (it != m_idMap.end())
         return (*it)->getBufferInterval();
     return 0;
+}
+
+bool SocketHandler::downsampling(int sessionId) const
+{
+    QMap<int, SessionData*>::const_iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        return (*it)->getBufferSize();
+    return 0;
+}
+
+void SocketHandler::setDownsampling(int sessionId, bool value)
+{
+    QMap<int, SessionData*>::iterator it = m_idMap.find(sessionId);
+    if (it != m_idMap.end())
+        (*it)->setBufferInterval(value);
 }

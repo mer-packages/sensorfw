@@ -38,58 +38,116 @@
 template <class TYPE>
 class RingBuffer;
 
+/**
+ * Base-class for ring buffer reader subclasses.
+ */
 class RingBufferReaderBase : public Pusher
 {
-public:
-    virtual int typeId() = 0;
-
 protected:
-    virtual ~RingBufferReaderBase() {}
+    /**
+     * Destructor
+     */
+    virtual ~RingBufferReaderBase();
 };
 
+/**
+ * Ring buffer reader.
+ *
+ * @tparam TYPE datatype to reader from buffer.
+ */
 template <class TYPE>
 class RingBufferReader : public RingBufferReaderBase
 {
-friend class RingBuffer<TYPE>;
-
 public:
+    /**
+     * Constructor.
+     */
     RingBufferReader() : readCount_(0) {}
+
+    /**
+     * Destructor
+     */
     virtual ~RingBufferReader() {}
 
-    int typeId() { return 0; } // TODO
-
 protected:
+    /**
+     * Read data from buffer.
+     *
+     * @param n maximum number of objects to read.
+     * @param values location to write to.
+     * @return how many objects were read.
+     */
     unsigned read(unsigned n, TYPE* values)
     {
         return buffer_->read(n, values, *this);
     }
 
 private:
-    unsigned                readCount_;
-    const RingBuffer<TYPE>* buffer_;
+    friend class RingBuffer<TYPE>;
+
+    unsigned                readCount_; /**< how many objects have been read */
+    const RingBuffer<TYPE>* buffer_; /**< buffer associated with this reader */
 };
 
-
+/**
+ * Base-class fo ring buffers.
+ */
 class RingBufferBase : public Consumer
 {
 public:
-    virtual int typeId() = 0;
-
-    bool join(RingBufferReaderBase* reader);
-    bool unjoin(RingBufferReaderBase* reader);
-
-protected:
+    /**
+     * Destructor.
+     */
     virtual ~RingBufferBase() {}
 
+    /**
+     * Connect reader to this buffer.
+     *
+     * @param reader reader to connect.
+     * @return was reader connected.
+     */
+    bool join(RingBufferReaderBase* reader);
+
+    /**
+     * Disconnect reader from this buffer.
+     *
+     * @param reader reader to disconnect.
+     * @return was reader disconnected.
+     */
+    bool unjoin(RingBufferReaderBase* reader);
+
 private:
-    virtual void joinTypeChecked(RingBufferReaderBase* reader) = 0;
-    virtual void unjoinTypeChecked(RingBufferReaderBase* reader) = 0;
+    /**
+     * Connect reader to this buffer.
+     *
+     * @param reader reader to connect.
+     * @return was join succesful.
+     */
+    virtual bool joinTypeChecked(RingBufferReaderBase* reader) = 0;
+
+    /**
+     * Disconnect reader from this buffer.
+     *
+     * @param reader reader to disconnect.
+     * @return was unjoin succesful.
+     */
+    virtual bool unjoinTypeChecked(RingBufferReaderBase* reader) = 0;
 };
 
+/**
+ * Ring buffer implementation.
+ *
+ * @tparam TYPE data type in buffer.
+ */
 template <class TYPE>
 class RingBuffer : public RingBufferBase
 {
 public:
+    /**
+     * Constructor.
+     *
+     * @param size how many elements can be buffered.
+     */
     RingBuffer(unsigned size) :
         sink_(this, &RingBuffer::write),
         bufferSize_(size),
@@ -99,13 +157,22 @@ public:
         addSink(&sink_, "sink");
     }
 
+    /**
+     * Destructor.
+     */
     virtual ~RingBuffer()
     {
         delete [] buffer_;
     }
 
-    int typeId() { return 0; } // TODO
-
+    /**
+     * Read data from buffer.
+     *
+     * @param n how many objects try to read.
+     * @param values location to write objects.
+     * @param reader buffer reader.
+     * @return how many objects were read.
+     */
     unsigned read(unsigned                n,
                   TYPE*                   values,
                   RingBufferReader<TYPE>& reader) const
@@ -122,16 +189,27 @@ public:
     }
 
 protected:
+    /**
+     * Get next slot in the ring buffer.
+     *
+     * @return next slot.
+     */
     TYPE* nextSlot()
     {
         return &buffer_[writeCount_ % bufferSize_];
     }
 
+    /**
+     * Called for each object written into buffer.
+     */
     void commit()
     {
         ++writeCount_;
     }
 
+    /**
+     * Wake up connected buffer readers.
+     */
     void wakeUpReaders()
     {
         RingBufferReader<TYPE>* reader;
@@ -140,6 +218,12 @@ protected:
         }
     }
 
+    /**
+     * Write to buffer.
+     *
+     * @param n how many objects to write.
+     * @param values location from where to copy objects.
+     */
     void write(unsigned n, const TYPE* values)
     {
         // buffer incoming data
@@ -151,42 +235,52 @@ protected:
         wakeUpReaders();
     }
 
-    virtual void joinTypeChecked(RingBufferReaderBase* reader)
+    /**
+     * Connect buffer reader to this buffer.
+     *
+     * @param reader reader to connect.
+     */
+    virtual bool joinTypeChecked(RingBufferReaderBase* reader)
     {
         sensordLogT() << "joining reader to ringbuffer.";
 
-        RingBufferReader<TYPE>* r =
-            dynamic_cast<RingBufferReader<TYPE>*>(reader);
+        RingBufferReader<TYPE>* r = dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {
             sensordLogW() << "Ringbuffer join failed!";
-            return;
+            return false;
         }
 
         r->readCount_ = writeCount_;
         r->buffer_    = this;
 
         readers_.insert(r);
+        return true;
     }
 
-    virtual void unjoinTypeChecked(RingBufferReaderBase* reader)
+    /**
+     * Disconnect buffer reader from this buffer.
+     *
+     * @param reader reader to disconnect.
+     */
+    virtual bool unjoinTypeChecked(RingBufferReaderBase* reader)
     {
-        RingBufferReader<TYPE>* r =
-            dynamic_cast<RingBufferReader<TYPE>*>(reader);
+        RingBufferReader<TYPE>* r = dynamic_cast<RingBufferReader<TYPE>*>(reader);
         if (r == NULL) {
             sensordLogW() << "Ringbuffer unjoin failed!";
-            return;
+            return false;
         }
 
         readers_.remove(r);
+        return true;
     }
 
 private:
 
-    Sink<RingBuffer, TYPE>        sink_;
-    const unsigned                bufferSize_;
-    TYPE*                         buffer_;
-    unsigned int                  writeCount_;
-    QSet<RingBufferReader<TYPE>*> readers_;
+    Sink<RingBuffer, TYPE>        sink_;       /**< data sink */
+    const unsigned                bufferSize_; /**< buffer size */
+    TYPE*                         buffer_;     /**< buffer */
+    unsigned int                  writeCount_; /**< how many objects have been written */
+    QSet<RingBufferReader<TYPE>*> readers_;    /**< connected readers */
 };
 
 #endif

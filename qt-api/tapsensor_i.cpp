@@ -39,9 +39,9 @@ TapSensorChannelInterface::TapSensorChannelInterface(const QString& path, int se
     : AbstractSensorChannelInterface(path, TapSensorChannelInterface::staticInterfaceName, sessionId)
 {
     type_ = SingleDouble;
-    timer = new QTimer(this);
-    timer->setSingleShot(true);
-    connect(timer, SIGNAL(timeout()), this, SLOT(output()));
+    timer_ = new QTimer(this);
+    timer_->setSingleShot(true);
+    connect(timer_, SIGNAL(timeout()), this, SLOT(output()));
 }
 
 const TapSensorChannelInterface* TapSensorChannelInterface::listenInterface(const QString& id)
@@ -72,9 +72,9 @@ bool TapSensorChannelInterface::dataReceivedImpl()
     foreach(TapData value, values) {
         if (type_ == Single) {
             emit dataAvailable(Tap(value));
-        } else if (timer->isActive()) {
+        } else if (timer_->isActive()) {
             if ((!tapValues_.isEmpty()) && (tapValues_.first().direction_ == value.direction_)) {
-                timer->stop();
+                timer_->stop();
                 tapValues_.removeFirst();
                 value.type_ = TapData::DoubleTap;
                 tapValues_.prepend(value);
@@ -82,11 +82,11 @@ bool TapSensorChannelInterface::dataReceivedImpl()
             } else {
                 output();
                 tapValues_.prepend(value);
-                timer->start(doubleClickInteval);
+                timer_->start(doubleClickInteval);
             }
         } else {
             tapValues_.prepend(value);
-            timer->start(doubleClickInteval);
+            timer_->start(doubleClickInteval);
         }
     }
     return true;

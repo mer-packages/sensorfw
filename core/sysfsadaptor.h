@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
@@ -39,23 +40,41 @@
 class SysfsAdaptor;
 
 /**
- * Threading functionality for SysfsAdaptor. Helper class that removes ambiguous
- * inheritance from QObject. Should not be invoked directly by anything except
- * #SysfsAdaptor.
+ * Threading functionality for SysfsAdaptor. Helper class that removes
+ * ambiguous inheritance from QObject. Should not be invoked directly
+ * by anything except #SysfsAdaptor.
  */
 class SysfsAdaptorReader : public QThread
 {
-    Q_OBJECT;
-public:
-    SysfsAdaptorReader(SysfsAdaptor *parent);
-    void run();
-    bool running_;
+    Q_OBJECT
+    Q_DISABLE_COPY(SysfsAdaptorReader)
 
-Q_SIGNALS:
-    void readyRead(const int pathId, const int fd);
+public:
+    /**
+     * Constructor.
+     *
+     * @param parent Parent object.
+     */
+    SysfsAdaptorReader(SysfsAdaptor *parent);
+
+    /**
+     * Reader thread entry-function.
+     */
+    void run();
+
+    /**
+     * Initiate reader stopping.
+     */
+    void stopReader();
+
+    /**
+     * Initiate reader starting.
+     */
+    void startReader();
 
 private:
-    SysfsAdaptor *parent_;
+    bool          running_; /**< should thread be running or not */
+    SysfsAdaptor *parent_;  /**< parent object. */
 };
 
 /**
@@ -67,13 +86,11 @@ private:
  *   <li><tt>SysfsAdaptor::SelectMode</tt>   - Wait for interrupt from driver before reading.</li>
  * </ul>
  *
- * Simultaneous monitoring of several files is supported. Currently files are indexed
- * only by their adding order. First added path is index 0, second index 1, etc.
+ * Simultaneous monitoring of several files is supported by giving unique
+ * index for each file.
  */
 class SysfsAdaptor : public DeviceAdaptor
 {
-    Q_OBJECT;
-
 public:
     enum PollMode {
         SelectMode = 0, /**< Wait for interrupt from driver before reading. */
@@ -82,14 +99,18 @@ public:
 
     /**
      * Constructor.
+     *
      * @param id   Identifier string for the adaptor.
      * @param mode Mode to use for monitoring.
      * @param seek Whether lseek() should be called to rewind the monitored fds.
      * @param path Path to the sysfs file device to monitor.
-     * @param pathId   Identifier for the path (used as parameter to processSample).
+     * @param pathId Identifier for the path (used as parameter to processSample).
      */
     SysfsAdaptor(const QString& id, PollMode mode = SelectMode, bool seek = true, const QString& path = "", const int pathId = 0);
 
+    /**
+     * Destructor.
+     */
     virtual ~SysfsAdaptor();
 
     virtual void init();
@@ -104,47 +125,47 @@ public:
     bool addPath(const QString& path, const int id = 0);
 
     /**
-     * Start measuring loop. Opens file descriptors.
+     * Start adaptor and open required resources.
+     *
+     * @return was adaptor started succesfully.
      */
-    bool startAdaptor();
+    virtual bool startAdaptor();
 
     /**
-     * Returns whether the adaptor is running or not.
-     * isRunning() returns false if all the started adaptor references
-     * have been stopped.
+     * Is adaptor running.
+     *
+     * @return whether the adaptor is running or not.
      */
-    bool isRunning();
+    bool isRunning() const;
 
     /**
-     * Stop measuring loop. Closes file descriptors.
+     * Stop adaptor and close acquired resources.
      */
-    void stopAdaptor();
+    virtual void stopAdaptor();
 
     virtual bool startSensor();
     virtual void stopSensor();
 
-    /**
-     * See #DeviceAdaptor::standby()
-     */
     virtual bool standby();
 
-    /**
-     * See #DeviceAdaptor::resume()
-     */
     virtual bool resume();
 
+protected:
     /**
-     * Called when new data is available on some file descriptor. Must be implemented
-     * by the child class.
-     * @param pathId Path ID for the file that has received new data. If path ID
-     *               was not set when file path was added, 0 will be used.
+     * Called when new data is available on some file descriptor.
+     * Must be implemented by the child class.
+     *
+     * @param pathId Path ID for the file that has received new data.
+     *               If path ID was not set when file path was added,
+     *               0 will be used.
      * @param fd     Open file descriptor where the new data can be read. This
      *               file descriptor must not be closed!
      */
     virtual void processSample(int pathId, int fd) = 0;
 
     /**
-     * Utility function for writing to sysfs entries.
+     * Utility function for writing to files. Can be used to control
+     * sensor driver parameters (setting to powersave mode etc.)
      *
      * @param path    Path of the file to write to
      * @param content What to write
@@ -160,18 +181,14 @@ public:
      */
     static QByteArray readFromFile(const QByteArray& path);
 
-protected slots:
-    void dataAvailable(int pathId, int fd);
-
 protected:
     /**
-     * Returns the current interval (see setInterval()). Valid for PollMode.
+     * Returns the current interval. Valid for PollMode.
      * Reimplementation for adaptors using SelectMode is a must.
      *
      * @return Currently used interval for adaptor.
      */
     virtual unsigned int interval() const;
-
 
     /**
      * Sets the interval for the adaptor. This function is valid for
@@ -199,39 +216,48 @@ protected:
 private:
     /**
      * Opens all file descriptors required by the adaptor.
+     *
+     * @return were files opened succesfully.
      */
     bool openFds();
 
     /**
      * Closes all file descriptors.
+     *
+     * @return were files closed succesfully.
      */
     void closeAllFds();
 
+    /**
+     * Stop reader thread.
+     */
     void stopReaderThread();
+
+    /**
+     * Start reader thread.
+     *
+     * @return was thread started succesfully.
+     */
     bool startReaderThread();
 
+    /**
+     * Sanity check for inteval usage.
+     */
     bool checkIntervalUsage() const;
 
-    SysfsAdaptorReader  reader_;
-
-    PollMode            mode_;
-    QString             path_;
-    int                 epollDescriptor_;
-    int                 pipeDescriptors_[2];
-
-    QStringList         paths_;
-    QList<int>          pathIds_;
-
-    unsigned int interval_;
-
-    bool initNotDone;
-    bool inStandbyMode_;
-    bool running_;
-    bool shouldBeRunning_;
-    bool doSeek_;
-
+    SysfsAdaptorReader  reader_; /**< reader thread instance */
+    PollMode            mode_;   /**< used poll mode */
+    int                 epollDescriptor_;    /**< open epoll descriptors */
+    int                 pipeDescriptors_[2]; /**< open pipe descriptors */
+    QStringList         paths_;   /**< added paths. */
+    QList<int>          pathIds_; /**< added path IDs. */
+    unsigned int interval_; /**< used interval */
+    bool inStandbyMode_;    /**< are we in standby */
+    bool running_;          /**< are we running */
+    bool shouldBeRunning_;  /**< should we be running */
+    bool doSeek_;           /**< should lseek() be performed after reading */
     QList<int> sysfsDescriptors_; /**< List of open file descriptors. */
-    QMutex mutex_;
+    QMutex mutex_;          /** mutex protecting starting and stopping. */
 
     friend class SysfsAdaptorReader;
 };

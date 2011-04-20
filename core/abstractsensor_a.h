@@ -33,6 +33,11 @@
 #include "abstractsensor.h"
 #include "datatypes/datarange.h"
 
+/**
+ * Sensor DBus facade for handling remote method invocations. It instance
+ * has associated AbstractSensorChannel to which this object delegates
+ * calls.
+ */
 class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
 {
     Q_OBJECT
@@ -48,55 +53,128 @@ class AbstractSensorChannelAdaptor : public QDBusAbstractAdaptor
     Q_PROPERTY(QString type READ type)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
     Q_PROPERTY(bool hwBuffering READ hwBuffering)
-    // Q_PROPERTY(SensorState state READ state) //TODO: put state back
 
 public:
+    /**
+     * Destructor.
+     */
     virtual ~AbstractSensorChannelAdaptor() {}
 
 protected:
+    /**
+     * Constructor.
+     *
+     * @param parent parent object.
+     */
     AbstractSensorChannelAdaptor(QObject *parent);
 
-private: // PROPERTIES
+private:
+    /**
+     * Previously occured error code.
+     *
+     * @return error code.
+     */
     int errorCodeInt() const;
+
+    /**
+     * Pointer to parent channel.
+     *
+     * @return point to parent channel.
+     */
     AbstractSensorChannel* node() const;
 
 public Q_SLOTS: // METHODS
-    bool isValid() const;
-    QString errorString() const;
-    QString description() const;
-    QString id() const;
-    unsigned int interval() const;
-    bool standbyOverride() const;
-    unsigned int bufferInterval() const;
-    unsigned int bufferSize() const;
-    QString type() const;
-    // SensorState state() const; //TODO: put state back
 
+    /** AbstractSensorChannel::isValid() */
+    bool isValid() const;
+
+    /** AbstractSensorChannel::errorString() */
+    QString errorString() const;
+
+    /** AbstractSensorChannel::description() */
+    QString description() const;
+
+    /** AbstractSensorChannel::id() */
+    QString id() const;
+
+    /** AbstractSensorChannel::interval() */
+    unsigned int interval() const;
+
+    /** AbstractSensorChannel::standbyOverride() */
+    bool standbyOverride() const;
+
+    /** AbstractSensorChannel::bufferInterval() */
+    unsigned int bufferInterval() const;
+
+    /** AbstractSensorChannel::bufferSize() */
+    unsigned int bufferSize() const;
+
+    /** AbstractSensorChannel::type() */
+    QString type() const;
+
+    /** AbstractSensorChannel::start(int) */
     void start(int sessionId);
+
+    /** AbstractSensorChannel::stop(int) */
     void stop(int sessionId);
 
+    /** AbstractSensorChannel::setInterval(int, int)
+     *
+     *  Will also configure interval for the data connection.
+     */
     void setInterval(int sessionId, int value);
+
+    /** AbstractSensorChannel::getAvailableIntervals() */
     DataRangeList getAvailableIntervals();
+
+    /** AbstractSensorChannel::setDefaultInteval(int) */
     bool setDefaultInterval(int sessionId);
 
+    /** AbstractSensorChannel::setStandbyOverride(int, bool) */
     bool setStandbyOverride(int sessionId, bool value);
 
+    /** AbstractSensorChannel::setDownsampling(int, bool) */
+    void setDownsampling(int sessionId, bool value);
+
+    /** AbstractSensorChannel::isValid(int, unsigned int)
+     *
+     *  Will also configure buffer interval for the data connection.
+     */
     void setBufferInterval(int sessionId, unsigned int value);
+
+    /** AbstractSensorChannel::isValid(int, unsigned int)
+     *
+     *  Will also configure buffer size for the data connection.
+     */
     void setBufferSize(int sessionId, unsigned int value);
+
+    /** AbstractSensorChannel::getAvailableBufferIntervals() */
     IntegerRangeList getAvailableBufferIntervals() const;
+
+    /** AbstractSensorChannel::getAvailableBufferSizes() */
     IntegerRangeList getAvailableBufferSizes() const;
 
+    /** AbstractSensorChannel::getAvailableDataRanges() */
     DataRangeList getAvailableDataRanges();
+
+    /** AbstractSensorChannel::getCurrentDataRange() */
     DataRange getCurrentDataRange();
+
+    /** AbstractSensorChannel::requestDataRange(int, DataRange) */
     void requestDataRange(int sessionId, DataRange range);
+
+    /** AbstractSensorChannel::removeDataRangeRequest(int) */
     void removeDataRangeRequest(int sessionId);
+
+    /** AbstractSensorChannel::setDataRangeIndex(int, int) */
     bool setDataRangeIndex(int sessionId, int rangeIndex);
 
-Q_SIGNALS: // SIGNALS
-    void propertyChanged(const QString& name);
-
-public:
+    /** AbstractSensorChannel::hwBuffering() */
     bool hwBuffering() const;
+
+Q_SIGNALS:
+    /** AbstractSensorChannel::propertyChanged(name) */
+    void propertyChanged(const QString& name);
 };
 
 #endif // ABSTRACTSENSORADAPTOR_H

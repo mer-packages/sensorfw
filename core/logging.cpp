@@ -38,6 +38,7 @@ bool SensordLogger::initialized = false;
 int SensordLogger::logTarget = 0;
 QMutex SensordLogger::mutex;
 std::ofstream* SensordLogger::logFile = 0;
+QByteArray SensordLogger::appName = "";
 
 SensordLogger::SensordLogger (const char* func, const char *file, int line, SensordLogLevel level) :
     oss(0),
@@ -64,11 +65,6 @@ void SensordLogger::setOutputLevel(SensordLogLevel level)
     outputLevel = level;
 }
 
-SensordLogLevel SensordLogger::getOutputLevel()
-{
-    return outputLevel;
-}
-
 void SensordLogger::close()
 {
     if (initialized)
@@ -80,8 +76,8 @@ void SensordLogger::close()
     }
 }
 
-void SensordLogger::printToTarget(const char* data) const {
-
+void SensordLogger::printToTarget(const char* data) const
+{
     if (logTarget == 0)
         return;
     QMutexLocker locker(&mutex);
@@ -91,7 +87,7 @@ void SensordLogger::printToTarget(const char* data) const {
         logTarget & STDOUT_FILENO ||
         logTarget & 4) {
         fdLogData << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss").toLocal8Bit().data();
-        fdLogData << " [sensord] ";
+        fdLogData << " [" << appName.constData() << "] ";
         fdLogData << data;
     }
     if (logTarget & STDERR_FILENO) {
@@ -112,10 +108,12 @@ void SensordLogger::printToTarget(const char* data) const {
     }
 }
 
-void SensordLogger::init(int target, QString logFilePath) {
+void SensordLogger::init(int target, const QString& logFilePath, const QString& name)
+{
     if (initialized)
         return;
     logTarget = target;
+    appName = name.toAscii();
     if (target & STDERR_FILENO){
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
     }
@@ -131,12 +129,13 @@ void SensordLogger::init(int target, QString logFilePath) {
     }
 
     if (target & 8){
-        openlog("sensord", LOG_PID, LOG_DAEMON);
+        openlog(appName, LOG_PID, LOG_DAEMON);
     }
     initialized = true;
 }
 
-int SensordLogger::logPriority(int currentLevel){
+int SensordLogger::logPriority(int currentLevel)
+{
     switch (currentLevel) {
         case SensordLogN:
         default:
@@ -151,18 +150,19 @@ int SensordLogger::logPriority(int currentLevel){
     }
 }
 
-const char* SensordLogger::logLevelToText(int level){
+const char* SensordLogger::logLevelToText(int level)
+{
     switch (level) {
-    case SensordLogTest:
-        return "*TEST* ";
-    case SensordLogDebug:
-        return "*DEBUG* ";
-    case SensordLogWarning:
-        return "*WARNING* ";
-    case SensordLogCritical:
-        return "*CRITICAL* ";
-    case SensordLogN:
-    default:
-        return "";
+        case SensordLogTest:
+            return "*TEST* ";
+        case SensordLogDebug:
+            return "*DEBUG* ";
+        case SensordLogWarning:
+            return "*WARNING* ";
+        case SensordLogCritical:
+            return "*CRITICAL* ";
+        case SensordLogN:
+        default:
+            return "";
     }
 }

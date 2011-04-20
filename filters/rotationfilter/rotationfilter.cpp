@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -78,6 +79,4 @@ void RotationFilter::updateZvalue(unsigned, const CompassData* data)
     /// Z-rotation
     /// Compass output is [0, 360), rotation is (-180, 180]
     rotation_.z_ = -1 * (data->degrees_ - 180);
-
-    source_.propagate(1, &rotation_);
 }

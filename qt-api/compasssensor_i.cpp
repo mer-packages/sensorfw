@@ -35,7 +35,8 @@ AbstractSensorChannelInterface* CompassSensorChannelInterface::factoryMethod(con
 }
 
 CompassSensorChannelInterface::CompassSensorChannelInterface(const QString &path, int sessionId) :
-    AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName, sessionId)
+    AbstractSensorChannelInterface(path, CompassSensorChannelInterface::staticInterfaceName, sessionId),
+    useDeclination_(true)
 {}
 
 const CompassSensorChannelInterface* CompassSensorChannelInterface::listenInterface(const QString& id)
@@ -65,23 +66,23 @@ bool CompassSensorChannelInterface::dataReceivedImpl()
     if(!read<CompassData>(values))
         return false;
     foreach(const CompassData& data, values)
-        emit dataAvailable(data);
+        emit dataAvailable(Compass(data, useDeclination_));
     return true;
 }
 
 Compass CompassSensorChannelInterface::get()
 {
-    return getAccessor<Compass>("value");
+    return Compass(getAccessor<Compass>("value").data(), useDeclination_);
 }
 
 bool CompassSensorChannelInterface::useDeclination()
 {
-    return getAccessor<bool>("useDeclination");
+    return useDeclination_;
 }
 
 void CompassSensorChannelInterface::setUseDeclination(bool enable)
 {
-    setAccessor("setUseDeclination", enable);
+    useDeclination_ = enable;
 }
 
 int CompassSensorChannelInterface::declinationValue()

@@ -6,8 +6,8 @@ include( ../../common-install.pri)
 
 INCLUDEPATH += ../../../qt-api \
                ../../../core \
-               ../../../ \
-               ../../../include
+               ../../../include \
+               ../../..
 
 SOURCES += dummyclient.cpp
 HEADERS += dummyclient.h

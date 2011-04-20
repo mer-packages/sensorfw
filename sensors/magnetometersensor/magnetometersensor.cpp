@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -33,7 +34,7 @@
 
 MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<CalibratedMagneticFieldData>(10),
+        DataEmitter<CalibratedMagneticFieldData>(1),
         scaleFilter_(NULL),
         prevMeasurement_()
 {
@@ -143,7 +144,7 @@ bool MagnetometerSensorChannel::stop()
 void MagnetometerSensorChannel::emitData(const CalibratedMagneticFieldData& value)
 {
     prevMeasurement_ = value;
-    writeToClients((const void*)(&value), sizeof(CalibratedMagneticFieldData));
+    downsampleAndPropagate(value, downsampleBuffer_);
     emit internalData(value);
 }
 
@@ -162,5 +163,16 @@ bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int session
     request.resolution = range.resolution * scaleCoefficient_;
 
     compassChain_->requestDataRange(sessionId, request);
+    return true;
+}
+
+void MagnetometerSensorChannel::removeSession(int sessionId)
+{
+    downsampleBuffer_.remove(sessionId);
+    AbstractSensorChannel::removeSession(sessionId);
+}
+
+bool MagnetometerSensorChannel::downsamplingSupported() const
+{
     return true;
 }

@@ -33,47 +33,69 @@
 #include "abstractsensor_i.h"
 
 /**
- * @brief DBus-interface for accessing ambient light sensor measurements.
- *
- * ALSSensorChannelInterface acts as proxy class for interface \c local.ALSSensor.
- * Provides signal on change of measured ambient light intensity level. Previous
- * measured intensity level can be queried any time. Provided values are in \e lux.
- *
- * For details of measurement process, see #ALSSensorChannel.
+ * Client interface for accessing ambient light sensor.
+ * Provides signal on change of measured ambient light intensity level.
+ * Previous measured intensity level can be queried any time. Provided
+ * values are in \e lux.
  */
-class ALSSensorChannelInterface: public AbstractSensorChannelInterface
+class ALSSensorChannelInterface : public AbstractSensorChannelInterface
 {
     Q_OBJECT
     Q_DISABLE_COPY(ALSSensorChannelInterface)
     Q_PROPERTY(Unsigned lux READ lux)
 
 public:
+    /**
+     * Name of the D-Bus interface for this class.
+     */
     static const char* staticInterfaceName;
 
+    /**
+     * Create new instance of the class.
+     *
+     * @param id Sensor ID.
+     * @param sessionId Session ID.
+     * @return Pointer to new instance of the class.
+     */
     static AbstractSensorChannelInterface* factoryMethod(const QString& id, int sessionId);
 
+    /**
+     * Get latest ambient light reading from sensor daemon.
+     *
+     * @return ambient light reading.
+     */
     Unsigned lux();
 
-public:
+    /**
+     * Constructor.
+     *
+     * @param path      path.
+     * @param sessionId session ID.
+     */
     ALSSensorChannelInterface(const QString& path, int sessionId);
 
     /**
      * Request a listening interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static const ALSSensorChannelInterface* listenInterface(const QString& id);
 
     /**
      * Request a control interface to the sensor.
-     * @param id Identifier string for the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
+     * @deprecated use #interface(const QString&) instead.
      */
     static ALSSensorChannelInterface* controlInterface(const QString& id);
 
     /**
-     * Request a interface to the sensor.
-     * @param id Identifier string for the sensor.
+     * Request an interface to the sensor.
+     *
+     * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
      */
     static ALSSensorChannelInterface* interface(const QString& id);
@@ -81,10 +103,11 @@ public:
 protected:
     virtual bool dataReceivedImpl();
 
-Q_SIGNALS: // SIGNALS
+Q_SIGNALS:
     /**
      * Sent when measured ambient light intensity has changed.
-     * @param value Observed ambient light intensity.
+     *
+     * @param value ambient light reading.
      */
     void ALSChanged(const Unsigned& value);
 };

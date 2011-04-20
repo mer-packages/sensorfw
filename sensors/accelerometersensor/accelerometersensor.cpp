@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,7 +33,7 @@
 
 AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
         AbstractSensorChannel(id),
-        DataEmitter<AccelerationData>(10),
+        DataEmitter<AccelerationData>(1),
         previousSample_(0,0,0,0)
 {
     SensorManager& sm = SensorManager::instance();
@@ -109,5 +110,16 @@ bool AccelerometerSensorChannel::stop()
 void AccelerometerSensorChannel::emitData(const AccelerationData& value)
 {
     previousSample_ = value;
-    writeToClients((const void*)(&value), sizeof(AccelerationData));
+    downsampleAndPropagate(value, downsampleBuffer_);
+}
+
+void AccelerometerSensorChannel::removeSession(int sessionId)
+{
+    downsampleBuffer_.remove(sessionId);
+    AbstractSensorChannel::removeSession(sessionId);
+}
+
+bool AccelerometerSensorChannel::downsamplingSupported() const
+{
+    return true;
 }

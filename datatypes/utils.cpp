@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Serhii Tsyba <ext-serhii.2.tsyba@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -37,6 +38,7 @@
 #include "datarange.h"
 #include "tap.h"
 #include "posedata.h"
+#include "proximity.h"
 
 void __attribute__ ((constructor)) datatypes_init(void)
 {
@@ -52,6 +54,7 @@ void __attribute__ ((constructor)) datatypes_init(void)
     qDBusRegisterMetaType<IntegerRangeList>();
     qRegisterMetaType<TimedUnsigned>();
     qRegisterMetaType<PoseData>();
+    qRegisterMetaType<Proximity>();
 }
 
 void __attribute__ ((destructor)) datatypes_fini(void)

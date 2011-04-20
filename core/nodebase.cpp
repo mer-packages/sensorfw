@@ -29,6 +29,34 @@
 #include "ringbuffer.h"
 #include "config.h"
 
+NodeBase::NodeBase(const QString& id, QObject* parent) :
+    QObject(parent),
+    m_bufferSize(0),
+    m_bufferInterval(0),
+    m_dataRangeSource(NULL),
+    m_intervalSource(NULL),
+    m_hasDefault(false),
+    m_defaultInterval(0),
+    DEFAULT_DATA_RANGE_REQUEST(-1),
+    id_(id),
+    isValid_(false)
+{
+}
+
+NodeBase::~NodeBase()
+{
+}
+
+const QString& NodeBase::id() const
+{
+    return id_;
+}
+
+bool NodeBase::isValid() const
+{
+    return isValid_;
+}
+
 bool NodeBase::isMetadataValid() const
 {
     if (!hasLocalRange())
@@ -272,6 +300,20 @@ unsigned int NodeBase::getInterval() const
     return interval();
 }
 
+unsigned int NodeBase::getInterval(int sessionId) const
+{
+    if (!hasLocalInterval())
+    {
+        return m_intervalSource->getInterval(sessionId);
+    }
+    QMap<int, unsigned int>::const_iterator it(m_intervalMap.find(sessionId));
+    if(it == m_intervalMap.end())
+    {
+        return 0;
+    }
+    return it.value();
+}
+
 bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
 {
     // Has single defined source, pass the request that way
@@ -283,7 +325,7 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     // Validate interval request
     if (!isValidIntervalRequest(value))
     {
-        sensordLogD() << "Invalid interval requested.";
+        sensordLogW() << "Invalid interval requested for node '" << id() << "' by session '" << sessionId << "': " << value;
         return false;
     }
 
@@ -298,6 +340,7 @@ bool NodeBase::setIntervalRequest(const int sessionId, const unsigned int value)
     unsigned int winningRequest = evaluateIntervalRequests(winningSessionId);
 
     if (winningSessionId >= 0) {
+        sensordLogD() << "Setting new interval for node: " << id() << ". Evaluation won by session '" << winningSessionId << "' with request: " << winningRequest;
         setInterval(winningRequest, winningSessionId);
     }
 
@@ -331,11 +374,14 @@ bool NodeBase::standbyOverride() const
 
 bool NodeBase::setStandbyOverrideRequest(const int sessionId, const bool override)
 {
+    sensordLogD() << sessionId << " requested standbyoverride for '" << id() << "' :" << override;
     // Only store true requests, id is enough, no need for value
     if (override == false)
     {
         m_standbyRequestList.removeAll(sessionId);
-    } else {
+    }
+    else
+    {
         if (!m_standbyRequestList.contains(sessionId))
         {
             m_standbyRequestList.append(sessionId);
@@ -472,7 +518,7 @@ bool NodeBase::connectToSource(NodeBase* source, const QString& bufferName, Ring
     if (rb == NULL)
     {
         // This is critical as long as connections are statically defined.
-        sensordLogC() << "Buffer '" << bufferName << "' not found while building connections";
+        sensordLogC() << "Buffer '" << bufferName << "' not found while building connections for node: " << id();
         return false;
     }
 
@@ -492,7 +538,7 @@ bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName,
     RingBufferBase* rb = source->findBuffer(bufferName);
     if (rb == NULL)
     {
-        sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections";
+        sensordLogW() << "Buffer '" << bufferName << "' not found while erasing connections for node: " << id();
         return false;
     }
 
@@ -503,7 +549,7 @@ bool NodeBase::disconnectFromSource(NodeBase* source, const QString& bufferName,
         // Remove the source reference from storage
         if (!m_sourceList.removeOne(source))
         {
-            sensordLogW() << "Buffer '" << bufferName << "' not disconnected properly.";
+            sensordLogW() << "Buffer '" << bufferName << "' not disconnected properly for node: " << id();
         }
     }
 
@@ -524,28 +570,30 @@ bool NodeBase::isValidIntervalRequest(const unsigned int value) const
 
 IntegerRangeList NodeBase::getAvailableBufferSizes(bool& hwSupported) const
 {
-    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
-
+    IntegerRangeList list;
     foreach (NodeBase* source, m_sourceList)
     {
-        return source->getAvailableBufferSizes(hwSupported);
+        list = source->getAvailableBufferSizes(hwSupported);
+        if(hwSupported)
+            return list;
     }
-    IntegerRangeList list;
-    list.push_back(IntegerRange(1, 256));
+    if(list.isEmpty())
+        list.push_back(IntegerRange(1, 256));
     hwSupported = false;
     return list;
 }
 
 IntegerRangeList NodeBase::getAvailableBufferIntervals(bool& hwSupported) const
 {
-    //TODO: add logic to take care of cases where one of the source supports HW buffering and others don't.
-
+    IntegerRangeList list;
     foreach (NodeBase* source, m_sourceList)
     {
-        return source->getAvailableBufferIntervals(hwSupported);
+        list = source->getAvailableBufferIntervals(hwSupported);
+        if(hwSupported)
+            return list;
     }
-    IntegerRangeList list;
-    list.push_back(IntegerRange(0, 60000));
+    if(list.isEmpty())
+        list.push_back(IntegerRange(0, 60000));
     hwSupported = false;
     return list;
 }
@@ -622,13 +670,70 @@ bool NodeBase::updateBufferInterval()
     return false;
 }
 
-bool NodeBase::setDataRangeIndex(int sessionId, const int rangeIndex)
+bool NodeBase::setDataRangeIndex(int sessionId, int rangeIndex)
 {
-    if (rangeIndex<0) return false;
-    if (rangeIndex>m_dataRangeList.size()-1) return false;
+    if (rangeIndex < 0)
+        return false;
+    if (rangeIndex > (m_dataRangeList.size() - 1))
+        return false;
     requestDataRange(sessionId, m_dataRangeList.at(rangeIndex));
     DataRangeList ranges = getAvailableDataRanges();
     DataRange range = getCurrentDataRange().range;
-    return ranges.at(rangeIndex)==range;
+    return ranges.at(rangeIndex) == range;
 }
 
+void NodeBase::removeSession(int sessionId)
+{
+    setStandbyOverrideRequest(sessionId, false);
+    removeIntervalRequest(sessionId);
+    removeDataRangeRequest(sessionId);
+    clearBufferSize(sessionId);
+    clearBufferInterval(sessionId);
+}
+
+void NodeBase::setValid(bool valid)
+{
+    isValid_ = valid;
+    if(!isValid_)
+    {
+        sensordLogW() << "Node '" << id() << "' state changed to invalid";
+    }
+}
+
+bool NodeBase::setDataRange(const DataRange& range, int sessionId)
+{
+    Q_UNUSED(range);
+    Q_UNUSED(sessionId);
+    return false;
+}
+
+bool NodeBase::setStandbyOverride(bool override)
+{
+    Q_UNUSED(override);
+    return false;
+}
+
+unsigned int NodeBase::interval() const
+{
+    return 0;
+}
+
+bool NodeBase::setInterval(unsigned int value, int sessionId)
+{
+    sensordLogW() << "setInterval() not implemented in some node using it.";
+    Q_UNUSED(value);
+    Q_UNUSED(sessionId);
+    return false;
+}
+
+bool NodeBase::setBufferSize(unsigned int value)
+{
+    Q_UNUSED(value);
+    return false;
+}
+
+bool NodeBase::setBufferInterval(unsigned int value)
+{
+    Q_UNUSED(value);
+    return false;
+}

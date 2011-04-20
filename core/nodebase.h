@@ -42,38 +42,68 @@ class RingBufferBase;
  */
 class NodeBase : public QObject
 {
-    Q_OBJECT;
-    Q_PROPERTY(QString description READ description);
-
-    Q_PROPERTY(bool standbyOverride READ standbyOverride);
-    Q_PROPERTY(unsigned int interval READ getInterval);
+    Q_OBJECT
+    Q_DISABLE_COPY(NodeBase)
+    Q_PROPERTY(QString description READ description)
+    Q_PROPERTY(bool standbyOverride READ standbyOverride)
+    Q_PROPERTY(unsigned int interval READ getInterval)
+    Q_PROPERTY(QString id READ id)
+    Q_PROPERTY(bool isValid READ isValid)
 
 protected:
-    NodeBase(QObject* parent = 0) : QObject(parent), m_bufferSize(0), m_bufferInterval(0), m_dataRangeSource(NULL), m_intervalSource(NULL), m_hasDefault(false), m_defaultInterval(0), DEFAULT_DATA_RANGE_REQUEST(-1) {}
-    virtual ~NodeBase() {}
-
-public Q_SLOTS:
+    /**
+     * Constructor.
+     *
+     * @param id node ID.
+     * @param parent parent object.
+     */
+    NodeBase(const QString& id, QObject* parent = 0);
 
     /**
+     * Destructor.
+     */
+    virtual ~NodeBase();
+
+public:
+    /**
+     * Idenfication string for the sensor node
+     *
+     * @return node ID.
+     */
+    const QString& id() const;
+
+    /**
+     * Is object succesfully initialized.
+     *
+     * @return is object successfully initialized.
+     */
+    bool isValid() const;
+
+public Q_SLOTS:
+    /**
      * Get the description for this node.
+     *
      * @return Descriptive string.
      */
     const QString& description() const;
 
     /**
      * Remove a range request.
+     *
      * @param sessionId ID of the session whose request to remove.
      */
     void removeDataRangeRequest(int sessionId);
 
     /**
      * Get list of available data ranges for this node.
-     * @return QList of available data ranges for this sensor.
+     *
+     * @return List of available data ranges for this node.
      */
     const QList<DataRange>& getAvailableDataRanges() const;
 
     /**
      * Get the currently active DataRange for this node.
+     *
      * @return DataRangeRequest currently in use. If no requests are set
      *         id will be set to -1.
      */
@@ -87,21 +117,22 @@ public Q_SLOTS:
      * immediately.
      *
      * @param sessionId session ID for the client making the request.
-     * @param range The requested data range
+     * @param range The requested data range.
      */
     void requestDataRange(int sessionId, const DataRange& range);
 
     /**
-     * Places a request for the given data range by index into queue. The range
-     * will be activated once all earlier requests have been released.
+     * Places a request for the given data range by index into queue.
+     * The range will be activated once all earlier requests have been
+     * released.
      *
-     * If the range is not valid, the request will be dropped
-     * immediately.
+     * If the range is not valid, the request will be dropped immediately.
      *
      * @param sessionId session ID for the client making the request.
-     * @param range The requested data range index
+     * @param rangeIndex The requested data range index
+     * @return false is returned if given index is out-of-bounds.
      */
-     bool setDataRangeIndex(int sessionId, const int rangeIndex);
+     bool setDataRangeIndex(int sessionId, int rangeIndex);
 
     /**
      * Tells whether the node is in standbyOverride mode. If \c true, the
@@ -109,15 +140,16 @@ public Q_SLOTS:
      * goes blank. Any client making the request for a sensor will make
      * all clients of the sensor experience the same behavior.
      *
-     * <br/><br/><b>!! NOTE !! </b>: Due to the fact that any other
-     * client may request this property for another sensor, whose processing
-     * chain is partly shared with the sensor this client is using, it is
-     * possible to receive samples only from some sources (i.e. this sensor
+     * Note: Due to the fact that any other client may request this
+     * property for another sensor, whose processing chain is partly
+     * shared with the sensor this client is using, it is possible to
+     * receive samples only from some sources (i.e. this sensor
      * has the property off, the one one has it on --> we get samples
      * from the shared parts). This may lead to some unexpected behavior.
      *
      * Return value is based on whether all source nodes are or local
      * implementation is true.
+     *
      * @return \c true if standyOverride is on, \c false otherwise.
      */
     bool standbyOverride() const;
@@ -125,8 +157,7 @@ public Q_SLOTS:
     /**
      * Sets a request for standbyOverride property.
      *
-     * @param sessionId ID of the session making the request. Used for
-     *                  maintenance. Always supply valid ID.
+     * @param sessionId ID of the session making the request.
      * @param override Whether to request (\c true) or reset (\c false).
      * @return \c true if local implementation or all sources return true.
      *         \c false otherwise.
@@ -139,32 +170,56 @@ public Q_SLOTS:
      * different, any value between \c min and \c max can be requested.
      * \c Resolution can be ignored.
      *
-     * @return List of possible intervals for this sensor.
+     * @return List of possible intervals in milliseconds for this node.
      */
     const QList<DataRange>& getAvailableIntervals() const;
 
+    /**
+     * Set interval request for the node. Acceptable values are listed by
+     * #getAvailableIntervals().
+     *
+     * @param sessionId Session ID.
+     * @param value interval value is milliseconds.
+     * @return was request succesful.
+     */
     bool setIntervalRequest(int sessionId, unsigned int value);
 
+    /**
+     * Request default interval for the node.
+     *
+     * @param sessionId Session ID.
+     * @return was request succesful.
+     */
     bool requestDefaultInterval(int sessionId);
 
     /**
      * Returns the default interval value for this node.
      *
-     * @return The default interval. Reports \c 0 on error, but \c 0
-     *         may just as well be a valid state, depending on the
-     *         node.
+     * @return The default interval.
      */
     unsigned int defaultInterval() const;
 
     /**
-     * Remove interval requests by session
+     * Remove interval requests for given session.
+     *
+     * @param sessionId Session ID.
      */
     void removeIntervalRequest(int sessionId);
 
     /**
-     * Return the interval
+     * Return the interval.
+     *
+     * @return current interval.
      */
     unsigned int getInterval() const;
+
+    /**
+     * Return the interval of given session.
+     *
+     * @param sessionId Session ID.
+     * @return interval requested by given session.
+     */
+    unsigned int getInterval(int sessionId) const;
 
     /**
      * Returns list of available buffer sizes. The list is ordered by
@@ -183,22 +238,95 @@ public Q_SLOTS:
      */
     virtual IntegerRangeList getAvailableBufferIntervals(bool& hwSupported) const;
 
+    /**
+     * Get current buffersize of the node.
+     *
+     * @return current buffersize.
+     */
     virtual unsigned int bufferSize() const { return 0; }
+
+    /**
+     * Get current buffer interval of the node.
+     *
+     * @return current buffer interval in milliseconds.
+     */
     virtual unsigned int bufferInterval() const { return 0; }
 
+    /**
+     * Set buffersize for given session.
+     *
+     * @param sessionId Session ID.
+     * @param value buffer size.
+     * @return was size set succesfully.
+     */
     bool setBufferSize(int sessionId, unsigned int value);
+
+    /**
+     * Clear buffer size requests of given session.
+     *
+     * @param sessionId Session ID.
+     * @return was buffer size request cleared.
+     */
     bool clearBufferSize(int sessionId);
+
+    /**
+     * Set buffer interval for given session.
+     *
+     * @param sessionId Session ID.
+     * @param value interval in milliseconds.
+     * @return was interval se succesfully.
+     */
     bool setBufferInterval(int sessionId, unsigned int value);
+
+    /**
+     * Clear buffer interval requests of given session.
+     *
+     * @param sessionId Session ID.
+     * @return was buffer interval request cleared.
+     */
     bool clearBufferInterval(int sessionId);
 
+    /**
+     * Removes session related associates from the node.
+     *
+     * @param sessionId Session ID.
+     */
+    virtual void removeSession(int sessionId);
+
 Q_SIGNALS:
+    /**
+     * Property value has changed signal.
+     *
+     * @param name property name.
+     */
     void propertyChanged(const QString& name);
 
 protected:
     /**
+     * Set object validity state.
+     *
+     * @param valid is object valid.
+     */
+    void setValid(bool valid);
+
+    /**
      * Sets up a source for this node.
+     *
+     * @param source source node.
+     * @param bufferName source buffer name to connect to.
+     * @param reader reader to connect to source buffer.
+     * @return was connection succesful.
      */
     bool connectToSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader);
+
+    /**
+     * Remove source for this node.
+     *
+     * @param source source node.
+     * @param bufferName source buffer name to disconnect from.
+     * @param reader reader to disconnect from source buffer.
+     * @return was disconnection succesful.
+     */
     bool disconnectFromSource(NodeBase* source, const QString& bufferName, RingBufferReaderBase* reader);
 
     /**
@@ -218,6 +346,7 @@ protected:
 
     /**
      * Set the description for the node.
+     *
      * @param str The description string to set.
      */
     void setDescription(const QString& str);
@@ -249,12 +378,12 @@ protected:
      * than one possible range and are responsible for actions to change
      * it. For nodes which merely get several options from previous nodes
      * this won't get invoked.
+     *
      * @param range The range to set
      * @param sessionId The session Id
-     * @return \c true on succesfull set, \c false otherwise. The base
-     *         class implementation always returns false.
+     * @return \c true on succesfull set, \c false otherwise.
      */
-    virtual bool setDataRange(const DataRange& range, int sessionId) { Q_UNUSED(range); Q_UNUSED(sessionId); return false; }
+    virtual bool setDataRange(const DataRange& range, int sessionId);
 
     /**
      * Sets the standbyOverride value for the node. This is the base
@@ -263,10 +392,9 @@ protected:
      *
      * @param override \c true to set standbyOverride on, \c false to
      *        remove the request.
-     * @return Whether request was successfull. For this implementation,
-     *         always \c false.
+     * @return Whether request was successfull.
      */
-    virtual bool setStandbyOverride(bool override) { Q_UNUSED(override); return false; }
+    virtual bool setStandbyOverride(bool override);
 
     /**
      * Adds a new node to the list of nodes that standbyOverride calls
@@ -282,24 +410,34 @@ protected:
 
     /**
      * Add a new interval to list of locally provided ones
+     *
+     * @param interval new interval range for the node.
      */
     void introduceAvailableInterval(const DataRange& interval);
 
     void introduceAvailableIntervals(const QString& typeName);
 
     /**
-     * Return the locally valid interval (reimplement when required)
+     * Return the locally valid interval.
+     *
+     * @return locally valid interval.
      */
-    virtual unsigned int interval() const { return 0; }
+    virtual unsigned int interval() const;
 
-    virtual bool setInterval(unsigned int value, int sessionId)
-    {
-        sensordLogW() << "setInterval() not implemented in some node using it.";
-        Q_UNUSED(value);
-        Q_UNUSED(sessionId);
-        return false;
-    }
+    /**
+     * Set given interval for the node.
+     *
+     * @param value interval in milliseconds.
+     * @param sessionId Session ID.
+     * @return was interval set succesfully.
+     */
+    virtual bool setInterval(unsigned int value, int sessionId);
 
+    /**
+     * Does node have locally set interval.
+     *
+     * @return does node have locally set interval.
+     */
     bool hasLocalInterval() const;
 
     /**
@@ -324,6 +462,8 @@ protected:
 
     /**
      * Node to fetch interval from
+     *
+     * @param node interval source.
      */
     void setIntervalSource(NodeBase* node);
 
@@ -332,27 +472,50 @@ protected:
      * valid setting.
      *
      * @param value Value to use as default interval.
+     * @return was interval set succesfully.
      */
     bool setDefaultInterval(unsigned int value);
 
     /**
      * Validate an interval request.
+     *
      * @param value Value to validate.
-     * @return \c True if valid, \c false otherwise.
+     * @return is valid request.
      */
     bool isValidIntervalRequest(unsigned int value) const;
 
-    virtual RingBufferBase* findBuffer(const QString& name) const { Q_UNUSED(name); return NULL; }
+    /**
+     * Find buffer with given name.
+     *
+     * @param name buffer name to locate.
+     * @return pointer to buffer or NULL if not found.
+     */
+    virtual RingBufferBase* findBuffer(const QString& name) const = 0;
 
-    virtual bool setBufferSize(unsigned int value) { Q_UNUSED(value); return false; }
-    virtual bool setBufferInterval(unsigned int value) { Q_UNUSED(value); return false; }
+    /**
+     * Set buffer size. Nodes subclasses supporting buffering needs to
+     * reimplement this.
+     *
+     * @param value buffer size.
+     * @return was buffer size set succesfully.
+     */
+    virtual bool setBufferSize(unsigned int value);
 
-    QMap<int, unsigned int> m_intervalMap; ///< Active interval requests (session, value)
-    unsigned int            m_bufferSize;
-    unsigned int            m_bufferInterval;
+    /**
+     * Set buffer interval. Nodes subclasses supporting buffering needs to
+     * reimplement this.
+     *
+     * @param value buffer interval.
+     * @return was buffer interval set succesfully.
+     */
+    virtual bool setBufferInterval(unsigned int value);
+
+    QMap<int, unsigned int> m_intervalMap;    /**< active interval requests for sessions */
+
+    unsigned int            m_bufferSize;     /** buffer size */
+    unsigned int            m_bufferInterval; /** buffer interval */
 
 private:
-
     /**
      * Returns whether the class defines its own output data range, or
      * whether it uses the values from previous layer.
@@ -360,32 +523,53 @@ private:
      * @return \c true if range defined locally, \c false otherwise
      */
     bool hasLocalRange() const;
-    bool updateBufferSize();
-    bool updateBufferInterval();
 
+    /**
+     * Re-evaluate buffer size for the node.
+     *
+     * @return was buffer size changed.
+     */
+    bool updateBufferSize();
+
+    /**
+     * Parse data range list from given text input.
+     *
+     * @param input text input.
+     * @param defaultResolution default resolution to set to created DataRange unless explicitly set.
+     * @return parsed data range list.
+     */
     DataRangeList parseDataRangeList(const QString& input, int defaultResolution) const;
 
-    QString                 m_description;
+    /**
+     * Re-evaluate buffer interval for the node.
+     *
+     * @return was buffer interval changed.
+     */
+    bool updateBufferInterval();
 
-    QList<DataRange>        m_dataRangeList;
-    QList<DataRangeRequest> m_dataRangeQueue;
-    NodeBase*               m_dataRangeSource;
+    QString                 m_description; /**< node description */
 
-    QList<NodeBase*>        m_standbySourceList;
-    QList<int>              m_standbyRequestList;
+    QList<DataRange>        m_dataRangeList; /**< available data ranges */
+    QList<DataRangeRequest> m_dataRangeQueue; /**< data range requests */
+    NodeBase*               m_dataRangeSource; /**< data range source node */
 
-    QList<DataRange>        m_intervalList;
-    NodeBase*               m_intervalSource;
-    bool                    m_hasDefault;
-    unsigned int            m_defaultInterval;
+    QList<NodeBase*>        m_standbySourceList; /** standbyoverride source nodes */
+    QList<int>              m_standbyRequestList; /** standbyoverride requests */
+    QList<DataRange>        m_intervalList;   /**< available intervals */
+    NodeBase*               m_intervalSource; /**< interval sources */
+    bool                    m_hasDefault;     /**< does node have locally set interval */
+    unsigned int            m_defaultInterval; /**< locally set interval */
 
-    QList<NodeBase*>        m_sourceList;
+    QList<NodeBase*>        m_sourceList; /**< source nodes */
 
     //Oldest session wins for these:
-    QMap<int, unsigned int> m_bufferSizeMap;
-    QMap<int, unsigned int> m_bufferIntervalMap;
+    QMap<int, unsigned int> m_bufferSizeMap; /**< buffersize requests for sessions. */
+    QMap<int, unsigned int> m_bufferIntervalMap; /**< buffer interval requests for sessions. */
 
-    const DataRangeRequest  DEFAULT_DATA_RANGE_REQUEST;
+    const DataRangeRequest  DEFAULT_DATA_RANGE_REQUEST; /**< default data range request */
+
+    QString                 id_; /**< node ID */
+    bool                    isValid_; /**< is node correctly initialized */
 };
 
 #endif

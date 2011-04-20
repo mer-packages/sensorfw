@@ -26,9 +26,6 @@
 #define MRSTACCELEROMETERADPTOR_H
 
 #include "sysfsadaptor.h"
-#include <QString>
-#include <QStringList>
-#include <linux/input.h>
 #include "deviceadaptorringbuffer.h"
 
 #include "datatypes/orientationdata.h"

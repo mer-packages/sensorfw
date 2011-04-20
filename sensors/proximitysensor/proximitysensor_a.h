@@ -31,6 +31,7 @@
 
 #include "abstractsensor_a.h"
 #include "datatypes/unsigned.h"
+#include "datatypes/proximity.h"
 
 class ProximitySensorChannelAdaptor : public AbstractSensorChannelAdaptor
 {
@@ -38,12 +39,14 @@ class ProximitySensorChannelAdaptor : public AbstractSensorChannelAdaptor
     Q_DISABLE_COPY(ProximitySensorChannelAdaptor)
     Q_CLASSINFO("D-Bus Interface", "local.ProximitySensor")
     Q_PROPERTY(Unsigned proximity READ proximity)
+    Q_PROPERTY(Proximity proximityReflectance READ proximityReflectance)
 
 public:
     ProximitySensorChannelAdaptor(QObject* parent);
 
 public Q_SLOTS:
     Unsigned proximity() const;
+    Proximity proximityReflectance() const;
 
 Q_SIGNALS:
     void dataAvailable(const Unsigned& data);

@@ -7,6 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -44,10 +45,11 @@ template <class TYPE> class BufferReader;
  */
 class ProximitySensorChannel :
     public AbstractSensorChannel,
-    public DataEmitter<TimedUnsigned>
+    public DataEmitter<ProximityData>
 {
     Q_OBJECT;
     Q_PROPERTY(Unsigned proximity READ proximity);
+    Q_PROPERTY(Proximity proximityReflectance READ proximityReflectance);
 
 public:
     /**
@@ -66,6 +68,8 @@ public:
      * @return Last measured value.
      */
     Unsigned proximity() const { return previousValue_; }
+
+    Proximity proximityReflectance() const { return previousValue_; }
 
 public Q_SLOTS:
     bool start();
@@ -86,11 +90,11 @@ private:
     Bin*                         filterBin_;
     Bin*                         marshallingBin_;
     DeviceAdaptor*               proximityAdaptor_;
-    BufferReader<TimedUnsigned>* proximityReader_;
-    RingBuffer<TimedUnsigned>*   outputBuffer_;
-    TimedUnsigned                previousValue_;
+    BufferReader<ProximityData>* proximityReader_;
+    RingBuffer<ProximityData>*   outputBuffer_;
+    ProximityData                previousValue_;
 
-    void emitData(const TimedUnsigned& value);
+    void emitData(const ProximityData& value);
 };
 
 #endif // PROXIMITY_SENSOR_CHANNEL_H

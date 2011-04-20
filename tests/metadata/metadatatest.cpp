@@ -23,15 +23,15 @@
    </p>
 */
 
-#include "qt-api/sensormanagerinterface.h"
-#include "qt-api/accelerometersensor_i.h"
-#include "qt-api/magnetometersensor_i.h"
-#include "qt-api/alssensor_i.h"
-#include "qt-api/compasssensor_i.h"
-#include "qt-api/rotationsensor_i.h"
-#include "qt-api/tapsensor_i.h"
-#include "qt-api/proximitysensor_i.h"
-#include "qt-api/orientationsensor_i.h"
+#include "sensormanagerinterface.h"
+#include "accelerometersensor_i.h"
+#include "magnetometersensor_i.h"
+#include "alssensor_i.h"
+#include "compasssensor_i.h"
+#include "rotationsensor_i.h"
+#include "tapsensor_i.h"
+#include "proximitysensor_i.h"
+#include "orientationsensor_i.h"
 
 #include "metadatatest.h"
 
@@ -67,19 +67,14 @@ void MetaDataTest::initTestCase()
 
 void MetaDataTest::init()
 {
-    //qDebug() << "Run before each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void MetaDataTest::cleanup()
 {
-    //qDebug() << "Run after each test";
-    //TODO: Verify that sensord has not crashed.
 }
 
 void MetaDataTest::cleanupTestCase()
 {
-    //qDebug() << "Run after all test cases";
 }
 
 void MetaDataTest::testDescription()
@@ -99,7 +94,6 @@ void MetaDataTest::testDescription()
 
     delete sensorIfc;
 }
-
 
 void MetaDataTest::testAvailableRanges()
 {
@@ -249,6 +243,18 @@ void MetaDataTest::testAvailableBufferSizes()
     delete sensorIfc;
 
     QVERIFY2(sizeList.size() > 0, "No buffer sizes received from sensor");
+}
+
+void MetaDataTest::testCompassDeclination()
+{
+    CompassSensorChannelInterface* compass = CompassSensorChannelInterface::interface("compasssensor");
+    compass->start();
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 50");
+    QCOMPARE(compass->declinationValue(), 50);
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 0");
+    QCOMPARE(compass->declinationValue(), 0);
+    compass->stop();
+    delete compass;
 }
 
 void MetaDataTest::printMetaData()

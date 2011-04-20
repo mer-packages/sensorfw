@@ -33,8 +33,8 @@
 #include "bufferreader.h"
 #include "filter.h"
 #include "bin.h"
-#include "orientationdata.h"
-#include "posedata.h"
+#include "datatypes/orientationdata.h"
+#include "datatypes/posedata.h"
 #include "datatypes/unsigned.h"
 
 class Bin;

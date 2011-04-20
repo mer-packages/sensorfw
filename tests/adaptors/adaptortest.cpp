@@ -29,18 +29,16 @@
 #include <QTest>
 #include <QVariant>
 
-#include <cerrno>
-
 #include "adaptortest.h"
 
-#include "adaptors/accelerometeradaptor/accelerometeradaptor.h"
-#include "adaptors/magnetometeradaptor/magnetometeradaptor.h"
-#include "adaptors/alsadaptor/alsadaptor.h"
-#include "adaptors/touchadaptor/touchadaptor.h"
-#include "adaptors/tapadaptor/tapadaptor.h"
-#include "adaptors/kbslideradaptor/kbslideradaptor.h"
-#include "adaptors/proximityadaptor/proximityadaptor.h"
-#include "adaptors/gyroscopeadaptor/gyroscopeadaptor.h"
+#include "accelerometeradaptor.h"
+#include "magnetometeradaptor.h"
+#include "alsadaptor.h"
+#include "touchadaptor.h"
+#include "tapadaptor.h"
+#include "kbslideradaptor.h"
+#include "proximityadaptor.h"
+#include "gyroscopeadaptor.h"
 
 #include "config.h"
 

@@ -26,19 +26,14 @@
 #ifndef TAP_H
 #define TAP_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/tapdata.h>
 
 /**
- * @brief Container class for #TapData.
- *
- * @todo Derive from AbstractSensorData
- * @todo Make sure that users of this class don't refer to data_ directly and 
- * make it private.
+ * QObject facade for #TapData.
  */
-class Tap : public QObject //AbstractSensorData
+class Tap : public QObject
 {
     Q_OBJECT
 
@@ -47,17 +42,21 @@ class Tap : public QObject //AbstractSensorData
 
 public:
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     Tap() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Constructor.
+     *
+     * @param tapData Source object.
      */
     Tap(const TapData& tapData);
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param tap Source object.
      */
     Tap(const Tap& tap);
 
@@ -79,30 +78,37 @@ public:
      */
     TapData::Type type() const { return data_.type_; }
 
-    TapData data_;
-
 private:
+    TapData data_; /**< Contained tap data */
 
-    // TODO: make this a base class    
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Tap& tap);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Tap& tap);
 };
 
 Q_DECLARE_METATYPE( Tap )
 
-// Marshall Tap data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Tap &tap)
+/**
+ * Marshall the Tap data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param tap data to marshall.
+ * @return dbus argument.
+ */
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Tap &tap)
 {
     argument.beginStructure();
-    argument << tap.data_.timestamp_ << (int)(tap.data_.direction_) << (int)(tap.data_.type_);
+    argument << tap.tapData().timestamp_ << (int)(tap.tapData().direction_) << (int)(tap.tapData().type_);
     argument.endStructure();
     return argument;
 }
 
-// Retrieve Tap data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Tap &tap)
+/**
+ * Unmarshall Tap data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param tap unmarshalled data.
+ * @return dbus argument.
+ */
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Tap &tap)
 {
     int tmp;
     argument.beginStructure();

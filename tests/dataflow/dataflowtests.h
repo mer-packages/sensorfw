@@ -6,6 +6,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Pia Niemela <pia.s.niemela@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -47,46 +48,10 @@ private slots:
 
     void cleanup() {};
     void cleanupTestCase();
+
+    static QList<QString> getKeys(const SensorManager &that);
+    static int getRefCountSum(const SensorManager &that);
+    static int getRefCount(const SensorManager &that, QString key);
 };
-
-class TestSensorManager2: public SensorManager
-{
-public:
-    static inline int getAdaptorCount(const SensorManager &that, QString adaptorName)
-    {
-        QList<QString> keys = static_cast<const TestSensorManager2*>(&that)->SensorManager::deviceAdaptorInstanceMap_.keys();
-        int count = 0;
-        foreach(QString key, keys) {
-            if (static_cast<const TestSensorManager2*>(&that)->SensorManager::deviceAdaptorInstanceMap_[adaptorName].adaptor_) {
-                count++;
-            }
-        }
-        return count;
-    }
-
-    static inline QList<QString> getKeys(const SensorManager &that)
-    {
-
-        return static_cast<const TestSensorManager2*>(&that)->SensorManager::deviceAdaptorInstanceMap_.keys();
-    }
-
-
-    static inline int getRefCountSum(const SensorManager &that){
-        QList<QString> keys = static_cast<const TestSensorManager2*>(&that)->SensorManager::deviceAdaptorInstanceMap_.keys();
-        int refCount = 0;
-        foreach(QString key, keys){
-            refCount += TestSensorManager2::getRefCount(that,key);
-        }
-        return refCount;
-
-    }
-
-    static inline int getRefCount(const SensorManager &that, QString key){
-        return ((DeviceAdaptorInstanceEntry)(static_cast<const TestSensorManager2*>(&that)->SensorManager::deviceAdaptorInstanceMap_).value(key)).cnt_;
-
-    }
-
-};
-
 
 #endif // DATAFLOWTESTS_H

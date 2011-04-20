@@ -1,3 +1,98 @@
+sensord (0.7.1) unstable; urgency=low
+
+  [Antti Virtanen]
+  * Cleaned used include paths a bit that they better match what is in sensord-dev. Fixes: NB#244277.
+  * Removed example headers form sensord-dev.
+  * Testcase refactoring.
+  * Sensor graph shrinking not supported anymore to prevent race conditions between adaptor threads and qt mainloop. Fixes: NB#242237
+  * Implemented downsample filter for XYZ data.
+  * RotationFilter won't propagate data for compass input. Fixes: NB#242233.
+  * TapAdaptor won't try to configure pollrate for accelerometer driver anymore. Fixes: NB#242902.
+  * Fixes to compass declination correction handling (Fixes: NB#241539):
+    - CompassSensorChannelInterface::setUseDeclination() enables it only locally.
+    - CompassData includes both raw and corrected reading.
+    - DeclinationFilter periodically reads value from GConf in case it gets changed. Interval is configurable. 
+    - CompassSensorChannel now only listens "truenorth" output from CompassChain.
+    - CompassSensorChannelAdaptor does not have options anymore to enable/disable declination correction globally.
+    - DeclinationFilter can be forced to read and update declination value from gconf with declinationValue().
+  * Improved FilterApiTests and MetadataTests.
+  * Fixed regression from CalibrationHandler: calibration_rate config entry didn't have any effect.
+  * Optimized InputDevAdaptor interval handling.
+  * ClientApiTest::testCompassSensor() now tests declination correction.
+  * Refactoring:
+    - Removed unnecessary @todo comments.
+    - AbstractChain is now able to take care of deleting added RingBuffers.
+    - Removed unused SensorState concept.
+    - Loader optimizations.
+    - NodeBase bufferInterval and bufferSize handlers will try to locate source which supports buffering in case there a multiple sources.
+    - Removed unused typeId() concept.
+    - SensorManager::addSensor() now gracefully handles if object registration to dbus fails.
+    - SocketHandler::socketReadable now gracefully handles if client writes sessionId incorrectly.
+    - Cleanup for adaptor codes
+    - Better error checks in InputDevAdaptor::getInputDevices().
+    - Logger optimized and improved a bit.
+    - Debug logs improved.
+    - Cleanup makefiles.
+    - Reduced used DataEmitter buffer sizes to 1.
+    - Timestamp values in datatypes are now passed as const refs.
+    - Removed unnecessary friend declarations from datatypes.
+    - Tap now hides internal data member.
+    - TouchData members renamed for clarity.
+    - AbstractSensorChannelInterface improvements
+      - release() deprecated and errorCodeInt() removed.
+      - hiding members which were too visible.
+    - AbstractSensorChannelInterface subclass improvements:
+      - listenInterface() and controlInterface() are now deprecated.
+      - marked some old unused features deprecated.
+      - few more members are hidden which weren't supposed to be visible.
+    - Moved few members from DeviceAdaptor and AbstractSensorChannel to NodeBase.
+    - Removed unnecessary members from AbstractSensorChannel.
+    - Simplified AbstractSensorChannel start/stop handling.
+    - Const correctness fixes.
+    - DataEmitter unused exposed source removed.
+    - AdaptedSensorEntry is no longer QObject and removed interval handling from it.
+    - Removed obsolete signal handling from SysfsAdaptor and SysfsAdaptorReader.
+    - InputDevAdaptor device detection now only tries to locate one compatible device.
+  * Downsampling (which works by dropping samples) can be now enabled/disabled.
+  * OrientationInterpreter filter orientation_buffer_size is now configurable.
+  * Threshold accessors removed from OrientationFilter since those had no effect.
+  * OrientationInterpreter default settings now provide more sensitive orientation detection. Fixes: NB#232872.
+  * Proximity sensor dataflow now uses datatype ProximityData. 
+  * ProximitySensorChannelInterface provides signal and accessor for getting proximity reading with reflectance value.
+  * c-api removed from doxygen targets.
+  * Config-class now better handles errors.
+  * AccelerometerAdaptor used for some reason OrientationData. Should have
+    been AccelerometerData. Only cosmetic change.
+  * Implemented new downsampling logic (Fixes: NB#234563):
+    - AccelerometerAdaptor, MagnetometerAdaptor and RotationSensorChannel interval rangelist has been limited to certain sizes.
+    - AccelerometerSensorChannel, RotationSensorChannel and MagnetometerSensorChannel downsamples data before propagating it.
+  * Config-class has now more friendly API.
+  * sensordtestapp improvements.
+  * API documentation improvements.
+  * Improved dataflowtests.
+  * SensorManager::releaseSensor() now removes bufferSize and bufferInterval settings for session from the node.
+  * Qt-api interface classes now directly access methods from dbus adaptor instead of using properties. Fixes: NB#181522.
+  * Refactored sensor interface and adaptor classes.
+  * AbstractSensorChannelInterface does not anymore inherit from QDBusAbstractInterface.
+
+  [Timo Rongas]
+  * Fixed library path for libdatatypes in core/core.pro
+  * Added trigger to raise cpu freq. when a change in orientation is detected. Fixes: NB#244543
+  * TestApp configuration file is now included by default.
+
+  [Lihan Guo]
+  * Added qt-mobility support for tests/testapp.
+
+  [Shenghua Liu]
+  * Make sensortestapp thread safe in exiting
+  * Fix sensord-tests-install 
+  * Fix sensordtestapp for qt apt to print out proximity reflectance data
+  * Fix the Proximity metatype registration problem
+  * ProximityAdaptor now stores reflectance reading (Fixes: NB#234186)
+  * Code cleanup
+
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Wed, 20 Apr 2011 16:37:18 +0200
+
 sensord (0.7.0) unstable; urgency=low
 
   [Pia Niemela]
@@ -524,7 +619,7 @@ sensord (0.6.1) unstable; urgency=low
 sensord (0.6.0) unstable; urgency=low
 
   * Implements: SWP#MaSSW-1004, SWP#MaSSW-1187
-  * Fixes: NB#155680 - UI is not rotated with 2.6.32 (linux-dali) kernel
+  * Fixes: NB#155680 - UI is not rotated with 2.6.32 kernel
 
  -- Timo Rongas <ext-timo.2.rongas@nokia.com>  Mon, 25 Jan 2010 13:51:17 +0200
 

@@ -3,7 +3,6 @@ CONFIG      += plugin
 
 TARGET       = sampleadaptor
 
-
 include(../../common-config.pri )
 
 HEADERS += sampleadaptor.h \
@@ -12,17 +11,12 @@ HEADERS += sampleadaptor.h \
 SOURCES += sampleadaptor.cpp \
            sampleadaptorplugin.cpp
 
-SENSORFW_INCLUDEPATHS = ../.. \
-                        ../../include \
+SENSORFW_INCLUDEPATHS = ../../include \
                         ../../sensord \
                         ../../datatypes \
                         ../../core \
-                        ../../filters
+                        ../../filters \
+                        ../..
 
 DEPENDPATH  += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
-
-include(../../common-install.pri)
-publicheaders.files += $$HEADERS
-target.path = $$PLUGINPATH
-

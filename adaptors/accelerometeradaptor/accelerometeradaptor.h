@@ -70,8 +70,8 @@ protected:
     virtual unsigned int evaluateIntervalRequests(int& sessionId) const;
 
 private:
-    DeviceAdaptorRingBuffer<OrientationData>* accelerometerBuffer_;
-    OrientationData orientationValue_;
+    DeviceAdaptorRingBuffer<AccelerationData>* accelerometerBuffer_;
+    AccelerationData orientationValue_;
 
     void interpretEvent(int src, struct input_event *ev);
     void commitOutput(struct input_event *ev);

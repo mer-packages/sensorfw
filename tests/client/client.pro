@@ -14,7 +14,7 @@ SOURCES += clientapitest.cpp
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \
                         ../../filters \
-                        ../../datatypes
+			../../qt-api
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS

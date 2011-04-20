@@ -28,14 +28,13 @@
 #ifndef MAGNETICFIELDDATA_H
 #define MAGNETICFIELDDATA_H
 
-#include <QtDebug>
 #include <QDBusArgument>
-
 #include <datatypes/orientationdata.h>
 
 /**
-*/
-class MagneticField : public QObject //AbstractSensorData
+ * QObject facade for #CalibratedMagneticField.
+ */
+class MagneticField : public QObject
 {
 public:
     Q_OBJECT;
@@ -43,12 +42,14 @@ public:
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     MagneticField() : QObject() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Constructor.
+     *
+     * @param calibratedData Source object.
      */
     MagneticField(const CalibratedMagneticFieldData& calibratedData) : QObject() {
         data_.timestamp_ = calibratedData.timestamp_;
@@ -58,11 +59,13 @@ public:
         data_.z_ = calibratedData.z_;
         data_.rx_ = calibratedData.rx_;
         data_.ry_ = calibratedData.ry_;
-        data_.rz_ = calibratedData.rz_; 
+        data_.rz_ = calibratedData.rz_;
     }
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param data Source object.
      */
     MagneticField(const MagneticField& data) : QObject() {
         data_.timestamp_ = data.data_.timestamp_;
@@ -72,13 +75,21 @@ public:
         data_.z_ = data.data_.z_;
         data_.rx_ = data.data_.rx_;
         data_.ry_ = data.data_.ry_;
-        data_.rz_ = data.data_.rz_; 
+        data_.rz_ = data.data_.rz_;
     }
 
     /**
+     * Accessor for contained #CalibratedMagneticFieldData.
+     *
+     * @return contained #CalibratedMagneticFieldData.
      */
     const CalibratedMagneticFieldData& data() const { return data_; }
 
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     MagneticField& operator=(const MagneticField& origin)
     {
         data_.timestamp_ = origin.data_.timestamp_;
@@ -88,11 +99,17 @@ public:
         data_.z_ = origin.data_.z_;
         data_.rx_ = origin.data_.rx_;
         data_.ry_ = origin.data_.ry_;
-        data_.rz_ = origin.data_.rz_; 
+        data_.rz_ = origin.data_.rz_;
 
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const MagneticField& right) const
     {
         CalibratedMagneticFieldData rdata = right.data();
@@ -106,7 +123,7 @@ public:
                 data_.timestamp_ == rdata.timestamp_);
     }
 
-     /**
+    /**
      * Returns the value for X.
      * @return x value.
      */
@@ -149,34 +166,44 @@ public:
     int level() const { return data_.level_; }
 
     /**
-     * Returns the timestamp.
+     * Returns the timestamp of sample as monotonic time (microsec).
      * @return timestamp value.
      */
-    quint64 timestamp() const { return data_.timestamp_; }
+    const quint64& timestamp() const { return data_.timestamp_; }
 
 private:
-    CalibratedMagneticFieldData data_;
+    CalibratedMagneticFieldData data_; /**< Contained data */
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const MagneticField& data);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, MagneticField& data);
 };
 
 Q_DECLARE_METATYPE( MagneticField )
 
-
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const MagneticField &data)
+/**
+ * Marshall the MagneticField data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
+inline QDBusArgument &operator<<(QDBusArgument &argument, const MagneticField &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.level_;
-    argument << data.data_.x_ << data.data_.y_ << data.data_.z_;
-    argument << data.data_.rx_ << data.data_.ry_ << data.data_.rz_;
+    argument << data.data().timestamp_ << data.data().level_;
+    argument << data.data().x_ << data.data().y_ << data.data().z_;
+    argument << data.data().rx_ << data.data().ry_ << data.data().rz_;
     argument.endStructure();
     return argument;
 }
 
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, MagneticField &data)
+/**
+ * Unmarshall MagneticField data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, MagneticField &data)
 {
     argument.beginStructure();
     argument >> data.data_.timestamp_ >> data.data_.level_;

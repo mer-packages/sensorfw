@@ -37,10 +37,6 @@
  *
  * Tap events are recognized by the internal accelerometer driver, and passed
  * to sensor framework by this adaptor.
- *
- * @todo Add support for additional tap directions (only X, Y, Z now)
- * @todo Add support for adjusting sensor sensitivity
- * @todo Add detection of correct event handle (currently hardcoded to 4)
  */
 class TapAdaptor : public InputDevAdaptor
 {
@@ -62,6 +58,8 @@ protected:
      */
     TapAdaptor(const QString& id);
     ~TapAdaptor();
+
+    virtual bool setInterval(const unsigned int value, const int sessionId);
 
 private:
     DeviceAdaptorRingBuffer<TapData>* tapBuffer_; /**< Output buffer */

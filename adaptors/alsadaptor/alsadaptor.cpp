@@ -11,6 +11,7 @@
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -49,15 +50,16 @@ struct bh1770glc_als {
     __u16 lux;
 } __attribute__((packed));
 
-
 ALSAdaptor::ALSAdaptor(const QString& id):
-        SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
+    SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
+    deviceType_(DeviceUnknown)
 {
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
-    deviceType_ = (DeviceType)Config::configuration()->value("als/driver_type", "0").toInt();
+    deviceType_ = (DeviceType)Config::configuration()->value<int>("als/driver_type", DeviceUnknown);
     powerStatePath_ = Config::configuration()->value("als/powerstate_path").toByteArray();
+
 #ifdef SENSORFW_MCE_WATCHER
     dbusIfc = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
                                  QDBusConnection::systemBus(), this);
@@ -93,16 +95,14 @@ void ALSAdaptor::stopSensor()
     SysfsAdaptor::stopSensor();
 }
 
-
 bool ALSAdaptor::startAdaptor()
 {
     if (deviceType_ == RM696 || deviceType_ == RM680)
     {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_als_enable");
+        dbusIfc->call(QDBus::NoBlock, "req_als_enable");
 #endif
     }
-
     return SysfsAdaptor::startAdaptor();
 }
 
@@ -111,13 +111,11 @@ void ALSAdaptor::stopAdaptor()
     if (deviceType_ == RM696 || deviceType_ == RM680)
     {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_als_disable");
+        dbusIfc->call(QDBus::NoBlock, "req_als_disable");
 #endif
     }
     SysfsAdaptor::stopAdaptor();
 }
-
-
 
 void ALSAdaptor::processSample(int pathId, int fd)
 {

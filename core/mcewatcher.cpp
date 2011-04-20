@@ -30,16 +30,20 @@
 #include "mcewatcher.h"
 
 MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
-    dbusIfc(new QDBusInterface(MCE_SERVICE, MCE_SIGNAL_PATH, MCE_SIGNAL_IF,
-                   QDBusConnection::systemBus(), parent)), m_state(true), m_powerSave(false)
+                                          dbusIfc(new QDBusInterface(MCE_SERVICE,
+                                                                     MCE_SIGNAL_PATH,
+                                                                     MCE_SIGNAL_IF,
+                                                                     QDBusConnection::systemBus(),
+                                                                     parent)),
+                                          displayState(true),
+                                          powerSave(false)
 {
-
     dbusIfc->connection().connect(dbusIfc->service(),
                                   dbusIfc->path(),
                                   dbusIfc->interface(),
                                   MCE_PSM_STATE_SIG,
                                   this,
-                                  SLOT(slotPSMStateChanged(const bool)));
+                                  SLOT(slotPSMStateChanged(bool)));
 
     dbusIfc->connection().connect(dbusIfc->service(),
                                   dbusIfc->path(),
@@ -47,31 +51,37 @@ MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
                                   MCE_DISPLAY_SIG,
                                   this,
                                   SLOT(slotDisplayStateChanged(const QString)));
-
-
 }
 
-void MceWatcher::slotDisplayStateChanged(const QString state)
+void MceWatcher::slotDisplayStateChanged(const QString& state)
 {
     bool newState = true;
     if (state == MCE_DISPLAY_OFF_STRING) {
         newState = false;
     }
 
-    if (m_state != newState)
+    if (displayState != newState)
     {
-        m_state = newState;
-        emit displayStateChanged(m_state);
+        displayState = newState;
+        emit displayStateChanged(displayState);
     }
 }
 
-
-void MceWatcher::slotPSMStateChanged(const bool mode)
+void MceWatcher::slotPSMStateChanged(bool mode)
 {
-    if (m_powerSave != mode)
+    if (powerSave != mode)
     {
-        m_powerSave = mode;
-        emit devicePSMStateChanged(m_powerSave);
+        powerSave = mode;
+        emit devicePSMStateChanged(powerSave);
     }
+}
 
+bool MceWatcher::displayEnabled() const
+{
+    return displayState;
+}
+
+bool MceWatcher::PSMEnabled() const
+{
+    return powerSave;
 }

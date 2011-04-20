@@ -32,42 +32,56 @@
 #include "sysfsadaptor.h"
 #include <QString>
 #include <QStringList>
+#include <QFile>
 #include <linux/input.h>
 
 /**
- * @brief Base class for adaptors accessing device drivers through Linux Input
- * Device subsytem.
- *
+ * @brief Base class for adaptors accessing device drivers through
+ * Linux Input Device subsytem.
  */
-class InputDevAdaptor : public SysfsAdaptor {
-    Q_OBJECT;
-
+class InputDevAdaptor : public SysfsAdaptor
+{
 public:
     /**
      * Constructor.
+     *
      * @param id The id for the adaptor.
-     * @param maxDeviceCount Maximum number of devices that can be associated with this adaptor
+     * @param maxDeviceCount Maximum number of devices that can be
+     *                       associated with this adaptor.
      */
     InputDevAdaptor(const QString& id, int maxDeviceCount = 1);
+
+    /**
+     * Destructor.
+     */
     virtual ~InputDevAdaptor();
 
     virtual void init();
 
-    int getDeviceCount() { return deviceCount_; }
+    /**
+     * Number of available input devices.
+     *
+     * @return number of available input devices.
+     */
+    int getDeviceCount() const;
 
 protected:
     /**
-     * Verify whether the input device handle on given path is of a certain device type.
+     * Verify whether the input device handle on given path is of a certain
+     * device type.
+     *
      * @param path path of the device file.
-     * @param matchString stringt to match in the device name acquired from the
-     * input device system.
-     * @param strictChecks whether to perform more extensive checks for the input device.
-     * @return True if yes, false if not.
+     * @param matchString string to match in the device name acquired from
+     *                    the input device system.
+     * @param strictChecks whether to perform more extensive checks for
+     *                     the input device.
+     * @return is given device valid or not.
      */
-    virtual bool checkInputDevice(const QString& path, const QString& matchString, bool strictChecks = true);
+    virtual bool checkInputDevice(const QString& path, const QString& matchString, bool strictChecks = true) const;
 
     /**
      * Interpret a read event and store the received value.
+     *
      * @param src Event source.
      * @param ev  Read event.
      */
@@ -75,49 +89,43 @@ protected:
 
     /**
      * Interpret a a synchronization event from the device.
+     *
+     * @param src Event source.
+     * @param ev  Read event.
      */
     virtual void interpretSync(int src, struct input_event *ev) = 0;
 
     /**
      * Scans through the /dev/input/event* device handles and registers the
      * ones that pass the test with the #checkInputDevice method.
-     * @param typeName device type name
      *
+     * @param typeName device type name
      * @return Number of devices detected.
      */
     int getInputDevices(const QString& typeName);
 
-    /**
-     * Read and process data. Run when sysfsadaptor has detected new available
-     * data.
-     * @param pathId PathId for the file that had event. Id for first found event
-     *               handle is 0, for second it's 1, etc.
-     * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
-     */
     void processSample(int pathId, int fd);
 
     virtual unsigned int interval() const;
+
     virtual bool setInterval(const unsigned int value, const int sessionId);
 
 private:
-
     /**
-     * Read events from file descriptor. The read events are stored in #evlist
-     * array.
+     * Read events from file descriptor. The read events are stored in
+     * #evlist_ array.
+     *
      * @param fd File descriptor to read from.
      * @return Number of read events.
      */
     int getEvents(int fd);
 
-    QString deviceSysPathString_;
-    QString devicePollFilePath_;
-    QString usedDevicePollFilePath_;
-    QString deviceString_;
-    int deviceCount_;
-    int maxDeviceCount_;
-    int deviceNumber_;
-    unsigned int originalPollingInterval_;
-    input_event evlist_[64];
+    QString usedDevicePollFilePath_; /**< sysfs path to input device poll file */
+    QString deviceString_;           /**< input device name */
+    int deviceCount_;                /**< number of available input devices */
+    const int maxDeviceCount_;       /**< maximum number of supported devices */
+    input_event evlist_[64];         /**< input event buffer */
+    unsigned int cachedInterval_;    /**< cached interval reading */
 };
 
 #endif

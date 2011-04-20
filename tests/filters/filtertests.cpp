@@ -29,162 +29,24 @@
 #include <QTest>
 #include <QVariant>
 
-#include <typeinfo>
-
 #include "sensormanager.h"
 #include "bin.h"
 #include "bufferreader.h"
 #include "filter.h"
-#include "dataemitter.h"
 #include "coordinatealignfilter.h"
 #include "orientationdata.h"
 #include "orientationinterpreter.h"
 #include "declinationfilter.h"
 #include "rotationfilter.h"
 #include "filtertests.h"
-#include "timedunsigned.h"
 #include "config.h"
 
-#define WAIT_ROUND_DELAY 100
-#define MAX_WAIT_ROUNDS 5
-#define MAX_FACE_WAIT_ROUNDS 30
-
-/**
- * DummyAdaptor is a Pusher that can be used to push data into a filter for testing.
- * Input data is given as an array. Calling \c pushNewData() will propagate the next
- * value in the array into adaptor output.
- *
- * @todo For some reason we can only feed in 10 samples.. Anything beyond that will
- *       get compared to wrong expected output..
- */
-template <class TYPE>
-class DummyAdaptor : public Pusher
+void FilterApiTest::initTestCase()
 {
-public:
-    DummyAdaptor() : counter_(0), datacount_(0), data_(NULL), loop_(false), index_(0) {
-        addSource(&source_, "source");
-    };
-
-    void setTestData(int count, TYPE *data, bool loop) {
-        datacount_ = count;
-        loop_ = loop;
-        data_ = data;
-        index_ = 0;
-    }
-
-    void pushNewData() {
-        if (index_ >= datacount_) {
-            QVERIFY2(loop_, "Test function error: out of input data.");
-            index_ = 0;
-        }
-
-        source_.propagate(1, &(data_[index_]));
-
-        index_++;
-        counter_++;
-    }
-
-    int getDataCount() { return counter_; }
-
-private:
-    Source<TYPE> source_;
-    int counter_;
-    int datacount_;
-    TYPE *data_;
-    bool loop_;
-    int index_;
-};
-
-
-
-/**
- * DummyDataEmitter is a DataEmitter that can be used to capture output data of
- * a filter for testing purposes. The expected output data is given through a
- * function, and is compared to actual received output  in \c emitData() function.
- */
-template <class TYPE>
-class DummyDataEmitter : public DataEmitter<TYPE> {
-public:
-    DummyDataEmitter() : DataEmitter<TYPE>(10),
-                         samplesReceived_(0),
-                         datacount_(0),
-                         data_(NULL),
-                         loop_(false),
-                         index_(0) {}
-
-    void setExpectedData(int count, TYPE *data, bool loop) {
-        datacount_ = count;
-        data_ = data;
-        loop_ = loop;
-        index_ = 0;
-    }
-    int numSamplesReceived() { return samplesReceived_; }
-
-    void emitData(const TYPE& data) {
-        index_++;
-        samplesReceived_++;
-
-        if (index_ > datacount_) {
-            QVERIFY2(loop_, "Test function error: out of expected results.");
-            index_ = 0;
-        }
-
-        // Check type
-        if (typeid(TYPE) == typeid(PoseData)) {
-            PoseData *d1 = (PoseData *)&data;
-            PoseData *d2 = (PoseData *)&(data_[index_-1]);
-            QCOMPARE(d1->timestamp_, d2->timestamp_);
-            QCOMPARE(d1->orientation_, d2->orientation_);
-
-        } else if (typeid(TYPE) == typeid(TimedUnsigned)) {
-            TimedUnsigned *d1 = (TimedUnsigned *)&data;
-            TimedUnsigned *d2 = (TimedUnsigned *)&(data_[index_-1]);
-            QCOMPARE(d1->timestamp_, d2->timestamp_);
-            QCOMPARE(d1->value_, d2->value_);
-
-        } else if (typeid(TYPE) == typeid(TimedXyzData)) {
-            TimedXyzData *d1 = (TimedXyzData *)&data;
-            TimedXyzData *d2 = (TimedXyzData *)&(data_[index_-1]);
-            QCOMPARE(d1->timestamp_, d2->timestamp_);
-            QCOMPARE(d1->x_, d2->x_);
-            QCOMPARE(d1->y_, d2->y_);
-            QCOMPARE(d1->z_, d2->z_);
-
-        } else if (typeid(TYPE) == typeid(CompassData)) {
-            CompassData *d1 = (CompassData *)&data;
-            CompassData *d2 = (CompassData *)&(data_[index_-1]);
-            QCOMPARE(d1->timestamp_, d2->timestamp_);
-            QCOMPARE(d1->degrees_, d2->degrees_);
-            QCOMPARE(d1->level_, d2->level_);
-
-        } else {
-            /*
-             TYPE *d1 = &data;
-             TYPE *d2 = &data_[index_-1];
-             QCOMPARE(*d1, *d2);
-             */
-            //TODO: Figure out how to compare types that have '==' operator so that
-            //      compiler will accept it.
-            QWARN("No comparison method for this type");
-        }
-    }
-
-protected:
-    int samplesReceived_;
-    int datacount_;
-    TYPE *data_;
-    bool loop_;
-    int index_;
-};
-
-
-
-void FilterApiTest::initTestCase() {
-
     Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
-
+    SensordLogger::init(1, "/tmp/test.log", "FilterApiTest");
+    SensordLogger::setOutputLevel(SensordLogTest);
 }
-
 
 /**
  * This should be simple enough to be valid if one transformation matrix works.
@@ -223,10 +85,10 @@ void FilterApiTest::testCoordinateAlignFilter()
         TimedXyzData(0,-1,-1, 1)
     };
 
-    QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),
+    QVERIFY2((sizeof(inputData)) == (sizeof(expectedResult)),
              "Test function error: Input and output count does not match.");
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
 
     Bin filterBin;
     DummyAdaptor<TimedXyzData> dummyAdaptor;
@@ -249,20 +111,15 @@ void FilterApiTest::testCoordinateAlignFilter()
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numInputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
+    for (int i = 0; i < numInputs; ++i) {
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();
@@ -292,10 +149,11 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
         PoseData(30000000, PoseData::BottomUp),
     };
 
-    QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
+    QVERIFY2((sizeof(inputData) / sizeof(TimedXyzData)) ==
+             (sizeof(expectedResult) / sizeof(PoseData)),
              "Test function error: Input and output count does not match.");
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
 
     // Build data pipeline
     Bin filterBin;
@@ -317,20 +175,15 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numInputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
+    for (int i = 0; i < numInputs; ++i) {
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();
@@ -343,7 +196,6 @@ void FilterApiTest::testTopEdgeInterpretationFilter()
 
 void FilterApiTest::testFaceInterpretationFilter()
 {
-
     // Input data to feed to the filter
     TimedXyzData inputData[] = {
         TimedXyzData(      0,   0,   0,-981),
@@ -360,8 +212,8 @@ void FilterApiTest::testFaceInterpretationFilter()
         PoseData(2000000, PoseData::FaceUp),
     };
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
-    int numOutputs = (sizeof(expectedResult)/sizeof(PoseData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
+    int numOutputs = (sizeof(expectedResult) / sizeof(PoseData));
 
     FilterBase* faceInterpreterFilter = OrientationInterpreter::factoryMethod();
 
@@ -376,28 +228,20 @@ void FilterApiTest::testFaceInterpretationFilter()
     filterBin.join("adapter", "source", "filter", "accsink");
     filterBin.join("filter", "face", "buffer", "sink");
 
-
     DummyDataEmitter<PoseData> dbusEmitter;
     Bin marshallingBin;
     marshallingBin.add(&dbusEmitter, "testdataemitter");
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-
-    dbusEmitter.setExpectedData(numOutputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numOutputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     for (int j=1; j < numInputs; j++){
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-
-    if (dummyAdaptor.getDataCount() != (dbusEmitter.numSamplesReceived() + 6) && waitRounds++ < MAX_FACE_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();
@@ -407,7 +251,6 @@ void FilterApiTest::testFaceInterpretationFilter()
 
     delete faceInterpreterFilter;
 }
-
 
 void FilterApiTest::testOrientationInterpretationFilter()
 {
@@ -431,10 +274,11 @@ void FilterApiTest::testOrientationInterpretationFilter()
         PoseData(5000000, PoseData::FaceDown)
     };
 
-    QVERIFY2((sizeof(inputData)/sizeof(TimedXyzData))==(sizeof(expectedResult)/sizeof(PoseData)),
+    QVERIFY2((sizeof(inputData) / sizeof(TimedXyzData)) ==
+             (sizeof(expectedResult) / sizeof(PoseData)),
              "Test function error: Input and output count does not match.");
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
 
     // Build data pipeline
     Bin filterBin;
@@ -456,20 +300,15 @@ void FilterApiTest::testOrientationInterpretationFilter()
     outputBuffer.join(&dbusEmitter);
 
     // Setup data
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numInputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
+    for (int i = 0; i < numInputs; ++i) {
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();
@@ -488,32 +327,37 @@ void FilterApiTest::testDeclinationFilter()
         CompassData(0, 1, 0),
         CompassData(0, 0, 2),
         CompassData(0, 0, 0),
-        CompassData(0, 4, 5),
-        CompassData(0, 6, 0),
+        CompassData(0, 340, 5),
+        CompassData(0, 359, 0),
         CompassData(0, 0, 8),
         CompassData(0, 1, 1)
     };
 
     FilterBase* declinationFilter = DeclinationFilter::factoryMethod();
     QVERIFY(declinationFilter);
-    int key = qvariant_cast<int>(dynamic_cast<DeclinationFilter*>(declinationFilter)->property("declinationCorrection"));
+
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 50");
+
+    int key = dynamic_cast<DeclinationFilter*>(declinationFilter)->declinationCorrection();
+
+    QCOMPARE(key, 50);
 
     // Expected output data
     CompassData expectedResult[] = {
-        CompassData(0, 0+key, 0),
-        CompassData(0, 1+key, 0),
-        CompassData(0, 0+key, 2),
-        CompassData(0, 0+key, 0),
-        CompassData(0, 4+key, 5),
-        CompassData(0, 6+key, 0),
-        CompassData(0, 0+key, 8),
-        CompassData(0, 1+key, 1)
+        CompassData(0, 0, 0, 0 + key, 0),
+        CompassData(0, 1, 0, 1 + key, 1),
+        CompassData(0, 0, 2, 0 + key, 0),
+        CompassData(0, 0, 0, 0 + key, 0),
+        CompassData(0, 340, 5, 30, 340),
+        CompassData(0, 359, 0, 49, 359),
+        CompassData(0, 0, 8, 0 + key, 0),
+        CompassData(0, 1, 1, 1 + key, 1)
     };
 
-    QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),
+    QVERIFY2((sizeof(inputData)) == (sizeof(expectedResult)),
              "Test function error: Input and output count does not match.");
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
 
     Bin filterBin;
     DummyAdaptor<CompassData> dummyAdaptor;
@@ -533,20 +377,15 @@ void FilterApiTest::testDeclinationFilter()
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numInputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
+    for (int i = 0; i < numInputs; ++i) {
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();
@@ -555,6 +394,8 @@ void FilterApiTest::testDeclinationFilter()
     QCOMPARE (dummyAdaptor.getDataCount(), dbusEmitter.numSamplesReceived());
 
     delete declinationFilter;
+
+    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 0");
 }
 
 void FilterApiTest::testRotationFilter()
@@ -603,10 +444,10 @@ void FilterApiTest::testRotationFilter()
 
     };
 
-    QVERIFY2((sizeof(inputData))==(sizeof(expectedResult)),
+    QVERIFY2((sizeof(inputData)) == (sizeof(expectedResult)),
              "Test function error: Input and output count does not match.");
 
-    int numInputs = (sizeof(inputData)/sizeof(TimedXyzData));
+    int numInputs = (sizeof(inputData) / sizeof(TimedXyzData));
 
     DummyAdaptor<TimedXyzData> dummyAdaptor;
     DummyDataEmitter<TimedXyzData> dbusEmitter;
@@ -627,20 +468,15 @@ void FilterApiTest::testRotationFilter()
     outputBuffer.join(&dbusEmitter);
 
     /* Setup data */
-    dummyAdaptor.setTestData(numInputs, inputData, false);
-    dbusEmitter.setExpectedData(numInputs, expectedResult, false);
+    dummyAdaptor.setTestData(numInputs, inputData);
+    dbusEmitter.setExpectedData(numInputs, expectedResult);
 
     marshallingBin.start();
     filterBin.start();
 
     // Start sends data once, so start from index 1.
-    for (int i=1; i < numInputs; i++) {
+    for (int i = 0; i < numInputs; ++i) {
         dummyAdaptor.pushNewData();
-    }
-
-    int waitRounds = 0;
-    if (dummyAdaptor.getDataCount() != dbusEmitter.numSamplesReceived() && waitRounds++ < MAX_WAIT_ROUNDS) {
-        QTest::qWait(WAIT_ROUND_DELAY);
     }
 
     filterBin.stop();

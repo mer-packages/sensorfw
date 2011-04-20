@@ -34,7 +34,7 @@
 
 #include "sysfsadaptor.h"
 #include "deviceadaptorringbuffer.h"
-#include "datatypes/timedunsigned.h"
+#include "datatypes/orientationdata.h"
 
 class ProximityAdaptorAscii : public SysfsAdaptor
 {
@@ -51,9 +51,8 @@ protected:
 
 private:
     void processSample(int pathId, int fd);
-    char buf[16];
 
-    DeviceAdaptorRingBuffer<TimedUnsigned>* proximityBuffer_;
+    DeviceAdaptorRingBuffer<ProximityData>* proximityBuffer_;
 };
 
 #endif

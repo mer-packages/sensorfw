@@ -26,6 +26,7 @@
 
 #include <gconf/gconf-client.h>
 #include "declinationfilter.h"
+#include "config.h"
 #include "logging.h"
 
 const char* DeclinationFilter::declinationKey = "/system/osso/location/settings/magneticvariation";
@@ -35,16 +36,26 @@ DeclinationFilter::DeclinationFilter() :
         declinationCorrection_(0)
 {
     g_type_init();
-
-    loadSettings();
+    updateInterval_ = Config::configuration()->value<quint64>("compass/declination_update_interval", 1000 * 60 * 60) * 1000;
 }
 
 void DeclinationFilter::correct(unsigned, const CompassData* data)
 {
-    newOrientation = *data;
-    newOrientation.degrees_ += declinationCorrection_;
-    orientation = newOrientation;
-    source_.propagate(1, &orientation);
+    CompassData newOrientation(*data);
+    if(newOrientation.timestamp_ - lastUpdate_ > updateInterval_)
+    {
+        loadSettings();
+        lastUpdate_ = newOrientation.timestamp_;
+    }
+    newOrientation.correctedDegrees_ = newOrientation.degrees_;
+    if(declinationCorrection_)
+    {
+        newOrientation.correctedDegrees_ += declinationCorrection_;
+        newOrientation.correctedDegrees_ %= 360;
+        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_ << ". Level: " << newOrientation.level_;
+    }
+    orientation_ = newOrientation;
+    source_.propagate(1, &orientation_);
 }
 
 void DeclinationFilter::loadSettings()
@@ -68,6 +79,12 @@ void DeclinationFilter::loadSettings()
     }
 
     declinationCorrection_ = value;
-
+    sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;
     g_object_unref(client);
+}
+
+int DeclinationFilter::declinationCorrection()
+{
+    loadSettings();
+    return declinationCorrection_;
 }

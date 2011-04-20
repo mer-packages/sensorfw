@@ -7,6 +7,7 @@
 
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -32,15 +33,30 @@
 
 class SinkBase;
 
+/**
+ * Base class for data consumers.
+ */
 class Consumer
 {
 public:
-    SinkBase* sink(const QString& name);
+    /**
+     * Locate sink with given name.
+     *
+     * @param name sink name.
+     * @return pointer to sink or NULL if not found.
+     */
+    SinkBase* sink(const QString& name) const;
 
 protected:
+    /**
+     * Add sink with given name.
+     *
+     * @param sink sink.
+     * @param name sink name.
+     */
     void addSink(SinkBase* sink, const QString& name);
 
-    QHash<QString, SinkBase*>   sinks_;
+    QHash<QString, SinkBase*>   sinks_; /**< sinks */
 };
 
 #endif

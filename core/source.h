@@ -8,6 +8,7 @@
    @author Semi Malinen <semi.malinen@nokia.com
    @author Joep van Gassel <joep.van.gassel@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -29,52 +30,105 @@
 #define SOURCE_H
 
 #include "sink.h"
+#include "logging.h"
+#include <typeinfo>
 #include <QSet>
 
 class SinkBase;
 
+/**
+ * Base-class for data source.
+ */
 class SourceBase
 {
 public:
-    virtual int typeId() = 0;
-
+    /**
+     * Connect sink to the source.
+     *
+     * @param sink Sink.
+     * @return was sink connected succesfully.
+     */
     bool join(SinkBase* sink);
+
+    /**
+     * Disconnect sink from the source.
+     *
+     * @param sink Sink.
+     * @return was sink disconnected succesfully.
+     */
     bool unjoin(SinkBase* sink);
 
 protected:
+    /**
+     * Destructor.
+     */
     virtual ~SourceBase() {}
 
 private:
-    virtual void joinTypeChecked(SinkBase* sink) = 0;
-    virtual void unjoinTypeChecked(SinkBase* sink) = 0;
+    /**
+     * Connect and check that sink is compatible with source.
+     *
+     * @param sink Sink.
+     * @return was sink joined.
+     */
+    virtual bool joinTypeChecked(SinkBase* sink) = 0;
+
+    /**
+     * Disconnect and check that sink is compatible with source.
+     *
+     * @param sink Sink.
+     * @return was sink unjoined.
+     */
+    virtual bool unjoinTypeChecked(SinkBase* sink) = 0;
 };
 
-
+/**
+ * Data source.
+ *
+ * @tparam TYPE type of data streamed from the source.
+ */
 template <class TYPE>
 class Source : public SourceBase
 {
 public:
-    int typeId() { return 0; } // TODO
-
+    /**
+     * Propagate data to connected sinks.
+     *
+     * @param n how many elements to stream.
+     * @param values source from where to stream data.
+     */
     void propagate(int n, const TYPE* values)
     {
-        SinkTyped<TYPE>* sink;
-
-        foreach (sink, sinks_) {
+        foreach (SinkTyped<TYPE>* sink, sinks_) {
             sink->collect(n, values);
         }
     }
 private:
-    void joinTypeChecked(SinkBase* sink)
+    bool joinTypeChecked(SinkBase* sink)
     {
-        sinks_.insert(dynamic_cast<SinkTyped<TYPE>*>(sink));
+        SinkTyped<TYPE>* type = dynamic_cast<SinkTyped<TYPE>*>(sink);
+        if(type)
+        {
+            sinks_.insert(type);
+            return true;
+        }
+        sensordLogC() << "Failed to join type '" << typeid(type).name() << " to source!";
+        return false;
     }
 
-    void unjoinTypeChecked(SinkBase* sink) {
-        sinks_.remove(dynamic_cast<SinkTyped<TYPE>*>(sink));
+    bool unjoinTypeChecked(SinkBase* sink)
+    {
+        SinkTyped<TYPE>* type = dynamic_cast<SinkTyped<TYPE>*>(sink);
+        if(type)
+        {
+            sinks_.remove(type);
+            return true;
+        }
+        sensordLogC() << "Failed to unjoin type '" << typeid(type).name() << " from source!";
+        return false;
     }
 
-    QSet<SinkTyped<TYPE>*> sinks_;
+    QSet<SinkTyped<TYPE>*> sinks_; /**< connected sinks. */
 };
 
 #endif

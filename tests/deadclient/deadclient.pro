@@ -1,19 +1,16 @@
-
 include(../common-install.pri)
 
 TEMPLATE = app
 TARGET = sensord-deadclient
-DEPENDPATH += .
 
 QT += network dbus
 QT -= gui
 CONFIG += debug
 DEFINES += ORIENTATION
 
-INCLUDEPATH += ../.. \
+INCLUDEPATH += ../../ \
                ../../include \
                ../../filters \
-               ../../datatypes \
                ../../qt-api
 
 QMAKE_LIBDIR_FLAGS += -L../../qt-api -lsensorclient \

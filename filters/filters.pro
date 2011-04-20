@@ -2,7 +2,8 @@ TEMPLATE = subdirs
 SUBDIRS = coordinatealignfilter \
           declinationfilter \
           orientationinterpreter \
-          rotationfilter
+          rotationfilter \
+          downsamplefilter
 
 include(../common-install.pri)
 publicheaders.files = *.h

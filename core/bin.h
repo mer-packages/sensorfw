@@ -43,46 +43,143 @@ class FilterBase;
 template <class TYPE>
 class RingBuffer;
 
+/**
+ * Bin is a container for joining dataflow connections for producers
+ * and consumer. When data is written to the buffers bin will invoke
+ * data consumers. Default bin will directly invoke consumers using
+ * the current thread without context switches.
+ * It is possible to subclass bin for threaded usage where bin instance
+ * is run by dedicated thread.
+ */
 class Bin
 {
 public:
     class Command;
 
+    /**
+     * Constructor.
+     */
     Bin();
+
+    /**
+     * Destructor
+     */
     virtual ~Bin();
 
+    /**
+     * Start bin processing. This should be called after all buffers and
+     * readers have been joined.
+     */
     virtual void start();
+
+    /**
+     * Stop bin processing.
+     */
     virtual void stop();
 
+    /**
+     * Add new data pusher. Pusher callback is set to call the bin.
+     *
+     * @param pusher pusher.
+     * @param name name for the pusher.
+     */
     void add(Pusher*     pusher,   const QString& name);
+
+    /**
+     * Add new data consumer.
+     *
+     * @param consumer consumer.
+     * @param name name for the consumer.
+     */
     void add(Consumer*   consumer, const QString& name);
+
+    /**
+     * Add new data filter.
+     *
+     * @param filter filter.
+     * @param name name for the filter.
+     */
     void add(FilterBase* filter,   const QString& name);
 
+    /**
+     * Establish dataflow connection.
+     *
+     * @param producerName Name of the producer.
+     * @param sourceName Data source name of the producer.
+     * @param consumerName Name of the consumer.
+     * @param sinkName Name of the data sink of the consumer.
+     * @return was connection succesful.
+     */
     bool join(const QString& producerName,
               const QString& sourceName,
               const QString& consumerName,
               const QString& sinkName);
 
+    /**
+     * De-establish dataflow connection.
+     *
+     * @param producerName Name of the producer.
+     * @param sourceName Data source name of the producer.
+     * @param consumerName Name of the consumer.
+     * @param sinkName Name of the data sink of the consumer.
+     * @return was disconnection succesful.
+     */
     bool unjoin(const QString& producerName,
-              const QString& sourceName,
-              const QString& consumerName,
-              const QString& sinkName);
+                const QString& sourceName,
+                const QString& consumerName,
+                const QString& sinkName);
 
 protected:
-    SourceBase* source(const QString& producerName, const QString& sourceName);
-    SinkBase*   sink(const QString& consumerName, const QString& sinkName);
-    Producer*   producer(const QString& name);
-    Consumer*   consumer(const QString& name);
+    /**
+     * Pointer to the producer data source.
+     *
+     * @param producerName Name of the producer.
+     * @param sourceName Data source name of the producer.
+     * @return source pointer.
+     */
+    SourceBase* source(const QString& producerName, const QString& sourceName) const;
 
+    /**
+     * Pointer to the consumer data sink.
+     *
+     * @param consumerName Name of the consumer.
+     * @param sinkName Name of the data sink of the consumer.
+     * @return sink pointer.
+     */
+    SinkBase*   sink(const QString& consumerName, const QString& sinkName) const;
+
+    /**
+     * Pointer to the producer.
+     *
+     * @param name Name of the producer.
+     * @return producer pointer.
+     */
+    Producer*   producer(const QString& name) const;
+
+    /**
+     * Pointer to the consumer.
+     *
+     * @param name Name of the consumer.
+     * @return consumer pointer.
+     */
+    Consumer*   consumer(const QString& name) const;
+
+    /**
+     * Event handler when new data is written by the producer.
+     */
     virtual void eventSignaled();
+
+    /**
+     * Call event handler.
+     */
     void signalNewEvent();
 
-    Callback<Bin>               signalNewEvent_;
+    Callback<Bin>               signalNewEvent_; /**< Event handler */
 
 private:
-    QHash<QString, Pusher*>     pushers_;
-    QHash<QString, Consumer*>   consumers_;
-    QHash<QString, FilterBase*> filters_;
+    QHash<QString, Pusher*>     pushers_;   /**< Pushers   */
+    QHash<QString, Consumer*>   consumers_; /**< Consumers */
+    QHash<QString, FilterBase*> filters_;   /**< Filters   */
 };
 
 #endif

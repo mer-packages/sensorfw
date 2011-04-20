@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -67,10 +68,8 @@ bool SocketReader::initiateConnection(int sessionId)
 
 bool SocketReader::dropConnection()
 {
-    if (socket_ == NULL) {
-        qDebug() << "Attempting to drop non-existant connection.";
+    if (!socket_)
         return false;
-    }
 
     socket_->disconnectFromServer();
     if(socket_->state() != QLocalSocket::UnconnectedState)

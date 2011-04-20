@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -43,31 +44,38 @@ class SocketReader : public QObject
     Q_DISABLE_COPY(SocketReader)
 
 public:
-    static const char* channelIDString;
 
+    /**
+     * Constructor.
+     *
+     * @param parent Parent QObject.
+     */
     SocketReader(QObject* parent = 0);
+
+    /**
+     * Destructor.
+     */
     ~SocketReader();
 
     /**
-     * Initiates socket connection.
-     * @param sessionId ID for the current session. Must be unique to map
-     *                  connection to session properly.
-     * @return \c true when new connection is succesfully created.
-     *         \c false otherwise.
+     * Initiates new data socket connection.
+     *
+     * @param sessionId ID for the current session.
+     * @return was the connection established successfully.
      */
     bool initiateConnection(int sessionId);
 
     /**
      * Drops socket connection.
-     * @return \c true when connection is succesfully dropped. \c false
-     *         otherwise.
+     * @return was the connection successfully closed.
      */
     bool dropConnection();
 
     /**
      * Provides access to the internal QLocalSocket for direct reading.
+     *
      * @return Pointer to the internal QLocalSocket. Pointer can be \c NULL
-     *         if \c initiateConnection() has not been called.
+     *         if \c initiateConnection() has not been called successfully.
      */
     QLocalSocket* socket();
 
@@ -78,31 +86,43 @@ public:
      * with a single operation.
      *
      * @param size Number of bytes to read.
-     * @param buffer   Location for storing the data.
-     * @return \c true if any bytes were read, \c false otherwise.
+     * @param buffer Location for storing the data.
+     * @return was given amount of bytes read succesfully.
      */
     bool read(void* buffer, int size);
 
     /**
-     * Attempt to read all objects which are being written to the socket.
+     * Attempt to read objects from the sockets. The call blocks until
+     * there are minimum amount of expected bytes availabled in the socket.
      *
-     * @param values   Vector to which objects will be appended.
-     * @return \c true if any bytes were read, \c false otherwise.
+     * @param values Vector to which objects will be appended.
+     * @tparam T type of expected object in the stream.
+     * @return true if atleast one object was read.
      */
     template<typename T>
     bool read(QVector<T>& values);
 
     /**
      * Returns whether the socket is currently connected.
-     * @return \c true if connected, \c false if not.
+     *
+     * @return is socket connected.
      */
     bool isConnected();
 
 private:
+    /**
+     * Prefix text needed to be written to the sensor daemon socket connection
+     * when establishing new session.
+     */
+    static const char* channelIDString;
+
+    /**
+     * Reads initial magic byte from the fresh connection.
+     */
     bool readSocketTag();
 
-    QLocalSocket* socket_;
-    bool tagRead_;
+    QLocalSocket* socket_; /**< socket data connection to sensord */
+    bool tagRead_; /**< is initial magic byte read from the socket */
 };
 
 template<typename T>

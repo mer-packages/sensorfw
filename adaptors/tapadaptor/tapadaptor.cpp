@@ -10,6 +10,7 @@
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,10 +27,6 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
 */
-#include <QTime>
-#include <QTimer>
-#include <QTimerEvent>
-
 #include "tapadaptor.h"
 #include "config.h"
 #include "datatypes/utils.h"
@@ -66,7 +63,8 @@ void TapAdaptor::interpretEvent(int src, struct input_event *ev)
                 dir = TapData::Z;
                 break;
             default:
-                dir = TapData::X; // TODO: Add Unknown state to TapData
+                dir = TapData::X;
+                sensordLogW() << "TapAdaptor: Unknown event-code received: " << ev->code;
                 break;
         }
         TapData tapValue;
@@ -94,4 +92,9 @@ void TapAdaptor::commitOutput(const TapData& data)
 
     tapBuffer_->commit();
     tapBuffer_->wakeUpReaders();
+}
+
+bool TapAdaptor::setInterval(const unsigned int, const int)
+{
+    return true;
 }

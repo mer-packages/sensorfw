@@ -6,6 +6,7 @@
    Copyright (C) 2009-2010 Nokia Corporation
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -26,42 +27,50 @@
 #ifndef COMPASS_H
 #define COMPASS_H
 
-#include <QtDebug>
 #include <QDBusArgument>
 
 #include <datatypes/orientationdata.h>
 
 /**
- * @brief Compass is a wrapper class for #CompassData.
- * 
- * It is used for marshalling compass measurements over DBus.
- * 
- * @todo derive from AbstractSensorData
+ * QObject facade for #CompassData.
  */
-class Compass : public QObject //AbstractSensorData
+class Compass : public QObject
 {
 public:
-    Q_OBJECT;
+    Q_OBJECT
 
-    Q_PROPERTY(int degrees READ degrees);
-    Q_PROPERTY(int level READ level);
+    Q_PROPERTY(int degrees READ degrees)
+    Q_PROPERTY(int level READ level)
 
 public:
 
     /**
-     * Default constructor (needed for Qt metatype system)
+     * Default constructor.
      */
     Compass() {}
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param data Source object.
+     * @param declinationCorrection Use declination corrected value.
      */
-    Compass(const CompassData& data);
+    Compass(const CompassData& data, bool declinationCorrection = true);
 
     /**
-     * Copy constructor (needed for Qt metatype system)
+     * Copy constructor.
+     *
+     * @param data Source object.
      */
     Compass(const Compass& data);
+
+    /**
+     * Copy constructor.
+     *
+     * @param data Source object.
+     * @param declinationCorrection Use declination corrected value.
+     */
+    Compass(const Compass& data, bool declinationCorrection);
 
     /**
      * Returns the contained #CompassData
@@ -81,13 +90,23 @@ public:
      */
     int level() const { return data_.level_; }
 
-
+    /**
+     * Assignment operator.
+     *
+     * @param origin Source object for assigment.
+     */
     Compass& operator=(const Compass& origin)
     {
         data_ = origin.data();
         return *this;
     }
 
+    /**
+     * Comparison operator.
+     *
+     * @param right Object to compare to.
+     * @return comparison result.
+     */
     bool operator==(const Compass& right) const
     {
         CompassData rdata = right.data();
@@ -99,31 +118,37 @@ public:
 private:
     CompassData data_;
 
-    friend QDBusArgument &operator<<(QDBusArgument &argument, const Compass& data);
     friend const QDBusArgument &operator>>(const QDBusArgument &argument, Compass& data);
-    friend class CompassSensorChannel;
 };
 
 Q_DECLARE_METATYPE( Compass )
 
-
-
-// Marshall the Compass data into a D-Bus argument
-inline
-QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
+/**
+ * Marshall the Compass data into a D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data data to marshall.
+ * @return dbus argument.
+ */
+inline QDBusArgument &operator<<(QDBusArgument &argument, const Compass &data)
 {
     argument.beginStructure();
-    argument << data.data_.timestamp_ << data.data_.degrees_ << data.data_.level_;
+    argument << data.data().timestamp_ << data.data().degrees_ << data.data().rawDegrees_ << data.data().correctedDegrees_ << data.data().level_;
     argument.endStructure();
     return argument;
 }
 
-// Retrieve the Compass data from the D-Bus argument
-inline
-const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
+/**
+ * Unmarshall Compass data from the D-Bus argument
+ *
+ * @param argument dbus argument.
+ * @param data unmarshalled data.
+ * @return dbus argument.
+ */
+inline const QDBusArgument &operator>>(const QDBusArgument &argument, Compass &data)
 {
     argument.beginStructure();
-    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.level_;
+    argument >> data.data_.timestamp_ >> data.data_.degrees_ >> data.data_.rawDegrees_ >> data.data_.correctedDegrees_ >> data.data_.level_;
     argument.endStructure();
     return argument;
 }

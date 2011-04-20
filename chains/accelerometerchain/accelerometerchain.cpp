@@ -34,7 +34,7 @@
 #include "config.h"
 #include "logging.h"
 
-#include "coordinatealignfilter/coordinatealignfilter.h"
+#include "coordinatealignfilter.h"
 
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
@@ -51,7 +51,7 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     accelerometerReader_ = new BufferReader<AccelerationData>(1);
 
     // Get the transformation matrix from config file
-    QString aconvString = Config::configuration()->value("accelerometer/transformation_matrix", "").toString();
+    QString aconvString = Config::configuration()->value<QString>("accelerometer/transformation_matrix", "");
     if (aconvString.size() > 0)
     {
         if (!setMatrixFromString(aconvString))

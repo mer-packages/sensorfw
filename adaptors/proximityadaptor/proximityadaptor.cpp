@@ -9,6 +9,7 @@
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Matias Muhonen <ext-matias.muhonen@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
@@ -40,7 +41,6 @@ struct bh1770glc_ps {
     __u8 led3;
 } __attribute__((packed));
 
-
 struct apds990x_data {
         __u32 lux; /* 10x scale */
         __u32 lux_raw; /* 10x scale */
@@ -58,8 +58,8 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
                                                  QDBusConnection::systemBus(), this);
 #endif
 
-    deviceType_ = (DeviceType)Config::configuration()->value("proximity/driver_type", "0").toInt();
-    threshold_ = Config::configuration()->value("proximity/threshold", "35").toInt();
+    deviceType_ = (DeviceType)Config::configuration()->value<int>("proximity/driver_type", 0);
+    threshold_ = Config::configuration()->value<int>("proximity/threshold", 35);
     powerStatePath_ = Config::configuration()->value("proximity/powerstate_path").toByteArray();
     if (deviceType_ == RM696)
     {
@@ -67,7 +67,7 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
         dbusIfc_->call(QDBus::NoBlock, "req_proximity_sensor_enable");
 #endif
     }
-    proximityBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
+    proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
     setDescription("Proximity sensor readings (Dipro sensor)");
 }
@@ -106,17 +106,15 @@ void ProximityAdaptor::processSample(int pathId, int fd)
 {
     Q_UNUSED(pathId);
 
-    char buffer[100];
-    memset(buffer, 0, sizeof(buffer));
-    int value = 0;
+    int ret = 0;
+    unsigned rawdata = 0;
 
     if (deviceType_ == RM680)
     {
         bh1770glc_ps ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer) - 1);
+        int bytesRead = read(fd, &ps_data, sizeof(ps_data));
 
         if (bytesRead > 0) {
-            memcpy(&ps_data, buffer, sizeof(ps_data));
             sensordLogT() << "Proximity Values: " << ps_data.led1 << ", " << ps_data.led2 << ", " <<  ps_data.led3;
         } else {
             sensordLogW() << "read(): " << strerror(errno);
@@ -124,16 +122,16 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         }
 
         if ( ps_data.led1 > threshold_ ) {
-            value = 1;
+            ret = 1;
         }
+        rawdata = ps_data.led1;
     }
     else if(deviceType_ == RM696)
     {
         apds990x_data ps_data;
-        int bytesRead = read(fd, buffer, sizeof(buffer) - 1);
+        int bytesRead = read(fd, &ps_data, sizeof(ps_data));
 
         if (bytesRead > 0) {
-            memcpy(&ps_data, buffer, sizeof(ps_data));
             sensordLogT() << "Proximity Values: " << ps_data.ps << ", " << ps_data.ps_raw << ", " << ps_data.status;
         } else {
             sensordLogW() << "read(): " << strerror(errno);
@@ -141,24 +139,24 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         }
 
         if ( ps_data.ps > threshold_ ) {
-            value = 1;
+            ret = 1;
         }
+        rawdata = ps_data.ps;
     }
     else if(deviceType_ == NCDK)
     {
+        char buffer[100];
+        memset(buffer, 0, sizeof(buffer));
         int bytesRead = read(fd, &buffer, sizeof(buffer));
         if (bytesRead <= 0) {
             sensordLogW() << "read(): " << strerror(errno);
             return;
         }
-        QVariant variant(buffer);
-        bool ok;
-        value = variant.toInt(&ok);
-        if(!ok) {
-            sensordLogW() << "read(): failed to parse int from: " << buffer;
-            return;
+        sscanf(buffer, "%d", &rawdata);
+        if ( rawdata > threshold_ ) {
+            ret = 1;
         }
-        sensordLogT() << "Proximity value: " << value;
+        sensordLogT() << "Proximity value: " << rawdata;
     }
     else
     {
@@ -166,11 +164,11 @@ void ProximityAdaptor::processSample(int pathId, int fd)
         return;
     }
 
-    TimedUnsigned* proximityData = proximityBuffer_->nextSlot();
+    ProximityData* proximityData = proximityBuffer_->nextSlot();
 
     proximityData->timestamp_ = Utils::getTimeStamp();
-    proximityData->value_ = value;
-
+    proximityData->withinProximity_ = ret;
+    proximityData->value_ = rawdata;
     proximityBuffer_->commit();
     proximityBuffer_->wakeUpReaders();
 }

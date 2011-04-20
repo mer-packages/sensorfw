@@ -46,14 +46,12 @@ QMap<QString, QString> ParameterParser::getPropertyMap(const QString& id)
             if ( pos != -1 )
             {
                 QString name  = property.left( pos );
-                // TODO: convert into a variant containing integer, string, ...
                 QString value = property.mid( pos + 1 );
-
                 propMap[name] = value;
             }
             else
             {
-                sensordLogW() << "Ignoring property:" << property;
+                sensordLogW() << "Propery value missing. Ignoring property: " << property;
             }
         }
     }

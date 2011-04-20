@@ -51,7 +51,7 @@ MagnetometerAdaptorAscii::~MagnetometerAdaptorAscii()
     delete magnetBuffer_;
 }
 
-void MagnetometerAdaptorAscii::processSample(int pathId, int fd)
+void MagnetometerAdaptorAscii::processSample(int, int fd)
 {
     unsigned short x, y, z;
 

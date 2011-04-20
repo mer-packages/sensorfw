@@ -9,6 +9,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -39,7 +40,6 @@
     #include <mce/mode-names.h>
     #include <mce/dbus-names.h>
 #endif
-
 
 /**
  * @brief Adaptor for internal ambient light sensor.
@@ -72,15 +72,16 @@ public:
     {
         return new ALSAdaptor(id);
     }
+
     /**
      * Start measuring loop. Opens file descriptors and set streaming mode
      */
-    bool startAdaptor();
+    virtual bool startAdaptor();
 
     /**
      * Stop measuring loop. Closes file descriptors and removes streaming mode
      */
-    void stopAdaptor();
+    virtual void stopAdaptor();
 
     virtual bool startSensor();
 
@@ -93,8 +94,6 @@ protected:
      */
     ALSAdaptor(const QString& id);
     ~ALSAdaptor();
-
-
 
 private:
 
@@ -114,7 +113,6 @@ private:
 #ifdef SENSORFW_MCE_WATCHER
     QDBusInterface *dbusIfc;
 #endif
-
 };
 
 #endif

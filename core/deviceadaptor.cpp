@@ -28,6 +28,67 @@
  */
 
 #include "deviceadaptor.h"
+#include "sensormanager.h"
+
+AdaptedSensorEntry::AdaptedSensorEntry(const QString& name, const QString& description, RingBufferBase* buffer) :
+    name_(name),
+    description_(description),
+    running_(false),
+    count_(0),
+    buffer_(buffer)
+{
+}
+
+const QString& AdaptedSensorEntry::name() const
+{
+    return name_;
+}
+
+bool AdaptedSensorEntry::isRunning() const
+{
+    return running_;
+}
+
+void AdaptedSensorEntry::setIsRunning(bool isRunning)
+{
+    running_ = isRunning;
+}
+
+int AdaptedSensorEntry::referenceCount() const
+{
+    return count_;
+}
+
+int AdaptedSensorEntry::addReference()
+{
+    ++count_;
+    return count_;
+}
+
+int AdaptedSensorEntry::removeReference()
+{
+    --count_;
+    return count_;
+}
+
+RingBufferBase* AdaptedSensorEntry::buffer() const
+{
+    return buffer_;
+}
+
+// TODO: correct initialization of screenBlanked is disabled since it
+// most probably has effect for testcase functionalities.
+DeviceAdaptor::DeviceAdaptor(const QString& id) :
+    NodeBase(id),
+    standbyOverride_(false),
+//#ifdef SENSORFW_MCE_WATCHER
+//    screenBlanked_(!SensorManager::instance().MCEWatcher()->displayEnabled())
+//#else
+    screenBlanked_(false)
+//#endif
+{
+    setValid(true);
+}
 
 DeviceAdaptor::~DeviceAdaptor()
 {
@@ -61,7 +122,7 @@ bool DeviceAdaptor::setStandbyOverride(bool override)
 {
     standbyOverride_ = override;
 
-    if (screenBlanked)
+    if (screenBlanked_)
     {
         if(override)
         {
@@ -74,4 +135,33 @@ bool DeviceAdaptor::setStandbyOverride(bool override)
     }
     sensordLogD() << "standbyOverride changed: id = " << id() << ", value = " <<  standbyOverride_;
     return true;
+}
+
+void DeviceAdaptor::setScreenBlanked(bool status)
+{
+    screenBlanked_ = status;
+}
+
+bool DeviceAdaptor::deviceStandbyOverride() const
+{
+    return standbyOverride_;
+}
+
+bool DeviceAdaptor::startSensor()
+{
+    return false;
+}
+
+void DeviceAdaptor::stopSensor()
+{
+}
+
+bool DeviceAdaptor::standby()
+{
+    return false;
+}
+
+bool DeviceAdaptor::resume()
+{
+    return false;
 }

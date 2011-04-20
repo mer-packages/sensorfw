@@ -11,6 +11,7 @@
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
    @author Lihan Guo <ext-lihan.4.guo@nokia.com>
    @author Shenghua <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -45,12 +46,8 @@ InputDevAdaptor::InputDevAdaptor(const QString& id, int maxDeviceCount) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
     deviceCount_(0),
     maxDeviceCount_(maxDeviceCount),
-    deviceNumber_(-1),
-    originalPollingInterval_(0)
+    cachedInterval_(0)
 {
-    deviceSysPathString_ = Config::configuration()->value("global/device_sys_path").toString();
-    devicePollFilePath_ = Config::configuration()->value("global/device_poll_file_path").toString();
-
     memset(evlist_, 0x0, sizeof(input_event)*64);
 }
 
@@ -60,45 +57,51 @@ InputDevAdaptor::~InputDevAdaptor()
 
 int InputDevAdaptor::getInputDevices(const QString& typeName)
 {
+    QString deviceSysPathString = Config::configuration()->value("device_sys_path").toString();
+    QString devicePollFilePath = Config::configuration()->value("device_poll_file_path").toString();
+
     int deviceNumber = 0;
-    deviceCount_ = 0;
     deviceString_ = typeName;
 
     // Check if this device name is defined in configuration
-    QString deviceName = Config::configuration()->value(typeName + "/device", "DEV_NOT_FOUND").toString();
+    QString deviceName = Config::configuration()->value<QString>(typeName + "/device", "");
 
     // Do not perform strict checks for the input device
-    if (deviceName != "DEV_NOT_FOUND" && checkInputDevice(deviceName, typeName, false)) {
+    if (deviceName.size() && checkInputDevice(deviceName, typeName, false)) {
         addPath(deviceName, deviceCount_);
         ++deviceCount_;
-        deviceNumber_ = deviceNumber;
     }
-    else
+    else if(deviceSysPathString.contains("%1"))
     {
         const int MAX_EVENT_DEV = 16;
 
         // No configuration for this device, try find the device from the device system path
         while (deviceNumber < MAX_EVENT_DEV && deviceCount_ < maxDeviceCount_) {
-            deviceName = deviceSysPathString_.arg(deviceNumber);
+            deviceName = deviceSysPathString.arg(deviceNumber);
             if (checkInputDevice(deviceName, typeName)) {
                 addPath(deviceName, deviceCount_);
                 ++deviceCount_;
-                deviceNumber_ = deviceNumber;
+                break;
             }
             ++deviceNumber;
         }
     }
 
     QString pollConfigKey = QString(typeName + "/poll_file");
-    if (Config::configuration()->value(pollConfigKey, "").toString().size() > 0) {
-        usedDevicePollFilePath_ = Config::configuration()->value(pollConfigKey, "").toString();
+    if (Config::configuration()->exists(pollConfigKey)) {
+        usedDevicePollFilePath_ = Config::configuration()->value<QString>(pollConfigKey, "");
     } else {
-        usedDevicePollFilePath_ = devicePollFilePath_.arg(deviceNumber_);
+        usedDevicePollFilePath_ = devicePollFilePath.arg(deviceNumber);
     }
 
     if (deviceCount_ == 0) {
         sensordLogW() << "Cannot find any device for: " << typeName;
         setValid(false);
+    }
+    else
+    {
+        QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toAscii());
+        cachedInterval_ = byteArray.size() > 0 ? byteArray.toInt() : 0;
     }
 
     return deviceCount_;
@@ -134,7 +137,7 @@ void InputDevAdaptor::processSample(int pathId, int fd)
     }
 }
 
-bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& matchString, bool strictChecks)
+bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& matchString, bool strictChecks) const
 {
     char deviceName[256] = {0,};
     bool check = true;
@@ -165,12 +168,7 @@ bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& match
 
 unsigned int InputDevAdaptor::interval() const
 {
-    if (deviceNumber_ < 0) {
-        return -1;
-    }
-
-    QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toAscii());
-    return byteArray.size() > 0 ? byteArray.toInt() : 0;
+    return cachedInterval_;
 }
 
 bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
@@ -179,13 +177,23 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 
     sensordLogD() << "Setting poll interval for " << deviceString_ << " to " << value;
     QByteArray frequencyString(QString("%1\n").arg(value).toLocal8Bit());
-    return writeToFile(usedDevicePollFilePath_.toLocal8Bit(), frequencyString);
+    if(writeToFile(usedDevicePollFilePath_.toLocal8Bit(), frequencyString))
+    {
+        cachedInterval_ = value;
+        return true;
+    }
+    return false;
 }
 
 void InputDevAdaptor::init()
 {
-    if (!getInputDevices(Config::configuration()->value(name() + "/input_match", name()).toString())) {
+    if (!getInputDevices(Config::configuration()->value<QString>(name() + "/input_match", name()))) {
         sensordLogW() << "Input device not found.";
     }
     SysfsAdaptor::init();
+}
+
+int InputDevAdaptor::getDeviceCount() const
+{
+    return deviceCount_;
 }

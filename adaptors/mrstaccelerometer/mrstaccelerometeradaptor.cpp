@@ -26,7 +26,6 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <stdio.h>
-
 #include "config.h"
 #include "mrstaccelerometeradaptor.h"
 #include "logging.h"
@@ -44,7 +43,7 @@ MRSTAccelAdaptor::~MRSTAccelAdaptor () {
     delete buffer;
 }
 
-void MRSTAccelAdaptor::processSample (int pathId, int fd) {
+void MRSTAccelAdaptor::processSample (int, int fd) {
     char buf[32];
     int x, y, z;
 

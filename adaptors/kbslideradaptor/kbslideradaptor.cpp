@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Shenghua <ext-shenghua.1.liu@nokia.com>
 
    This file is part of Sensord.
 
@@ -24,7 +25,6 @@
    </p>
 */
 
-#include <QtDebug>
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
@@ -88,7 +88,6 @@ void KeyboardSliderAdaptor::interpretSync(int src, struct input_event *ev)
 
 void KeyboardSliderAdaptor::commitOutput()
 {
-
     sensordLogD() << "KB Slider state change detected: " << currentState_;
 
     KeyboardSliderState *state = kbstateBuffer_->nextSlot();

@@ -31,24 +31,55 @@
 #include <QtPlugin>
 #include <QStringList>
 
+class Loader;
+
+/**
+ * Sensor plugin base-class interface.
+ */
 class PluginBase
 {
 public:
+    /**
+     * Destructor.
+     */
     virtual ~PluginBase();
-    virtual void Register(class Loader& l) = 0;
-    virtual void Init(class Loader&) {}
-    virtual QStringList Dependencies() { return QStringList(); }
+
+    /**
+     * Register plugin to SensorManager.
+     *
+     * @param l plugin loader instance.
+     */
+    virtual void Register(Loader& l) = 0;
+
+    /**
+     * Initialize plugin.
+     *
+     * @param l plugin loader instance.
+     */
+    virtual void Init(Loader& l);
+
+    /**
+     * List of plugin dependencies.
+     *
+     * @return list of dependencies.
+     */
+    virtual QStringList Dependencies();
 };
 
-// TODO: figure out the proper name to use for the I/F
 Q_DECLARE_INTERFACE(PluginBase, "com.nokia.SensorService.Plugin/1.0");
 
+/**
+ * Sensor plugin interface.
+ */
 class Plugin : public QObject, PluginBase
 {
     Q_OBJECT
     Q_INTERFACES(PluginBase)
 
 public:
+    /**
+     * Destructor.
+     */
     virtual ~Plugin();
 };
 

@@ -44,7 +44,7 @@ bool AbstractSensorChannelAdaptor::isValid() const
 
 int AbstractSensorChannelAdaptor::errorCodeInt() const
 {
-    return node()->errorCodeInt();
+    return static_cast<int>(node()->errorCode());
 }
 
 QString AbstractSensorChannelAdaptor::errorString() const
@@ -83,13 +83,6 @@ bool AbstractSensorChannelAdaptor::hwBuffering() const
     node()->getAvailableBufferSizes(hwBuffering);
     return hwBuffering;
 }
-
-/*
-SensorState AbstractSensorChannelAdaptor::state() const
-{
-    return node()->state();
-}
-*/
 
 QString AbstractSensorChannelAdaptor::type() const
 {
@@ -209,4 +202,9 @@ AbstractSensorChannel* AbstractSensorChannelAdaptor::node() const
 bool AbstractSensorChannelAdaptor::setDataRangeIndex(int sessionId, int rangeIndex)
 {
     return node()->setDataRangeIndex(sessionId, rangeIndex);
+}
+
+void AbstractSensorChannelAdaptor::setDownsampling(int sessionId, bool value)
+{
+    node()->setDownsamplingEnabled(sessionId, value);
 }

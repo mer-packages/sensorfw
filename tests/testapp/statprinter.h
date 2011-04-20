@@ -28,19 +28,19 @@
 
 #include <QObject>
 #include <QList>
-#include "sensorhandler.h"
+#include "abstractsensorhandler.h"
 
 class StatPrinter : public QObject
 {
     Q_OBJECT
 public:
-    StatPrinter(QList<SensorHandler*> handlers, int interval, QObject *parent = 0);
+    StatPrinter(QList<AbstractSensorHandler*> handlers, int interval, QObject *parent = 0);
 
 protected:
     void timerEvent(QTimerEvent*);
 
 private:
-    QList<SensorHandler*> handlers;
+    QList<AbstractSensorHandler*> handlers;
     bool first;
 };
 

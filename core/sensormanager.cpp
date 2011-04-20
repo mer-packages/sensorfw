@@ -34,7 +34,6 @@
 #include "idutils.h"
 #include "logging.h"
 #include "mcewatcher.h"
-#include "calibrationhandler.h"
 
 #include <QSocketNotifier>
 #include <errno.h>
@@ -42,6 +41,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <unistd.h>
 
 typedef struct {
         int id;
@@ -49,12 +49,43 @@ typedef struct {
         void* buffer;
 } PipeData;
 
-
 SensorManager* SensorManager::instance_ = NULL;
 int SensorManager::sessionIdCount_ = 0;
 
-inline
-QDBusConnection bus()
+SensorInstanceEntry::SensorInstanceEntry(const QString& type) :
+    sensor_(0),
+    type_(type)
+{
+}
+
+SensorInstanceEntry::~SensorInstanceEntry()
+{
+}
+
+ChainInstanceEntry::ChainInstanceEntry(const QString& type) :
+    cnt_(0),
+    chain_(0),
+    type_(type)
+{
+}
+
+ChainInstanceEntry::~ChainInstanceEntry()
+{
+}
+
+DeviceAdaptorInstanceEntry::DeviceAdaptorInstanceEntry(const QString& type, const QString& id) :
+    adaptor_(0),
+    cnt_(0),
+    type_(type)
+{
+    propertyMap_ = ParameterParser::getPropertyMap(id);
+}
+
+DeviceAdaptorInstanceEntry::~DeviceAdaptorInstanceEntry()
+{
+}
+
+inline QDBusConnection bus()
 {
     return QDBusConnection::systemBus();
 }
@@ -94,9 +125,6 @@ SensorManager::SensorManager()
         sensordLogW() << "Error setting socket permissions! " << SOCKET_NAME;
     }
 
-    displayState_ = true;
-    psmState_ = false;
-
 #ifdef SENSORFW_MCE_WATCHER
 
     mceWatcher_ = new MceWatcher(this);
@@ -106,22 +134,56 @@ SensorManager::SensorManager()
     connect(mceWatcher_, SIGNAL(devicePSMStateChanged(const bool)),
             this, SLOT(devicePSMStateChanged(const bool)));
 
-
 #endif //SENSORFW_MCE_WATCHER
 }
 
 SensorManager::~SensorManager()
 {
-    foreach (const QString& key, sensorInstanceMap_.keys())
+    // stop adaptor threads and acquired resources
+    for(QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.begin(); it != deviceAdaptorInstanceMap_.end(); ++it)
     {
-         sensordLogW() << "ERROR: sensor" << key << "not released!";
-         Q_ASSERT( sensorInstanceMap_[key].sensor_ == 0 );
+        releaseDeviceAdaptor(it.key());
     }
 
-    foreach (const QString& key, deviceAdaptorInstanceMap_.keys())
+    sleep(1); // sleep for seconds so adaptor threads have time to die
+
+    // close open sessions
+    for(QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it)
     {
-         sensordLogW() << "ERROR: device adaptor" << key << "not released!";
-         Q_ASSERT( deviceAdaptorInstanceMap_[key].adaptor_ == 0 );
+        for(QSet<int>::const_iterator it2 = it.value().sessions_.begin(); it2 != it.value().sessions_.end(); ++it2)
+        {
+            lostClient(*it2);
+        }
+    }
+
+    // delete sensors
+    for(QMap<QString, SensorInstanceEntry>::iterator it = sensorInstanceMap_.begin(); it != sensorInstanceMap_.end(); ++it)
+    {
+        if(it.value().sensor_)
+        {
+            delete it.value().sensor_;
+            it.value().sensor_ = 0;
+        }
+    }
+
+    // delete chains
+    for(QMap<QString, ChainInstanceEntry>::iterator it = chainInstanceMap_.begin(); it != chainInstanceMap_.end(); ++it)
+    {
+        if(it.value().chain_)
+        {
+            delete it.value().chain_;
+            it.value().chain_ = 0;
+        }
+    }
+
+    // delete adaptors
+    for(QMap<QString, DeviceAdaptorInstanceEntry>::iterator it = deviceAdaptorInstanceMap_.begin(); it != deviceAdaptorInstanceMap_.end(); ++it)
+    {
+        if(it.value().adaptor_)
+        {
+            delete it.value().adaptor_;
+            it.value().adaptor_ = 0;
+        }
     }
 
     delete socketHandler_;
@@ -136,7 +198,7 @@ SensorManager::~SensorManager()
 
 void SensorManager::setError(SensorManagerError errorCode, const QString& errorString)
 {
-    sensordLogW() << "SensorManagerError:" <<  errorString;
+    sensordLogW() << "SensorManagerError: " << errorString;
 
     errorCode_   = errorCode;
     errorString_ = errorString;
@@ -176,18 +238,20 @@ bool SensorManager::registerService()
 
 AbstractSensorChannel* SensorManager::addSensor(const QString& id)
 {
+    sensordLogD() << "Adding sensor: " << id;
+
     clearError();
 
     QString cleanId = getCleanId(id);
-    QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(cleanId);
+    QMap<QString, SensorInstanceEntry>::const_iterator entryIt = sensorInstanceMap_.find(cleanId);
 
     if (entryIt == sensorInstanceMap_.end()) {
-        sensordLogC() << QString("<%1> Sensor not present...").arg(cleanId);
+        sensordLogC() << QString("%1 not present").arg(cleanId);
         setError( SmIdNotRegistered, QString(tr("instance for sensor type '%1' not registered").arg(cleanId)) );
         return NULL;
     }
 
-    QString typeName = entryIt.value().type_;
+    const QString& typeName = entryIt.value().type_;
 
     if ( !sensorFactoryMap_.contains(typeName) )
     {
@@ -198,18 +262,18 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
     AbstractSensorChannel* sensorChannel = sensorFactoryMap_[typeName](id);
     if ( !sensorChannel->isValid() )
     {
+        sensordLogC() << QString("%1 instantiation failed").arg(cleanId);
         delete sensorChannel;
         return NULL;
     }
-    Q_ASSERT( entryIt.value().sensor_ == 0 );
-    entryIt.value().sensor_ = sensorChannel;
 
     bool ok = bus().registerObject(OBJECT_PATH + "/" + sensorChannel->id(), sensorChannel);
     if ( !ok )
     {
         QDBusError error = bus().lastError();
         setError(SmCanNotRegisterObject, error.message());
-        Q_ASSERT ( false ); // TODO: release the sensor and update administration accordingly...
+        sensordLogC() << "Failed to register sensor '" << OBJECT_PATH + "/" + sensorChannel->id() << "'";
+        delete sensorChannel;
         return NULL;
     }
     return sensorChannel;
@@ -217,6 +281,8 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
 
 void SensorManager::removeSensor(const QString& id)
 {
+    sensordLogD() << "Removing sensor: " << id;
+
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
     bus().unregisterObject(OBJECT_PATH + "/" + id);
     delete entryIt.value().sensor_;
@@ -225,6 +291,8 @@ void SensorManager::removeSensor(const QString& id)
 
 bool SensorManager::loadPlugin(const QString& name)
 {
+    sensordLogD() << "Loading plugin: " << name;
+
     QString errorMessage;
     bool result;
 
@@ -237,6 +305,8 @@ bool SensorManager::loadPlugin(const QString& name)
 
 int SensorManager::requestSensor(const QString& id)
 {
+    sensordLogD() << "Requesting sensor: " << id;
+
     clearError();
 
     QString cleanId = getCleanId(id);
@@ -249,24 +319,33 @@ int SensorManager::requestSensor(const QString& id)
     }
 
     int sessionId = createNewSessionId();
-    if(entryIt.value().sessions_.empty())
+    if(!entryIt.value().sensor_)
     {
         AbstractSensorChannel* sensor = addSensor(id);
         if ( sensor == NULL )
         {
+            setError(SmNotInstantiated, tr("sensor has not been instantiated"));
             return INVALID_SESSION;
         }
+        entryIt.value().sensor_ = sensor;
     }
-    entryIt.value().sessions_.append(sessionId);
+    entryIt.value().sessions_.insert(sessionId);
 
     return sessionId;
 }
 
 bool SensorManager::releaseSensor(const QString& id, int sessionId)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing in release
+    sensordLogD() << "Releasing sensor '" << id << "' for session: " << sessionId;
 
     clearError();
+
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        sensordLogW() << "Invalid parameter passed to releaseSensor(): " << id;
+        return false;
+    }
+
     QMap<QString, SensorInstanceEntry>::iterator entryIt = sensorInstanceMap_.find(id);
 
     if ( entryIt == sensorInstanceMap_.end() )
@@ -276,11 +355,7 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
     }
 
     /// Remove any property requests by this session
-    entryIt.value().sensor_->setStandbyOverrideRequest(sessionId, false);
-    entryIt.value().sensor_->removeIntervalRequest(sessionId);
-    entryIt.value().sensor_->removeDataRangeRequest(sessionId);
-    entryIt.value().sensor_->clearBufferSize(sessionId);
-    entryIt.value().sensor_->clearBufferInterval(sessionId);
+    entryIt.value().sensor_->removeSession(sessionId);
 
     if (entryIt.value().sessions_.empty())
     {
@@ -290,12 +365,14 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
     bool returnValue = false;
 
-    if(entryIt.value().sessions_.removeAll( sessionId ))
+    if(entryIt.value().sessions_.remove( sessionId ))
     {
+        /** Fix for NB#242237
         if ( entryIt.value().sessions_.empty() )
         {
             removeSensor(id);
         }
+        */
         returnValue = true;
     }
     else
@@ -311,27 +388,39 @@ bool SensorManager::releaseSensor(const QString& id, int sessionId)
 
 AbstractChain* SensorManager::requestChain(const QString& id)
 {
+    sensordLogD() << "Requesting chain: " << id;
     clearError();
 
     AbstractChain* chain = NULL;
     QMap<QString, ChainInstanceEntry>::iterator entryIt = chainInstanceMap_.find(id);
-    if (entryIt != chainInstanceMap_.end()) {
-        if (entryIt.value().chain_ ) {
+    if (entryIt != chainInstanceMap_.end())
+    {
+        if (entryIt.value().chain_ )
+        {
             chain = entryIt.value().chain_;
             entryIt.value().cnt_++;
-        } else {
+            sensordLogD() << "Found chain '" << id << "'. Ref count: " << entryIt.value().cnt_;
+        }
+        else
+        {
             QString type = entryIt.value().type_;
-            if (chainFactoryMap_.contains(type)) {
+            if (chainFactoryMap_.contains(type))
+            {
                 chain = chainFactoryMap_[type](id);
                 Q_ASSERT(chain);
+                sensordLogD() << "Instantiated chain '" << id << "'. Valid = " << chain->isValid();
 
                 entryIt.value().cnt_++;
                 entryIt.value().chain_ = chain;
-            } else {
+            }
+            else
+            {
                 setError( SmFactoryNotRegistered, QString(tr("unknown chain type '%1'").arg(type)) );
             }
         }
-    } else {
+    }
+    else
+    {
         setError( SmIdNotRegistered, QString(tr("unknown chain id '%1'").arg(id)) );
     }
 
@@ -340,31 +429,52 @@ AbstractChain* SensorManager::requestChain(const QString& id)
 
 void SensorManager::releaseChain(const QString& id)
 {
+    sensordLogD() << "Releasing chain: " << id;
+
     clearError();
 
     QMap<QString, ChainInstanceEntry>::iterator entryIt = chainInstanceMap_.find(id);
-    if (entryIt != chainInstanceMap_.end()) {
-        if (entryIt.value().chain_) {
+    if (entryIt != chainInstanceMap_.end())
+    {
+        if (entryIt.value().chain_)
+        {
             entryIt.value().cnt_--;
 
-            if (entryIt.value().cnt_ == 0) {
+            /** Fix for NB#242237
+            if (entryIt.value().cnt_ == 0)
+            */
+            if (false)
+            {
+                sensordLogD() << "Chain '" << id << "' has no more references. Deleting it.";
                 delete entryIt.value().chain_;
-                entryIt.value().cnt_ = 0;
                 entryIt.value().chain_ = 0;
             }
-        } else {
+            else
+            {
+                sensordLogD() << "Chain '" << id << "' ref count: " << entryIt.value().cnt_;
+            }
+        }
+        else
+        {
             setError( SmNotInstantiated, QString(tr("chain '%1' not instantiated, cannot release").arg(id)) );
         }
-    } else {
+    }
+    else
+    {
         setError( SmIdNotRegistered, QString(tr("unknown chain id '%1'").arg(id)) );
     }
 }
 
 DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing support for adaptors
+    sensordLogD() << "Requesting adaptor: " << id;
 
     clearError();
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        setError( SmIdNotRegistered, QString(tr("unknown adaptor id '%1'").arg(id)) );
+        return false;
+    }
 
     DeviceAdaptor* da = NULL;
     QMap<QString, DeviceAdaptorInstanceEntry>::iterator entryIt = deviceAdaptorInstanceMap_.find(id);
@@ -375,13 +485,13 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
             Q_ASSERT( entryIt.value().adaptor_ );
             da = entryIt.value().adaptor_;
             entryIt.value().cnt_++;
+            sensordLogD() << "Found adaptor '" << id << "'. Ref count: " << entryIt.value().cnt_;
         }
         else
         {
             QString type = entryIt.value().type_;
             if ( deviceAdaptorFactoryMap_.contains(type) )
             {
-                sensordLogD() << __PRETTY_FUNCTION__ << "new instance created:" << id;
                 da = deviceAdaptorFactoryMap_[type](id);
                 Q_ASSERT( da );
                 da->init();
@@ -393,6 +503,7 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
                 {
                     entryIt.value().adaptor_ = da;
                     entryIt.value().cnt_++;
+                    sensordLogD() << "Instantiated adaptor '" << id << "'. Valid = " << da->isValid();
                 }
                 else
                 {
@@ -417,9 +528,14 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
 
 void SensorManager::releaseDeviceAdaptor(const QString& id)
 {
-    Q_ASSERT( !id.contains(';') ); // no parameter passing support for adaptors
+    sensordLogD() << "Releasing adaptor: " << id;
 
     clearError();
+    if( id.contains(';') ) // no parameter passing in release
+    {
+        setError( SmIdNotRegistered, QString(tr("unknown adaptor id '%1'").arg(id)) );
+        return;
+    }
 
     QMap<QString, DeviceAdaptorInstanceEntry>::iterator entryIt = deviceAdaptorInstanceMap_.find(id);
     if ( entryIt != deviceAdaptorInstanceMap_.end() )
@@ -431,13 +547,19 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
             entryIt.value().cnt_--;
             if ( entryIt.value().cnt_ == 0 )
             {
+                sensordLogD() << "Adaptor '" << id << "' has no more references.";
+
                 Q_ASSERT( entryIt.value().adaptor_ );
 
                 entryIt.value().adaptor_->stopAdaptor();
-
+                /** Fix for NB#242237
                 delete entryIt.value().adaptor_;
                 entryIt.value().adaptor_ = 0;
-                entryIt.value().cnt_ = 0;
+                */
+            }
+            else
+            {
+                sensordLogD() << "Adaptor '" << id << "' has ref count: " << entryIt.value().cnt_;
             }
         }
         else
@@ -453,6 +575,8 @@ void SensorManager::releaseDeviceAdaptor(const QString& id)
 
 FilterBase* SensorManager::instantiateFilter(const QString& id)
 {
+    sensordLogD() << "Instantiating filter: " << id;
+
     QMap<QString, FilterFactoryMethod>::iterator it = filterFactoryMap_.find(id);
     if(it == filterFactoryMap_.end())
     {
@@ -512,16 +636,13 @@ void SensorManager::lostClient(int sessionId)
     sensordLogW() << "[SensorManager]: Lost session " << sessionId << " detected, but not found from session list";
 }
 
-void SensorManager::displayStateChanged(const bool displayState)
+void SensorManager::displayStateChanged(bool displayState)
 {
-    sensordLogD() << "Signal detected, display state changed to:" << displayState;
-
-    displayState_ = displayState;
-
-    if (displayState_) {
+    sensordLogD() << "Signal detected, display state changed to: " << displayState;
+    if (displayState) {
         /// Emit signal to make background calibration resume from sleep
         emit displayOn();
-        if (!psmState_)
+        if (!mceWatcher_->PSMEnabled())
         {
             emit resumeCalibration();
         }
@@ -541,10 +662,9 @@ void SensorManager::displayStateChanged(const bool displayState)
     }
 }
 
-void SensorManager::devicePSMStateChanged(const bool psmState)
+void SensorManager::devicePSMStateChanged(bool psmState)
 {
-    psmState_ = psmState;
-    if (psmState_)
+    if (psmState)
     {
         emit stopCalibration();
     }
@@ -591,7 +711,7 @@ QString SensorManager::socketToPid(int id) const
     return "n/a";
 }
 
-QString SensorManager::socketToPid(QList<int> ids) const
+QString SensorManager::socketToPid(const QSet<int>& ids) const
 {
     QString str;
     bool first = true;
@@ -605,14 +725,64 @@ QString SensorManager::socketToPid(QList<int> ids) const
     return str;
 }
 
-bool SensorManager::getPSMState()
-{
-    return psmState_;
-}
-
 int SensorManager::createNewSessionId()
 {
     return ++sessionIdCount_;
+}
+
+const SensorInstanceEntry* SensorManager::getSensorInstance(const QString& id) const
+{
+    QMap<QString, SensorInstanceEntry>::const_iterator it(sensorInstanceMap_.find(id));
+    if(it == sensorInstanceMap_.end())
+    {
+        sensordLogW() << "Failed to locate sensor instance: " << id;
+        return NULL;
+    }
+    return &it.value();
+}
+
+SensorManagerError SensorManager::errorCode() const
+{
+    return errorCode_;
+}
+
+int SensorManager::errorCodeInt() const
+{
+    return static_cast<int>(errorCode_);
+}
+
+const QString& SensorManager::errorString() const
+{
+    return errorString_;
+}
+
+void SensorManager::clearError()
+{
+    errorCode_ = SmNoError;
+    errorString_.clear();
+}
+
+SocketHandler& SensorManager::socketHandler() const
+{
+    return *socketHandler_;
+}
+
+QList<QString> SensorManager::getAdaptorTypes() const
+{
+    return deviceAdaptorInstanceMap_.keys();
+}
+
+int SensorManager::getAdaptorCount(const QString& type) const
+{
+    QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.find(type);
+    if(it == deviceAdaptorInstanceMap_.end())
+        return 0;
+    return it.value().cnt_;
+}
+
+MceWatcher* SensorManager::MCEWatcher() const
+{
+    return mceWatcher_;
 }
 
 #ifdef SM_PRINT
