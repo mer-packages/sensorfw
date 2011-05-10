@@ -33,8 +33,9 @@
 #include "loader.h"
 #include "idutils.h"
 #include "logging.h"
+#ifdef SENSORFW_MCE_WATCHER
 #include "mcewatcher.h"
-
+#endif // SENSORFW_MCE_WATCHER
 #include <QSocketNotifier>
 #include <errno.h>
 #include "sockethandler.h"
@@ -642,10 +643,13 @@ void SensorManager::displayStateChanged(bool displayState)
     if (displayState) {
         /// Emit signal to make background calibration resume from sleep
         emit displayOn();
+#ifdef SENSORFW_MCE_WATCHER
         if (!mceWatcher_->PSMEnabled())
+#endif // SENSORFW_MCE_WATCHER
         {
             emit resumeCalibration();
         }
+
     }
 
     foreach (const DeviceAdaptorInstanceEntry& adaptor, deviceAdaptorInstanceMap_) {
@@ -780,10 +784,12 @@ int SensorManager::getAdaptorCount(const QString& type) const
     return it.value().cnt_;
 }
 
+#ifdef SENSORFW_MCE_WATCHER
 MceWatcher* SensorManager::MCEWatcher() const
 {
     return mceWatcher_;
 }
+#endif // SENSORFW_MCE_WATCHER
 
 #ifdef SM_PRINT
 void SensorManager::print() const
