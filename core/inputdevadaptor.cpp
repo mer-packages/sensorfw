@@ -57,8 +57,8 @@ InputDevAdaptor::~InputDevAdaptor()
 
 int InputDevAdaptor::getInputDevices(const QString& typeName)
 {
-    QString deviceSysPathString = Config::configuration()->value("device_sys_path").toString();
-    QString devicePollFilePath = Config::configuration()->value("device_poll_file_path").toString();
+    QString deviceSysPathString = Config::configuration()->value("global/device_sys_path").toString();
+    QString devicePollFilePath = Config::configuration()->value("global/device_poll_file_path").toString();
 
     int deviceNumber = 0;
     deviceString_ = typeName;
