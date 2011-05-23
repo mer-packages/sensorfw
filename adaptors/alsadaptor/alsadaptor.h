@@ -9,6 +9,7 @@
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Shenghua <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -65,48 +66,46 @@ public:
 
     /**
      * Factory method for gaining a new instance of ALSAdaptor class.
+     *
      * @param id Identifier for the adaptor.
+     * @return new instance
      */
     static DeviceAdaptor* factoryMethod(const QString& id)
     {
         return new ALSAdaptor(id);
     }
 
-    /**
-     * Start measuring loop. Opens file descriptors and set streaming mode
-     */
-    bool startAdaptor();
+    virtual bool startSensor(const QString& sensorId);
 
-    /**
-     * Stop measuring loop. Closes file descriptors and removes streaming mode
-     */
-    void stopAdaptor();
+    virtual void stopSensor(const QString& sensorId);
+
+    virtual bool standby();
+
+    virtual bool resume();
 
 protected:
+
     /**
      * Constructor.
      * @param id Identifier for the adaptor.
      */
     ALSAdaptor(const QString& id);
+
     ~ALSAdaptor();
 
-private:
-
-    /**
-     * Read and process data. Run when sysfsadaptor has detected new available
-     * data.
-     * @param pathId PathId for the file that had event. Always 0, as we monitor
-     *               only single file and don't set any proper id.
-     * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
-     */
     void processSample(int pathId, int fd);
+
+private:
+#ifdef SENSORFW_MCE_WATCHER
+    void enableALS();
+    void disableALS();
+
+    QDBusInterface *dbusIfc;
+    bool alsEnabled;
+#endif
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
     ALSAdaptor::DeviceType device;
-
-#ifdef SENSORFW_MCE_WATCHER
-    QDBusInterface *dbusIfc;
-#endif
 };
 
 #endif

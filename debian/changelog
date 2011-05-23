@@ -1,3 +1,10 @@
+sensord (0.6.44) unstable; urgency=low
+
+  * ALSAdaptor doesn't notify MCE about ALS usage state when going to standby or resuming from it. Fixes: NB#258493.
+  * Return values for startSensor(), resume() and standby() now reflect was the state changed or not.
+
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 23 May 2011 15:17:45 +0200
+
 sensord (0.6.43) unstable; urgency=low
 
   [Timo Rongas]
