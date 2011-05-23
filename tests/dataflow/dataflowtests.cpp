@@ -89,8 +89,8 @@ void DataFlowTest::testAdaptorSharing()
     QVERIFY(sysfsAdaptorA);
     QVERIFY2(sysfsAdaptorA->isRunning(), "AdaptorA is not running after start");
 
-    // start B
-    QVERIFY(adaptorB->startSensor(sensorName));
+    // start B which returns false since it is already running
+    QVERIFY(!adaptorB->startSensor(sensorName));
 
     // Check that B runs, is not running unless sensor is started
 
