@@ -55,12 +55,10 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     }
 
     // Pick correct datarange based on chip...
-    if (driverHandle_.contains("8975"))
-    {
-        introduceAvailableDataRange(DataRange(-4096, 4096, 1));
-    } else {
-        introduceAvailableDataRange(DataRange(-2048, 2048, 1));
-    }
+    bool is13bitVersion = driverHandle_.contains("8975");
+    int limit = is13bitVersion ? 4096 : 2048;
+    introduceAvailableDataRange(DataRange(-limit, limit, 1));
+    setOverflowLimit(is13bitVersion ? 8000 : 4000);  //AK8975C_MS1187_E-02_100507.pdf, chapter 6.4.2.3
 
     setDescription("Input device Magnetometer adaptor (ak897x)");
     int ranges[] = {25, 50, 100, 200, 250, 500, 1000};
@@ -130,4 +128,9 @@ bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessio
         return SysfsAdaptor::setInterval(value > 16 ? value - 16 : 0, sessionId);
     }
     return SysfsAdaptor::setInterval(value, sessionId);
+}
+
+
+void MagnetometerAdaptor::setOverflowLimit(int limit){
+    setProperty("overflow_limit", limit);
 }
