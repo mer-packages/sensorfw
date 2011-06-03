@@ -79,6 +79,11 @@ private:
     void getSensitivityAdjustment(int &x, int &y, int &z) const;
     int adjustPos(const int value, const int adj) const;
     int intervalCompensation_;
+
+    /**
+     * Sets the overflowLimit of the sensor, checked when calibrated
+     */
+    void setOverflowLimit(int limit);
 };
 
 #endif // MAGNETOMETERADAPTOR_NCDK_H

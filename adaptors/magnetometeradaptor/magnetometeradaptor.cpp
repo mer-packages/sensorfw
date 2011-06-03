@@ -47,6 +47,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
+    setOverflowLimit(Config::configuration()->value<int>("magnetometer/overflow_limit", 8000);
     setDescription("Input device Magnetometer adaptor (ak897x)");
 }
 
@@ -93,4 +94,9 @@ bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessio
         return SysfsAdaptor::setInterval(value > intervalCompensation_ ? value - intervalCompensation_ : 0, sessionId);
     }
     return SysfsAdaptor::setInterval(value, sessionId);
+}
+
+void MagnetometerAdaptor::setOverflowLimit(int limit)
+{
+    setProperty("overflow_limit", limit);
 }

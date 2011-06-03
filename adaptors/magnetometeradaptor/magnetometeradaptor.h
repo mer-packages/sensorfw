@@ -44,6 +44,8 @@ class MagnetometerAdaptor : public SysfsAdaptor
     Q_OBJECT;
 public:
 
+    Q_PROPERTY(int overflow_limit WRITE setOverflowLimit);
+
     /**
      * Factory method for gaining a new instance of MagnetometerAdaptor class.
      * @param id Identifier for the adaptor.
@@ -73,6 +75,11 @@ private:
      * @param fd     Open file descriptor with new data. See #SysfsAdaptor::processSample()
      */
     void processSample(int pathId, int fd);
+
+    /**
+     * Sets the overflowLimit of the sensor, checked when calibrated
+     */
+    void setOverflowLimit(int limit);
 
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
     int intervalCompensation_;

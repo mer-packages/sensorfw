@@ -88,9 +88,9 @@ void DataFlowTest::testAdaptorSharing()
     SysfsAdaptor* sysfsAdaptorA = dynamic_cast<SysfsAdaptor*>(adaptorA);
     QVERIFY(sysfsAdaptorA);
     QVERIFY2(sysfsAdaptorA->isRunning(), "AdaptorA is not running after start");
-    
-    // start B
-    QVERIFY(adaptorB->startSensor());
+
+    // start B which returns false since it is already running
+    QVERIFY(!adaptorB->startSensor());
 
     // Check that B runs, is not running unless sensor is started
 

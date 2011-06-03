@@ -2,7 +2,7 @@
 ##
 ## Copyright (C) 2009-2010 Nokia Corporation
 ##
-## Contact: Lihan Guo <lihan.guo@digia.com>
+## Contact: Lihan Guo <ext-lihan.4.guo@nokia.com>
 ##
 ## This file is part of Sensord.
 ##

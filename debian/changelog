@@ -1,9 +1,9 @@
 sensord (0.7.1) unstable; urgency=low
 
+  [Pia Niemela]
+  * Added new property to magnetometer adaptor for overflow check in compassplugin. Fixes: NB#259945 
+
   [Antti Virtanen]
-  * Cleaned used include paths a bit that they better match what is in sensord-dev. Fixes: NB#244277.
-  * Removed example headers form sensord-dev.
-  * Testcase refactoring.
   * Sensor graph shrinking not supported anymore to prevent race conditions between adaptor threads and qt mainloop. Fixes: NB#242237
   * Implemented downsample filter for XYZ data.
   * RotationFilter won't propagate data for compass input. Fixes: NB#242233.
@@ -74,6 +74,11 @@ sensord (0.7.1) unstable; urgency=low
   * Qt-api interface classes now directly access methods from dbus adaptor instead of using properties. Fixes: NB#181522.
   * Refactored sensor interface and adaptor classes.
   * AbstractSensorChannelInterface does not anymore inherit from QDBusAbstractInterface.
+  * Cleaned used include paths a bit that they better match what is in sensord-dev. Fixes: NB#244277.
+  * Removed example headers form sensord-dev.
+  * Testcase refactoring.
+  * ALSAdaptor doesn't notify MCE about ALS usage state when going to standby or resuming from it. Fixes: NB#258493.
+  * Return values for startSensor(), resume() and standby() now reflect was the state changed or not.
 
   [Timo Rongas]
   * Fixed library path for libdatatypes in core/core.pro

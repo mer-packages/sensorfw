@@ -7,7 +7,7 @@
 
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Lihan Guo <lihan.guo@digia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
 
    This file is part of Sensord.
 

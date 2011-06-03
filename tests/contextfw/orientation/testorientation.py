@@ -5,7 +5,7 @@
 ## Contact: Jean-Luc Lamadon <jean-luc.lamadon@nokia.com>
 ##          Matias Muhonen <ext-matias.muhonen@nokia.com>
 ##          Tapio Rantala <ext-tapio.rantala@nokia.com>
-##          Lihan Guo <lihan.guo@digia.com>
+##          Lihan Guo <ext-lihan.4.guo@nokia.com>
 ##
 ## This file is part of Sensord.
 ##
