@@ -7,7 +7,7 @@
 
    @author Üstün Ergenoglu <ext-ustun.ergenoglu@nokia.com>
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
-   @author Lihan Guo <lihan.guo@digia.com>
+   @author Lihan Guo <ext-lihan.4.guo@nokia.com>
    @author Shenghua Liu <ext-shenghua.1.liu@nokia.com>
    @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
