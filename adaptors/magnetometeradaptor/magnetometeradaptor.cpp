@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -58,7 +59,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     bool is13bitVersion = driverHandle_.contains("8975");
     int limit = is13bitVersion ? 4096 : 2048;
     introduceAvailableDataRange(DataRange(-limit, limit, 1));
-    setOverflowLimit(is13bitVersion ? 8000 : 4000);  //AK8975C_MS1187_E-02_100507.pdf, chapter 6.4.2.3
+    overflowLimit_ = (is13bitVersion ? 8000 : 4000);  //AK8975C_MS1187_E-02_100507.pdf, chapter 6.4.2.3
 
     setDescription("Input device Magnetometer adaptor (ak897x)");
     int ranges[] = {25, 50, 100, 200, 250, 500, 1000};
@@ -130,7 +131,12 @@ bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessio
     return SysfsAdaptor::setInterval(value, sessionId);
 }
 
+void MagnetometerAdaptor::setOverflowLimit(int limit)
+{
+    overflowLimit_ = limit;
+}
 
-void MagnetometerAdaptor::setOverflowLimit(int limit){
-    setProperty("overflow_limit", limit);
+int MagnetometerAdaptor::overflowLimit() const
+{
+    return overflowLimit_;
 }

@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -43,7 +44,7 @@ class MagnetometerAdaptor : public SysfsAdaptor
     Q_OBJECT;
 public:
 
-    Q_PROPERTY(int overflow_limit WRITE setOverflowLimit);
+    Q_PROPERTY(int overflowLimit READ overflowLimit WRITE setOverflowLimit);
 
     /**
      * Factory method for gaining a new instance of MagnetometerAdaptor class.
@@ -83,12 +84,22 @@ private:
     QString getDriverHandle() const;
 
     /**
-    * Sets the overflowLimit of the sensor, checked when calibrated
-    */
+     * Sets the overflow limit of the sensor, checked when calibrated
+     *
+     * @param limit overflow limit.
+     */
     void setOverflowLimit(int limit);
+
+    /**
+     * Get the overflow limit.
+     *
+     * @return overflow limit.
+     */
+    int overflowLimit() const;
 
     QString driverHandle_;
     DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
+    int overflowLimit_;
 };
 
 #endif
