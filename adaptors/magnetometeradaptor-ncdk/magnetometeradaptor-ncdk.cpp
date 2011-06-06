@@ -43,7 +43,7 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     //get sensitivity adjustment
     getSensitivityAdjustment(x_adj, y_adj, z_adj);
 
-    setOverflowLimit(Config::configuration()->value<int>("magnetometer/overflow_limit", 8000);
+    setOverflowLimit(Config::configuration()->value<int>("magnetometer/overflow_limit", 8000));
 }
 
 MagnetometerAdaptorNCDK::~MagnetometerAdaptorNCDK()
