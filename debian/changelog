@@ -1,7 +1,7 @@
 sensord (0.6.43.2) unstable; urgency=low
 
   [Pia Niemelä]
-  * added a new property to magnetometer adaptor for overflow check in compass plugin. Fixes: NB#259945 
+  * Added new property to magnetometer adaptor for overflow check in compassplugin. Fixes: NB#259945 
 
  -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 01 Aug 2011 16:15:23 +0200
 
