@@ -164,18 +164,6 @@ protected:
      */
     Consumer*   consumer(const QString& name) const;
 
-    /**
-     * Event handler when new data is written by the producer.
-     */
-    virtual void eventSignaled();
-
-    /**
-     * Call event handler.
-     */
-    void signalNewEvent();
-
-    Callback<Bin>               signalNewEvent_; /**< Event handler */
-
 private:
     QHash<QString, Pusher*>     pushers_;   /**< Pushers   */
     QHash<QString, Consumer*>   consumers_; /**< Consumers */

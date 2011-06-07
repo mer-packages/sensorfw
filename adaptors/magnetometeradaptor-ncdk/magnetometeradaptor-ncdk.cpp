@@ -43,7 +43,7 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     //get sensitivity adjustment
     getSensitivityAdjustment(x_adj, y_adj, z_adj);
 
-    setOverflowLimit(Config::configuration()->value<int>("magnetometer/overflow_limit", 8000));
+    overflowLimit_ = Config::configuration()->value<int>("magnetometer/overflow_limit", 8000);
 }
 
 MagnetometerAdaptorNCDK::~MagnetometerAdaptorNCDK()
@@ -165,5 +165,10 @@ bool MagnetometerAdaptorNCDK::setInterval(const unsigned int value, const int se
 
 void MagnetometerAdaptorNCDK::setOverflowLimit(int limit)
 {
-    setProperty("overflow_limit", limit);
+    overflowLimit_ = limit;
+}
+
+int MagnetometerAdaptorNCDK::overflowLimit() const
+{
+    return overflowLimit_;
 }

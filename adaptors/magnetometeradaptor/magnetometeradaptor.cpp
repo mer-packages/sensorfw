@@ -7,6 +7,7 @@
 
    @author Timo Rongas <ext-timo.2.rongas@nokia.com>
    @author Ustun Ergenoglu <ext-ustun.ergenoglu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -47,7 +48,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
     magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
-    setOverflowLimit(Config::configuration()->value<int>("magnetometer/overflow_limit", 8000));
+    overflowLimit_ = Config::configuration()->value<int>("magnetometer/overflow_limit", 8000);
     setDescription("Input device Magnetometer adaptor (ak897x)");
 }
 
@@ -98,5 +99,10 @@ bool MagnetometerAdaptor::setInterval(const unsigned int value, const int sessio
 
 void MagnetometerAdaptor::setOverflowLimit(int limit)
 {
-    setProperty("overflow_limit", limit);
+    overflowLimit_ = limit;
+}
+
+int MagnetometerAdaptor::overflowLimit() const
+{
+    return overflowLimit_;
 }

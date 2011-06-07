@@ -79,6 +79,7 @@ sensord (0.7.1) unstable; urgency=low
   * Testcase refactoring.
   * ALSAdaptor doesn't notify MCE about ALS usage state when going to standby or resuming from it. Fixes: NB#258493.
   * Return values for startSensor(), resume() and standby() now reflect was the state changed or not.
+  * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
 
   [Timo Rongas]
   * Fixed library path for libdatatypes in core/core.pro

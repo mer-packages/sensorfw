@@ -33,7 +33,10 @@
 
 class MagnetometerAdaptorNCDK : public SysfsAdaptor
 {
+    Q_OBJECT;
 public:
+
+    Q_PROPERTY(int overflowLimit READ overflowLimit WRITE setOverflowLimit);
 
     /**
      * Factory method for gaining a new instance of MagnetometerAdaptor class.
@@ -79,11 +82,21 @@ private:
     void getSensitivityAdjustment(int &x, int &y, int &z) const;
     int adjustPos(const int value, const int adj) const;
     int intervalCompensation_;
+    int overflowLimit_;
 
     /**
-     * Sets the overflowLimit of the sensor, checked when calibrated
+     * Sets the overflow limit of the sensor, checked when calibrated
+     *
+     * @param limit overflow limit.
      */
     void setOverflowLimit(int limit);
+
+    /**
+     * Get the overflow limit.
+     *
+     * @return overflow limit.
+     */
+    int overflowLimit() const;
 };
 
 #endif // MAGNETOMETERADAPTOR_NCDK_H

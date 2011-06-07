@@ -59,7 +59,13 @@ public:
     virtual void pushNewData() = 0;
 
 protected:
-    const CallbackBase* ready_; /**< callback */
+    /**
+     * Call event handler.
+     */
+    void signalNewEvent();
+
+    const CallbackBase*    ready_; /**< callback */
+    const Callback<Pusher> signalNewEvent_; /**< Event handler */
 };
 
 #endif
