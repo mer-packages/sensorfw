@@ -28,8 +28,10 @@
 #include "pusher.h"
 
 Pusher::Pusher() :
-    ready_(0)
+    ready_(0),
+    signalNewEvent_(this, &Pusher::signalNewEvent)
 {
+    setReadyCallback(&signalNewEvent_);
 }
 
 void Pusher::setReadyCallback(const CallbackBase* ready)
@@ -42,4 +44,9 @@ void Pusher::wakeup() const
     if (ready_) {
         (*ready_)();
     }
+}
+
+void Pusher::signalNewEvent()
+{
+    pushNewData();
 }

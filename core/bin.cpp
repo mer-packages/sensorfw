@@ -32,30 +32,15 @@
 #include "filter.h"
 #include "source.h"
 #include "sink.h"
-#include "callback.h"
 #include "ringbuffer.h"
 #include "logging.h"
 
-Bin::Bin() :
-    signalNewEvent_(this, &Bin::signalNewEvent)
+Bin::Bin()
 {
 }
 
 Bin::~Bin()
 {
-}
-
-void Bin::signalNewEvent()
-{
-    eventSignaled();
-}
-
-void Bin::eventSignaled()
-{
-    // filter new data
-    foreach (Pusher* pusher, pushers_) {
-        pusher->pushNewData();
-    }
 }
 
 void Bin::start()
@@ -71,7 +56,6 @@ void Bin::add(Pusher* pusher, const QString& name)
     Q_ASSERT(!pushers_.contains(name));
     Q_ASSERT(!filters_.contains(name));
 
-    pusher->setReadyCallback(&signalNewEvent_);
     pushers_.insert(name, pusher);
 }
 

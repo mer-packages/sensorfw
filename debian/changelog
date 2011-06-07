@@ -3,6 +3,8 @@ sensord (0.6.44) unstable; urgency=low
   [Antti Virtanen]
   * ALSAdaptor doesn't notify MCE about ALS usage state when going to standby or resuming from it. Fixes: NB#258493.
   * Return values for startSensor(), resume() and standby() now reflect was the state changed or not.
+  * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
+
   [Pia Niemela]
   * Added new property to magnetometer adaptor for overflow check in compassplugin. Fixes: NB#259945 
 
