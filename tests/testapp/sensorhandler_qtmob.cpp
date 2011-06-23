@@ -94,7 +94,7 @@ void SensorHandler::receivedAccelerometerData()
     QAccelerometerReading* data = (QAccelerometerReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-                  << "x " << data->x() << "y " <<  data->y() << "z " <<  data->z();
+                  << "x " << data->x() << " y " <<  data->y() << " z " <<  data->z();
 }
 
 void SensorHandler::receivedCompassData()
@@ -102,7 +102,7 @@ void SensorHandler::receivedCompassData()
     QCompassReading* data = (QCompassReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-             << " azimuth: " << data->azimuth() << "calibrationLevel: " <<  data-> calibrationLevel();
+             << " azimuth " << data->azimuth() << " calibrationLevel " <<  data->calibrationLevel();
 
 }
 
@@ -111,7 +111,7 @@ void SensorHandler::receivedAlsData()
     QAmbientLightReading* data = (QAmbientLightReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-                  << "lightLevel  " << data->lightLevel();
+                  << "lightLevel " << data->lightLevel();
 }
 
 void SensorHandler::receivedMagnetometerData()
@@ -119,8 +119,8 @@ void SensorHandler::receivedMagnetometerData()
     QMagnetometerReading* data = (QMagnetometerReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-                  << "x " << data->x() << "y " <<  data->y() << "z " <<  data->z()
-                  << " calibrationLevel" << data->calibrationLevel();
+                  << "x " << data->x() << " y " <<  data->y() << " z " <<  data->z()
+                  << " calibrationLevel " << data->calibrationLevel();
 }
 
 void SensorHandler::receivedOrientationData()
@@ -136,7 +136,7 @@ void SensorHandler::receivedRotationData()
     QRotationReading* data = (QRotationReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-                  << "x " << data->x() << "y " <<  data->y() << "z " <<  data->z();
+                  << "x " << data->x() << " y " <<  data->y() << " z " << data->z();
 }
 
 void SensorHandler::receivedTapData()
@@ -144,7 +144,7 @@ void SensorHandler::receivedTapData()
     QTapReading* data = (QTapReading*) m_sensor->reading();
     ++dataCount_;
     sensordLogT() << sensorName_ << " sample " << dataCount_ << ": "
-                  << "DoubleTap " <<  data->isDoubleTap();
+                  << "doubleTap " << data->isDoubleTap() << " direction " << data->tapDirection();
 }
 
 void SensorHandler::receivedProximityData()
