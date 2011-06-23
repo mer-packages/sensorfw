@@ -1,3 +1,9 @@
+sensord (0.6.43.1) unstable; urgency=low
+
+  * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
+
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 23 Jun 2011 13:46:35 +0200
+
 sensord (0.6.43) unstable; urgency=low
 
   [Timo Rongas]
