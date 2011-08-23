@@ -108,7 +108,7 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
 
     for (++it; it != m_intervalMap.constEnd(); ++it)
     {
-        if ((it.value() < highestValue) && (it.value() > 0)) {
+        if (((it.value() < highestValue) && (it.value() > 0)) || highestValue == 0) {
             highestValue = it.value();
             winningSessionId = it.key();
         }

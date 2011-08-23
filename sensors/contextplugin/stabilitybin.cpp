@@ -106,13 +106,13 @@ void StabilityBin::stopRun()
     stop();
     if (accelerometerAdaptor)
     {
-        accelerometerAdaptor->setStandbyOverrideRequest(sessionId, false);
         accelerometerAdaptor->stopSensor();
         RingBufferBase* rb = accelerometerAdaptor->findBuffer("accelerometer");
         if (rb)
         {
             rb->unjoin(&accelerometerReader);
         }
+        accelerometerAdaptor->removeSession(sessionId);
         SensorManager::instance().releaseDeviceAdaptor("accelerometeradaptor");
         accelerometerAdaptor = NULL;
     }

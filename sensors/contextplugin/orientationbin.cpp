@@ -110,8 +110,6 @@ void OrientationBin::stopRun()
     stop();
     if (orientationChain)
     {
-        orientationChain->requestDefaultInterval(sessionId);
-
         orientationChain->stop();
 
         RingBufferBase* rb = orientationChain->findBuffer("topedge");
@@ -126,6 +124,7 @@ void OrientationBin::stopRun()
             rb->unjoin(&faceReader);
         }
 
+        orientationChain->removeSession(sessionId);
         SensorManager::instance().releaseChain("orientationchain");
         orientationChain = NULL;
     }
