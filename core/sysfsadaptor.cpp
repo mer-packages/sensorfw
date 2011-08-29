@@ -110,14 +110,14 @@ bool SysfsAdaptor::startSensor(const QString& sensorId)
 
     /// Check from entry
     if (isRunning()) {
-        return true;
+        return false;
     }
 
     shouldBeRunning_ = true;
 
     // Do not open if in standby mode.
     if (inStandbyMode_ && !deviceStandbyOverride()) {
-        return true;
+        return false;
     }
 
     /// We are waking up from standby or starting fresh, no matter
@@ -167,15 +167,19 @@ void SysfsAdaptor::stopSensor(const QString& sensorId)
 bool SysfsAdaptor::standby()
 {
     sensordLogD() << "Adaptor '" << id() << "' requested to go to standby";
-    if (deviceStandbyOverride() || inStandbyMode_) {
-        sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby or not overriden";
-        return true;
+    if (inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby";
+        return false;
+    }
+    if (deviceStandbyOverride()) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: overriden";
+        return false;
     }
     inStandbyMode_ = true;
 
     if (!isRunning()) {
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
-        return true;
+        return false;
     }
 
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
@@ -194,14 +198,14 @@ bool SysfsAdaptor::resume()
     // Don't resume if not in standby
     if (!inStandbyMode_) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
-        return true;
+        return false;
     }
 
     inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
-        return true;
+        return false;
     }
 
     sensordLogD() << "Adaptor '" << id() << "' resuming from standby";

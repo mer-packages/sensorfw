@@ -11,6 +11,7 @@
    @author Tapio Rantala <ext-tapio.rantala@nokia.com>
    @author Lihan Guo <lihan.guo@digia.com>
    @author Shenghua <ext-shenghua.1.liu@nokia.com>
+   @author Antti Virtanen <antti.i.virtanen@nokia.com>
 
    This file is part of Sensord.
 
@@ -61,6 +62,9 @@ struct bh1770glc_als {
 
 ALSAdaptor::ALSAdaptor(const QString& id):
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false),
+#ifdef SENSORFW_MCE_WATCHER
+    alsEnabled(false),
+#endif
     device(DeviceUnknown)
 {
 #ifdef SENSORFW_MCE_WATCHER
@@ -97,36 +101,76 @@ ALSAdaptor::ALSAdaptor(const QString& id):
 
 ALSAdaptor::~ALSAdaptor()
 {
-    if (device == RM696 || device == RM680)
-    {
 #ifdef SENSORFW_MCE_WATCHER
-        delete dbusIfc;
+    delete dbusIfc;
 #endif
-    }
     delete alsBuffer_;
 }
 
-bool ALSAdaptor::startAdaptor()
-{
-    if (device == RM696 || device == RM680)
-    {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_als_enable");
-#endif
+void ALSAdaptor::enableALS()
+{
+    if(!alsEnabled)
+    {
+        sensordLogT() << "Requesting MCE to enable ALS";
+        dbusIfc->call(QDBus::NoBlock, "req_als_enable");
+        alsEnabled = true;
     }
-
-    return SysfsAdaptor::startAdaptor();
 }
 
-void ALSAdaptor::stopAdaptor()
+void ALSAdaptor::disableALS()
 {
-    if (device == RM696 || device == RM680)
+    if(alsEnabled)
+    {
+        sensordLogT() << "Requesting MCE to disable ALS";
+        dbusIfc->call(QDBus::NoBlock, "req_als_disable");
+        alsEnabled = false;
+    }
+}
+#endif
+
+bool ALSAdaptor::startSensor(const QString& sensorId)
+{
+    if (SysfsAdaptor::startSensor(sensorId))
     {
 #ifdef SENSORFW_MCE_WATCHER
-        dbusIfc -> call(QDBus::NoBlock, "req_als_disable");
+        enableALS();
 #endif
+        return true;
     }
-    SysfsAdaptor::stopAdaptor();
+    return false;
+}
+
+void ALSAdaptor::stopSensor(const QString& sensorId)
+{
+#ifdef SENSORFW_MCE_WATCHER
+    disableALS();
+#endif
+    SysfsAdaptor::stopSensor(sensorId);
+}
+
+bool ALSAdaptor::standby()
+{
+    if(SysfsAdaptor::standby())
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        disableALS();
+#endif
+        return true;
+    }
+    return false;
+}
+
+bool ALSAdaptor::resume()
+{
+    if(SysfsAdaptor::resume())
+    {
+#ifdef SENSORFW_MCE_WATCHER
+        enableALS();
+#endif
+        return true;
+    }
+    return false;
 }
 
 void ALSAdaptor::processSample(int pathId, int fd)
