@@ -26,7 +26,7 @@ Package: libsensord-dev
 Section: libdevel
 Priority: extra
 Architecture: any
-Depends: libqt4-dev (>= 4.5), sensord (= ${binary:Version})
+Depends: libqt4-dev (>= 4.5), sensord (= ${binary:Version}), libcontextprovider-dev (>= 0.3)
 Description: Sensor framework daemon libraries development headers
  Development headers for sensor framework daemon and libraries.
 
