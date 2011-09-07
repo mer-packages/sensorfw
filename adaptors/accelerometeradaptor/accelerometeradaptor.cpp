@@ -100,7 +100,7 @@ void AccelerometerAdaptor::commitOutput(struct input_event *ev)
     d->y_ = orientationValue_.y_;
     d->z_ = orientationValue_.z_;
 
-    sensordLogT() << "Accelerometer reading: " << d->x_ << ", " << d->y_ << ", " << d->z_;
+    sensordLogT() << "Accelerometer reading: " << d->x_ << ", " << d->y_ << ", " << d->z_ << ". Time: " << d->timestamp_;
 
     accelerometerBuffer_->commit();
     accelerometerBuffer_->wakeUpReaders();

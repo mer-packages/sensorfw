@@ -128,6 +128,8 @@ class Orientation(unittest.TestCase):
         index = 0
         for v in self.dataSet[:]:
             time.sleep(0.9)
+            print("Dataset: " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]))
+            print("Expecting: " + str(self.expectSet[index]))
             if self.expectSet[index] != '':
                 os.system("echo " + str(v[0]) + " " + str(v[1]) + " " + str(v[2]) + " | " + self.datafaker + " " + self.fpath)
                 self.assert_(self.context_client_edge.expect(self.expectSet[index]))
@@ -150,5 +152,5 @@ class Orientation(unittest.TestCase):
 if __name__ == "__main__":
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 1)
     signal.signal(signal.SIGALRM, timeoutHandler)
-    signal.alarm(30)
+    signal.alarm(40)
     unittest.main()

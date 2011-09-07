@@ -6,6 +6,8 @@ sensord (0.6.44) unstable; urgency=low
   * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
   * Added missing libcontextprovider-dev dependency for libsensord-dev package. Fixes: NB#276453.
   * Fixed compile warning from unit test.
+  * Orientation buffering is disabled for contextfw tests.
+  * Datafaker now correctly fills timestamp to accelerometer events.
 
   [Pia Niemela]
   * Added new property to magnetometer adaptor for overflow check in compassplugin. Fixes: NB#259945 

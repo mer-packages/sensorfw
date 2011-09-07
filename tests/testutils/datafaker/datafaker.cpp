@@ -26,6 +26,7 @@
 #include "datafaker.h"
 #include <fcntl.h>
 #include <linux/input.h>
+#include <sys/time.h>
 #include <QDebug>
 
 DataFaker::DataFaker(QObject* parent) : QObject(parent) {}
@@ -85,6 +86,7 @@ bool DataFaker::write(QString name, int type, int code, int value)
     ev.type = type;
     ev.code = code;
     ev.value = value;
+    gettimeofday(&ev.time, 0);
 
     return write(name, (const void *)&ev, sizeof(ev));
 }
