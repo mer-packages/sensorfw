@@ -3,16 +3,25 @@ sensord (0.6.44) unstable; urgency=low
   [Antti Virtanen]
   * ALSAdaptor doesn't notify MCE about ALS usage state when going to standby or resuming from it. Fixes: NB#258493.
   * Return values for startSensor(), resume() and standby() now reflect was the state changed or not.
-  * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
   * Added missing libcontextprovider-dev dependency for libsensord-dev package. Fixes: NB#276453.
   * Fixed compile warning from unit test.
   * Orientation buffering is disabled for contextfw tests.
   * Datafaker now correctly fills timestamp to accelerometer events.
 
-  [Pia Niemela]
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Fri, 09 Sep 2011 12:56:12 +0200
+
+sensord (0.6.43.2) unstable; urgency=low
+
+  [Pia Niemelä]
   * Added new property to magnetometer adaptor for overflow check in compassplugin. Fixes: NB#259945 
 
- -- Antti Virtanen <antti.i.virtanen@nokia.com>  Mon, 23 May 2011 15:17:45 +0200
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 01 Aug 2011 16:15:23 +0200
+
+sensord (0.6.43.1) unstable; urgency=low
+
+  * Pusher default callback now points to itself so delegation is not routed through Bin. Fixes: NB#262887.
+
+ -- Antti Virtanen <antti.i.virtanen@nokia.com>  Thu, 23 Jun 2011 13:46:35 +0200
 
 sensord (0.6.43) unstable; urgency=low
 
