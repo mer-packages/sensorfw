@@ -1,4 +1,4 @@
-sensord (0.6.44.1) unstable; urgency=low
+sensord (0.6.45) unstable; urgency=low
 
   [Pia Niemela]
   * Orientation flat configuration enabled. Fixes NB#282294
