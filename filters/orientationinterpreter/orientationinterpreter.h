@@ -75,6 +75,7 @@ private:
     int maxLimit;
     int angleThresholdPortrait;
     int angleThresholdLandscape;
+    int faceThreshold;
     unsigned long discardTime;
     int maxBufferSize;
 
@@ -101,6 +102,7 @@ private:
 
     static const int THRESHOLD_LANDSCAPE;
     static const int THRESHOLD_PORTRAIT;
+    static const int THRESHOLD_FACE;
 
     static const int DISCARD_TIME;
     static const int AVG_BUFFER_MAX_SIZE;

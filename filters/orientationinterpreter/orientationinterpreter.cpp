@@ -40,6 +40,7 @@ const int OrientationInterpreter::OVERFLOW_MIN = 0;
 const int OrientationInterpreter::OVERFLOW_MAX = INT_MAX;
 const int OrientationInterpreter::THRESHOLD_LANDSCAPE = 25;
 const int OrientationInterpreter::THRESHOLD_PORTRAIT = 20;
+const int OrientationInterpreter::THRESHOLD_FACE = 300;
 const int OrientationInterpreter::DISCARD_TIME = 750000;
 const int OrientationInterpreter::AVG_BUFFER_MAX_SIZE = 10;
 const char* OrientationInterpreter::CPU_BOOST_PATH = "/sys/power/pm_optimizer_rotation";
@@ -64,6 +65,7 @@ OrientationInterpreter::OrientationInterpreter() :
 
     angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait", QVariant(THRESHOLD_PORTRAIT)).toInt();
     angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape", QVariant(THRESHOLD_LANDSCAPE)).toInt();
+    faceThreshold = Config::configuration()->value("orientation_threshold_face", QVariant(THRESHOLD_FACE)).toInt();
 
     discardTime = Config::configuration()->value("orientation_discard_time", QVariant(DISCARD_TIME)).toUInt();
 
@@ -221,7 +223,7 @@ void OrientationInterpreter::processTopEdge()
 
 void OrientationInterpreter::processFace()
 {
-    if (abs(data.z_) >= 300)
+    if (abs(data.z_) >= faceThreshold)
     {
         PoseData newFace;
         newFace.orientation_ = ((data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp);
