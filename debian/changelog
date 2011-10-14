@@ -3,6 +3,8 @@ sensord (0.7.3) unstable; urgency=low
   [Timo Rongas]
   * Fixed accelerometer interval evaluation (BMC#20777)
 
+ -- Timo Rongas <ext-timo.rongas@nokia.com>  Tue, 23 Aug 2011 11:12:48 +0200
+	
 sensord (0.7.2) unstable; urgency=low
 
   [Pia Niemela]
