@@ -60,12 +60,14 @@ private:
     void processTopEdge();
     void processFace();
     void processOrientation();
+    void solveTopEdge();
 
     OrientationInterpreter();
 
     PoseData topEdge;
+    PoseData newTopEdge;
     PoseData face;
-    PoseData previousFace;
+    PoseData newFace;
     bool updatePreviousFace;
 
     AccelerationData data;

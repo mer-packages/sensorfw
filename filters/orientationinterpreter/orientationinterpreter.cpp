@@ -49,8 +49,9 @@ typedef PoseData (OrientationInterpreter::*ptrFUN)(int);
 OrientationInterpreter::OrientationInterpreter() :
         accDataSink(this, &OrientationInterpreter::accDataAvailable),
         topEdge(PoseData::Undefined),
+        newTopEdge(PoseData::Undefined),
         face(PoseData::Undefined),
-        previousFace(PoseData::Undefined),
+        newFace(PoseData::Undefined),
         orientationData(PoseData::Undefined),
         cpuBoostFile(CPU_BOOST_PATH)
 
@@ -65,7 +66,7 @@ OrientationInterpreter::OrientationInterpreter() :
 
     angleThresholdPortrait = Config::configuration()->value("orientation_threshold_portrait", QVariant(THRESHOLD_PORTRAIT)).toInt();
     angleThresholdLandscape = Config::configuration()->value("orientation_threshold_landscape", QVariant(THRESHOLD_LANDSCAPE)).toInt();
-    faceThreshold = Config::configuration()->value("orientation_threshold_face", QVariant(THRESHOLD_FACE)).toInt();
+    faceThreshold = Config::configuration()->value("face_threshold", QVariant(THRESHOLD_FACE)).toInt();
 
     discardTime = Config::configuration()->value("orientation_discard_time", QVariant(DISCARD_TIME)).toUInt();
 
@@ -113,7 +114,7 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
     data.y_ = y / dataBuffer.count();
     data.z_ = z / dataBuffer.count();
 
-    // calculate topedge
+    // calculate topedge and orientation
     processTopEdge();
 
     // calculate face
@@ -121,6 +122,8 @@ void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* 
 
     // calculate orientation
     processOrientation();
+
+
 }
 
 bool OrientationInterpreter::overFlowCheck()
@@ -182,7 +185,47 @@ PoseData OrientationInterpreter::orientationRotation (const AccelerationData &da
 
 void OrientationInterpreter::processTopEdge()
 {
-    PoseData newTopEdge = PoseData::Undefined;
+    solveTopEdge();
+    if (topEdge.orientation_ == newTopEdge.orientation_) return;
+
+    // Propagate if changed
+    // Request CPU clock raise to get smooth desktop rotation
+    if (cpuBoostFile.isOpen())
+    {
+        cpuBoostFile.write("1", 1);
+        cpuBoostFile.flush();
+    }
+    topEdge.orientation_ = newTopEdge.orientation_;
+    topEdge.orientation_= topEdge.orientation_ != (PoseData::Undefined && abs(data.z_)< (2*faceThreshold+50)) ?
+                          topEdge.orientation_: (data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp;
+    topEdge.timestamp_ = data.timestamp_;
+    topEdgeSource.propagate(1, &topEdge);
+}
+
+void OrientationInterpreter::processFace()
+{
+    if (abs(data.z_)< faceThreshold) return;
+    newFace.orientation_ = ((data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp);
+    if (newFace.orientation_ == face.orientation_) return;
+
+    face.orientation_ = newFace.orientation_;
+    face.timestamp_ = data.timestamp_;
+    faceSource.propagate(1, &face);
+}
+
+void OrientationInterpreter::processOrientation()
+{
+    PoseData newOrientation;
+    newOrientation.orientation_ = newTopEdge.orientation_ == PoseData::Undefined ? face.orientation_ : newTopEdge.orientation_ ;
+    if (newOrientation.orientation_ == orientationData.orientation_) return;
+
+    sensordLogT() << "New orientation value: " << orientationData.orientation_;
+    orientationData.orientation_ = newOrientation.orientation_;
+    orientationData.timestamp_ = data.timestamp_;
+    orientationSource.propagate(1, &orientationData);
+}
+
+void OrientationInterpreter::solveTopEdge(){
     ptrFUN rotator;
     OrientationMode mode;
 
@@ -202,66 +245,5 @@ void OrientationInterpreter::processTopEdge()
         mode = (mode == OrientationInterpreter::Portrait) ? (OrientationInterpreter::Landscape) : (OrientationInterpreter::Portrait);
         rotator = (rotator == (&OrientationInterpreter::rotateToPortrait)) ? (&OrientationInterpreter::rotateToLandscape) : (&OrientationInterpreter::rotateToPortrait);
         newTopEdge = orientationRotation(data, mode, rotator);
-    }
-
-    // Propagate if changed
-    if (topEdge.orientation_ != newTopEdge.orientation_)
-    {
-        // Request CPU clock raise to get smooth desktop rotation
-        if (cpuBoostFile.isOpen())
-        {
-            cpuBoostFile.write("1", 1);
-            cpuBoostFile.flush();
-        }
-
-        topEdge.orientation_ = newTopEdge.orientation_;
-        sensordLogT() << "new TopEdge value: " << topEdge.orientation_;
-        topEdge.timestamp_ = data.timestamp_;
-        topEdgeSource.propagate(1, &topEdge);
-    }
-}
-
-void OrientationInterpreter::processFace()
-{
-    if (abs(data.z_) >= faceThreshold)
-    {
-        PoseData newFace;
-        newFace.orientation_ = ((data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp);
-
-        if (newFace.orientation_ == PoseData::FaceDown)
-        {
-            if (topEdge.orientation_ != PoseData::Undefined) {
-                face.orientation_ = PoseData::FaceUp;
-            } else {
-                face.orientation_ = PoseData::FaceDown;
-            }
-        } else {
-            face.orientation_ = PoseData::FaceUp;
-        }
-
-        if (face.orientation_ != previousFace.orientation_)
-        {
-            previousFace.orientation_ = face.orientation_;
-            face.timestamp_ = data.timestamp_;
-            faceSource.propagate(1, &face);
-        }
-    }
-}
-
-void OrientationInterpreter::processOrientation()
-{
-    PoseData newPose;
-
-    if (topEdge.orientation_ != PoseData::Undefined) {
-        newPose.orientation_ = topEdge.orientation_;
-    } else {
-        newPose.orientation_ = face.orientation_;
-    }
-
-    if (newPose.orientation_ != orientationData.orientation_) {
-        orientationData.orientation_ = newPose.orientation_;
-        sensordLogT() << "New orientation value: " << orientationData.orientation_;
-        orientationData.timestamp_ = data.timestamp_;
-        orientationSource.propagate(1, &orientationData);
     }
 }
