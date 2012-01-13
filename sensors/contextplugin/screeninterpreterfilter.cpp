@@ -71,9 +71,11 @@ void ScreenInterpreterFilter::provideScreenData(PoseData::Orientation orientatio
     switch (orientation) {
         case PoseData::FaceUp:
             isCovered = false;
+            isFlat = true;
             break;
         case PoseData::FaceDown:
             isCovered = true;
+            isFlat = true;
             break;
         case PoseData::LeftUp:
             topEdge = "left";
