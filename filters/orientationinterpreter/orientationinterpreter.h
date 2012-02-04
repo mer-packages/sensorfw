@@ -67,8 +67,6 @@ private:
     PoseData topEdge;
     PoseData newTopEdge;
     PoseData face;
-    PoseData newFace;
-    bool updatePreviousFace;
 
     AccelerationData data;
     QList<AccelerationData> dataBuffer;
