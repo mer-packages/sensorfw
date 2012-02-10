@@ -1,4 +1,11 @@
-sensord (0.6.45) unstable; urgency=low
+sensord (0.6.46) unstable; urgency=low
+
+  [Pia Niemela]
+  * flat fix. Fixes: NB#282294
+
+ -- Pia Niemela <pia.s.niemela@nokia.com>  Fri, 10 Feb 2012 15:05:12 +0200
+
+sensord (0.6.45) stable; urgency=low
 
   [Pia Niemela]
   * Orientation flat configuration enabled. Fixes NB#282294
