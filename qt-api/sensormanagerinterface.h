@@ -28,6 +28,8 @@
 #ifndef SENSORMANAGERINTERFACE_H
 #define SENSORMANAGERINTERFACE_H
 
+#include <QMutexLocker>
+
 #include "sensormanager_i.h"
 #include "abstractsensor_i.h"
 
@@ -60,11 +62,13 @@ protected:
     QMap<QString, SensorInterfaceEntry> sensorInterfaceMap_;
 
     static SensorManagerInterface* ifc_;
+    static QMutex mutex_;
 };
 
 template<class SensorInterfaceType>
 void SensorManagerInterface::registerSensorInterface(const QString& sensorName)
 {
+	QMutexLocker locker(&mutex_);
     sensorInterfaceMap_[sensorName].sensorInterfaceFactory = SensorInterfaceType::factoryMethod;
     sensorInterfaceMap_[sensorName].type = SensorInterfaceType::staticMetaObject.className();
 }

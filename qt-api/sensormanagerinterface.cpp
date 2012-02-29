@@ -30,6 +30,7 @@
 #include "sensormanagerinterface.h"
 
 SensorManagerInterface* SensorManagerInterface::ifc_ = 0;
+QMutex SensorManagerInterface::mutex_;
 
 SensorManagerInterface::SensorManagerInterface()
   : LocalSensorManagerInterface( SERVICE_NAME, OBJECT_PATH, QDBusConnection::systemBus() )
