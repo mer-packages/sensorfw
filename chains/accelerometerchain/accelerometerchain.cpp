@@ -39,9 +39,9 @@
 AccelerometerChain::AccelerometerChain(const QString& id) :
     AbstractChain(id)
 {
-    setMatrixFromString("1.0,0.0,0.0,\
-                         0.0,1.0,0.0,\
-                         0.0,0.0,1.0");
+    setMatrixFromString("1,0,0,\
+                         0,1,0,\
+                         0,0,1");
     SensorManager& sm = SensorManager::instance();
 
     accelerometerAdaptor_ = sm.requestDeviceAdaptor("accelerometeradaptor");
