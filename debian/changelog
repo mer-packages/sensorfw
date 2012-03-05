@@ -1,3 +1,10 @@
+sensord (0.6.46.1) unstable; urgency=low
+
+  [Pia Niemela]
+  * flat fix for the orientation test: NB#282294
+
+ -- Pia Niemela <pia.s.niemela@nokia.com>  Mon, 05 Mar 2012 15:05:12 +0200
+
 sensord (0.6.46) unstable; urgency=low
 
   [Pia Niemela]
