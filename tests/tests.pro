@@ -16,6 +16,6 @@ SUBDIRS = filters\
           external
 
 testdefinition.files = tests.xml
-testdefinition.path = /usr/share/sensord-tests
+testdefinition.path = /usr/share/sensorfw-tests
 
 INSTALLS += testdefinition

@@ -23,8 +23,8 @@
 
 ### configuration
 
-TESTCONFIGSOURCE_RM680=/usr/share/sensord-tests/00-automatic-testing-rm680.conf
-TESTCONFIGSOURCE_RM696=/usr/share/sensord-tests/00-automatic-testing-rm696.conf
+TESTCONFIGSOURCE_RM680=/usr/share/sensorfw-tests/00-automatic-testing-rm680.conf
+TESTCONFIGSOURCE_RM696=/usr/share/sensorfw-tests/00-automatic-testing-rm696.conf
 TESTCONFIGTARGET=/etc/sensorfw/sensord.conf.d/00-automatic-testing.conf
 DIVERTPATH=/tmp/fakedsensors
 FIFODIVERTS="accelerometer als"
