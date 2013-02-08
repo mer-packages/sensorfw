@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <testdefinition version="0.1">
-  <!-- Test suite, sensord-tests for automated testing of sensord -->
-  <suite name="Sensord-tests" domain="System Software">
+  <!-- Test suite, sensorfw-tests for automated testing of sensord -->
+  <suite name="Sensorfw-tests" domain="System Software">
     <!-- At least one set per suite, name and description mandatory -->
     <set name="Sensord-automated-tests" description="Unit test cases for sensord" feature="Sensor Framework" requirement="88917">
       <case name="Sensord_Filters" level="Component" type="Functional" description="Unit test cases for sensor filters" timeout="15" subfeature="Sensor Framework">
@@ -26,7 +26,7 @@
         <step expected_result="0">/usr/bin/sensormetadata-test</step>
       </case>
       <case name="Dead_Client" type="Functional" level="Component" description="Unit test for properly detecting dead clients." timeout="60" subfeature="Sensor Framework">
-        <step expected_result="0">/usr/share/sensord-tests/sensord-deadclienttest.py</step>
+        <step expected_result="0">/usr/share/sensorfw-tests/sensord-deadclienttest.py</step>
       </case>
 
       <!-- Environments optional - tells where the tests are run -->

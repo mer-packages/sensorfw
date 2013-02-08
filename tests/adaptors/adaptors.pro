@@ -45,4 +45,4 @@ INCLUDEPATH += ../.. \
     ../../adaptors/proximityadaptor \
     ../../adaptors/gyroscopeadaptor
 
-QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw 
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw -lrt

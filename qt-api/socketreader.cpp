@@ -50,7 +50,7 @@ bool SocketReader::initiateConnection(int sessionId)
     }
 
     socket_ = new QLocalSocket(this);
-    socket_->connectToServer("/tmp/sensord.sock", QIODevice::ReadWrite);
+    socket_->connectToServer("/var/run/sensord.sock", QIODevice::ReadWrite);
 
     if (!(socket_->serverName().size())) {
         qDebug() << socket_->errorString();

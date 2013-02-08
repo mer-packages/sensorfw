@@ -58,7 +58,7 @@ equals(TARGET_LIB,qtmob) {
     LIBS += -lQtSensors
 }
 
-testconf.path = /usr/share/sensord-tests/
+testconf.path = /usr/share/sensorfw-tests/
 testconf.files = testapp.conf
 
 INSTALLS += testconf

@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <testdefinition version="0.1">
-  <suite name="sensord-contextfw-tests" domain="System Software" >
+  <suite name="sensorfw-contextfw-tests" domain="System Software" >
     <set name="sensord-contextfw" description="Tests for sensord acting as context provider" requirement="" feature="Sensor Framework">
       <pre_steps>
         <step expected_result="0">/usr/bin/sensordiverter.sh start</step>
       </pre_steps>
       <case name="sensordcontextfw001" type="Functional" level="Component" description="Screen.TopEdge and Screen.IsCovered" timeout="80" subfeature="Context Provider Orientation">
-        <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensord-contextfw-tests ; python /usr/share/sensord-contextfw-tests/testorientation.py</step>
+        <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensorfw-contextfw-tests ; python /usr/share/sensorfw-contextfw-tests/testorientation.py</step>
       </case>
       <case name="sensordcontextfw002" type="Functional" level="Component" description="Environment.IsBright and Environment.IsDark" timeout="20" subfeature="Context Provider ALS">
-        <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensord-contextfw-tests ; python /usr/share/sensord-contextfw-tests/testals.py</step>
+        <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensorfw-contextfw-tests ; python /usr/share/sensorfw-contextfw-tests/testals.py</step>
       </case>
       <case name="sensordcontextfw003" type="Functional" level="Component" description="Position.Stable" timeout="300" subfeature="Context Provider Stationary">
         <step expected_result="0">. /tmp/session_bus_address.user; cd /usr/share/sensord-contextfw-tests ; python /usr/share/sensord-contextfw-tests/teststationary.py</step>

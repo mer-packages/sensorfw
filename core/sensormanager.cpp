@@ -105,7 +105,7 @@ SensorManager::SensorManager()
     : errorCode_(SmNoError),
     pipeNotifier_(0)
 {
-    const char* SOCKET_NAME = "/tmp/sensord.sock";
+    const char* SOCKET_NAME = "/var/run/sensord.sock";
 
     new SensorManagerAdaptor(this);
 

@@ -21,6 +21,6 @@ HEADERS += datareceiver.h testwindow.h
 SOURCES += deadclient.cpp
 
 deadclienttest.files = sensord-deadclienttest.py
-deadclienttest.path = /usr/share/sensord-tests
+deadclienttest.path = /usr/share/sensorfw-tests
 
 INSTALLS += deadclienttest

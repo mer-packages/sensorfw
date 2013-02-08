@@ -39,7 +39,7 @@
 #include "sensorhandler_qtmob.h"
 #endif
 
-const char* ClientAdmin::CONFIG_FILE_PATH = "/usr/share/sensord-tests/testapp.conf";
+const char* ClientAdmin::CONFIG_FILE_PATH = "/usr/share/sensorfw-tests/testapp.conf";
 
 ClientAdmin::ClientAdmin(const Parser& parser, QObject *parent) :
         QObject(parent),parser(parser), printer(0)
