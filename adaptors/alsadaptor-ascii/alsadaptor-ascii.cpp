@@ -49,6 +49,22 @@ ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdap
     alsBuffer_ = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", alsBuffer_);
     setDescription("Ambient light");
+
+    // Get range from a file, if the path is found in configuration
+    QString rangeFilePath_ = Config::configuration()->value("als/range_file_path",QVariant("")).toString();
+    if (rangeFilePath_ != "") {
+        QFile sysFile(rangeFilePath_);
+
+        if (!(sysFile.open(QIODevice::ReadOnly))) {
+            sensordLogW() << "Unable to config ALS range from sysfs";
+        } else {
+            sysFile.readLine(buf, sizeof(buf));
+            int range = QString(buf).toInt();
+
+            introduceAvailableDataRange(DataRange(0, range, 1));
+            sensordLogT() << "Ambient light range: " << range;
+        }
+    }
 }
 
 ALSAdaptorAscii::~ALSAdaptorAscii()
