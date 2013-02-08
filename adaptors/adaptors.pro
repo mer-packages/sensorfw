@@ -18,4 +18,5 @@ SUBDIRS = alsadaptor \
           mrstaccelerometer \
           gyroscopeadaptor
 SUDBIRS += oemtabletmagnetometeradaptor
-SUBDIRS += pegatronaccelerometeradaptor
+SUBDIRS += pegatronaccelerometeradaptor 
+SUBDIRS += oemtabletalsadaptor-ascii
