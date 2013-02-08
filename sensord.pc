@@ -4,7 +4,7 @@ libdir=${prefix}/lib/
 
 Name: Sensord
 Description: Sensord
-Version: 0.7.2
+Version: 0.7.2.2
 Requires:
 Libs: -L${libdir} -lsensorclient -lsensordatatypes
 Cflags: -I${includedir} -I${includedir}/datatypes -I${includedir}/filters
