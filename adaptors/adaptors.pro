@@ -21,3 +21,4 @@ SUDBIRS += oemtabletmagnetometeradaptor
 SUBDIRS += pegatronaccelerometeradaptor 
 SUBDIRS += oemtabletalsadaptor-ascii
 SUBDIRS += oaktrailaccelerometer
+SUBDIRS += oemtabletaccelerometer
