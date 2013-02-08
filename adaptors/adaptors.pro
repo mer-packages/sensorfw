@@ -17,3 +17,4 @@ SUBDIRS = alsadaptor \
           proximityadaptor-ascii \
           mrstaccelerometer \
           gyroscopeadaptor
+SUDBIRS += oemtabletmagnetometeradaptor
