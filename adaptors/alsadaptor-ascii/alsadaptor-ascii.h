@@ -50,7 +50,8 @@ public:
 protected:
     ALSAdaptorAscii(const QString& id);
     ~ALSAdaptorAscii();
-
+    bool startSensor();
+    void stopSensor();
     virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
 private:
 
@@ -58,6 +59,9 @@ private:
     char buf[16];
 
     DeviceAdaptorRingBuffer<TimedUnsigned>* alsBuffer_;
+
+    QByteArray powerStatePath;
+    QByteArray powerMode;
 };
 
 #endif

@@ -65,6 +65,8 @@ ALSAdaptorAscii::ALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdap
             sensordLogT() << "Ambient light range: " << range;
         }
     }
+        powerStatePath = Config::configuration()->value("als/powerstate_path").toByteArray();
+        powerMode = Config::configuration()->value("als/mode").toByteArray();
 }
 
 ALSAdaptorAscii::~ALSAdaptorAscii()
@@ -92,4 +94,24 @@ void ALSAdaptorAscii::processSample(int pathId, int fd) {
 
     alsBuffer_->commit();
     alsBuffer_->wakeUpReaders();
+}
+
+bool ALSAdaptorAscii::startSensor()
+{
+    if(!powerStatePath.isEmpty()) {
+        writeToFile(powerStatePath, powerMode);
+    }
+
+    if (!(SysfsAdaptor::startSensor()))
+        return false;
+
+    return true;
+}
+
+void ALSAdaptorAscii::stopSensor()
+{
+    if(!powerStatePath.isEmpty()) {
+        writeToFile(powerStatePath, "0");
+    }
+    SysfsAdaptor::stopSensor();
 }
