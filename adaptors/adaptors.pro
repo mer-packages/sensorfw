@@ -23,5 +23,5 @@ SUBDIRS += oemtabletalsadaptor-ascii
 SUBDIRS += oaktrailaccelerometer
 SUBDIRS += oemtabletaccelerometer
 SUDBIRS += oemtabletgyroscopeadaptor
-SUBDIRS += steaccelerometeradaptor
-SUBDIRS += stealsadaptor
+SUBDIRS +=  steaccelerometeradaptor
+
