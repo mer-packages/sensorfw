@@ -15,14 +15,15 @@ public:
     static DeviceAdaptor* factoryMethod (const QString& id) {
         return new SteAccelAdaptor (id);
     }
-    SteAccelAdaptor (const QString& id);
-    ~SteAccelAdaptor ();
+    SteAccelAdaptor(const QString& id);
+    ~SteAccelAdaptor();
 
-    bool startSensor ();
-    void stopSensor ();
+    bool startSensor();
+    void stopSensor();
 
 protected:
-    void processSample (int pathId, int fd);
+    void processSample(int pathId, int fd);
+    virtual bool setStandbyOverride(const bool override) { Q_UNUSED(override); return false; }
 
 private:
     DeviceAdaptorRingBuffer<OrientationData>* buffer;
@@ -31,5 +32,6 @@ private:
     QByteArray powerStatePath;
     QByteArray range;
     int frequency;
+    bool displayOn;
 };
 #endif
