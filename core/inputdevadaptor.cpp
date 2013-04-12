@@ -100,7 +100,7 @@ int InputDevAdaptor::getInputDevices(const QString& typeName)
     }
     else
     {
-        QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toAscii());
+        QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toLatin1());
         cachedInterval_ = byteArray.size() > 0 ? byteArray.toInt() : 0;
     }
 

@@ -40,4 +40,6 @@ QStringList AccelerometerPlugin::Dependencies() {
     return QString("accelerometerchain").split(":", QString::SkipEmptyParts);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(accelerometersensor, AccelerometerPlugin)
+#endif

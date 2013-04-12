@@ -14,7 +14,7 @@ OemtabletAccelAdaptor::OemtabletAccelAdaptor (const QString& id) :
     struct stat st;
 
     devPath = Config::configuration ()->value ("oem_tablet_acc_sys_path").toString ();
-    if ( lstat (devPath.toAscii().constData(), &st) < 0 ) {
+    if ( lstat (devPath.toLatin1().constData(), &st) < 0 ) {
         sensordLogW () << devPath << "no found";
         return;
     }

@@ -36,4 +36,6 @@ void OrientationInterpreterPlugin::Register(class Loader&)
     sm.registerFilter<OrientationInterpreter>("orientationinterpreter");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(orientationinterpreter, OrientationInterpreterPlugin)
+#endif

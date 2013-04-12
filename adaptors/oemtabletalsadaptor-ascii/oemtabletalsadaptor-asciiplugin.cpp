@@ -9,4 +9,6 @@ void OEMTabletALSAdaptorAsciiPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<OEMTabletALSAdaptorAscii>("alsadaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(alsadaptor, OEMTabletALSAdaptorAsciiPlugin)
+#endif

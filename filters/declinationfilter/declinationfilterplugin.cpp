@@ -35,4 +35,6 @@ void DeclinationFilterPlugin::Register(class Loader&)
     sm.registerFilter<DeclinationFilter>("declinationfilter");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(declinationfilter, DeclinationFilterPlugin)
+#endif

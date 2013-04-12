@@ -40,4 +40,6 @@ QStringList CompassPlugin::Dependencies() {
     return QString("compasschain").split(":", QString::SkipEmptyParts);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(compasssensor, CompassPlugin)
+#endif

@@ -294,7 +294,7 @@ void MetaDataTest::printMetaData()
         sensor = sensorList.takeFirst();
         if (sensor != NULL)
         {
-            qDebug() << "   Description    :" << sensor->description().toAscii().data();
+            qDebug() << "   Description    :" << sensor->description().toLatin1().data();
 
             qDebug() << "   Interval       :" << sensor->interval();
             qDebug() << "   Possible rates :";
@@ -307,32 +307,32 @@ void MetaDataTest::printMetaData()
                 DataRange r = rateList.at(i-1);
                 if (r.min == r.max)
                 {
-                    qDebug() << QString("                    %1. %2").arg(i).arg(r.min).toAscii().data();
+                    qDebug() << QString("                    %1. %2").arg(i).arg(r.min).toLatin1().data();
                 } else {
-                    qDebug() << QString("                    %1. [%2, %3]").arg(i).arg(r.min).arg(r.max).toAscii().data();
+                    qDebug() << QString("                    %1. [%2, %3]").arg(i).arg(r.min).arg(r.max).toLatin1().data();
                 }
 
                 // min
                 sensor->setInterval(r.min);
-                QVERIFY2(r.min==sensor->interval(),msg.append(QString::number(r.min)).toAscii());
+                QVERIFY2(r.min==sensor->interval(),msg.append(QString::number(r.min)).toLatin1());
                 // max
                 sensor->setInterval(r.max);
-                QVERIFY2(r.max==sensor->interval(),msg.append(QString::number(r.max)).toAscii());
+                QVERIFY2(r.max==sensor->interval(),msg.append(QString::number(r.max)).toLatin1());
                 // average
                 int value = (r.min+r.max)*0.5;
                 sensor->setInterval(value);
-                QVERIFY2(value==sensor->interval(),msg.append(QString::number(value)).toAscii());
+                QVERIFY2(value==sensor->interval(),msg.append(QString::number(value)).toLatin1());
             }
 
 
             DataRange r = sensor->getCurrentDataRange();
-            qDebug() << QString("   Data Range     : [%1, %2], resolution %3").arg(r.min).arg(r.max).arg(r.resolution).toAscii().data();
+            qDebug() << QString("   Data Range     : [%1, %2], resolution %3").arg(r.min).arg(r.max).arg(r.resolution).toLatin1().data();
             qDebug() << "   Possible ranges:";
             QList<DataRange> rangeList = sensor->getAvailableDataRanges();
             for (int i = 1; i <= rangeList.size(); i++)
             {
                 r = rangeList.at(i-1);
-                qDebug() << QString("                    %1. [%2, %3], resolution %4").arg(i).arg(r.min).arg(r.max).arg(r.resolution).toAscii().data();
+                qDebug() << QString("                    %1. [%2, %3], resolution %4").arg(i).arg(r.min).arg(r.max).arg(r.resolution).toLatin1().data();
             }
 
             delete sensor;

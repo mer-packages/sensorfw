@@ -35,4 +35,6 @@ void ALSAdaptorPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<ALSAdaptor>("alsadaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(alsadaptor, ALSAdaptorPlugin)
+#endif

@@ -222,7 +222,7 @@ bool SysfsAdaptor::openFds()
 
     int fd;
     for (int i = 0; i < paths_.size(); i++) {
-        if ((fd = open(paths_.at(i).toAscii().constData(), O_RDONLY)) == -1) {
+        if ((fd = open(paths_.at(i).toLatin1().constData(), O_RDONLY)) == -1) {
             sensordLogW() << "open(): " << strerror(errno);
             return false;
         }

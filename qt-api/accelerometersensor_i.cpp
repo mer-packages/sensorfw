@@ -86,9 +86,18 @@ XYZ AccelerometerSensorChannelInterface::get()
     return getAccessor<XYZ>("xyz");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void AccelerometerSensorChannelInterface::connectNotify(const char* signal)
+#else
+void AccelerometerSensorChannelInterface::connectNotify(const QMetaMethod &signal)
+#endif
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+#else
+    static const QMetaMethod frameAvailableSignal = QMetaMethod::fromSignal(&AccelerometerSensorChannelInterface::frameAvailable);
+    if(signal == frameAvailableSignal)
+#endif
         frameAvailableConnected = true;
     dbusConnectNotify(signal);
 }

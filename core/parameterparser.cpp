@@ -65,6 +65,6 @@ void ParameterParser::applyPropertyMap(QObject* object, const QMap<QString, QStr
 
     for(QMap<QString, QString>::const_iterator it = propertyMap.constBegin(); it != propertyMap.constEnd(); ++it)
     {
-        object->setProperty(it.key().toAscii().data(), QVariant(it.value()));
+        object->setProperty(it.key().toLatin1().data(), QVariant(it.value()));
     }
 }

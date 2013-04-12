@@ -35,4 +35,6 @@ void AccelerometerAdaptorPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<AccelerometerAdaptor>("accelerometeradaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(accelerometeradaptor, AccelerometerAdaptorPlugin)
+#endif

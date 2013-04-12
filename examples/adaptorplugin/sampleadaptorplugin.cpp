@@ -39,4 +39,6 @@ void SampleAdaptorPlugin::Register(class Loader&)
 }
 
 // Plugin must be exported for it to loaded properly
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(sampleadaptor, SampleAdaptorPlugin)
+#endif

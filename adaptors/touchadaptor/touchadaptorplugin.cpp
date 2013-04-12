@@ -35,4 +35,6 @@ void TouchAdaptorPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<TouchAdaptor>("touchadaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(touchadaptor, TouchAdaptorPlugin)
+#endif

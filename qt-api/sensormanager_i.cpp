@@ -31,8 +31,9 @@
 #include "sensormanager_i.h"
 #include <QAbstractSocket>
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_DECLARE_METATYPE( QAbstractSocket::SocketState)
-
+#endif
 void __attribute__ ((constructor)) qtapi_init(void)
 {
     qRegisterMetaType<QAbstractSocket::SocketState>("SocketState");

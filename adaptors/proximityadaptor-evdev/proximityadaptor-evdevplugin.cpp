@@ -36,4 +36,6 @@ void ProximityAdaptorEvdevPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<ProximityAdaptorEvdev>("proximityadaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(proximityadaptor-evdev, ProximityAdaptorEvdevPlugin)
+#endif

@@ -8,6 +8,6 @@ SOURCES += proximityadaptor.cpp \
 
 include( ../adaptor-config.pri )
 
-!mce_disable {
+mce {
     DEFINES += SENSORFW_MCE_WATCHER
 }

@@ -39,4 +39,6 @@ void MagnetometerAdaptorAsciiPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<MagnetometerAdaptorAscii>("magnetometeradaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(magnetometeradaptor, MagnetometerAdaptorAsciiPlugin)
+#endif

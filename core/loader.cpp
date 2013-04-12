@@ -108,7 +108,7 @@ bool Loader::loadPlugin(const QString& name, QString* errorString)
 {
     QString error;
     bool loaded = false;
-    QStringList        newPluginNames;
+    QStringList newPluginNames;
     QList<PluginBase*> newPlugins;
 
     if (loadedPluginNames_.contains(name)) {

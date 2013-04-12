@@ -63,13 +63,13 @@ int open(const char *pathname, int flags, mode_t mode)
         if (pathList.at(0) == QString(pathname)) {
             qDebug() << "[FAKEOPEN]: Opening" << pathList.at(1) << "instead of" << pathList.at(0);
             
-            int fd = real_open(pathList.at(1).toAscii().constData(), flags, mode);
+            int fd = real_open(pathList.at(1).toLatin1().constData(), flags, mode);
             if (fd >= 0) {
                 const char* fakedFdsC = getenv("FAKEOPEN_FDS");
                 QString fakedFds(fakedFdsC);
                 fakedFds.append(QString(":%1=%2").arg(fd).arg(pathList.at(2)));
 
-                if (setenv("FAKEOPEN_FDS", fakedFds.toAscii().constData(), 1)) {
+                if (setenv("FAKEOPEN_FDS", fakedFds.toLatin1().constData(), 1)) {
                     qDebug() << "[FAKEOPEN]: Setting FAKEOPEN_FDS failed!";
                 }
             } else {
@@ -121,7 +121,7 @@ int ioctl(int d, int request, ...)
         foreach (QString fakedFd, fakedFds) {
             if (fakedFd.split("=").at(0).toInt() == d) {
                 qDebug() << "[FAKEOPEN]: Faking ioctl() call ";
-                sprintf(argp, "%s", fakedFd.split("=").at(1).toAscii().constData());
+                sprintf(argp, "%s", fakedFd.split("=").at(1).toLatin1().constData());
                 return 0;
             }
         }

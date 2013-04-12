@@ -113,7 +113,7 @@ void SensordLogger::init(int target, const QString& logFilePath, const QString& 
     if (initialized)
         return;
     logTarget = target;
-    appName = name.toAscii();
+    appName = name.toLatin1();
     if (target & STDERR_FILENO){
         fcntl(STDERR_FILENO, F_SETFL, O_WRONLY);
     }

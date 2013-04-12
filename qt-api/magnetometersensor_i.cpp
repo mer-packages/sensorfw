@@ -83,9 +83,18 @@ bool MagnetometerSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void MagnetometerSensorChannelInterface::connectNotify(const char* signal)
+#else
+void MagnetometerSensorChannelInterface::connectNotify(const QMetaMethod &signal)
+#endif
 {
-    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<MagneticField>)))
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+#else
+    static const QMetaMethod frameAvailableSignal = QMetaMethod::fromSignal(&MagnetometerSensorChannelInterface::frameAvailable);
+    if(signal == frameAvailableSignal)
+#endif
         frameAvailableConnected = true;
     dbusConnectNotify(signal);
 }

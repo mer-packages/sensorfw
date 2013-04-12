@@ -10,7 +10,7 @@ CONFIG += debug
 CONFIG += thread
 
 # Maemo specific options
-CONFIG += contextprovider
+#CONFIG += contextprovider
 
 # DEPRECATED: CompassChain is now provided by separate package
 #             sensorfw-plugins-compasslogic

@@ -35,4 +35,6 @@ void SampleFilterPlugin::Register(class Loader&)
     sm.registerFilter<SampleFilter>("samplefilter");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(samplefilter, SampleFilterPlugin)
+#endif

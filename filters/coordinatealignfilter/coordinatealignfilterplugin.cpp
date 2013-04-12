@@ -35,4 +35,6 @@ void CoordinateAlignFilterPlugin::Register(class Loader&)
     sm.registerFilter<CoordinateAlignFilter>("coordinatealignfilter");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(coordinatealignfilter, CoordinateAlignFilterPlugin)
+#endif

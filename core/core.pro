@@ -68,7 +68,7 @@ HEADERS += sensormanager.h \
     config.h \
     nodebase.h
 
-!mce_disable {
+mce {
     SOURCES += mcewatcher.cpp
     HEADERS += mcewatcher.h
     DEFINES += SENSORFW_MCE_WATCHER

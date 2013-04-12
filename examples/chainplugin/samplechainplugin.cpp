@@ -44,4 +44,6 @@ QStringList SampleChainPlugin::Dependencies() {
     return QString("sampleadaptor:samplefilter").split(":", QString::SkipEmptyParts);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(samplechain, SampleChainPlugin)
+#endif

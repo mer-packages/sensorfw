@@ -76,7 +76,7 @@ private:
      */
     QString resolveRealPluginName(const QString& pluginName) const;
 
-    QStringList        loadedPluginNames_; /**< list of loaded plugins */
+    QStringList loadedPluginNames_; /**< list of loaded plugins */
 };
 
 #endif

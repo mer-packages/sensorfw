@@ -34,4 +34,6 @@ void MRSTAccelerometerAdaptorPlugin::Register(class Loader&)
     sm.registerDeviceAdaptor<MRSTAccelAdaptor>("accelerometeradaptor");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(accelerometeradaptor-mrst, MRSTAccelerometerAdaptorPlugin)
+#endif

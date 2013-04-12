@@ -519,7 +519,7 @@ void ClientApiTest::testBuffering()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
         TestClient client(*sensor, true);
         int bufferSize = 10;
         int interval = 100;
@@ -562,7 +562,7 @@ void ClientApiTest::testBufferingAllIntervalRanges()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
         TestClient client(*sensor, true);
 
         int bufferSize = 100;
@@ -620,7 +620,7 @@ void ClientApiTest::testBufferingCompatibility()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
         TestClient client(*sensor, false);
         int interval = 100;
         int bufferSize = 10;
@@ -666,7 +666,7 @@ void ClientApiTest::testBufferingInterval()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
         TestClient client(*sensor, true);
         int interval = 100;
         sensor->setInterval(interval);
@@ -731,7 +731,7 @@ void ClientApiTest::testAvailableBufferIntervals()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
 
         IntegerRangeList rangeList = sensor->getAvailableBufferIntervals();
         QVERIFY(rangeList.size() == 1);
@@ -748,7 +748,7 @@ void ClientApiTest::testAvailableBufferSizes()
     {
         AbstractSensorChannelInterface* sensor = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp(sensor);
-        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor && sensor->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
         IntegerRangeList rangeList = sensor->getAvailableBufferSizes();
         QVERIFY(rangeList.size() == 1);
         QVERIFY(rangeList.front().first == 1);
@@ -766,8 +766,8 @@ void ClientApiTest::testDownsampling()
         AbstractSensorChannelInterface* sensor2 = getSensor(sensorName);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensor2);
-        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
-        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
+        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
 
         SampleCollector client1(*sensor1, true);
         int interval = 100;
@@ -841,8 +841,8 @@ void ClientApiTest::testDownsamplingDisabled()
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp1(sensor1);
         QScopedPointer<AbstractSensorChannelInterface> sensorTmp2(sensor2);
 
-        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
-        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toAscii());
+        QVERIFY2(sensor1 && sensor1->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
+        QVERIFY2(sensor2 && sensor2->isValid(),QString("Could not get %1 sensor channel").arg(sensorName).toLatin1());
 
         SampleCollector client1(*sensor1, true);
         int interval = 100;

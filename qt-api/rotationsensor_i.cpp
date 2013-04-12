@@ -92,9 +92,18 @@ bool RotationSensorChannelInterface::hasZ()
     return getAccessor<bool>("hasZ");
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void RotationSensorChannelInterface::connectNotify(const char* signal)
+#else
+void RotationSensorChannelInterface::connectNotify(const QMetaMethod &signal)
+#endif
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+#else
+    static const QMetaMethod frameAvailableSignal = QMetaMethod::fromSignal(&RotationSensorChannelInterface::frameAvailable);
+    if(signal == frameAvailableSignal)
+#endif
         frameAvailableConnected = true;
     dbusConnectNotify(signal);
 }

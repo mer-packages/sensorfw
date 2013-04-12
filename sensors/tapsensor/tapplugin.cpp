@@ -40,4 +40,6 @@ QStringList TapPlugin::Dependencies() {
     return QString("tapadaptor").split(":", QString::SkipEmptyParts);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(tapsensor, TapPlugin)
+#endif

@@ -86,9 +86,18 @@ bool GyroscopeSensorChannelInterface::dataReceivedImpl()
     return true;
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void GyroscopeSensorChannelInterface::connectNotify(const char* signal)
+#else
+void GyroscopeSensorChannelInterface::connectNotify(const QMetaMethod &signal)
+#endif
 {
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if(QLatin1String(signal) == SIGNAL(frameAvailable(QVector<XYZ>)))
+#else
+    static const QMetaMethod frameAvailableSignal = QMetaMethod::fromSignal(&GyroscopeSensorChannelInterface::frameAvailable);
+    if(signal == frameAvailableSignal)
+#endif
         frameAvailableConnected = true;
     dbusConnectNotify(signal);
 }

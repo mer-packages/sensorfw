@@ -1,0 +1,20 @@
+#!/bin/bash
+
+if [ -x "/usr/sbin/sensord" ] ; then
+	if [ ! -f "/etc/sensorfw/primaryuse.conf" ] ; then 
+          		# Determine the correct "primary" config file: the first conf file
+                # whose basename is a substring of boardname, if any (i.e. 'foo.conf'
+                # matches all devices which have 'foo' in their /etc/boardname)
+        if [ -f /etc/boardname ]; then
+            for f in /etc/sensorfw/*conf; do
+                fbase=`basename $f '.conf' | sed s/sensord-//`
+                grep -q $fbase /etc/boardname
+                if [ $? -eq 0 ]; then
+                    ln -s $f /etc/sensorfw/primaryuse.conf
+                    break
+                fi
+            done
+        fi
+	    
+    fi
+fi

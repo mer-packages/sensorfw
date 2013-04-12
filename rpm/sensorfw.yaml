@@ -1,0 +1,89 @@
+Name: sensorfw
+Summary: Sensor Framework
+Version: 0.7.2.2
+Release: 0
+Group: "System/Sensor Framework"
+License: LGPLv2+
+URL: http://gitorious.org/sensorfw
+Description: |
+    Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
+Sources:
+    - "%{name}-%{version}.tar.bz2"
+    - "sensorfw-rpmlintrc"
+    - "sensord.service"
+    - "sensord-daemon-conf-setup"
+Requires:
+    - qt
+    - GConf-dbus
+    - "%{name}-configs"
+
+PkgConfigBR:
+    - QtCore
+    - gconf-2.0
+    - contextprovider-1.0
+
+#PkgBR:
+#    - doxygen
+#    - graphviz
+
+Obsoletes:
+    - sensorframework
+
+Configure: none
+Builder: qmake
+UseAsNeeded: no
+
+QMakeOptions:
+    - "CONFIG+=mce_disable"
+
+SubPackages:
+    - Name: devel
+      Group: Development/Libraries
+      Requires:
+          - qt-devel
+      Summary: Sensor framework daemon libraries development headers
+      Description: |
+        Development headers for sensor framework daemon and libraries.
+
+    - Name: tests
+      Group: Development/Libraries
+      Requires:
+          - testrunner-lite
+          - python
+      Summary: Unit test cases for sensord
+      Description: |
+        Contains unit test cases for CI environment.
+
+    - Name: contextfw-tests
+      Group: Development/Libraries
+      Requires:
+          - sensorfw-tests
+          - contextkit >= 0.3.6
+      Summary: Test cases for sensord acting as context provider
+      Description: |
+        Contains test cases for CI environment, for ensuring that sensord provides context properties correctly.
+
+#    - Name: doc
+#      Group: Documentation
+#      Summary: API documentation for libsensord
+#      Description: |
+#        Doxygen-generated API documentation for sensord.
+
+    - Name: configs
+      Group: System/Libraries
+      Summary: Sensorfw configuration files
+      Description: |
+        Sensorfw configuration files.
+      BuildArch: noarch
+      AutoDepend: no
+      Requires:
+          - "%{name} = %{version}"
+      Provides:
+          - sensord-config
+          - config-n900
+          - config-aava
+          - config-icdk
+          - config-ncdk
+          - config-oemtablet
+          - config-oaktraili
+          - config-u8500

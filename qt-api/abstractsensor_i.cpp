@@ -33,8 +33,11 @@ struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl : publ
 {
     AbstractSensorChannelInterfaceImpl(QObject* parent, int sessionId, const QString& path, const char* interfaceName);
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     void dbusConnectNotify(const char* signal) { QDBusAbstractInterface::connectNotify(signal); }
-
+#else
+    void dbusConnectNotify(const QMetaMethod& signal) { QDBusAbstractInterface::connectNotify(signal); }
+#endif
     SensorError errorCode_;
     QString errorString_;
     int sessionId_;
@@ -364,7 +367,11 @@ QDBusMessage AbstractSensorChannelInterface::callWithArgumentList(QDBus::CallMod
     return pimpl_->call(mode, method, args);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 void AbstractSensorChannelInterface::dbusConnectNotify(const char* signal)
+#else
+void AbstractSensorChannelInterface::dbusConnectNotify(const QMetaMethod& signal)
+#endif
 {
     pimpl_->dbusConnectNotify(signal);
 }

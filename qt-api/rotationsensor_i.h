@@ -109,7 +109,12 @@ public:
     static RotationSensorChannelInterface* interface(const QString& id);
 
 protected:
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     virtual void connectNotify(const char* signal);
+#else
+    virtual void connectNotify(const QMetaMethod &signal);
+#endif
+
     virtual bool dataReceivedImpl();
 
 private:

@@ -39,4 +39,6 @@ QStringList ProximityPlugin::Dependencies() {
     return QString("proximityadaptor").split(":", QString::SkipEmptyParts);
 }
 
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
 Q_EXPORT_PLUGIN2(proximitysensor, ProximityPlugin)
+#endif

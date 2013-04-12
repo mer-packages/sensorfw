@@ -143,7 +143,7 @@ QByteArray ClientApiTest::errorMessage(const QString& sensorName, int interval, 
 {
     QString errMsg(QString("Buffering err %1 (%2 Hz): ").arg(sensorName).arg(QString::number(1000 / interval)));
     errMsg.append(QString("%1 %2 %3").arg(QString::number(value)).arg(compOperator).arg(QString::number(limit)));
-    return errMsg.toAscii();
+    return errMsg.toLatin1();
 }
 
 #endif // CLIENT_API_TEST_H

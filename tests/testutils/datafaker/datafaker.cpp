@@ -41,7 +41,7 @@ bool DataFaker::open(QString path, QString name)
         return false;
     }
 
-    int fd = ::open(path.toAscii().constData(), O_WRONLY);
+    int fd = ::open(path.toLatin1().constData(), O_WRONLY);
     if (fd < 0) {
         qDebug() << "[DataFaker]: Failed to open" << path;
         return false;
