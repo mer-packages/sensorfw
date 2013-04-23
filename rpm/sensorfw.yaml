@@ -34,7 +34,7 @@ Builder: qmake
 UseAsNeeded: no
 
 QMakeOptions:
-    - "CONFIG+=mce_disable"
+    - "CONFIG+=contextprovider"
 
 SubPackages:
     - Name: devel
@@ -87,3 +87,21 @@ SubPackages:
           - config-oemtablet
           - config-oaktraili
           - config-u8500
+
+    - Name: qt4-compat
+      Group: System/Libraries
+      Summary: Compatibiliy package for Qt 5 Sensorfw 
+      Description: |
+        Provides Qt 4 compatibility for Qt 5 Sensorfw files.
+      AutoDepend: no
+      Obsoletes:
+        - sensorfw
+      Provides:
+        - sensorfw
+      Requires:
+          - sensorfw-qt5
+      Files:
+          - "%{_libdir}/libsensorclient.so*"
+          - "%{_libdir}/libsensordatatypes.so*"
+
+

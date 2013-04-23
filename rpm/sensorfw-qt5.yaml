@@ -13,12 +13,12 @@ Sources:
     - "sensord.service"
     - "sensord-daemon-conf-setup"
 Requires:
-    - qt
+    - qt5-qtcore
     - GConf-dbus
     - "%{name}-configs"
 
 PkgConfigBR:
-    - QtCore
+    - Qt5Core
     - gconf-2.0
     - contextprovider-1.0
 
@@ -34,7 +34,7 @@ Builder: qmake
 UseAsNeeded: no
 
 QMakeOptions:
-    - "CONFIG+=mce_disable"
+    - "CONFIG+=contextprovider"
 
 SubPackages:
     - Name: devel

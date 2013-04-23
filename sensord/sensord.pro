@@ -1,9 +1,10 @@
 QT += network
 
 TEMPLATE = app
-TARGET = sensord
 
 include( ../common-config.pri )
+#don't change target name in qt5
+TARGET = sensord
 
 CONFIG += console \
           link_pkgconfig
@@ -18,9 +19,16 @@ SENSORFW_INCLUDEPATHS = .. \
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
-QMAKE_LIBDIR_FLAGS += -L../datatypes -lsensordatatypes \
-                      -L../core -lsensorfw
+QMAKE_LIBDIR_FLAGS += -L../datatypes \
+                      -L../core
 
+equals(QT_MAJOR_VERSION, 4):{
+    QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorfw
+}
+equals(QT_MAJOR_VERSION, 5):{
+    QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5 -lsensorfw-qt5
+
+}
 QMAKE_RPATHDIR += /usr/lib/sensord
 
 SOURCES += main.cpp \

@@ -1,3 +1,11 @@
-LIBS += -L/usr/lib/ -lsensorclient -lsensordatatypes
+
+equals(QT_MAJOR_VERSION, 4):{
+    LIBS += -L/usr/lib/ -lsensorclient -lsensordatatypes
+}
+
+equals(QT_MAJOR_VERSION, 5):{
+    LIBS += -L/usr/lib/ -lsensorclient-qt5 -lsensordatatypes-qt5
+}
+
 DEPENDPATH += /usr/include/sensord
 INCLUDEPATH += /usr/include/sensord /usr/include/sensord/datatypes /usr/include/sensord/filters

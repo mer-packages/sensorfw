@@ -17,14 +17,23 @@ sensord.depends = datatypes adaptors sensors chains
 include( common-install.pri )
 include( common-config.pri )
 
-PKGCONFIGFILES.files = sensord.pc
+equals(QT_MAJOR_VERSION, 4):{
+    PKGCONFIGFILES.files = sensord.pc
+    QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
+}
+
+equals(QT_MAJOR_VERSION, 5):{
+    PKGCONFIGFILES.files = sensord-qt5.pc
+    QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
+
+}
+
 PKGCONFIGFILES.path = /usr/lib/pkgconfig
 
 # How to make this work in all cases?
 #PKGCONFIGFILES.commands = sed -i \"s/Version:.*$$/Version: `head -n1 debian/changelog | cut -f 2 -d\' \' | tr -d \'()\'`/\" sensord.pc
 
 QTCONFIGFILES.files = sensord.prf
-QTCONFIGFILES.path = /usr/share/qt4/mkspecs/features
 
 DBUSCONFIGFILES.files = sensorfw.conf
 DBUSCONFIGFILES.path = /etc/dbus-1/system.d

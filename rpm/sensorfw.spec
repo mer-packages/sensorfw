@@ -87,6 +87,19 @@ Provides:   config-u8500
 Sensorfw configuration files.
 
 
+%package qt4-compat
+Summary:    Compatibiliy package for Qt 5 Sensorfw
+Group:      System/Libraries
+Requires:   sensorfw-qt5
+Requires(post): /sbin/ldconfig
+Requires(postun): /sbin/ldconfig
+Provides:   sensorfw
+Obsoletes:   sensorfw
+
+%description qt4-compat
+Provides Qt 4 compatibility for Qt 5 Sensorfw files.
+
+
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -101,7 +114,7 @@ export LD_RUN_PATH=/usr/lib/sensord/
 # << build pre
 
 %qmake  \
-    CONFIG+=mce_disable
+    CONFIG+=contextprovider
 
 make %{?jobs:-j%jobs}
 
@@ -136,6 +149,10 @@ systemctl reload-or-try-restart sensord.service
 %postun
 /sbin/ldconfig
 systemctl daemon-reload
+
+%post qt4-compat -p /sbin/ldconfig
+
+%postun qt4-compat -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
@@ -189,3 +206,10 @@ systemctl daemon-reload
 %config %{_sysconfdir}/%{name}/*conf
 %exclude %{_sysconfdir}/sensorfw/sensord.conf
 # << files configs
+
+%files qt4-compat
+%defattr(-,root,root,-)
+%{_libdir}/libsensorclient.so*
+%{_libdir}/libsensordatatypes.so*
+# >> files qt4-compat
+# << files qt4-compat
