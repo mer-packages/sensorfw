@@ -1,5 +1,5 @@
 prefix=/usr
-includedir=${prefix}/include/sensord
+includedir=${prefix}/include/sensord-qt5
 libdir=${prefix}/lib/
 
 Name: Sensord-qt5
