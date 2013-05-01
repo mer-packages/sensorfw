@@ -20,6 +20,13 @@ INCLUDEPATH += ../../include \
     ../../adaptors \
     ../..
 
-QMAKE_LIBDIR_FLAGS += -L../../builddir/datatypes -L../../datatypes/ -lsensordatatypes
-QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
+QMAKE_LIBDIR_FLAGS += -L../../builddir/datatypes -L../../datatypes/
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/
 QMAKE_RPATHDIR += /usr/lib/sensord
+
+equals(QT_MAJOR_VERSION, 4):{
+    QMAKE_LIBDIR_FLAGS += -lsensorfw
+}
+equals(QT_MAJOR_VERSION, 5):{
+    QMAKE_LIBDIR_FLAGS += -lsensorfw-qt5
+}

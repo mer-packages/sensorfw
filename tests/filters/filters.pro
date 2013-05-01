@@ -31,5 +31,13 @@ INCLUDEPATH += ../../include \
     ../../core \
     ../../datatypes
     
-QMAKE_LIBDIR_FLAGS += -L../../datatypes -lsensordatatypes
-QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/ -lsensorfw
+QMAKE_LIBDIR_FLAGS += -L../../datatypes
+QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/
+
+equals(QT_MAJOR_VERSION, 4):{
+    QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorfw
+}
+
+equals(QT_MAJOR_VERSION, 5):{
+    QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5 -lsensorfw-qt5
+}

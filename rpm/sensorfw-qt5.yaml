@@ -20,7 +20,6 @@ Requires:
 PkgConfigBR:
     - Qt5Core
     - gconf-2.0
-    - contextprovider-1.0
 
 #PkgBR:
 #    - doxygen
@@ -34,7 +33,7 @@ Builder: qmake
 UseAsNeeded: no
 
 QMakeOptions:
-    - "CONFIG+=contextprovider"
+    - "CONFIG+=mce"
 
 SubPackages:
     - Name: devel
@@ -53,15 +52,6 @@ SubPackages:
       Summary: Unit test cases for sensord
       Description: |
         Contains unit test cases for CI environment.
-
-    - Name: contextfw-tests
-      Group: Development/Libraries
-      Requires:
-          - sensorfw-tests
-          - contextkit >= 0.3.6
-      Summary: Test cases for sensord acting as context provider
-      Description: |
-        Contains test cases for CI environment, for ensuring that sensord provides context properties correctly.
 
 #    - Name: doc
 #      Group: Documentation

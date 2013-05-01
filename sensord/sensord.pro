@@ -24,10 +24,11 @@ QMAKE_LIBDIR_FLAGS += -L../datatypes \
 
 equals(QT_MAJOR_VERSION, 4):{
     QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorfw
+    TARGET_H.path += /usr/include/sensord
 }
 equals(QT_MAJOR_VERSION, 5):{
     QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5 -lsensorfw-qt5
-
+    TARGET_H.path += /usr/include/sensord-qt5
 }
 QMAKE_RPATHDIR += /usr/lib/sensord
 
@@ -43,7 +44,6 @@ contextprovider {
     PKGCONFIG += contextprovider-1.0
 }
 
-TARGET_H.path += /usr/include/sensord
 TARGET_H.files = $$HEADERS
 target.path = /usr/sbin/
 

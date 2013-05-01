@@ -94,12 +94,6 @@ SubPackages:
       Description: |
         Provides Qt 4 compatibility for Qt 5 Sensorfw files.
       AutoDepend: no
-      Obsoletes:
-        - sensorfw
-      Provides:
-        - sensorfw
-      Requires:
-          - sensorfw-qt5
       Files:
           - "%{_libdir}/libsensorclient.so*"
           - "%{_libdir}/libsensordatatypes.so*"

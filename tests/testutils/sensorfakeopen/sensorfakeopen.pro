@@ -1,4 +1,5 @@
 TEMPLATE = lib
+include(../../../common-install.pri)
 TARGET = sensorfakeopen
 DEPENDPATH += .
 INCLUDEPATH += .
@@ -8,6 +9,5 @@ QT -= gui
 HEADERS += sensorfakeopen.h
 SOURCES += sensorfakeopen.cpp
 
-include(../../../common-install.pri)
 target.path = $$SHAREDLIBPATH
 INSTALLS += target
