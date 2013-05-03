@@ -20,6 +20,7 @@ Requires:
 PkgConfigBR:
     - Qt5Core
     - gconf-2.0
+    - mce
 
 #PkgBR:
 #    - doxygen
@@ -29,7 +30,7 @@ Obsoletes:
     - sensorframework
 
 Configure: none
-Builder: qmake
+Builder: qmake5
 UseAsNeeded: no
 
 QMakeOptions:
@@ -39,7 +40,7 @@ SubPackages:
     - Name: devel
       Group: Development/Libraries
       Requires:
-          - qt-devel
+          - qt5-devel
       Summary: Sensor framework daemon libraries development headers
       Description: |
         Development headers for sensor framework daemon and libraries.

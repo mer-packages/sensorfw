@@ -30,6 +30,7 @@ Requires(postun): /sbin/ldconfig
 Requires(postun): systemd
 BuildRequires:  pkgconfig(QtCore)
 BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(contextprovider-1.0)
 Obsoletes:   sensorframework
 

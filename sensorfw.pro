@@ -47,3 +47,13 @@ SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
 publicheaders.files += include/*.h
 
 INSTALLS += PKGCONFIGFILES QTCONFIGFILES DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES
+
+equals(QT_MAJOR_VERSION, 4):  {
+    OTHER_FILES += rpm/sensorfw.spec \
+                   rpm/sensorfw.yaml
+}
+
+equals(QT_MAJOR_VERSION, 5):  {
+    OTHER_FILES += rpm/sensorfw-qt5.spec \
+                   rpm/sensorfw-qt5.yaml
+}

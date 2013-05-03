@@ -29,7 +29,12 @@ Requires(post): systemd
 Requires(postun): /sbin/ldconfig
 Requires(postun): systemd
 BuildRequires:  pkgconfig(Qt5Core)
+BuildRequires:  pkgconfig(Qt5DBus)
+BuildRequires:  pkgconfig(Qt5Network)
+BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(mce)
+
 Obsoletes:   sensorframework
 
 %description
@@ -88,7 +93,8 @@ unset LD_AS_NEEDED
 export LD_RUN_PATH=/usr/lib/sensord/
 # << build pre
 
-%qmake  \
+export QT_SELECT=5
+%qmake \
     CONFIG+=mce
 
 make %{?jobs:-j%jobs}
@@ -100,6 +106,7 @@ make %{?jobs:-j%jobs}
 rm -rf %{buildroot}
 # >> install pre
 # << install pre
+export QT_SELECT=5
 %qmake_install
 
 # >> install post
