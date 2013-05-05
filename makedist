@@ -15,10 +15,11 @@ PROJECT=sensorfw
 # Parse it from any Qt *.pro or *.pri files in CWD:
 # PROJECT=$(grep -E "TARGET ?= ?" *.pr[io]|cut -d' ' -f3)
 
-while getopts ht: o
+while getopts qht: o
 do   case $o in
    h)   head=1;;
    t)   TAG="$OPTARG";;
+   q)   PROJECT=sensorfw-qt5;;
    ?) printf >&2 "Usage: $0 [-h] [-t TAG]\n"
       exit 2;;
    esac

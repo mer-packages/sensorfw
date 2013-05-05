@@ -1,6 +1,6 @@
 Name: sensorfw-qt5
 Summary: Sensor Framework Qt5
-Version: 0.7.2.2
+Version: 0.7.2.4
 Release: 0
 Group: "System/Sensor Framework"
 License: LGPLv2+
@@ -20,7 +20,6 @@ Requires:
 PkgConfigBR:
     - Qt5Core
     - gconf-2.0
-    - mce
 
 #PkgBR:
 #    - doxygen
@@ -33,8 +32,7 @@ Configure: none
 Builder: qmake5
 UseAsNeeded: no
 
-QMakeOptions:
-    - "CONFIG+=mce"
+#QMakeOptions:
 
 SubPackages:
     - Name: devel

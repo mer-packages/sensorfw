@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.2.2
+Version:    0.7.2.4
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -33,7 +33,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
-BuildRequires:  pkgconfig(mce)
+#BuildRequires:  pkgconfig(mce)
 
 Obsoletes:   sensorframework
 
@@ -94,8 +94,9 @@ export LD_RUN_PATH=/usr/lib/sensord/
 # << build pre
 
 export QT_SELECT=5
-%qmake \
-    CONFIG+=mce
+%qmake5 
+#\
+#    CONFIG+=mce
 
 make %{?jobs:-j%jobs}
 
@@ -132,6 +133,12 @@ systemctl reload-or-try-restart sensord.service
 /sbin/ldconfig
 systemctl daemon-reload
 
+%post tests
+/sbin/ldconfig
+
+%postun tests
+/sbin/ldconfig
+
 %files
 %defattr(-,root,root,-)
 # >> files
@@ -158,8 +165,6 @@ systemctl daemon-reload
 %{_libdir}/pkgconfig/*
 %{_includedir}/sensord-qt5/*
 %{_datadir}/qt5/mkspecs/features/sensord.prf
-# From docs
-#%attr(644,root,root)%{_defaultdocdir}/sensord/html/*
 # << files devel
 
 %files tests

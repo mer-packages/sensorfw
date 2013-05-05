@@ -5,7 +5,7 @@ After=boardname.service
 [Service]
 Type=forking 
 ExecStartPre=/bin/sh /usr/bin/sensord-daemon-conf-setup
-ExecStart=/usr/sbin/sensord -c=/etc/sensorfw/primaryuse.conf -d --log-target=4 --log-file-path=/var/log/sensord.log
+ExecStart=/usr/sbin/sensord -c=/etc/sensorfw/primaryuse.conf -d --log-target=8 --log-level=warning
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]

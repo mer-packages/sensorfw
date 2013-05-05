@@ -9,7 +9,7 @@ Name:       sensorfw
 # << macros
 
 Summary:    Sensor Framework
-Version:    0.7.2.2
+Version:    0.7.2.4
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -23,6 +23,7 @@ Requires:   qt
 Requires:   GConf-dbus
 Requires:   %{name}-configs
 Requires:   systemd
+Requires:   mce
 Requires(preun): systemd
 Requires(post): /sbin/ldconfig
 Requires(post): systemd

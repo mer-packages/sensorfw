@@ -57,3 +57,5 @@ equals(QT_MAJOR_VERSION, 5):  {
     OTHER_FILES += rpm/sensorfw-qt5.spec \
                    rpm/sensorfw-qt5.yaml
 }
+
+OTHER_FILES += config/*
