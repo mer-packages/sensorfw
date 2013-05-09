@@ -24,7 +24,7 @@ PkgConfigBR:
 #PkgBR:
 #    - doxygen
 #    - graphviz
-
+Provides: sensord-qt5
 Obsoletes:
     - sensorframework
 
