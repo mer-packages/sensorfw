@@ -23,7 +23,6 @@ Requires:   qt
 Requires:   GConf-dbus
 Requires:   %{name}-configs
 Requires:   systemd
-Requires:   mce
 Requires(preun): systemd
 Requires(post): /sbin/ldconfig
 Requires(post): systemd
@@ -92,11 +91,8 @@ Sensorfw configuration files.
 %package qt4-compat
 Summary:    Compatibiliy package for Qt 5 Sensorfw
 Group:      System/Libraries
-Requires:   sensorfw-qt5
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
-Provides:   sensorfw
-Obsoletes:   sensorfw
 
 %description qt4-compat
 Provides Qt 4 compatibility for Qt 5 Sensorfw files.
