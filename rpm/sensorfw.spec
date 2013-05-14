@@ -141,6 +141,7 @@ fi
 
 %post
 /sbin/ldconfig
+update-contextkit-providers
 systemctl daemon-reload
 systemctl reload-or-try-restart sensord.service
 
