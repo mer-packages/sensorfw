@@ -8,7 +8,7 @@ URL: http://gitorious.org/sensorfw
 Description: |
     Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
 Sources:
-    - "%{name}-%{version}.tar.bz2"
+    - "sensorfw-%{version}.tar.bz2"
     - "sensorfw-rpmlintrc"
     - "sensord.service"
     - "sensord-daemon-conf-setup"

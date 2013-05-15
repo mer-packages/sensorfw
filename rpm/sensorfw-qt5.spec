@@ -14,7 +14,7 @@ Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
 URL:        http://gitorious.org/sensorfw
-Source0:    %{name}-%{version}.tar.bz2
+Source0:    sensorfw-%{version}.tar.bz2
 Source1:    sensorfw-rpmlintrc
 Source2:    sensord.service
 Source3:    sensord-daemon-conf-setup
