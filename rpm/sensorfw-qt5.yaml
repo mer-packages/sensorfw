@@ -1,6 +1,6 @@
 Name: sensorfw-qt5
 Summary: Sensor Framework Qt5
-Version: 0.7.2.4
+Version: 0.7.2.6
 Release: 0
 Group: "System/Sensor Framework"
 License: LGPLv2+
@@ -19,12 +19,14 @@ Requires:
 
 PkgConfigBR:
     - Qt5Core
+    - Qt5DBus
+    - Qt5Network
+    - Qt5Test
     - gconf-2.0
 
 #PkgBR:
 #    - doxygen
 #    - graphviz
-Provides: sensord-qt5
 Obsoletes:
     - sensorframework
 
@@ -38,7 +40,9 @@ SubPackages:
     - Name: devel
       Group: Development/Libraries
       Requires:
-          - qt5-devel
+          - qt5-qtcore-devel
+          - qt5-qtdbus-devel
+          - qt5-qtnetwork-devel
       Summary: Sensor framework daemon libraries development headers
       Description: |
         Development headers for sensor framework daemon and libraries.
@@ -46,6 +50,7 @@ SubPackages:
     - Name: tests
       Group: Development/Libraries
       Requires:
+          - qt5-qttest-devel
           - testrunner-lite
           - python
       Summary: Unit test cases for sensord
