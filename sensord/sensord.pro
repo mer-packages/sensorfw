@@ -48,4 +48,5 @@ target.path = /usr/sbin/
 INSTALLS += target \
             TARGET_H
 
-include(../../common.pri)
+include(../common.pri)
+
