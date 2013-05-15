@@ -35,12 +35,16 @@ INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 QMAKE_LIBDIR_FLAGS += -L../../qt-api\
                       -L../../datatypes  \
                       -L../../core
+
 equals(QT_MAJOR_VERSION, 4):{
-    QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorclient -lsensorfw
+    QMAKE_LIBDIR_FLAGS += -lsensorclient
 }
+
 equals(QT_MAJOR_VERSION, 5):{
-    QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5 -lsensorclient-qt5 -lsensorfw-qt5
+    QMAKE_LIBDIR_FLAGS += -lsensorclient-qt5
 }
+
+include(../../common.pri)
 
 DEFINES += TARGET_LIB_$$TARGET_LIB
 

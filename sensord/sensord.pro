@@ -23,11 +23,9 @@ QMAKE_LIBDIR_FLAGS += -L../datatypes \
                       -L../core
 
 equals(QT_MAJOR_VERSION, 4):{
-    QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorfw
     TARGET_H.path += /usr/include/sensord
 }
 equals(QT_MAJOR_VERSION, 5):{
-    QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5 -lsensorfw-qt5
     TARGET_H.path += /usr/include/sensord-qt5
 }
 QMAKE_RPATHDIR += /usr/lib/sensord
@@ -49,3 +47,5 @@ target.path = /usr/sbin/
 
 INSTALLS += target \
             TARGET_H
+
+include(../../common.pri)
