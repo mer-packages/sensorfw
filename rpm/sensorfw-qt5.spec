@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.2.6
+Version:    0.7.2.8
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -107,7 +107,7 @@ rm -rf %{buildroot}
 # >> install pre
 export QT_SELECT=5
 # << install pre
-%qmake_install
+%qmake5_install
 
 # >> install post
 install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_lib}/systemd/system/sensord.service
