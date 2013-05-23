@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.2.8
+Version:    0.7.2.9
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -34,6 +34,7 @@ BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
 Obsoletes:   sensorframework
+Provides: sensord-qt5
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.

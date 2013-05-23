@@ -29,6 +29,7 @@ PkgConfigBR:
 
 Obsoletes:
     - sensorframework
+Provides: sensord
 
 Configure: none
 Builder: qmake

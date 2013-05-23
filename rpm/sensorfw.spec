@@ -32,6 +32,7 @@ BuildRequires:  pkgconfig(QtCore)
 BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(contextprovider-1.0)
+Provides:   sensord
 Obsoletes:   sensorframework
 
 %description
