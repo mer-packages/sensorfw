@@ -1,6 +1,0 @@
-<aegis>
-  <request policy="add">
-    <credential name="mce::SensorControl" />
-    <for path="/usr/sbin/sensord" />
-  </request>
-</aegis>

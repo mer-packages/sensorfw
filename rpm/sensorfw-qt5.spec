@@ -147,7 +147,6 @@ systemctl daemon-reload
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-%doc debian/copyright debian/README COPYING
 /%{_lib}/systemd/system/sensord.service
 /%{_lib}/systemd/system/basic.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup

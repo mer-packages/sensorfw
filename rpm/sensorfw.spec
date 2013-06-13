@@ -164,7 +164,6 @@ systemctl daemon-reload
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/%{name}/sensord.conf.d/
 %{_datadir}/contextkit/providers/com.nokia.SensorService.context
-%doc debian/copyright debian/README COPYING
 /%{_lib}/systemd/system/sensord.service
 /%{_lib}/systemd/system/basic.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
