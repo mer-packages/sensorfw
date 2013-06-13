@@ -29,7 +29,22 @@ PkgConfigBR:
 
 Obsoletes:
     - sensorframework
-Provides: sensord
+    - sensorfw-qt4-compat
+Provides:
+    - sensord
+    - sensorfw-qt4-compat
+Files:
+    - "%attr(755,root,root)%{_sbindir}/sensord"
+    - "%{_libdir}/sensord/*.so"
+    - "%{_libdir}/*.so.*"
+    - "%config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf"
+    - "%config %{_sysconfdir}/sensorfw/sensord.conf"
+    - "%dir %{_sysconfdir}/%{name}/sensord.conf.d/"
+    - "%{_datadir}/contextkit/providers/com.nokia.SensorService.context"
+    - "/%{_lib}/systemd/system/sensord.service"
+    - "/%{_lib}/systemd/system/basic.target.wants/sensord.service"
+    - "%{_bindir}/sensord-daemon-conf-setup"
+
 
 Configure: none
 Builder: qmake
@@ -44,8 +59,12 @@ SubPackages:
       Requires:
           - qt-devel
       Summary: Sensor framework daemon libraries development headers
-      Description: |
-        Development headers for sensor framework daemon and libraries.
+      Description: "%{summary}."
+      Files:
+          - "%{_libdir}/*.so"
+          - "%{_libdir}/pkgconfig/*"
+          - "%{_includedir}/sensord/*"
+          - "%{_datadir}/qt4/mkspecs/features/sensord.prf"
 
     - Name: tests
       Group: Development/Libraries
@@ -54,7 +73,13 @@ SubPackages:
           - python
       Summary: Unit test cases for sensord
       Description: |
-        Contains unit test cases for CI environment.
+          Contains unit test cases for CI environment.
+      Files:
+          - "%{_libdir}/sensord/testing/*"
+          - "%attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*"
+          - "%attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml"
+          - "%attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf"
+          - "%attr(755,root,root)%{_bindir}/*"
 
     - Name: contextfw-tests
       Group: Development/Libraries
@@ -63,7 +88,12 @@ SubPackages:
           - contextkit >= 0.3.6
       Summary: Test cases for sensord acting as context provider
       Description: |
-        Contains test cases for CI environment, for ensuring that sensord provides context properties correctly.
+          Contains test cases for CI environment, for ensuring that sensord provides context properties correctly.
+      Files:
+          - "%attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.sh"
+          - "%attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.p*"
+          - "%attr(644,root,root)%{_datadir}/sensorfw-contextfw-tests/*.xml"
+
 
 #    - Name: doc
 #      Group: Documentation
@@ -89,15 +119,8 @@ SubPackages:
           - config-oemtablet
           - config-oaktraili
           - config-u8500
-
-    - Name: qt4-compat
-      Group: System/Libraries
-      Summary: Compatibiliy package for Qt 5 Sensorfw 
-      Description: |
-        Provides Qt 4 compatibility for Qt 5 Sensorfw files.
-      AutoDepend: no
       Files:
-          - "%{_libdir}/libsensorclient.so*"
-          - "%{_libdir}/libsensordatatypes.so*"
-
+          - "%config %{_sysconfdir}/%{name}/sensord.conf.d/*conf"
+          - "%config %{_sysconfdir}/%{name}/*conf"
+          - "%exclude %{_sysconfdir}/sensorfw/sensord.conf"
 

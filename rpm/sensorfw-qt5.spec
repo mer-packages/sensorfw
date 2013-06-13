@@ -16,25 +16,17 @@ License:    LGPLv2+
 URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
 Source1:    sensorfw-rpmlintrc
-Source2:    sensord.service
-Source3:    sensord-daemon-conf-setup
 Source100:  sensorfw-qt5.yaml
 Requires:   qt5-qtcore
 Requires:   GConf-dbus
-Requires:   %{name}-configs
-Requires:   systemd
-Requires(preun): systemd
+Requires:   sensorfw
 Requires(post): /sbin/ldconfig
-Requires(post): systemd
 Requires(postun): /sbin/ldconfig
-Requires(postun): systemd
 BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
-Obsoletes:   sensorframework
-Provides: sensord-qt5
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
@@ -52,38 +44,6 @@ Requires:   qt5-qtnetwork-devel
 Development headers for sensor framework daemon and libraries.
 
 
-%package tests
-Summary:    Unit test cases for sensord
-Group:      Development/Libraries
-Requires:   %{name} = %{version}-%{release}
-Requires:   qt5-qttest-devel
-Requires:   testrunner-lite
-Requires:   python
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-
-%description tests
-Contains unit test cases for CI environment.
-
-
-%package configs
-Summary:    Sensorfw configuration files
-Group:      System/Libraries
-BuildArch:  noarch
-Requires:   %{name} = %{version}
-Provides:   sensord-config
-Provides:   config-n900
-Provides:   config-aava
-Provides:   config-icdk
-Provides:   config-ncdk
-Provides:   config-oemtablet
-Provides:   config-oaktraili
-Provides:   config-u8500
-
-%description configs
-Sensorfw configuration files.
-
-
 %prep
 %setup -q -n %{name}-%{version}
 
@@ -91,10 +51,10 @@ Sensorfw configuration files.
 # << setup
 
 %build
-unset LD_AS_NEEDED
 # >> build pre
 # << build pre
-%qmake5
+
+%qmake5 
 
 make %{?jobs:-j%jobs}
 
@@ -109,74 +69,25 @@ export QT_SELECT=5
 %qmake5_install
 
 # >> install post
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_lib}/systemd/system/sensord.service
-install -D -m750 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
-
-mkdir -p %{buildroot}/%{_lib}/systemd/system/basic.target.wants
-ln -s ../sensord.service %{buildroot}/%{_lib}/systemd/system/basic.target.wants/sensord.service
 # << install post
 
-%preun
-if [ "$1" -eq 0 ]; then
-systemctl stop sensord.service
-fi
+%post -p /sbin/ldconfig
 
-%post
-/sbin/ldconfig
-systemctl daemon-reload
-systemctl reload-or-try-restart sensord.service
-
-%postun
-/sbin/ldconfig
-systemctl daemon-reload
-
-%post tests -p /sbin/ldconfig
-
-%postun tests -p /sbin/ldconfig
+%postun -p /sbin/ldconfig
 
 %files
 %defattr(-,root,root,-)
+%{_libdir}/libsensorclient-qt5.so.*
+%{_libdir}/libsensordatatypes-qt5.so.*
 # >> files
-%attr(755,root,root)%{_sbindir}/sensord
-%{_libdir}/sensord-qt5/*.so
-%{_libdir}/libsensorfw*.so.*
-%{_libdir}/libsensordatatypes*.so.*
-%{_libdir}/libsensorclient*.so.*
-%config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
-%config %{_sysconfdir}/sensorfw/sensord.conf
-%dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-/%{_lib}/systemd/system/sensord.service
-/%{_lib}/systemd/system/basic.target.wants/sensord.service
-%{_bindir}/sensord-daemon-conf-setup
 # << files
 
 %files devel
 %defattr(-,root,root,-)
-# >> files devel
-%{_libdir}/libsensorfw*.so
-%{_libdir}/libsensordatatypes*.so
+%{_libdir}/libsensordatatypes-qt5.so
 %{_libdir}/libsensorclient*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/sensord-qt5/*
 %{_datadir}/qt5/mkspecs/features/sensord.prf
+# >> files devel
 # << files devel
-
-%files tests
-%defattr(-,root,root,-)
-# >> files tests
-%{_libdir}/libsensorfakeopen*.so
-%{_libdir}/libsensorfakeopen*.so.*
-%{_libdir}/sensord-qt5/testing/*
-%attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*
-%attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml
-%attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf
-%attr(755,root,root)%{_bindir}/*
-# << files tests
-
-%files configs
-%defattr(-,root,root,-)
-# >> files configs
-%config %{_sysconfdir}/sensorfw/sensord.conf.d/*conf
-%config %{_sysconfdir}/sensorfw/*conf
-%exclude %{_sysconfdir}/sensorfw/sensord.conf
-# << files configs

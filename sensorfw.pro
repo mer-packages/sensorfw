@@ -11,6 +11,17 @@ SUBDIRS = datatypes \
           tests \
           examples
 
+# Until the situation regarding contextkit etc is sorted out, we don't want to
+# port the daemon to Qt 5. So we build it only for Qt 4, and depend on it for
+# the Qt 5 package.
+#
+# When that is sorted out, we can reverse the situation, and only build the
+# daemon for Qt 5. There is no sense in having a co-installable daemon.
+equals(QT_MAJOR_VERSION, 5): {
+    SUBDIRS = datatypes qt-api
+}
+
+qt-api.depends = datatypes
 sensord.depends = datatypes adaptors sensors chains
 
 #include( doc/doc.pri )
@@ -35,18 +46,22 @@ PKGCONFIGFILES.path = /usr/lib/pkgconfig
 
 QTCONFIGFILES.files = sensord.prf
 
-DBUSCONFIGFILES.files = sensorfw.conf
-DBUSCONFIGFILES.path = /etc/dbus-1/system.d
+equals(QT_MAJOR_VERSION, 4):  {
+    DBUSCONFIGFILES.files = sensorfw.conf
+    DBUSCONFIGFILES.path = /etc/dbus-1/system.d
 
-SENSORDCONFIGFILE.files = config/sensor*.conf
-SENSORDCONFIGFILE.path = /etc/sensorfw
+    SENSORDCONFIGFILE.files = config/sensor*.conf
+    SENSORDCONFIGFILE.path = /etc/sensorfw
 
-SENSORDCONFIGFILES.files = config/90-sensord-default.conf
-SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
+    SENSORDCONFIGFILES.files = config/90-sensord-default.conf
+    SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
+
+    INSTALLS += DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES
+}
 
 publicheaders.files += include/*.h
 
-INSTALLS += PKGCONFIGFILES QTCONFIGFILES DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES
+INSTALLS += PKGCONFIGFILES QTCONFIGFILES
 
 equals(QT_MAJOR_VERSION, 4):  {
     OTHER_FILES += rpm/sensorfw.spec \
