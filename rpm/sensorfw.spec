@@ -108,7 +108,6 @@ Provides Qt 4 compatibility for Qt 5 Sensorfw files.
 %build
 unset LD_AS_NEEDED
 # >> build pre
-export LD_RUN_PATH=/usr/lib/sensord/
 # << build pre
 
 %qmake  \

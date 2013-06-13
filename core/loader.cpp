@@ -28,7 +28,7 @@
 
 #include "loader.h"
 #include "plugin.h"
-#include <QLibrary>
+#include <QPluginLoader>
 #include <QStringList>
 #include <QList>
 #include <QCoreApplication>
@@ -38,7 +38,6 @@
 
 Loader::Loader()
 {
-    QCoreApplication::addLibraryPath("/usr/lib/sensord/");
 }
 
 Loader& Loader::instance()
@@ -52,23 +51,21 @@ bool Loader::loadPluginFile(const QString& name, QString *errorString, QStringLi
 {
     sensordLogT() << "Loading plugin:" << name;
 
-    QLibrary ql(name);
-    ql.setLoadHints(QLibrary::ExportExternalSymbolsHint);
-    if (!ql.load()) {
-        *errorString = ql.errorString();
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    QString pluginPath = QString::fromLatin1("/usr/lib/sensord/lib%1.so").arg(name);
+#else
+    QString pluginPath = QString::fromLatin1("/usr/lib/sensord-qt5/lib%1-qt5.so").arg(name);
+#endif
+
+    QPluginLoader qpl(pluginPath);
+    qpl.setLoadHints(QLibrary::ExportExternalSymbolsHint);
+    if (!qpl.load()) {
+        *errorString = qpl.errorString();
         sensordLogC() << "plugin loading error: " << *errorString;
         return false;
     }
 
-    QtPluginInstanceFunction instance;
-    instance = (QtPluginInstanceFunction)ql.resolve("qt_plugin_instance");
-    if (!instance) {
-        *errorString = "qt_plugin_instance not found";
-        sensordLogC() << "plugin loading error: " << *errorString;
-        return false;
-    }
-
-    QObject* object = instance();
+    QObject* object = qpl.instance();
     if (!object) {
         *errorString = "not able to instanciate";
         sensordLogC() << "plugin loading error: " << *errorString;

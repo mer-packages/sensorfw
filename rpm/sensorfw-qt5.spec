@@ -93,8 +93,6 @@ Sensorfw configuration files.
 %build
 unset LD_AS_NEEDED
 # >> build pre
-export LD_RUN_PATH=/usr/lib/sensord/
-export QT_SELECT=5
 # << build pre
 %qmake5
 
