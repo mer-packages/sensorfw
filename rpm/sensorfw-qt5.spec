@@ -93,8 +93,6 @@ Sensorfw configuration files.
 %build
 unset LD_AS_NEEDED
 # >> build pre
-export LD_RUN_PATH=/usr/lib/sensord/
-export QT_SELECT=5
 # << build pre
 %qmake5
 
@@ -147,7 +145,6 @@ systemctl daemon-reload
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-%doc debian/copyright debian/README COPYING
 /%{_lib}/systemd/system/sensord.service
 /%{_lib}/systemd/system/basic.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup

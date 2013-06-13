@@ -20,6 +20,5 @@ INCLUDEPATH += ../../include \
 
 QMAKE_LIBDIR_FLAGS += -L../../builddir/datatypes -L../../datatypes/
 QMAKE_LIBDIR_FLAGS += -L../../builddir/core -L../../core/
-QMAKE_RPATHDIR += /usr/lib/sensord
 
 include(../../common.pri)

@@ -108,7 +108,6 @@ Provides Qt 4 compatibility for Qt 5 Sensorfw files.
 %build
 unset LD_AS_NEEDED
 # >> build pre
-export LD_RUN_PATH=/usr/lib/sensord/
 # << build pre
 
 %qmake  \
@@ -164,7 +163,6 @@ systemctl daemon-reload
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/%{name}/sensord.conf.d/
 %{_datadir}/contextkit/providers/com.nokia.SensorService.context
-%doc debian/copyright debian/README COPYING
 /%{_lib}/systemd/system/sensord.service
 /%{_lib}/systemd/system/basic.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
