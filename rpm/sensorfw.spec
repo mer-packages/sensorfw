@@ -33,7 +33,9 @@ BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(contextprovider-1.0)
 Provides:   sensord
+Provides:   sensorfw-qt4-compat
 Obsoletes:   sensorframework
+Obsoletes:   sensorfw-qt4-compat
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
@@ -46,8 +48,7 @@ Requires:   %{name} = %{version}-%{release}
 Requires:   qt-devel
 
 %description devel
-Development headers for sensor framework daemon and libraries.
-
+%{summary}.
 
 %package tests
 Summary:    Unit test cases for sensord
@@ -87,16 +88,6 @@ Provides:   config-u8500
 
 %description configs
 Sensorfw configuration files.
-
-
-%package qt4-compat
-Summary:    Compatibiliy package for Qt 5 Sensorfw
-Group:      System/Libraries
-Requires(post): /sbin/ldconfig
-Requires(postun): /sbin/ldconfig
-
-%description qt4-compat
-Provides Qt 4 compatibility for Qt 5 Sensorfw files.
 
 
 %prep
@@ -149,13 +140,8 @@ update-contextkit-providers
 /sbin/ldconfig
 systemctl daemon-reload
 
-%post qt4-compat -p /sbin/ldconfig
-
-%postun qt4-compat -p /sbin/ldconfig
-
 %files
 %defattr(-,root,root,-)
-# >> files
 %attr(755,root,root)%{_sbindir}/sensord
 %{_libdir}/sensord/*.so
 %{_libdir}/*.so.*
@@ -166,48 +152,40 @@ systemctl daemon-reload
 /%{_lib}/systemd/system/sensord.service
 /%{_lib}/systemd/system/basic.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
+# >> files
 # << files
 
 %files devel
 %defattr(-,root,root,-)
-# >> files devel
 %{_libdir}/*.so
 %{_libdir}/pkgconfig/*
 %{_includedir}/sensord/*
 %{_datadir}/qt4/mkspecs/features/sensord.prf
-# From docs
-#%attr(644,root,root)%{_defaultdocdir}/sensord/html/*
+# >> files devel
 # << files devel
 
 %files tests
 %defattr(-,root,root,-)
-# >> files tests
 %{_libdir}/sensord/testing/*
 %attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf
 %attr(755,root,root)%{_bindir}/*
+# >> files tests
 # << files tests
 
 %files contextfw-tests
 %defattr(-,root,root,-)
-# >> files contextfw-tests
 %attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.sh
 %attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.p*
 %attr(644,root,root)%{_datadir}/sensorfw-contextfw-tests/*.xml
+# >> files contextfw-tests
 # << files contextfw-tests
 
 %files configs
 %defattr(-,root,root,-)
-# >> files configs
 %config %{_sysconfdir}/%{name}/sensord.conf.d/*conf
 %config %{_sysconfdir}/%{name}/*conf
 %exclude %{_sysconfdir}/sensorfw/sensord.conf
+# >> files configs
 # << files configs
-
-%files qt4-compat
-%defattr(-,root,root,-)
-%{_libdir}/libsensorclient.so*
-%{_libdir}/libsensordatatypes.so*
-# >> files qt4-compat
-# << files qt4-compat

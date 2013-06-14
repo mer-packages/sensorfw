@@ -10,12 +10,10 @@ Description: |
 Sources:
     - "%{name}-%{version}.tar.bz2"
     - "sensorfw-rpmlintrc"
-    - "sensord.service"
-    - "sensord-daemon-conf-setup"
 Requires:
     - qt5-qtcore
     - GConf-dbus
-    - "%{name}-configs"
+    - sensorfw
 
 PkgConfigBR:
     - Qt5Core
@@ -24,19 +22,11 @@ PkgConfigBR:
     - Qt5Test
     - gconf-2.0
 
-#PkgBR:
-#    - doxygen
-#    - graphviz
-Obsoletes:
-    - sensorframework
-
-Provides: sensord-qt5
-
 Configure: none
 Builder: qmake5
-UseAsNeeded: no
-
-#QMakeOptions:
+Files:
+    - "%{_libdir}/libsensorclient-qt5.so.*"
+    - "%{_libdir}/libsensordatatypes-qt5.so.*"
 
 SubPackages:
     - Name: devel
@@ -48,38 +38,9 @@ SubPackages:
       Summary: Sensor framework daemon libraries development headers
       Description: |
         Development headers for sensor framework daemon and libraries.
-
-    - Name: tests
-      Group: Development/Libraries
-      Requires:
-          - qt5-qttest-devel
-          - testrunner-lite
-          - python
-      Summary: Unit test cases for sensord
-      Description: |
-        Contains unit test cases for CI environment.
-
-#    - Name: doc
-#      Group: Documentation
-#      Summary: API documentation for libsensord
-#      Description: |
-#        Doxygen-generated API documentation for sensord.
-
-    - Name: configs
-      Group: System/Libraries
-      Summary: Sensorfw configuration files
-      Description: |
-        Sensorfw configuration files.
-      BuildArch: noarch
-      AutoDepend: no
-      Requires:
-          - "%{name} = %{version}"
-      Provides:
-          - sensord-config
-          - config-n900
-          - config-aava
-          - config-icdk
-          - config-ncdk
-          - config-oemtablet
-          - config-oaktraili
-          - config-u8500
+      Files:
+          - "%{_libdir}/libsensordatatypes-qt5.so"
+          - "%{_libdir}/libsensorclient*.so"
+          - "%{_libdir}/pkgconfig/*"
+          - "%{_includedir}/sensord-qt5/*"
+          - "%{_datadir}/qt5/mkspecs/features/sensord.prf"
