@@ -27,6 +27,8 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
+Provides:   sensorfw-qt5-configs
+Obsoletes:   sensorfw-qt5-configs
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.

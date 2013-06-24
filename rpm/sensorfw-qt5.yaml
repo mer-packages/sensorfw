@@ -24,6 +24,10 @@ PkgConfigBR:
 
 Configure: none
 Builder: qmake5
+Obsoletes:
+    - sensorfw-qt5-configs
+Provides:
+    - sensorfw-qt5-configs
 Files:
     - "%{_libdir}/libsensorclient-qt5.so.*"
     - "%{_libdir}/libsensordatatypes-qt5.so.*"
