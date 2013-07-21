@@ -61,6 +61,11 @@ Mpu6050AccelAdaptor::Mpu6050AccelAdaptor (const QString& id) :
     }
     addPath(zAxisPath, Z_AXIS);
 
+    swapXY = Config::configuration()->value<int>("accelerometer/swap_xy", 0);
+    xAxisDirection = Config::configuration()->value<int>("accelerometer/x_axis_direction", 1);
+    yAxisDirection = Config::configuration()->value<int>("accelerometer/y_axis_direction", 1);
+    zAxisDirection = Config::configuration()->value<int>("accelerometer/z_axis_direction", 1);
+
     buffer = new DeviceAdaptorRingBuffer<OrientationData>(128);
     setAdaptedSensor("accelerometer", "MPU6050 accelerometer", buffer);
 
@@ -111,13 +116,21 @@ void Mpu6050AccelAdaptor::processSample (int pathId, int fd) {
         case X_AXIS:
             currentData = buffer->nextSlot();                
             currentData->timestamp_ = Utils::getTimeStamp();
-            currentData->x_ = qRound(val / CORRECTION_FACTOR);
+            if (swapXY == 1) {
+                currentData->y_ = qRound(xAxisDirection * val / CORRECTION_FACTOR);
+            } else {
+                currentData->x_ = qRound(xAxisDirection * val / CORRECTION_FACTOR);
+            }
             break;
         case Y_AXIS:
-            currentData->y_ = qRound(-val / CORRECTION_FACTOR);
+            if (swapXY == 1) {
+                currentData->x_ = qRound(yAxisDirection * -val / CORRECTION_FACTOR);
+            } else {
+                currentData->y_ = qRound(yAxisDirection * -val / CORRECTION_FACTOR);
+            }
             break;
         case Z_AXIS:
-            currentData->z_ = qRound(-val / CORRECTION_FACTOR);
+            currentData->z_ = qRound(zAxisDirection * -val / CORRECTION_FACTOR);
             buffer->commit();
             buffer->wakeUpReaders();
             break;

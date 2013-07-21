@@ -51,5 +51,10 @@ class Mpu6050AccelAdaptor : public SysfsAdaptor {
     private:
         DeviceAdaptorRingBuffer<OrientationData>* buffer;
         OrientationData *currentData;
+
+        int swapXY;
+        int xAxisDirection;
+        int yAxisDirection;
+        int zAxisDirection;
 };
 #endif
