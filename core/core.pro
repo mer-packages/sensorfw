@@ -81,6 +81,13 @@ mce {
     DEFINES += SENSORFW_MCE_WATCHER
 }
 
+contains(CONFIG,hybris) {
+    message("<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>")
+    SOURCES += hybrisadaptor.cpp
+    HEADERS += hybrisadaptor.h
+    LIBS += -L/usr/lib -lhybris-common -lhardware
+}
+
 publicheaders.path  = $${publicheaders.path}/core
 publicheaders.files = $$HEADERS
 

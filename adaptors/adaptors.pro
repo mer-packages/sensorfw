@@ -26,3 +26,13 @@ SUDBIRS += oemtabletgyroscopeadaptor
 SUBDIRS += steaccelerometeradaptor
 SUBDIRS += mpu6050accelerometer
 
+contains(CONFIG,hybris) {
+    SUBDIRS += hybrisaccelerometer
+    SUBDIRS += hybrisalsadaptor
+    SUBDIRS += hybrisgyroscopeadaptor
+    SUBDIRS += hybrismagnetometeradaptor
+    SUBDIRS += hybrisproximityadaptor
+    SUBDIRS += hybrisorientationadaptor
+}
+
+
