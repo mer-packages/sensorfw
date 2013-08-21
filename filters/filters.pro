@@ -3,7 +3,8 @@ SUBDIRS = coordinatealignfilter \
           declinationfilter \
           orientationinterpreter \
           rotationfilter \
-          downsamplefilter
+          downsamplefilter \
+          avgaccfilter
 
 include(../common-install.pri)
 publicheaders.files = *.h

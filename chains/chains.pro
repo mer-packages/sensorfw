@@ -4,4 +4,6 @@ include( ../common-config.pri )
 include( ../common-install.pri )
 
 SUBDIRS  = accelerometerchain \
-           orientationchain
+           orientationchain \
+           magcalibrationchain \
+           compasschain
