@@ -6,4 +6,6 @@ HEADERS += hybrisproximityadaptor.h \
 SOURCES += hybrisproximityadaptor.cpp \
            hybrisproximityadaptorplugin.cpp
 
+LIBS+= -L../../core -lhybrissensorfw-qt5
+
 include( ../adaptor-config.pri )

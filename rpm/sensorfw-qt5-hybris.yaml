@@ -9,14 +9,11 @@ Description: |
     Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
 Sources:
     - "%{name}-%{version}.tar.bz2"
-    - "sensorfw-rpmlintrc"
-    - "sensord.service"
-    - "sensord-daemon-conf-setup"
 Requires:
     - qt5-qtcore
     - GConf-dbus
     - "%{name}-configs"
-
+    - sensorfw-qt5
 PkgConfigBR:
     - Qt5Core
     - Qt5DBus
@@ -26,17 +23,10 @@ PkgConfigBR:
 #PkgBR:
 #    - doxygen
 #    - graphviz
-Obsoletes:
-    - sensorframework
-
-Provides: sensord-qt5
-
 
 Configure: none
 Builder: qmake5
 UseAsNeeded: no
-
-#QMakeOptions:
 
 SubPackages:
     - Name: devel
@@ -45,25 +35,10 @@ SubPackages:
           - qt5-qtcore-devel
           - qt5-qtdbus-devel
           - qt5-qtnetwork-devel
-      Summary: Sensor framework daemon libraries development headers
+          - sensorfw-qt5-devel
+      Summary: Sensor framework hybris libraries development headers
       Description: |
-        Development headers for sensor framework daemon and libraries.
-
-    - Name: tests
-      Group: Development/Libraries
-      Requires:
-          - qt5-qttest-devel
-          - testrunner-lite
-          - python
-      Summary: Unit test cases for sensord
-      Description: |
-        Contains unit test cases for CI environment.
-
-#    - Name: doc
-#      Group: Documentation
-#      Summary: API documentation for libsensord
-#      Description: |
-#        Doxygen-generated API documentation for sensord.
+        Development headers for sensor framework hybris library.
 
     - Name: configs
       Group: System/Libraries
@@ -75,11 +50,4 @@ SubPackages:
       Requires:
           - "%{name} = %{version}"
       Provides:
-          - sensord-config
-          - config-n900
-          - config-aava
-          - config-icdk
-          - config-ncdk
-          - config-oemtablet
-          - config-oaktraili
-          - config-u8500
+          - config-hybris

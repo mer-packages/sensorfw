@@ -10,12 +10,10 @@ Description: |
 Sources:
     - "%{name}-%{version}.tar.bz2"
     - "sensorfw-rpmlintrc"
-    - "sensord.service"
-    - "sensord-daemon-conf-setup"
 Requires:
     - qt
     - GConf-dbus
-    - "%{name}-configs"
+    - sensorfw-qt5
 
 PkgConfigBR:
     - QtCore
@@ -23,35 +21,12 @@ PkgConfigBR:
     - QtDeclarative
     - contextprovider-1.0
 
-#PkgBR:
-#    - doxygen
-#    - graphviz
-
-Obsoletes:
-    - sensorframework
-    - sensorfw-qt4-compat
-Provides:
-    - sensord
-    - sensorfw-qt4-compat
-Files:
-    - "%attr(755,root,root)%{_sbindir}/sensord"
-    - "%{_libdir}/sensord/*.so"
-    - "%{_libdir}/*.so.*"
-    - "%config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf"
-    - "%config %{_sysconfdir}/sensorfw/sensord.conf"
-    - "%dir %{_sysconfdir}/%{name}/sensord.conf.d/"
-    - "%{_datadir}/contextkit/providers/com.nokia.SensorService.context"
-    - "/%{_lib}/systemd/system/sensord.service"
-    - "/%{_lib}/systemd/system/basic.target.wants/sensord.service"
-    - "%{_bindir}/sensord-daemon-conf-setup"
-
-
 Configure: none
 Builder: qmake
+Files:
+    - "%{_libdir}/libsensorclient.so.*"
+    - "%{_libdir}/libsensordatatypes.so.*"
 UseAsNeeded: no
-
-QMakeOptions:
-    - "CONFIG+=contextprovider"
 
 SubPackages:
     - Name: devel
@@ -61,66 +36,9 @@ SubPackages:
       Summary: Sensor framework daemon libraries development headers
       Description: "%{summary}."
       Files:
-          - "%{_libdir}/*.so"
+          - "%{_libdir}/libsensordatatypes.so"
+          - "%{_libdir}/libsensorclient*.so"
           - "%{_libdir}/pkgconfig/*"
           - "%{_includedir}/sensord/*"
           - "%{_datadir}/qt4/mkspecs/features/sensord.prf"
-
-    - Name: tests
-      Group: Development/Libraries
-      Requires:
-          - testrunner-lite
-          - python
-      Summary: Unit test cases for sensord
-      Description: |
-          Contains unit test cases for CI environment.
-      Files:
-          - "%{_libdir}/sensord/testing/*"
-          - "%attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*"
-          - "%attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml"
-          - "%attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf"
-          - "%attr(755,root,root)%{_bindir}/*"
-
-    - Name: contextfw-tests
-      Group: Development/Libraries
-      Requires:
-          - sensorfw-tests
-          - contextkit >= 0.3.6
-      Summary: Test cases for sensord acting as context provider
-      Description: |
-          Contains test cases for CI environment, for ensuring that sensord provides context properties correctly.
-      Files:
-          - "%attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.sh"
-          - "%attr(755,root,root)%{_datadir}/sensorfw-contextfw-tests/*.p*"
-          - "%attr(644,root,root)%{_datadir}/sensorfw-contextfw-tests/*.xml"
-
-
-#    - Name: doc
-#      Group: Documentation
-#      Summary: API documentation for libsensord
-#      Description: |
-#        Doxygen-generated API documentation for sensord.
-
-    - Name: configs
-      Group: System/Libraries
-      Summary: Sensorfw configuration files
-      Description: |
-        Sensorfw configuration files.
-      BuildArch: noarch
-      AutoDepend: no
-      Requires:
-          - "%{name} = %{version}"
-      Provides:
-          - sensord-config
-          - config-n900
-          - config-aava
-          - config-icdk
-          - config-ncdk
-          - config-oemtablet
-          - config-oaktraili
-          - config-u8500
-      Files:
-          - "%config %{_sysconfdir}/%{name}/sensord.conf.d/*conf"
-          - "%config %{_sysconfdir}/%{name}/*conf"
-          - "%exclude %{_sysconfdir}/sensorfw/sensord.conf"
 

@@ -18,7 +18,6 @@
 **
 ****************************************************************************/
 
-#include <QDebug>
 #include "hybrisorientationadaptor.h"
 #include "logging.h"
 #include "datatypes/utils.h"
@@ -73,25 +72,12 @@ void HybrisOrientationAdaptor::stopSensor()
 
 void HybrisOrientationAdaptor::processSample(const sensors_event_t& data)
 {
-    qDebug() << Q_FUNC_INFO
-            << "sensor:" << data.type
-            << "timestamp:" << quint64(data.timestamp * .001)
-            << "value:"
-            << data.data[0]
-            << data.data[1]
-            << data.data[2];
-
     TimedXyzData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
     // sensorfw wants milli-G'
     d->x_ = data.data[0] * 1000; //azimuth
     d->y_ = data.data[1] * 1000; //pitch
     d->z_ = data.data[2] * 1000; //roll
-
-    qDebug() << Q_FUNC_INFO
-            << "sensor:" << data.type
-            << "timestamp:" << quint64(data.timestamp * .001)
-            << "value:" << d->x_<< d->y_ << d->z_;
 
 //  qt's sensorfw plugin expects G == 9.81286, but it should be
     //9.80665
@@ -101,7 +87,4 @@ void HybrisOrientationAdaptor::processSample(const sensors_event_t& data)
 
 void HybrisOrientationAdaptor::init()
 {
-//    qDebug() << "maxRange" << HybrisAdaptor::maxRange;
-//    introduceAvailableDataRange(DataRange(-HybrisAdaptor::maxRange, HybrisAdaptor::maxRange , 1));
-//    introduceAvailableInterval(DataRange(10, 586, 0));
 }

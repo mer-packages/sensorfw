@@ -6,5 +6,6 @@ HEADERS += hybrisgyroscopeadaptor.h \
 SOURCES += hybrisgyroscopeadaptor.cpp \
            hybrisgyroscopeadaptorplugin.cpp
 
+LIBS+= -L../../core -lhybrissensorfw-qt5
 
 include( ../adaptor-config.pri )

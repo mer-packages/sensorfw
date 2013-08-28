@@ -82,15 +82,11 @@ mce {
 }
 
 contains(CONFIG,hybris) {
-    message("<<<<<<<<<<<<<<<<<>>>>>>>>>>>>>>>>>>>>>>>>>")
-    SOURCES += hybrisadaptor.cpp
-    HEADERS += hybrisadaptor.h
-    LIBS += -L/usr/lib -lhybris-common -lhardware
+} else {
+    publicheaders.path  = $${publicheaders.path}/core
+    publicheaders.files = $$HEADERS
+
+    include(../common-install.pri)
+    target.path = $$SHAREDLIBPATH
+    INSTALLS += target
 }
-
-publicheaders.path  = $${publicheaders.path}/core
-publicheaders.files = $$HEADERS
-
-include(../common-install.pri)
-target.path = $$SHAREDLIBPATH
-INSTALLS += target

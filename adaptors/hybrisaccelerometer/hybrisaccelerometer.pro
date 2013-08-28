@@ -5,5 +5,6 @@ HEADERS += hybrisaccelerometeradaptor.h \
 
 SOURCES += hybrisaccelerometeradaptor.cpp \
            hybrisaccelerometeradaptorplugin.cpp
+LIBS+= -L../../core -lhybrissensorfw-qt5
 
 include( ../adaptor-config.pri )
