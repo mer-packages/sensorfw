@@ -13,13 +13,18 @@ Requires:
     - qt5-qtcore
     - GConf-dbus
     - "%{name}-configs"
-    - sensorfw-qt5
+    - sensord-qt5
+    - libhybris
+    - libhybris-libhardware
 PkgConfigBR:
     - Qt5Core
     - Qt5DBus
     - Qt5Network
     - Qt5Test
     - gconf-2.0
+    - libhybris
+    - libhybris-libhardware
+    - sensord-qt5
 #PkgBR:
 #    - doxygen
 #    - graphviz

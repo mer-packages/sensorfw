@@ -20,7 +20,7 @@ Requires:   qt5-qtcore
 Requires:   GConf-dbus
 Requires:   %{name}-configs
 Requires:   systemd
-Requires:   sensorfw-qt5
+Requires:   sensord-qt5
 Requires(preun): systemd
 Requires(post): /sbin/ldconfig
 Requires(post): systemd
@@ -33,8 +33,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
-BuildRequires:  libhybris-devel
-BuildRequires:  libhybris-libhardware-devel
+BuildRequires:  pkgconfig(sensord-qt5)
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
