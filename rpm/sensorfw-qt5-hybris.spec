@@ -34,6 +34,7 @@ BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(sensord-qt5)
+BuildRequires:  pkgconfig(libhybris-libhardware)
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
