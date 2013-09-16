@@ -9,7 +9,7 @@ Name:       hybris-libsensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.12
+Version:    0.7.3.13
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+

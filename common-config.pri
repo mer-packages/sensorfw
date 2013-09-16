@@ -35,3 +35,9 @@ equals(QT_MAJOR_VERSION, 5):{
 
 OTHER_FILES += \
     ../../common.pri
+
+contains(CONFIG,hybris) {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += android-headers
+    PKGCONFIG += libhardware
+}
