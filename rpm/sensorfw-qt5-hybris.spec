@@ -9,7 +9,7 @@ Name:       hybris-libsensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.4
+Version:    0.7.3.9
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -34,8 +34,7 @@ BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
 BuildRequires:  pkgconfig(sensord-qt5)
-BuildRequires:  libhybris-libhardware-devel
-BuildRequires:  libhybris
+BuildRequires:  pkgconfig(libhardware)
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.

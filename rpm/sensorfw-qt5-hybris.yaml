@@ -1,6 +1,6 @@
 Name: sensorfw-qt5
 Summary: Sensor Framework Qt5
-Version: 0.7.3.4
+Version: 0.7.3.9
 Release: 0
 Group: "System/Sensor Framework"
 License: LGPLv2+
@@ -14,16 +14,14 @@ Requires:
     - GConf-dbus
     - "%{name}-configs"
     - sensord-qt5
-    - libhybris
-    - libhybris-libhardware
+    -libhardware
 PkgConfigBR:
     - Qt5Core
     - Qt5DBus
     - Qt5Network
     - Qt5Test
     - gconf-2.0
-    - libhybris
-    - libhybris-libhardware
+    - libhardware
     - sensord-qt5
 #PkgBR:
 #    - doxygen
