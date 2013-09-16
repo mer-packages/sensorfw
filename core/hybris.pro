@@ -20,7 +20,7 @@ QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5
 SOURCES += hybrisadaptor.cpp
 HEADERS += hybrisadaptor.h
 LIBS += -L/usr/lib -lhybris-common -lhardware
-
+PKGCONFIG += android-headers
 
 include(../common-install.pri)
 target.path = $$SHAREDLIBPATH
