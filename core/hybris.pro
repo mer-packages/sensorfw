@@ -21,6 +21,7 @@ SOURCES += hybrisadaptor.cpp
 HEADERS += hybrisadaptor.h
 LIBS += -L/usr/lib -lhybris-common -lhardware
 PKGCONFIG += android-headers
+PKGCONFIG += libhardware
 
 include(../common-install.pri)
 target.path = $$SHAREDLIBPATH

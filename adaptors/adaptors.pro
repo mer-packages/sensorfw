@@ -28,6 +28,7 @@ SUBDIRS += mpu6050accelerometer
 
 contains(CONFIG,hybris) {
     PKGCONFIG += android-headers
+    PKGCONFIG += libhardware
     SUBDIRS = hybrisaccelerometer
     SUBDIRS += hybrisalsadaptor
     SUBDIRS += hybrisgyroscopeadaptor
