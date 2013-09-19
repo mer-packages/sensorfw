@@ -1,6 +1,6 @@
 Name:       hybris-libsensorfw-qt5
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.14
+Version:    0.7.3.15
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -69,6 +69,7 @@ export QT_SELECT=5
 
 %post
 /sbin/ldconfig
+%{_bindir}/sensord-daemon-conf-setup
 
 %postun
 /sbin/ldconfig
