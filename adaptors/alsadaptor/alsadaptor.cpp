@@ -102,7 +102,7 @@ void ALSAdaptor::disableALS()
 
 bool ALSAdaptor::startSensor()
 {
-    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    if(!powerStatePath_.isEmpty())
     {
         writeToFile(powerStatePath_, "1");
     }
@@ -118,7 +118,7 @@ bool ALSAdaptor::startSensor()
 
 void ALSAdaptor::stopSensor()
 {
-    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    if(!powerStatePath_.isEmpty())
     {
         writeToFile(powerStatePath_, "0");
     }
@@ -167,7 +167,7 @@ void ALSAdaptor::processSample(int pathId, int fd)
             sensordLogW() << "read(): " << strerror(errno);
             return;
         }
-        sensordLogW() << "Ambient light value: " << als_data.lux;
+        sensordLogT() << "Ambient light value: " << als_data.lux;
 
         TimedUnsigned* lux = alsBuffer_->nextSlot();
         lux->value_ = als_data.lux;
