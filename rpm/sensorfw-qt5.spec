@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.16
+Version:    0.7.3.17
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
