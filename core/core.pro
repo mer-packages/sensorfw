@@ -38,7 +38,6 @@ SOURCES += sensormanager.cpp \
     plugin.cpp \
     abstractsensor_a.cpp \
     abstractsensor.cpp \
-    logging.cpp \
     parameterparser.cpp \
     abstractchain.cpp \
     sysfsadaptor.cpp \

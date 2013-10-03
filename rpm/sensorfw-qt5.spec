@@ -99,7 +99,7 @@ export QT_SELECT=5
 
 %qmake5 
 
-make %{?jobs:-j%jobs}
+make %{?_smp_mflags}
 
 # >> build post
 # << build post

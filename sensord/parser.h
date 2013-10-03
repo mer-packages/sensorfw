@@ -38,8 +38,7 @@ public:
     ~Parser();
 
     bool printHelp() const;
-    bool changeLogLevel() const;
-    SensordLogLevel getLogLevel() const;
+    QtMsgType getLogLevel() const;
 
     bool configFileInput() const;
     const QString& configFilePath() const;
@@ -49,15 +48,12 @@ public:
     bool contextInfo() const;
     bool magnetometerCalibration() const;
     bool createDaemon() const;
-    int logTarget() const;
-    const QString& logFilePath() const;
 
 private:
     void parsingCommandLine(QStringList arguments);
 
     bool printHelp_;
     bool contextInfo_;
-    bool changeLogLevel_;
     bool configFile_;
     bool configDir_;
     bool daemon_;
@@ -65,9 +61,7 @@ private:
 
     QString configFilePath_;
     QString configDirPath_;
-    SensordLogLevel logLevel_;
-    int logTarget_; //TODO: add some enum about log targets
-    QString logFilePath_;
+    QtMsgType logLevel_;
 };
 
 #endif // PARSER_H
