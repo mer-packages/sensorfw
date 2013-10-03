@@ -48,13 +48,6 @@ ClientAdmin::ClientAdmin(const Parser& parser, QObject *parent) :
 
 void ClientAdmin::init()
 {
-    SensordLogger::init(parser.logTarget(), parser.logFilePath(), "sensortestapp");
-
-    if (parser.changeLogLevel())
-    {
-        SensordLogger::setOutputLevel(parser.getLogLevel());
-    }
-
     if (parser.configFileInput())
     {
         QString defConfigFile = parser.configFilePath();
@@ -128,5 +121,4 @@ ClientAdmin::~ClientAdmin()
         delete handler;
     }
     Config::close();
-    SensordLogger::close();
 }

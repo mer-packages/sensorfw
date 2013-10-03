@@ -30,15 +30,12 @@
 Parser::Parser(QStringList arguments) :
     printHelp_(false),
     contextInfo_(true),
-    changeLogLevel_(false),
     configFile_(false),
     configDir_(false),
     daemon_(false),
     magnetometerCalibration_(true),
     configFilePath_(""),
-    logLevel_(SensordLogWarning),
-    logTarget_(8),
-    logFilePath_("/var/log/sensord.log")
+    logLevel_(QtWarningMsg)
 {
     parsingCommandLine(arguments);
 }
@@ -57,28 +54,15 @@ void Parser::parsingCommandLine(QStringList arguments)
         if (opt.startsWith("-l=") || opt.startsWith("--log-level"))
         {
             data = opt.split("=");
-            changeLogLevel_ = true;
             QString logLevel = data.at(1);
-            if (logLevel == "test")
-                logLevel_ = SensordLogTest;
-            else if (logLevel == "debug")
-                logLevel_ = SensordLogDebug;
+            if (logLevel == "test" || logLevel == "debug")
+                logLevel_ = QtDebugMsg;
             else if (logLevel == "warning")
-                logLevel_ = SensordLogWarning;
+                logLevel_ = QtWarningMsg;
             else if (logLevel == "critical")
-                logLevel_ = SensordLogCritical;
+                logLevel_ = QtCriticalMsg;
             else
-                logLevel_ = SensordLogWarning;
-        }
-        else if (opt.startsWith("--log-target"))
-        {
-            data = opt.split("=");
-            logTarget_= data.at(1).toInt();
-        }
-        else if (opt.startsWith("--log-file-path"))
-        {
-            data = opt.split("=");
-            logFilePath_ = data.at(1);
+                logLevel_ = QtWarningMsg;
         }
         else if (opt.startsWith("-c=") || opt.startsWith("--config-file"))
         {
@@ -110,12 +94,7 @@ bool Parser::printHelp() const
     return printHelp_;
 }
 
-bool Parser::changeLogLevel() const
-{
-    return changeLogLevel_;
-}
-
-SensordLogLevel Parser::getLogLevel() const
+QtMsgType Parser::getLogLevel() const
 {
     return logLevel_;
 }
@@ -155,12 +134,3 @@ bool Parser::createDaemon() const
     return daemon_;
 }
 
-int Parser::logTarget() const
-{
-    return logTarget_;
-}
-
-const QString& Parser::logFilePath() const
-{
-    return logFilePath_;
-}

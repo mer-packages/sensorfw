@@ -44,8 +44,6 @@
 void FilterApiTest::initTestCase()
 {
     Config::loadConfig(CONFIG_FILE_PATH, CONFIG_DIR_PATH);
-    SensordLogger::init(1, "/tmp/test.log", "FilterApiTest");
-    SensordLogger::setOutputLevel(SensordLogTest);
 }
 
 /**
