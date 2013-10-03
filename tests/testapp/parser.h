@@ -27,6 +27,8 @@
 #define PARSER_H
 
 #include <QString>
+#include <QStringList>
+
 #include "logging.h"
 
 class Parser
@@ -39,8 +41,7 @@ public:
 
     bool printHelp() const;
 
-    bool changeLogLevel() const;
-    SensordLogLevel getLogLevel() const;
+    QtMsgType getLogLevel() const;
 
     bool configFileInput() const;
     const QString& configFilePath() const;
@@ -48,22 +49,16 @@ public:
     bool singleThread() const;
     bool gracefulShutdown() const;
 
-    int logTarget() const;
-    const QString& logFilePath() const;
-
     int statInterval() const;
 
 private:
     bool printHelp_;
-    bool changeLogLevel_;
     bool configFile_;
     bool singleThread_;
     bool gracefulShutdown_;
 
     QString configFilePath_;
-    SensordLogLevel logLevel_;
-    int logTarget_;
-    QString logFilePath_;
+    QtMsgType logLevel_;
     int statInterval_;
 };
 

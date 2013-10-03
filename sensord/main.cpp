@@ -31,6 +31,8 @@
  */
 
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDebug>
+
 #include <signal.h>
 #include <iostream>
 #include <errno.h>
@@ -42,15 +44,27 @@
 #include "calibrationhandler.h"
 #include "parser.h"
 
+static QtMsgType logLevel;
+static QtMessageHandler previousMessageHandler;
+
+static void messageOutput(QtMsgType type, QMessageLogContext &context, const QString &str)
+{
+    if (type < logLevel)
+        return;
+
+    previousMessageHandler(type, context, str);
+}
+
 void printUsage();
 
 void signalUSR1(int param)
 {
     Q_UNUSED(param);
 
-    SensordLogger::setOutputLevel(static_cast<SensordLogLevel> ((static_cast<int>(SensordLogger::getOutputLevel()) + 1) % SensordLogN));
-
-    std::cerr << "New debugging level: " << SensordLogger::getOutputLevel() << "\n";
+    logLevel = QtMsgType(logLevel + 1);
+    if (logLevel > QtSystemMsg)
+        logLevel = QtDebugMsg;
+    std::cerr << "New debugging level: " << logLevel << "\n";
 }
 
 void signalUSR2(int param)
@@ -60,7 +74,7 @@ void signalUSR2(int param)
     QStringList output;
 
     output.append("Flushing sensord state\n");
-    output.append(QString("  Logging level: %1\n").arg(SensordLogger::getOutputLevel()));
+    output.append(QString("  Logging level: %1\n").arg(logLevel));
     SensorManager::instance().printStatus(output);
 
     foreach (const QString& line, output) {
@@ -79,7 +93,6 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
-    SensordLogger::init(parser.logTarget(), parser.logFilePath(), "sensord");
 
     if (parser.printHelp())
     {
@@ -89,10 +102,7 @@ int main(int argc, char *argv[])
 
     }
 
-    if (parser.changeLogLevel())
-    {
-        SensordLogger::setOutputLevel(parser.getLogLevel());
-    }
+    logLevel = parser.getLogLevel();
 
     const char* CONFIG_FILE_PATH = "/etc/sensorfw/sensord.conf";
     const char* CONFIG_DIR_PATH = "/etc/sensorfw/sensord.conf.d/";
@@ -163,7 +173,6 @@ int main(int argc, char *argv[])
     int ret = app.exec();
     sensordLogD() << "Exiting...";
     Config::close();
-    SensordLogger::close();
     return ret;
 }
 
@@ -176,8 +185,6 @@ void printUsage()
     qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
-    qDebug() << " --log-target=<target>            Logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
-    qDebug() << " --log-file-path=<path>           Log file path\n";
     qDebug() << " -c=P, --config-file=<path>       Load configuration from given path. By default";
     qDebug() << "                                  /etc/sensorfw/sensord.conf is used.\n";
     qDebug() << " --no-context-info                Do not provide context information for context";
