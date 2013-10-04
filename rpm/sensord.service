@@ -1,6 +1,7 @@
 [Unit]
-Description=Sensor daemon for sensor framwork
+Description=Sensor daemon for sensor framework
 After=boardname.service
+Requires=dbus.socket
 
 [Service]
 Type=forking 
@@ -9,5 +10,5 @@ ExecStart=/usr/sbin/sensord -c=/etc/sensorfw/primaryuse.conf -d --log-target=8 -
 ExecReload=/bin/kill -HUP $MAINPID
 
 [Install]
-WantedBy=jolla-middleware.target
+WantedBy=basic.target
 
