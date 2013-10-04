@@ -74,8 +74,6 @@ void printUsage()
     qDebug() << "                                  can also be notched up by sending SIGUSR1 to";
     qDebug() << "                                  the process. Valid values for N are: 'test',";
     qDebug() << "                                  'debug', 'warning', 'critical'.\n";
-    qDebug() << " --log-target=N                   logging target mask (1=stdout, 2=stderr, 4=file, 8=syslog and combos e.g. 3=stdout|stderr\n";
-    qDebug() << " --log-file-path=P                Log file path\n";
     qDebug() << " -c=P, --config-file=P            Load configuration from P. By default";
     qDebug() << "                                  /usr/share/sensorfw-tests/testapp.conf is used.\n";
     qDebug() << " -m=N  --model=N                  Start clients in single thread model or multithread mode. (1=single thread(default), 2=multithread)\n";
