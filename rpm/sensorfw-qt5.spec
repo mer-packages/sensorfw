@@ -19,6 +19,7 @@ Source1:    sensorfw-rpmlintrc
 Source2:    sensord.service
 Source3:    sensord-daemon-conf-setup
 Source100:  sensorfw-qt5.yaml
+Requires:   mce
 Requires:   qt5-qtcore
 Requires:   GConf-dbus
 Requires:   %{name}-configs
@@ -33,6 +34,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(mce)
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
 
@@ -97,7 +99,8 @@ export LD_RUN_PATH=/usr/lib/sensord/
 export QT_SELECT=5
 # << build pre
 
-%qmake5 
+%qmake5  \
+    CONFIG+=mce
 
 make %{?_smp_mflags}
 
