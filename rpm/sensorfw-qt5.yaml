@@ -13,6 +13,7 @@ Sources:
     - "sensord.service"
     - "sensord-daemon-conf-setup"
 Requires:
+    - mce
     - qt5-qtcore
     - GConf-dbus
     - "%{name}-configs"
@@ -23,9 +24,8 @@ PkgConfigBR:
     - Qt5Network
     - Qt5Test
     - gconf-2.0
-#PkgBR:
-#    - doxygen
-#    - graphviz
+    - mce
+
 Obsoletes:
     - sensorframework
 
@@ -36,7 +36,8 @@ Configure: none
 Builder: qmake5
 UseAsNeeded: no
 
-#QMakeOptions:
+QMakeOptions:
+    - "CONFIG+=mce"
 
 SubPackages:
     - Name: devel
