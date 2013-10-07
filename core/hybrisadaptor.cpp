@@ -371,13 +371,56 @@ void HybrisAdaptor::stopSensor()
 
 bool HybrisAdaptor::standby()
 {
-    return false;
+    sensordLogD() << "Adaptor '" << id() << "' requested to go to standby";
+    if (inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby";
+        return false;
+    }
+    if (deviceStandbyOverride()) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: overriden";
+        return false;
+    }
+    inStandbyMode_ = true;
+
+    if (!isRunning()) {
+        sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
+        return false;
+    }
+
+    sensordLogD() << "Adaptor '" << id() << "' going to standby";
+    stopReaderThread();
+
+    running_ = false;
+    return true;
 }
 
 
 bool HybrisAdaptor::resume()
 {
-    return false;
+    sensordLogD() << "Adaptor '" << id() << "' requested to resume from standby";
+
+    // Don't resume if not in standby
+    if (!inStandbyMode_) {
+        sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
+        return false;
+    }
+
+    inStandbyMode_ = false;
+
+    if (!shouldBeRunning_) {
+        sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
+        return false;
+    }
+
+    sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
+
+    if (!startReaderThread()) {
+        sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";
+        return false;
+    }
+
+    running_ = true;
+    return true;
 }
 
 unsigned int HybrisAdaptor::interval() const
