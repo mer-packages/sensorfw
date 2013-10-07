@@ -32,7 +32,12 @@
 #include <QObject>
 #include <QDBusInterface>
 #include <QString>
-
+#define MCE_SERVICE                     "com.nokia.mce"
+#define MCE_SIGNAL_PATH                 "/com/nokia/mce/signal"
+#define MCE_SIGNAL_IF                   "com.nokia.mce.signal"
+#define MCE_DISPLAY_OFF_STRING                  "off"
+#define MCE_PSM_STATE_SIG               "psm_state_ind"
+#define MCE_DISPLAY_SIG                 "display_status_ind"
 /**
  * Class for monitoring various MCE signals.
  */

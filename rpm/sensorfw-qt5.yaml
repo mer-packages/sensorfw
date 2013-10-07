@@ -24,7 +24,6 @@ PkgConfigBR:
     - Qt5Network
     - Qt5Test
     - gconf-2.0
-    - mce
 
 Obsoletes:
     - sensorframework

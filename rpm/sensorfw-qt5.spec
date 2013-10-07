@@ -34,7 +34,6 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(gconf-2.0)
-BuildRequires:  pkgconfig(mce)
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
 
