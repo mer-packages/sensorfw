@@ -389,10 +389,9 @@ bool HybrisAdaptor::standby()
 
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
     stopReaderThread();
-//    closeAllFds();
 
     running_ = false;
-    return false;
+    return true;
 }
 
 
@@ -421,7 +420,7 @@ bool HybrisAdaptor::resume()
     }
 
     running_ = true;
-    return false;
+    return true;
 }
 
 unsigned int HybrisAdaptor::interval() const
