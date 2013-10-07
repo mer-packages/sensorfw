@@ -2,6 +2,7 @@
 Description=Sensor daemon for sensor framework
 After=boardname.service
 Requires=dbus.socket
+Conflicts=actdead.target
 
 [Service]
 Type=forking 
