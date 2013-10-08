@@ -28,7 +28,7 @@
 HybrisGyroscopeAdaptor::HybrisGyroscopeAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_GYROSCOPE)
 {
-    buffer = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
+    buffer = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
     setAdaptedSensor("gyroscopeadaptor", "Internal gyroscope coordinates", buffer);
 
     setDescription("Hybris gyroscope");
@@ -58,6 +58,7 @@ void HybrisGyroscopeAdaptor::stopSensor()
 
 void HybrisGyroscopeAdaptor::processSample(const sensors_event_t& data)
 {
+
     TimedXyzData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
     d->x_ = (data.acceleration.x) * 57295.7795;
