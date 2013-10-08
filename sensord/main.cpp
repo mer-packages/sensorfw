@@ -47,7 +47,7 @@
 static QtMsgType logLevel;
 static QtMessageHandler previousMessageHandler;
 
-static void messageOutput(QtMsgType type, QMessageLogContext &context, const QString &str)
+static void messageOutput(QtMsgType type, const QMessageLogContext &context, const QString &str)
 {
     if (type < logLevel)
         return;
@@ -90,6 +90,8 @@ void signalINT(int param)
 
 int main(int argc, char *argv[])
 {
+    previousMessageHandler = qInstallMessageHandler(messageOutput);
+
     QCoreApplication app(argc, argv);
     SensorManager& sm = SensorManager::instance();
     Parser parser(app.arguments());
