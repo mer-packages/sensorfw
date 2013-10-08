@@ -25,9 +25,8 @@
  */
 
 
-#include <mce/mode-names.h>
-#include <mce/dbus-names.h>
 #include "mcewatcher.h"
+
 
 MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
                                           dbusIfc(new QDBusInterface(MCE_SERVICE,

@@ -38,8 +38,11 @@
 #include <QDBusInterface>
 
 #ifdef SENSORFW_MCE_WATCHER
-    #include <mce/mode-names.h>
-    #include <mce/dbus-names.h>
+// these come from mce/mode-names.h
+// and mce/dbus-names.h
+#define MCE_SERVICE                     "com.nokia.mce"
+#define MCE_REQUEST_PATH                "/com/nokia/mce/request"
+#define MCE_REQUEST_IF                  "com.nokia.mce.request"
 #endif
 
 /**
