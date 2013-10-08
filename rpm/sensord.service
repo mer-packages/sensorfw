@@ -9,6 +9,8 @@ Type=forking
 ExecStartPre=/bin/sh /usr/bin/sensord-daemon-conf-setup
 ExecStart=/usr/sbin/sensord -c=/etc/sensorfw/primaryuse.conf -d --log-level=warning
 ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=1
 
 [Install]
 WantedBy=basic.target
