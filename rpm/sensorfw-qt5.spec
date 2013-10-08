@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.20
+Version:    0.7.3.21
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -19,7 +19,6 @@ Source1:    sensorfw-rpmlintrc
 Source2:    sensord.service
 Source3:    sensord-daemon-conf-setup
 Source100:  sensorfw-qt5.yaml
-Requires:   mce
 Requires:   qt5-qtcore
 Requires:   GConf-dbus
 Requires:   %{name}-configs
