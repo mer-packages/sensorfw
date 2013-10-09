@@ -9,7 +9,7 @@ Name:       sensorfw
 # << macros
 
 Summary:    Sensor Framework
-Version:    0.7.3.22
+Version:    0.7.3.23
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+

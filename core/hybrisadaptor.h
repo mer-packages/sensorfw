@@ -72,6 +72,9 @@ public:
     void startReader(HybrisAdaptor *adaptor);
     void stopReader(HybrisAdaptor *adaptor);
 
+    bool resumeReader(HybrisAdaptor *adaptor);
+    void standbyReader(HybrisAdaptor *adaptor);
+
     bool openSensors();
     bool closeSensors();
 
