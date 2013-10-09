@@ -9,7 +9,7 @@ Name:       sensorfw-qt5
 # << macros
 
 Summary:    Sensor Framework Qt5
-Version:    0.7.3.21
+Version:    0.7.3.22
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -97,8 +97,7 @@ export LD_RUN_PATH=/usr/lib/sensord/
 export QT_SELECT=5
 # << build pre
 
-%qmake5  \
-    CONFIG+=mce
+%qmake5 
 
 make %{?_smp_mflags}
 
