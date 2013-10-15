@@ -38,6 +38,7 @@ class HybrisAdaptorReader : public QThread
 public:
 
     HybrisAdaptorReader(QObject *parent);
+    ~HybrisAdaptorReader();
 
     void run();
     void stopReader();
@@ -58,6 +59,7 @@ class HybrisManager : public QObject
 public:
     explicit HybrisManager(QObject *parent = 0);
     static HybrisManager *instance();
+    virtual ~HybrisManager();
 
     struct sensors_poll_device_t* device;
     struct sensor_t const* sensorList;
@@ -71,6 +73,9 @@ public:
     bool setDelay(int handle, int interval);
     void startReader(HybrisAdaptor *adaptor);
     void stopReader(HybrisAdaptor *adaptor);
+
+    bool resumeReader(HybrisAdaptor *adaptor);
+    void standbyReader(HybrisAdaptor *adaptor);
 
     bool openSensors();
     bool closeSensors();
@@ -86,6 +91,7 @@ protected:
     QMap <int, int> sensorMap; //type, index
     QMap <int, HybrisAdaptor *> registeredAdaptors; //type, obj
     bool sensorsOpened;
+    void closeAllSensors();
 };
 
 class HybrisAdaptor : public DeviceAdaptor

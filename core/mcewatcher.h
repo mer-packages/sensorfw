@@ -38,6 +38,12 @@
 #define MCE_DISPLAY_OFF_STRING                  "off"
 #define MCE_PSM_STATE_SIG               "psm_state_ind"
 #define MCE_DISPLAY_SIG                 "display_status_ind"
+
+#define MCE_REQUEST_PATH                "/com/nokia/mce/request"
+#define MCE_REQUEST_IF                  "com.nokia.mce.request"
+#define MCE_DISPLAY_STATUS_GET          "get_display_status"
+#define MCE_PSM_STATE_GET               "get_psm_state"
+
 /**
  * Class for monitoring various MCE signals.
  */

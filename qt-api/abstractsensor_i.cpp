@@ -28,6 +28,9 @@
 
 #include "sensormanagerinterface.h"
 #include "abstractsensor_i.h"
+#ifdef SENSORFW_MCE_WATCHER
+#include "mcewatcher.h"
+#endif
 
 struct AbstractSensorChannelInterface::AbstractSensorChannelInterfaceImpl : public QDBusAbstractInterface
 {
@@ -71,6 +74,12 @@ AbstractSensorChannelInterface::AbstractSensorChannelInterface(const QString& pa
     if (!pimpl_->socketReader_.initiateConnection(sessionId)) {
         setError(SClientSocketError, "Socket connection failed.");
     }
+#ifdef SENSORFW_MCE_WATCHER
+    MceWatcher *mcewatcher;
+    mcewatcher = new MceWatcher(this);
+    QObject::connect(mcewatcher,SIGNAL(displayStateChanged(bool)),
+                     this,SLOT(displayStateChanged(bool)),Qt::UniqueConnection);
+#endif
 }
 
 AbstractSensorChannelInterface::~AbstractSensorChannelInterface()
@@ -400,3 +409,15 @@ QDBusReply<void> AbstractSensorChannelInterface::setDownsampling(int sessionId, 
     argumentList << qVariantFromValue(sessionId) << qVariantFromValue(value);
     return pimpl_->callWithArgumentList(QDBus::Block, QLatin1String("setDownsampling"), argumentList);
 }
+
+void AbstractSensorChannelInterface::displayStateChanged(bool displayState)
+{
+    if (!pimpl_->standbyOverride_) {
+        if (!displayState) {
+            stop();
+        } else {
+            start();
+        }
+    }
+}
+
