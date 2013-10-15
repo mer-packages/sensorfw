@@ -314,6 +314,9 @@ private:
     SocketReader& getSocketReader() const;
 
 private Q_SLOTS: // METHODS
+
+    void displayStateChanged(bool displayState);
+
     /**
      * Set interval to session.
      *
