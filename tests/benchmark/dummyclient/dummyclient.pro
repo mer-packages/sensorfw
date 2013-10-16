@@ -13,7 +13,8 @@ SOURCES += dummyclient.cpp
 HEADERS += dummyclient.h
 
 QMAKE_LIBDIR_FLAGS += -L../../../qt-api  \
-                      -L../../../datatypes
+                      -L../../../datatypes \
+                      -L../../../core
 
 equals(QT_MAJOR_VERSION, 4):{
     QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorclient

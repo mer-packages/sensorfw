@@ -50,8 +50,3 @@ include(../common-install.pri)
 publicheaders.files = $$HEADERS
 target.path = $$SHAREDLIBPATH
 INSTALLS += target
-
-mce {
-    DEFINES += SENSORFW_MCE_WATCHER
-LIBS += -lsensorfw-qt5
-}

@@ -15,6 +15,7 @@ SENSORFW_INCLUDEPATHS = ../../../include \
                         ../../../core \
                         ../../../datatypes \
                         ../../../filters \
+                        ../../../core \
                         ../../..
 
 DEPENDPATH  += $$SENSORFW_INCLUDEPATHS

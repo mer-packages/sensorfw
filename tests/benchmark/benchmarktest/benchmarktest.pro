@@ -15,13 +15,16 @@ SENSORFW_INCLUDEPATHS = ../../../include \
                         ../../../filters \
                         ../../../datatypes \
 			../../../qt-api \
+                        ../../../core \
                         ../../..
 
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 
 QMAKE_LIBDIR_FLAGS += -L../../../qt-api \
-                      -L../../../datatypes
+                      -L../../../datatypes \
+                      -L../../../core
+
 equals(QT_MAJOR_VERSION, 4):{
     QMAKE_LIBDIR_FLAGS += -lsensordatatypes -lsensorclient
 }
