@@ -99,8 +99,12 @@ HybrisManager::HybrisManager(QObject *parent) :
     sensorsCount(0),
     sensorsOpened(0)
 {
-    qDebug() << Q_FUNC_INFO;
     init();
+}
+
+HybrisManager::~HybrisManager()
+{
+    closeAllSensors();
 }
 
 HybrisManager *HybrisManager::instance()
@@ -130,7 +134,6 @@ void HybrisManager::init()
     for (int i = 0 ; i < sensorsCount ; i++) {
         sensorMap.insert(sensorList[i].type, i);
     }
-    qDebug() << Q_FUNC_INFO;
 }
 
 int HybrisManager::handleForType(int sensorType)
@@ -163,10 +166,9 @@ int HybrisManager::resolution(int sensorType)
 
 bool HybrisManager::setDelay(int sensorHandle, int interval)
 {
-    qDebug() << Q_FUNC_INFO;
     int result = device->setDelay(device, sensorHandle, interval);
     if (result < 0) {
-        qDebug() << "setDelay() failed" << strerror(-result);
+        sensordLogW() << "setDelay() failed" << strerror(-result);
         return false;
     }
     return true;
@@ -174,11 +176,10 @@ bool HybrisManager::setDelay(int sensorHandle, int interval)
 
 void HybrisManager::startReader(HybrisAdaptor *adaptor)
 {
-    qDebug() << Q_FUNC_INFO;
     if (registeredAdaptors.values().contains(adaptor)) {
         int error = device->activate(device, adaptor->sensorHandle, 1);
         if (error != 0) {
-            qDebug() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
+            sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
         }
         if (!adaptorReader.isRunning())
             adaptorReader.startReader();
@@ -192,14 +193,59 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
     bool okToStop = true;
 
     for (int i = 0; i < list.count(); i++) {
-        if (list.at(i) != adaptor && list.at(i)->isRunning())
+        if (list.at(i) != adaptor && list.at(i)->isRunning()) {
             okToStop = false;
+        }
     }
     if (okToStop) {
         adaptorReader.stopReader();
+        adaptorReader.wait();
         int error = device->activate(device, adaptor->sensorHandle, 0);
         if (error != 0) {
-            qDebug() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
+            sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
+        }
+    }
+}
+
+bool HybrisManager::resumeReader(HybrisAdaptor *adaptor)
+{    
+    sensordLogD() << Q_FUNC_INFO << adaptor->id() << adaptor->deviceStandbyOverride(); //alwaysOn
+    QList <HybrisAdaptor *> list;
+    list = registeredAdaptors.values();
+    bool okToResume = false;
+    for (int i = 0; i < list.count(); i++) {
+        if (list.at(i) != adaptor && list.at(i)->isRunning()) {
+            qDebug() << Q_FUNC_INFO << "running";
+            okToResume = true;
+        }
+    }
+
+    if (okToResume) {
+        int error = device->activate(device, adaptor->sensorHandle, 1);
+        if (error != 0) {
+            sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
+        }
+    }
+    return true;
+}
+
+void HybrisManager::standbyReader(HybrisAdaptor *adaptor)
+{
+    sensordLogD() << Q_FUNC_INFO  << adaptor->id() << adaptor->deviceStandbyOverride(); //alwaysOn
+    QList <HybrisAdaptor *> list;
+    list = registeredAdaptors.values();
+    bool okToStandby = true;
+    for (int i = 0; i < list.count(); i++) {
+        if (adaptor->sensorType  == list.at(i)->sensorType && list.at(i)->isRunning()) {
+            qDebug() << Q_FUNC_INFO << list.at(i) << "running";
+            okToStandby = false;
+        }
+    }
+
+    if (okToStandby) {
+        int error = device->activate(device, adaptor->sensorHandle, 0);
+        if (error != 0) {
+            sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
         }
     }
 }
@@ -213,19 +259,47 @@ bool HybrisManager::openSensors()
             return false;
         }
     }
+    sensorsOpened = true;
     return true;
 }
 
 bool HybrisManager::closeSensors()
 {
-    if (sensorsOpened) { //TODO
-        int errorCode = sensors_close(device);
-        if (errorCode != 0) {
-            qDebug() << "sensors_close() failed" << strerror(-errorCode);
-            return false;
+    QList <HybrisAdaptor *> list;
+    list = registeredAdaptors.values();
+    bool okToStop = true;
+
+    for (int i = 0; i < list.count(); i++) {
+        if (list.at(i)->isRunning())
+            okToStop = false;
+        qDebug() << Q_FUNC_INFO << "still running"<< list.at(i);
+    }
+    if (okToStop) {
+
+        if (sensorsOpened) { //TODO
+            int errorCode = sensors_close(device);
+            if (errorCode != 0) {
+                qDebug() << "sensors_close() failed" << strerror(-errorCode);
+                return false;
+            }
         }
     }
     return true;
+}
+
+void HybrisManager::closeAllSensors()
+{
+    QList <HybrisAdaptor *> list;
+    list = registeredAdaptors.values();
+
+    for (int i = 0; i < list.count(); i++) {
+        if (list.at(i)->isRunning())
+            list.at(i)->stopSensor();
+    }
+    int errorCode = sensors_close(device);
+    if (errorCode != 0) {
+        qDebug() << "sensors_close() failed" << strerror(-errorCode);
+    }
 }
 
 void HybrisManager::processSample(const sensors_event_t& data)
@@ -251,10 +325,10 @@ void HybrisManager::registerAdaptor(HybrisAdaptor *adaptor)
 //////////////////////////////////
 HybrisAdaptor::HybrisAdaptor(const QString& id, int type)
     : DeviceAdaptor(id),
-      inStandbyMode_(0),
-      running_(0),
       sensorType(type),
-      cachedInterval(50)
+      cachedInterval(50),
+      inStandbyMode_(false),
+      running_(false)
 {
     if (!HybrisAdaptor_sensorTypes().values().contains(sensorType)) {
         qDebug() << Q_FUNC_INFO <<"no such sensor" << id;
@@ -319,14 +393,13 @@ bool HybrisAdaptor::startSensor()
         return false;
     }
 
-    shouldBeRunning_ = true;
-
     // Do not open if in standby mode.
     if (inStandbyMode_ && !deviceStandbyOverride()) {
         qDebug()  << Q_FUNC_INFO << "inStandbyMode_ true";
         return false;
     }
 
+    shouldBeRunning_ = true;
     /// We are waking up from standby or starting fresh, no matter
     inStandbyMode_ = false;
 
@@ -359,12 +432,12 @@ void HybrisAdaptor::stopSensor()
 
     entry->removeReference();
     if (entry->referenceCount() <= 0) {
-        if (!inStandbyMode_) {
-            stopReaderThread();
-        }
         entry->setIsRunning(false);
         running_ = false;
         shouldBeRunning_ = false;
+        if (!inStandbyMode_) {
+            stopReaderThread();
+        }
     }
 }
 
@@ -376,21 +449,17 @@ bool HybrisAdaptor::standby()
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby";
         return false;
     }
-    if (deviceStandbyOverride()) {
-        sensordLogD() << "Adaptor '" << id() << "' not going to standby: overriden";
-        return false;
-    }
-    inStandbyMode_ = true;
 
     if (!isRunning()) {
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
         return false;
     }
 
+    inStandbyMode_ = true;
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
-    stopReaderThread();
+    running_ = deviceStandbyOverride();
+    hybrisManager()->standbyReader(this);
 
-    running_ = false;
     return true;
 }
 
@@ -414,7 +483,7 @@ bool HybrisAdaptor::resume()
 
     sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
 
-    if (!startReaderThread()) {
+    if (!hybrisManager()->resumeReader(this)) {
         sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";
         return false;
     }
@@ -428,7 +497,7 @@ unsigned int HybrisAdaptor::interval() const
     return cachedInterval;
 }
 
-bool HybrisAdaptor::setInterval(const unsigned int value, const int sessionId)
+bool HybrisAdaptor::setInterval(const unsigned int value, const int /*sessionId*/)
 {                     // 1000000
     cachedInterval = value;
     bool ok;
@@ -448,7 +517,6 @@ void HybrisAdaptor::stopReaderThread()
 
 bool HybrisAdaptor::startReaderThread()
 {
-    qDebug() << Q_FUNC_INFO;
     running_ = true;
     hybrisManager()->startReader(this);
     return true;
@@ -491,6 +559,10 @@ HybrisAdaptorReader::HybrisAdaptorReader(QObject *parent)
 {
 }
 
+HybrisAdaptorReader::~HybrisAdaptorReader()
+{
+}
+
 ////
 /// \brief HybrisAdaptorReader::stopReader
 ///
@@ -507,7 +579,7 @@ void HybrisAdaptorReader::startReader()
 
 void HybrisAdaptorReader::run()
 {
-    int err;
+    int err = 0;
     static const size_t numEvents = 16;
     sensors_event_t buffer[numEvents];
 
@@ -533,6 +605,8 @@ void HybrisAdaptorReader::run()
                 QThread::msleep(50);
         }
     }
+    sensordLogT() << Q_FUNC_INFO << "runner thread end";
+
 }
 
 ////////////////////////////////////////////////////////

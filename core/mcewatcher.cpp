@@ -26,7 +26,7 @@
 
 
 #include "mcewatcher.h"
-
+#include <QDBusReply>
 
 MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
                                           dbusIfc(new QDBusInterface(MCE_SERVICE,
@@ -50,6 +50,17 @@ MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
                                   MCE_DISPLAY_SIG,
                                   this,
                                   SLOT(slotDisplayStateChanged(const QString)));
+
+// get the current state, instead of assuming it's true
+    QDBusPendingReply<QString> displayStateReply = QDBusConnection::systemBus().call(
+                QDBusMessage::createMethodCall(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
+                                               MCE_DISPLAY_STATUS_GET));
+    displayStateReply.waitForFinished();
+    if (displayStateReply.isValid()) {
+        if (displayStateReply.value() == MCE_DISPLAY_OFF_STRING) {
+            displayState = false;
+        }
+    }
 }
 
 void MceWatcher::slotDisplayStateChanged(const QString& state)

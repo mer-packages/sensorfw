@@ -35,7 +35,9 @@ HEADERS += sensormanagerinterface.h \
 
 SENSORFW_INCLUDEPATHS = .. \
     ../include \
-    ../datatypes
+    ../datatypes \
+    ../core
+
 DEPENDPATH += $$SENSORFW_INCLUDEPATHS
 INCLUDEPATH += $$SENSORFW_INCLUDEPATHS
 equals(QT_MAJOR_VERSION, 4): {
@@ -48,3 +50,8 @@ include(../common-install.pri)
 publicheaders.files = $$HEADERS
 target.path = $$SHAREDLIBPATH
 INSTALLS += target
+
+mce {
+    DEFINES += SENSORFW_MCE_WATCHER
+LIBS += -lsensorfw-qt5
+}
