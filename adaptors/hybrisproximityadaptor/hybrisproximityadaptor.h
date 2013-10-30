@@ -50,6 +50,8 @@ protected:
 private:
     DeviceAdaptorRingBuffer<ProximityData>* buffer;
     int sensorType;
+private slots:
+    void sendInitialData();
 
 };
 #endif
