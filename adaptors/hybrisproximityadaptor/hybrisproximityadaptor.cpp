@@ -94,6 +94,7 @@ void HybrisProximityAdaptor::sendInitialData()
             } else {
                 qDebug() << "ioctl not opened" ;
             }
+            close(fd);
         } else {
             qDebug() << "could not open proximity evdev";
         }
