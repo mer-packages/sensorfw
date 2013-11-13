@@ -70,23 +70,24 @@ private:
     AbstractChain *accelerometerChain;
     AbstractChain *magChain;
 
-   // DeviceAdaptor *accelerometerAdaptor;
     BufferReader<AccelerationData> *accelerometerReader;
-
-   // DeviceAdaptor *magAdaptor;
     BufferReader<CalibratedMagneticFieldData> *magReader;
 
-//    DeviceAdaptor *orientAdaptor;
-//    BufferReader<TimedXyzData> *orientationdataReader;
+    DeviceAdaptor *orientAdaptor;
+    BufferReader<TimedXyzData> *orientationdataReader;
 
 
     FilterBase *compassFilter;
+    FilterBase *orientationFilter;
     FilterBase *declinationFilter;
+
     FilterBase *downsampleFilter;
     FilterBase *avgaccFilter;
 
     RingBuffer<CompassData> *trueNorthBuffer;
     RingBuffer<CompassData> *magneticNorthBuffer;
+
+    bool hasOrientationAdaptor;
 };
 
 #endif // COMPASSCHAIN_H
