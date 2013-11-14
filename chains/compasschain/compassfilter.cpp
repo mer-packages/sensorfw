@@ -29,13 +29,10 @@
 CompassFilter::CompassFilter() :
         magDataSink(this, &CompassFilter::magDataAvailable),
         accelSink(this, &CompassFilter::accelDataAvailable),
-        orientDataSink(this, &CompassFilter::orientDataAvailable),
         factor(1)
 {
     addSink(&magDataSink, "magsink");
     addSink(&accelSink, "accsink");
-    addSink(&orientDataSink, "orientsink");
-
     addSource(&magSource, "magnorthangle");
 }
 
@@ -121,15 +118,4 @@ int offset = 90;
     compassData.degrees_ = (int)(Psi + (360 - offset)) % 360;
     compassData.level_ = level;
     magSource.propagate(1, &compassData);
-}
-
-void CompassFilter::orientDataAvailable(unsigned, const TimedXyzData *data)
-{
-    CompassData compassData; //north angle
-    compassData.timestamp_ = data->timestamp_;
-    compassData.degrees_ = data->x_;
-    compassData.level_ = level;
-    qDebug() << Q_FUNC_INFO << compassData.degrees_ * .001;
-
-//    magSource.propagate(1, &compassData);
 }

@@ -21,6 +21,7 @@
 #include "compasschainplugin.h"
 #include "compasschain.h"
 #include "compassfilter.h"
+#include "orientationfilter.h"
 #include "sensormanager.h"
 #include "logging.h"
 
@@ -31,6 +32,7 @@ void CompassChainPlugin::Register(class Loader&)
 
     sm.registerChain<CompassChain>("compasschain");
     sm.registerFilter<CompassFilter>("compassfilter");
+    sm.registerFilter<OrientationFilter>("orientationfilter");
 }
 
 QStringList CompassChainPlugin::Dependencies() {

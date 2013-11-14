@@ -2,16 +2,14 @@ TARGET       = compasschain
 
 HEADERS += compasschain.h   \
            compasschainplugin.h \
-           compassfilter.h
+           compassfilter.h \
+           orientationfilter.h
 
 SOURCES += compasschain.cpp   \
            compasschainplugin.cpp \
-           compassfilter.cpp
-
-#HEADERS += ../../filters/avgaccfilter/avgaccfilter.h
-#SOURCES += ../../filters/avgaccfilter/avgaccfilter.cpp
+           compassfilter.cpp \
+           orientationfilter.cpp
 
 INCLUDEPATH += ../../filters/coordinatealignfilter
-#INCLUDEPATH += ../../filters/avgaccfilter
 
 include( ../chain-config.pri )

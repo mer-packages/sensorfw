@@ -18,48 +18,33 @@
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef COMPASSFILTER_H
-#define COMPASSFILTER_H
+#ifndef ORIENTATIONFILTER_H
+#define ORIENTATIONFILTER_H
 
 #include <QObject>
 #include "ringbuffer.h"
 #include "orientationdata.h"
 #include "filter.h"
 
-class CompassFilter : public QObject, public FilterBase
+class OrientationFilter : public QObject, public FilterBase
 {
     Q_OBJECT
 
 public:
 
     static FilterBase* factoryMethod() {
-        return new CompassFilter;
+        return new OrientationFilter;
     }
 
 protected:
 
-    CompassFilter();
+    OrientationFilter();
 
 private:
-
-    Sink<CompassFilter, CalibratedMagneticFieldData> magDataSink;
-    Sink<CompassFilter, AccelerationData> accelSink;
     Source<CompassData> magSource;
 
-    void magDataAvailable(unsigned, const CalibratedMagneticFieldData*);
-    void accelDataAvailable(unsigned, const AccelerationData*);
-
-    int factor;
-    CalibratedMagneticFieldData magData;
-
-    qreal magRX;
-    qreal magRY;
-    qreal magRZ;
-
-    qreal adjX;
-    qreal adjY;
-    qreal adjZ;
-
+    Sink<OrientationFilter, TimedXyzData> orientDataSink;
+    void orientDataAvailable(unsigned, const TimedXyzData*);
     qreal level;
     qreal oldHeading;
 };
