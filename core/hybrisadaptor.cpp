@@ -177,6 +177,7 @@ bool HybrisManager::setDelay(int sensorHandle, int interval)
 void HybrisManager::startReader(HybrisAdaptor *adaptor)
 {
     if (registeredAdaptors.values().contains(adaptor)) {
+        sensordLogD() << "activating " << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 1);
         if (error != 0) {
             sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
@@ -200,6 +201,7 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
     if (okToStop) {
         adaptorReader.stopReader();
         adaptorReader.wait();
+        sensordLogD() << "deactivating " << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 0);
         if (error != 0) {
             sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
@@ -221,6 +223,7 @@ bool HybrisManager::resumeReader(HybrisAdaptor *adaptor)
     }
 
     if (okToResume) {
+        sensordLogD() << "activating for resume" << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 1);
         if (error != 0) {
             sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
@@ -243,6 +246,7 @@ void HybrisManager::standbyReader(HybrisAdaptor *adaptor)
     }
 
     if (okToStandby) {
+        sensordLogD() << "deactivating for standby" << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 0);
         if (error != 0) {
             sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
