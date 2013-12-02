@@ -44,7 +44,7 @@ HybrisOrientationAdaptor::HybrisOrientationAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_ORIENTATION)
 {
     buffer = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
-    setAdaptedSensor("accelerometer", "Internal orientation coordinates", buffer);
+    setAdaptedSensor("orientation", "Internal orientation coordinates", buffer);
 
     setDescription("Hybris orientation");
 //    setDefaultInterval(50);
