@@ -100,17 +100,17 @@ ln -s ../sensord.service %{buildroot}/%{_lib}/systemd/system/basic.target.wants/
 
 %preun
 if [ "$1" -eq 0 ]; then
-systemctl stop sensord.service
+systemctl stop sensord.service || :
 fi
 
 %post
 /sbin/ldconfig
-systemctl daemon-reload
-systemctl reload-or-try-restart sensord.service
+systemctl daemon-reload || :
+systemctl reload-or-try-restart sensord.service || :
 
 %postun
 /sbin/ldconfig
-systemctl daemon-reload
+systemctl daemon-reload || :
 
 %post tests -p /sbin/ldconfig
 
