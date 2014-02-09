@@ -45,7 +45,8 @@ Summary:    Sensorfw configuration files
 Group:      System/Libraries
 BuildArch:  noarch
 Requires:   %{name} = %{version}
-Provides:   config-hybris
+Provides:   sensord-configs
+Obsoletes:  sensorfw-qt5-configs <= 0.7.3.31
 
 %description configs
 Sensorfw configuration files.
