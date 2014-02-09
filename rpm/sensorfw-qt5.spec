@@ -11,7 +11,7 @@ Source2:    sensord.service
 Source3:    sensord-daemon-conf-setup
 Requires:   qt5-qtcore
 Requires:   GConf-dbus
-Requires:   %{name}-configs
+Requires:   sensord-configs
 Requires:   systemd
 Requires(preun): systemd
 Requires(post): /sbin/ldconfig
@@ -61,7 +61,7 @@ Summary:    Sensorfw configuration files
 Group:      System/Libraries
 BuildArch:  noarch
 Requires:   %{name} = %{version}
-Provides:   sensord-config
+Provides:   sensord-configs
 Provides:   config-n900
 Provides:   config-aava
 Provides:   config-icdk
