@@ -1,6 +1,6 @@
 Name:       sensorfw
 Summary:    Sensor Framework
-Version:    0.7.3.31
+Version:    0.7.3.32
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -36,7 +36,7 @@ Requires:   qt-devel
 %build
 unset LD_AS_NEEDED
 
-%qmake 
+%qmake
 
 make %{?_smp_mflags}
 
