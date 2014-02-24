@@ -21,7 +21,7 @@
 #include "hybrisorientationadaptor.h"
 #include "logging.h"
 #include "datatypes/utils.h"
-#include <android/hardware/sensors.h>
+#include <hardware/sensors.h>
 
 /*
  * azimuth: angle between the magnetic north direction and the Y axis, around

@@ -25,8 +25,8 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-#include <android/hardware/hardware.h>
-#include <android/hardware/sensors.h>
+#include <hardware/hardware.h>
+#include <hardware/sensors.h>
 
 #ifndef SENSOR_TYPE_ACCELEROMETER
 #define SENSOR_TYPE_ACCELEROMETER (1)
