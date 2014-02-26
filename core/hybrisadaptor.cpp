@@ -140,7 +140,9 @@ int HybrisManager::handleForType(int sensorType)
 {
     if (sensorMap.contains(sensorType))
         return sensorList[sensorMap[sensorType]].handle;
-    return 0;
+
+    sensordLogW() << Q_FUNC_INFO << "No sensor of type:" << sensorType;
+    return -1;
 }
 
 int HybrisManager::maxRange(int sensorType)
