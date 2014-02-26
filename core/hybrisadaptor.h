@@ -26,7 +26,7 @@
 #include <QTimer>
 
 #include "deviceadaptor.h"
-#include <android/hardware/sensors.h>
+#include <hardware/sensors.h>
 
 class HybrisAdaptor;
 

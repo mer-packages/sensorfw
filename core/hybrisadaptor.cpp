@@ -25,8 +25,8 @@
 #include <QCoreApplication>
 #include <QTimer>
 
-#include <android/hardware/hardware.h>
-#include <android/hardware/sensors.h>
+#include <hardware/hardware.h>
+#include <hardware/sensors.h>
 
 #ifndef SENSOR_TYPE_ACCELEROMETER
 #define SENSOR_TYPE_ACCELEROMETER (1)
@@ -140,7 +140,9 @@ int HybrisManager::handleForType(int sensorType)
 {
     if (sensorMap.contains(sensorType))
         return sensorList[sensorMap[sensorType]].handle;
-    return 0;
+
+    sensordLogW() << Q_FUNC_INFO << "No sensor of type:" << sensorType;
+    return -1;
 }
 
 int HybrisManager::maxRange(int sensorType)

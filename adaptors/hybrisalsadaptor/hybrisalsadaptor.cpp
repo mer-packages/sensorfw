@@ -21,7 +21,7 @@
 #include "hybrisalsadaptor.h"
 #include "logging.h"
 #include "datatypes/utils.h"
-#include <android/hardware/sensors.h>
+#include <hardware/sensors.h>
 
 HybrisAlsAdaptor::HybrisAlsAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_LIGHT)

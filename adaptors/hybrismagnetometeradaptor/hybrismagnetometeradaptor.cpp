@@ -22,7 +22,7 @@
 #include "hybrismagnetometeradaptor.h"
 #include "logging.h"
 #include "datatypes/utils.h"
-#include <android/hardware/sensors.h>
+#include <hardware/sensors.h>
 
 HybrisMagnetometerAdaptor::HybrisMagnetometerAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_MAGNETIC_FIELD)
