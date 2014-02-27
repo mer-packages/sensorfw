@@ -1,24 +1,27 @@
 #!/bin/bash
+# Set up a configuration for sensord for "primary use"
+# The way we choose the configuration is as follows:
+#   1. Prefer the hybris plugin (if available)
+#   2. If not, try to pick the best-match from the boardname
 
-if [ -x "/usr/sbin/sensord" ] ; then
-	if [ ! -f "/etc/sensorfw/primaryuse.conf" ] ; then 
-               # If hybrissensorfw lib is found, use that
-        if [ -f /usr/lib/libhybrissensorfw*.so ]; then
-            ln -s sensord-hybris.conf /etc/sensorfw/primaryuse.conf
-        else
-          		# Determine the correct "primary" config file: the first conf file
-                # whose basename is a substring of boardname, if any (i.e. 'foo.conf'
-                # matches all devices which have 'foo' in their /etc/boardname)
-            if [ -f /etc/boardname ]; then
-                for f in /etc/sensorfw/*conf; do
-                    fbase=`basename $f '.conf' | sed s/sensord-//`
-                    grep -q $fbase /etc/boardname
-                    if [ $? -eq 0 ]; then
-                        ln -s $f /etc/sensorfw/primaryuse.conf
-                        break
-                    fi
-                done
-            fi
+cd /etc/sensorfw/
+if [ -x /usr/sbin/sensord ]; then
+    if [ -f /usr/lib/libhybrissensorfw*.so ]; then
+        # Always prefer hybris sensor backend to anything else (also overwrite
+        # old setting, as sometimes the boardname matches, e.g. on grouper)
+        if [ "$(readlink primaryuse.conf)" != sensord-hybris.conf ]; then
+            ln -sf sensord-hybris.conf primaryuse.conf
         fi
+    elif [ ! -f primaryuse.conf -a -f /etc/boardname ]; then
+        # Determine the correct "primary" config file: the first conf file
+        # whose basename is a substring of boardname, if any (i.e. 'foo.conf'
+        # matches all devices which have 'foo' in their /etc/boardname)
+        for f in sensord-*.conf; do
+            fbase="${f#sensord-}"
+            if grep -q "${fbase%.conf}" /etc/boardname; then
+                ln -s $f primaryuse.conf
+                break
+            fi
+        done
     fi
 fi
