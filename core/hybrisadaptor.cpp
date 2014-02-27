@@ -93,11 +93,15 @@ static QHash<QString,int> HybrisAdaptor_sensorTypes()
 
 Q_GLOBAL_STATIC(HybrisManager, hybrisManager)
 
-HybrisManager::HybrisManager(QObject *parent) :
-    QObject(parent),
-    adaptorReader(parent),
-    sensorsCount(0),
-    sensorsOpened(0)
+HybrisManager::HybrisManager(QObject *parent)
+    : QObject(parent)
+    , device(NULL)
+    , sensorList(NULL)
+    , module(NULL)
+    , sensorsCount(0)
+    , sensorMap()
+    , registeredAdaptors()
+    , adaptorReader(parent)
 {
     init();
 }
@@ -115,18 +119,15 @@ HybrisManager *HybrisManager::instance()
 
 void HybrisManager::init()
 {
-    int errorCode;
-
-    errorCode = hw_get_module(SENSORS_HARDWARE_MODULE_ID, (hw_module_t const**)&module);
+    int errorCode = hw_get_module(SENSORS_HARDWARE_MODULE_ID, (hw_module_t const**)&module);
     if (errorCode != 0) {
         qDebug() << "hw_get_module() failed" <<  strerror(-errorCode);
         return ;
     }
 
-    errorCode = sensors_open(&module->common, &device);
-    if (errorCode != 0) {
-        qDebug() << "sensors_open() failed" <<  strerror(-errorCode);
-        return ;
+    if (!openSensors()) {
+        sensordLogW() << "Cannot open sensors";
+        return;
     }
 
     sensorsCount = module->get_sensors_list(module, &sensorList);
@@ -262,38 +263,36 @@ void HybrisManager::standbyReader(HybrisAdaptor *adaptor)
 
 bool HybrisManager::openSensors()
 {
-    if (!sensorsOpened) {
+    if (!device) {
+        sensordLogD() << "Calling sensors_open";
         int errorCode = sensors_open(&module->common, &device);
         if (errorCode != 0) {
-            qDebug() << "sensors_open() failed" <<  strerror(-errorCode);
-            return false;
+            sensordLogW() << "sensors_open() failed:" << strerror(-errorCode);
+            device = NULL;
         }
     }
-    sensorsOpened = true;
-    return true;
+
+    return (device != NULL);
 }
 
 bool HybrisManager::closeSensors()
 {
-    QList <HybrisAdaptor *> list;
-    list = registeredAdaptors.values();
-    bool okToStop = true;
-
-    for (int i = 0; i < list.count(); i++) {
-        if (list.at(i)->isRunning())
-            okToStop = false;
-        qDebug() << Q_FUNC_INFO << "still running"<< list.at(i);
-    }
-    if (okToStop) {
-
-        if (sensorsOpened) { //TODO
-            int errorCode = sensors_close(device);
-            if (errorCode != 0) {
-                qDebug() << "sensors_close() failed" << strerror(-errorCode);
+    if (device) {
+        foreach (HybrisAdaptor *adaptor, registeredAdaptors.values()) {
+            if (adaptor->isRunning()) {
+                sensordLogW() << Q_FUNC_INFO << "still running:" << adaptor;
                 return false;
             }
         }
+
+        sensordLogD() << "Calling sensors_close";
+        int errorCode = sensors_close(device);
+        if (errorCode != 0) {
+            sensordLogW() << "sensors_close() failed:" << strerror(-errorCode);
+        }
     }
+
+    device = NULL;
     return true;
 }
 
@@ -306,9 +305,9 @@ void HybrisManager::closeAllSensors()
         if (list.at(i)->isRunning())
             list.at(i)->stopSensor();
     }
-    int errorCode = sensors_close(device);
-    if (errorCode != 0) {
-        qDebug() << "sensors_close() failed" << strerror(-errorCode);
+
+    if (!closeSensors()) {
+        sensordLogW() << "Cannot close sensors";
     }
 }
 
