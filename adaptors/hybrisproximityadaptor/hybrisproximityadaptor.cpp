@@ -72,6 +72,11 @@ void HybrisProximityAdaptor::sendInitialData()
             line = in.readLine();
         }
 
+        if (inputDev.isEmpty()) {
+            sensordLogW() << "No sysfs proximity device found";
+            return;
+        }
+
         struct input_absinfo absinfo;
         int fd;
         inputDev.replace("input","event");
