@@ -314,13 +314,9 @@ void HybrisManager::closeAllSensors()
 
 void HybrisManager::processSample(const sensors_event_t& data)
 {
-
-    if (registeredAdaptors.contains(data.type)) {
-        QList <HybrisAdaptor *> list;
-        list = registeredAdaptors.values(data.type);
-        for (int i = 0; i < list.count(); i++){
-            if (list.at(i)->isRunning())
-                list.at(i)->processSample(data);
+    foreach (HybrisAdaptor *adaptor, registeredAdaptors.values(data.type)) {
+        if (adaptor->isRunning()) {
+            adaptor->processSample(data);
         }
     }
 }
