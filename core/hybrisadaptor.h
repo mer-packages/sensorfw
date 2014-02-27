@@ -43,10 +43,6 @@ public:
     void run();
     void stopReader();
     void startReader();
-    void setDevice();
-
-    int sensorHandle;
-    int sensorType;
 
 private:
     bool running_;
