@@ -36,7 +36,7 @@ void RotationPlugin::Register(class Loader&)
 }
 
 QStringList RotationPlugin::Dependencies() {
-    return QString("accelerometerchain:rotationfilter").split(":", QString::SkipEmptyParts);
+    return QString("accelerometerchain:rotationfilter:compasschain").split(":", QString::SkipEmptyParts);
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
