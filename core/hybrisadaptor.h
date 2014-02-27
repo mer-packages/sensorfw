@@ -43,10 +43,6 @@ public:
     void run();
     void stopReader();
     void startReader();
-    void setDevice();
-
-    int sensorHandle;
-    int sensorType;
 
 private:
     bool running_;
@@ -60,10 +56,6 @@ public:
     explicit HybrisManager(QObject *parent = 0);
     static HybrisManager *instance();
     virtual ~HybrisManager();
-
-    struct sensors_poll_device_t* device;
-    struct sensor_t const* sensorList;
-    struct sensors_module_t* module;
 
     int handleForType(int sensorType);
     int maxRange(int sensorType);
@@ -83,15 +75,22 @@ public:
     void registerAdaptor(HybrisAdaptor * adaptor);
 
     void processSample(const sensors_event_t& data);
-    HybrisAdaptorReader adaptorReader;
 
 protected:
+    // methods
     void init();
+    void closeAllSensors();
+
+    // fields
+    struct sensors_poll_device_t* device;
+    struct sensor_t const* sensorList;
+    struct sensors_module_t* module;
     int sensorsCount;
     QMap <int, int> sensorMap; //type, index
     QMap <int, HybrisAdaptor *> registeredAdaptors; //type, obj
-    bool sensorsOpened;
-    void closeAllSensors();
+    HybrisAdaptorReader adaptorReader;
+
+    friend class HybrisAdaptorReader;
 };
 
 class HybrisAdaptor : public DeviceAdaptor
