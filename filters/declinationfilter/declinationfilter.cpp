@@ -24,7 +24,7 @@
    </p>
  */
 
-#include <gconf/gconf-client.h>
+#include <MGConfItem>
 #include "declinationfilter.h"
 #include "config.h"
 #include "logging.h"
@@ -35,7 +35,6 @@ DeclinationFilter::DeclinationFilter() :
         Filter<CompassData, DeclinationFilter, CompassData>(this, &DeclinationFilter::correct),
         declinationCorrection_(0)
 {
-    g_type_init();
     updateInterval_ = Config::configuration()->value<quint64>("compass/declination_update_interval", 1000 * 60 * 60) * 1000;
 }
 
@@ -68,31 +67,13 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
 
 void DeclinationFilter::loadSettings()
 {
-    GConfClient *client = gconf_client_get_default();
-    if (! client ) {
-        sensordLogW() << "Failed to initialise GConf client.";
-        return;
-    }
-    GError *error = NULL;
-    int value = gconf_client_get_int(client, declinationKey, &error);
-    if ( error != NULL) {
-        GError *error2 = NULL;
-        value = gconf_client_get_float(client, declinationKey, &error2);
-        if ( error2 != NULL) {
-            sensordLogW() << "Failed to read value for " << declinationKey << " from GConf: " << error2->message;
-            g_error_free(error2);
-            return;
-        }
-        g_error_free(error);
-    }
-
-    declinationCorrection_ = value;
+    MGConfItem item(declinationKey);
+    declinationCorrection_ = item.value().toInt();
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;
 #else
     sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_.loadAcquire();
 #endif
-    g_object_unref(client);
 }
 
 int DeclinationFilter::declinationCorrection()

@@ -34,6 +34,7 @@
 #include "orientationsensor_i.h"
 
 #include "metadatatest.h"
+#include <MGConfItem>
 
 void MetaDataTest::initTestCase()
 {
@@ -249,9 +250,16 @@ void MetaDataTest::testCompassDeclination()
 {
     CompassSensorChannelInterface* compass = CompassSensorChannelInterface::interface("compasssensor");
     compass->start();
-    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 50");
+
+    MGConfItem item("/system/osso/location/settings/magneticvariation");
+    item.set(QVariant(50));
+    item.sync();
+
     QCOMPARE(compass->declinationValue(), 50);
-    system("gconftool-2 --set /system/osso/location/settings/magneticvariation --type int 0");
+
+    item.set(QVariant((int)0));
+    item.sync();
+
     QCOMPARE(compass->declinationValue(), 0);
     compass->stop();
     delete compass;

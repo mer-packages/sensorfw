@@ -8,12 +8,11 @@ URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
 Source1:    sensorfw-rpmlintrc
 Requires:   qt
-Requires:   GConf-dbus
 Requires:   sensorfw-qt5
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 BuildRequires:  pkgconfig(QtCore)
-BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(mlite5)
 BuildRequires:  pkgconfig(QtDeclarative)
 BuildRequires:  pkgconfig(contextprovider-1.0)
 

@@ -23,26 +23,18 @@
 */
 
 #include "externaltests.h"
-#include <gconf/gconf-client.h>
+#include <MGConfItem>
 #include <QDebug>
 
 void ExternalTest::testDeclinationCorrectionKey()
 {
     QString gconfkey("/system/osso/location/settings/magneticvariation");
 
-    g_type_init();
+    MGConfItem item(gconfkey);
+    QVariant value = item.value();
+    QVERIFY2(value.isValid(), "Failed to read declination key");
 
-    GConfClient *client = NULL;
-    client = gconf_client_get_default();
-    QVERIFY2(client, "Failed to initialise GConf client.");
-
-    GError *error = NULL;
-    GConfValue* value = gconf_client_get_without_default(client, gconfkey.toLocal8Bit(), &error);
-    QVERIFY2(value, QString("Failed to read declination key from GConf (%1)").arg(gconfkey).toLocal8Bit());
-
-    qDebug() << "Stored value for declination correction:" << gconf_value_get_int(value);
-
-    g_object_unref(client);
+    qDebug() << "Stored value for declination correction:" << value.toInt();
 }
 
 QTEST_MAIN(ExternalTest)

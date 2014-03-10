@@ -30,9 +30,10 @@
 #include <QFile>
 #include <QTimer>
 #include <QProcess>
+#include <MGConfItem>
 
-#define DISABLE_TKLOCK QProcess::execute("gconftool-2 --set /system/osso/dsm/locks/touchscreen_keypad_autolock_enabled --type=bool false");
-#define ENABLE_TKLOCK QProcess::execute("gconftool-2 --set /system/osso/dsm/locks/touchscreen_keypad_autolock_enabled --type=bool true");
+#define DISABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(false)); item.sync(); }
+#define ENABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(true)); item.sync(); }
 #define OPEN_TKLOCK QProcess::execute("mcetool --set-tklock-mode=unlocked");
 #define BLANK_SCREEN QProcess::execute("mcetool --blank-screen");
 #define UNBLANK_SCREEN QProcess::execute("mcetool --unblank-screen");
