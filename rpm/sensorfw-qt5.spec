@@ -10,7 +10,6 @@ Source1:    sensorfw-rpmlintrc
 Source2:    sensord.service
 Source3:    sensord-daemon-conf-setup
 Requires:   qt5-qtcore
-Requires:   GConf-dbus
 Requires:   sensord-configs
 Requires:   systemd
 Requires(preun): systemd
@@ -22,7 +21,7 @@ BuildRequires:  pkgconfig(Qt5Core)
 BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
-BuildRequires:  pkgconfig(gconf-2.0)
+BuildRequires:  pkgconfig(mlite5)
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
 
