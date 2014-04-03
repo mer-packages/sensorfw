@@ -44,7 +44,6 @@ HybrisProximityAdaptor::~HybrisProximityAdaptor()
 
 bool HybrisProximityAdaptor::startSensor()
 {
-    QTimer::singleShot(500,this,SLOT(sendInitialData()));
     if (!(HybrisAdaptor::startSensor()))
         return false;
     sensordLogD() << "HybrisProximityAdaptor start\n";
@@ -94,6 +93,7 @@ void HybrisProximityAdaptor::sendInitialData()
                 d->timestamp_ = Utils::getTimeStamp();
                 d->withinProximity_ = near;
                 d->value_ = near ? 10 : 0;
+
                 buffer->commit();
                 buffer->wakeUpReaders();
             } else {

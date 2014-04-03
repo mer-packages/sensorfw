@@ -174,6 +174,14 @@ bool HybrisManager::setDelay(int sensorHandle, int interval)
         sensordLogW() << "setDelay() failed" << strerror(-result);
         return false;
     }
+    QList <HybrisAdaptor *> list;
+    list = registeredAdaptors.values();
+    for (int i = 0; i < list.count(); i++) {
+        if (list.at(i)->sensorHandle == sensorHandle) {
+            list.at(i)->sendInitialData();
+        }
+    }
+
     return true;
 }
 
@@ -217,7 +225,7 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
 }
 
 bool HybrisManager::resumeReader(HybrisAdaptor *adaptor)
-{    
+{
     sensordLogD() << Q_FUNC_INFO << adaptor->id() << adaptor->deviceStandbyOverride(); //alwaysOn
     QList <HybrisAdaptor *> list;
     list = registeredAdaptors.values();
@@ -519,7 +527,6 @@ bool HybrisAdaptor::setInterval(const unsigned int value, const int /*sessionId*
 
 void HybrisAdaptor::stopReaderThread()
 {
-    qDebug();
     hybrisManager()->stopReader(this);
     running_ = false;
 }
