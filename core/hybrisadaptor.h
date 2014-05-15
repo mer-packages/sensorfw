@@ -121,6 +121,8 @@ public:
     int sensorType;
     int cachedInterval;
 
+    virtual void sendInitialData() {}
+
 protected:
     virtual void processSample(const sensors_event_t& data) = 0;
 
