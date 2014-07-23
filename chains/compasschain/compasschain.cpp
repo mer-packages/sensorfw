@@ -46,7 +46,7 @@ CompassChain::CompassChain(const QString& id) :
         hasOrientationAdaptor = true;
         setValid(orientAdaptor->isValid());
         if (orientAdaptor->isValid())
-            orientationdataReader = new BufferReader<TimedXyzData>(1);
+            orientationdataReader = new BufferReader<CompassData>(1);
 
         orientationFilter = sm.instantiateFilter("orientationfilter");
         Q_ASSERT(orientationFilter);

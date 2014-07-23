@@ -46,7 +46,7 @@ protected:
     void init();
 
 private:
-    DeviceAdaptorRingBuffer<TimedXyzData>* buffer;
+    DeviceAdaptorRingBuffer<CompassData>* buffer;
     int sensorType;
 
 };

@@ -74,7 +74,7 @@ private:
     BufferReader<CalibratedMagneticFieldData> *magReader;
 
     DeviceAdaptor *orientAdaptor;
-    BufferReader<TimedXyzData> *orientationdataReader;
+    BufferReader<CompassData> *orientationdataReader;
 
 
     FilterBase *compassFilter;
