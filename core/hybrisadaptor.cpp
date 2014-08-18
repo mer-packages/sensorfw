@@ -363,6 +363,8 @@ void HybrisAdaptor::init()
     sensorHandle = hybrisManager()->handleForType(sensorType);
     maxRange = hybrisManager()->maxRange(sensorType);
     minDelay = hybrisManager()->minDelay(sensorType);
+    if (minDelay > 1000)
+        minDelay = 0;
     resolution = hybrisManager()->resolution(sensorType);
 }
 
