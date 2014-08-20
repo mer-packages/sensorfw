@@ -36,6 +36,7 @@ DeclinationFilter::DeclinationFilter() :
         declinationCorrection_(0)
 {
     updateInterval_ = Config::configuration()->value<quint64>("compass/declination_update_interval", 1000 * 60 * 60) * 1000;
+    loadSettings();
 }
 
 void DeclinationFilter::correct(unsigned, const CompassData* data)
@@ -50,7 +51,7 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     if(declinationCorrection_)
 #else
-    if(declinationCorrection_.loadAcquire() == 0)
+    if(declinationCorrection_.loadAcquire() != 0)
 #endif
     {
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
@@ -67,6 +68,16 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
 
 void DeclinationFilter::loadSettings()
 {
+    QSettings confFile("/home/nemo/.config/geoclue/location.conf",
+                       QSettings::IniFormat);
+    confFile.beginGroup("location");
+    int dec = confFile.value("declination",0).toInt();
+    if (dec != 0) {
+        declinationCorrection_ = dec;
+        sensordLogD() << "Fetched declination correction from location: " << dec << declinationCorrection_.loadAcquire();
+        return;
+    }
+
     MGConfItem item(declinationKey);
     declinationCorrection_ = item.value().toInt();
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
