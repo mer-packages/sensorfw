@@ -25,6 +25,8 @@
  */
 
 #include <MGConfItem>
+#include <QSettings>
+
 #include "declinationfilter.h"
 #include "config.h"
 #include "logging.h"
@@ -36,6 +38,7 @@ DeclinationFilter::DeclinationFilter() :
         declinationCorrection_(0)
 {
     updateInterval_ = Config::configuration()->value<quint64>("compass/declination_update_interval", 1000 * 60 * 60) * 1000;
+    loadSettings();
 }
 
 void DeclinationFilter::correct(unsigned, const CompassData* data)
@@ -67,8 +70,15 @@ void DeclinationFilter::correct(unsigned, const CompassData* data)
 
 void DeclinationFilter::loadSettings()
 {
-    MGConfItem item(declinationKey);
-    declinationCorrection_ = item.value().toInt();
+    QSettings confFile("/etc/xdg/sensorfw/location.conf", QSettings::IniFormat);
+    confFile.beginGroup("location");
+    double declination = confFile.value("declination",0).toDouble();
+    if (declination != 0) {
+        declinationCorrection_ = declination;
+    } else {
+        MGConfItem item(declinationKey);
+        declinationCorrection_ = item.value().toInt();
+    }
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;
 #else
