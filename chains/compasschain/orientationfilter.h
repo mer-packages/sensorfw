@@ -43,8 +43,8 @@ protected:
 private:
     Source<CompassData> magSource;
 
-    Sink<OrientationFilter, TimedXyzData> orientDataSink;
-    void orientDataAvailable(unsigned, const TimedXyzData*);
+    Sink<OrientationFilter, CompassData> orientDataSink;
+    void orientDataAvailable(unsigned, const CompassData*);
     qreal level;
     qreal oldHeading;
 };

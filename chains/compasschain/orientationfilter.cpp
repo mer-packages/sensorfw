@@ -24,17 +24,20 @@
 
 OrientationFilter::OrientationFilter()
     : orientDataSink(this, &OrientationFilter::orientDataAvailable),
-      level(3) //presume this is fully calibrated
+      level(0) //presume this is fully calibrated
 {
     addSink(&orientDataSink, "orientsink");
     addSource(&magSource, "magnorthangle");
 }
 
-void OrientationFilter::orientDataAvailable(unsigned, const TimedXyzData *data)
+void OrientationFilter::orientDataAvailable(unsigned, const CompassData *data)
 {
     CompassData compassData; //north angle
     compassData.timestamp_ = data->timestamp_;
-    compassData.degrees_ = data->x_ * .001;
-    compassData.level_ = level;
+    compassData.degrees_ = data->degrees_ * .001;
+    if (data->level_ > 0 && data->level_ < 3.1)
+        compassData.level_ = data->level_;
+    else
+        compassData.level_ = level;
     magSource.propagate(1, &compassData);
 }

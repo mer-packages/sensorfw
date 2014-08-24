@@ -43,7 +43,7 @@
 HybrisOrientationAdaptor::HybrisOrientationAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_ORIENTATION)
 {
-    buffer = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
+    buffer = new DeviceAdaptorRingBuffer<CompassData>(1);
     setAdaptedSensor("orientation", "Internal orientation coordinates", buffer);
 
     setDescription("Hybris orientation");
@@ -72,15 +72,18 @@ void HybrisOrientationAdaptor::stopSensor()
 
 void HybrisOrientationAdaptor::processSample(const sensors_event_t& data)
 {
-    TimedXyzData *d = buffer->nextSlot();
+    CompassData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
-    // sensorfw wants milli-G'
-    d->x_ = data.data[0] * 1000; //azimuth
-    d->y_ = data.data[1] * 1000; //pitch
-    d->z_ = data.data[2] * 1000; //roll
+    d->degrees_ = data.data[0] * 1000; //azimuth
+    switch (data.orientation.status) {
+    case SENSOR_STATUS_UNRELIABLE:
+        d->level_ = 0;
+        break;
+    default:
+        d->level_ = data.orientation.status / 3;
+        break;
+    };
 
-//  qt's sensorfw plugin expects G == 9.81286, but it should be
-    //9.80665
     buffer->commit();
     buffer->wakeUpReaders();
 }
