@@ -43,6 +43,8 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <unistd.h>
+#include <QSettings>
+
 
 typedef struct {
         int id;
@@ -103,7 +105,8 @@ SensorManager& SensorManager::instance()
 
 SensorManager::SensorManager()
     : errorCode_(SmNoError),
-    pipeNotifier_(0)
+    pipeNotifier_(0),
+    deviation(0)
 {
     const char* SOCKET_NAME = "/var/run/sensord.sock";
 
@@ -808,3 +811,23 @@ void SensorManager::print() const
     sensordLogD() << "sensorFactoryMap(" << sensorFactoryMap_.size() << "):" << sensorFactoryMap_.keys();
 }
 #endif
+
+double SensorManager::magneticDeviation()
+{
+    if (deviation == 0) {
+        QSettings confFile("/etc/xdg/sensorfw/location.conf", QSettings::IniFormat);
+        confFile.beginGroup("location");
+        deviation = confFile.value("declination",0).toDouble();
+    }
+    return deviation;
+}
+
+void SensorManager::setMagneticDeviation(double level)
+{
+    if (level != deviation) {
+        QSettings confFile("/etc/xdg/sensorfw/location.conf", QSettings::IniFormat);
+        confFile.beginGroup("location");
+        confFile.setValue("declination",level);
+        deviation = level;
+    }
+}

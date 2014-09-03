@@ -322,6 +322,9 @@ public:
     MceWatcher* MCEWatcher() const;
 #endif
 
+    double magneticDeviation();
+    void setMagneticDeviation(double level);
+
 private Q_SLOTS:
     /**
      * Callback for lost session connections.
@@ -454,6 +457,8 @@ private:
 
     static SensorManager*                          instance_; /** singleton */
     static int                                     sessionIdCount_; /** session ID counter */
+
+    double deviation;
 };
 
 template<class SENSOR_TYPE>

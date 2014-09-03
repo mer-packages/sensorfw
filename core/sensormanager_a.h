@@ -41,6 +41,7 @@ class SensorManagerAdaptor : public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Interface", "local.SensorManager")
     Q_PROPERTY(QString errorString READ errorString)
     Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    Q_PROPERTY(int magneticDeviation READ magneticDeviation WRITE setMagneticDeviation)
 
 public:
     /**
@@ -104,6 +105,9 @@ public Q_SLOTS:
      * @return was session released succesfully.
      */
     bool releaseSensor(const QString &id, int sessionId, qint64 pid);
+
+    double magneticDeviation();
+    void setMagneticDeviation(double level);
 
 Q_SIGNALS:
     /**

@@ -67,6 +67,16 @@ bool SensorManagerAdaptor::releaseSensor(const QString &id, int sessionId, qint6
     return sensorManager()->releaseSensor(id, sessionId);
 }
 
+void SensorManagerAdaptor::setMagneticDeviation(double level)
+{
+    sensorManager()->setMagneticDeviation(level);
+}
+
+double SensorManagerAdaptor::magneticDeviation()
+{
+    return sensorManager()->magneticDeviation();
+}
+
 SensorManager* SensorManagerAdaptor::sensorManager() const
 {
     return dynamic_cast<SensorManager*>(parent());
