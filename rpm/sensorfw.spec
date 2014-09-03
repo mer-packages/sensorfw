@@ -1,6 +1,6 @@
 Name:       sensorfw
 Summary:    Sensor Framework
-Version:    0.7.3.36
+Version:    0.7.3.37
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
