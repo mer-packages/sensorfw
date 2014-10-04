@@ -41,6 +41,7 @@
 template <class TYPE>
 class BufferReader : public RingBufferReader<TYPE>
 {
+
 public:
     /**
      * Constructor.
@@ -51,7 +52,7 @@ public:
         chunkSize_(chunkSize),
         chunk_(new TYPE[chunkSize])
     {
-        addSource(&source_, "source");
+        this->addSource(&source_, "source");
     }
 
     /**

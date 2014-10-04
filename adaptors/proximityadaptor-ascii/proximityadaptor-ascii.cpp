@@ -37,6 +37,7 @@
 #include "config.h"
 #include "proximityadaptor-ascii.h"
 #include "datatypes/utils.h"
+#include <unistd.h>
 
 ProximityAdaptorAscii::ProximityAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)

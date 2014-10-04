@@ -32,6 +32,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <sys/epoll.h>
+#include <unistd.h>
 #include <QFile>
 #include "logging.h"
 #include "config.h"

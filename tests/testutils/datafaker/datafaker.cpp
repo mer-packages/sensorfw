@@ -26,6 +26,7 @@
 #include "datafaker.h"
 #include <fcntl.h>
 #include <linux/input.h>
+#include <unistd.h>
 #include <QDebug>
 
 DataFaker::DataFaker(QObject* parent) : QObject(parent) {}

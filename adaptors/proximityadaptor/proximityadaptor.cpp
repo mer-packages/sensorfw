@@ -34,6 +34,7 @@
 #include "config.h"
 #include <QFile>
 #include <linux/types.h>
+#include <unistd.h>
 
 struct bh1770glc_ps {
     __u8 led1;

@@ -31,6 +31,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <linux/input.h>
+#include <unistd.h>
 
 const int TouchAdaptor::HARD_MAX_TOUCH_POINTS = 5;
 

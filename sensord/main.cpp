@@ -36,6 +36,7 @@
 #include <signal.h>
 #include <iostream>
 #include <errno.h>
+#include <unistd.h>
 
 #include "config.h"
 #include "sensormanager.h"

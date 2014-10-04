@@ -37,6 +37,7 @@
 #include "config.h"
 #include "magnetometeradaptor-ascii.h"
 #include "datatypes/utils.h"
+#include <unistd.h>
 
 MagnetometerAdaptorAscii::MagnetometerAdaptorAscii(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
