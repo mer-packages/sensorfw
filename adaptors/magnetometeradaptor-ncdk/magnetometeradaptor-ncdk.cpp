@@ -28,6 +28,7 @@
 #include <errno.h>
 #include "datatypes/utils.h"
 #include "logging.h"
+#include <unistd.h>
 
 MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode),

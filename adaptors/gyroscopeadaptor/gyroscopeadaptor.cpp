@@ -26,6 +26,7 @@
    </p>
 */
 #include <errno.h>
+#include <unistd.h>
 
 #include "logging.h"
 #include "config.h"

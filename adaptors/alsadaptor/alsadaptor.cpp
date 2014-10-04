@@ -36,6 +36,7 @@
 #include <errno.h>
 #include "datatypes/utils.h"
 #include <linux/types.h>
+#include <unistd.h>
 #include <QFile>
 
 /* Device name: /dev/apds990x0 */

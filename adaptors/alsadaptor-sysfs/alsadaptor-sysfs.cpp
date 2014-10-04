@@ -35,6 +35,7 @@
 #include <stdlib.h>
 #include "datatypes/utils.h"
 #include <linux/types.h>
+#include <unistd.h>
 
 ALSAdaptorSysfs::ALSAdaptorSysfs(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, true)

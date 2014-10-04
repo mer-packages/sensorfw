@@ -32,6 +32,7 @@
 #include <fcntl.h>
 #include <linux/input.h>
 #include "datatypes/utils.h"
+#include <unistd.h>
 #include <QFile>
 
 /* Device name: /dev/ak8974n, where n is a running number (0 in case on single chip configuration) */

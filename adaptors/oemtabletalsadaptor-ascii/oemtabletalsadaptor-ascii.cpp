@@ -9,6 +9,7 @@
 #include "datatypes/utils.h"
 #include <stdlib.h>
 #include <linux/types.h>
+#include <unistd.h>
 
 OEMTabletALSAdaptorAscii::OEMTabletALSAdaptorAscii(const QString& id) : SysfsAdaptor(id, SysfsAdaptor::IntervalMode)
 {
