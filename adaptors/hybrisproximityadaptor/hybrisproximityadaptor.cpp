@@ -27,6 +27,7 @@
 #include "datatypes/utils.h"
 #include <hardware/sensors.h>
 #include <fcntl.h>
+#include <unistd.h>
 
 HybrisProximityAdaptor::HybrisProximityAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_PROXIMITY)
