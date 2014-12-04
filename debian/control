@@ -1,0 +1,57 @@
+Source: sensord
+Section: misc
+Priority: optional
+Maintainer: Antti Virtanen <antti.i.virtanen@nokia.com>
+Uploaders: Timo Rongas <ext-timo.2.rongas@nokia.com>, Pia Niemelä <pia.s.niemela@nokia.com>, Markus Lehtonen <markus.lehtonen@nokia.com>, Semi Malinen <semi.malinen@nokia.com>
+Build-Depends: debhelper (>=5), libqt4-dev (>= 4.5), doxygen, libcontextprovider-dev (>= 0.3), libgconf2-dev, mce-dev (>= 1.10.16), aegis-builder (>= 1.4)
+Standards-Version: 3.7.3
+
+Package: sensord
+Section: misc
+Priority: extra
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt4-core (>=4.5), libgconf2-6, mce (>=1.10.94)
+Description: Sensor framework daemon
+ Provides sensor framework daemon and required libraries
+
+Package: sensord-dbg
+Section: misc
+Priority: extra
+Architecture: any
+Depends: sensord (= ${binary:Version}), ${misc:Depends}
+Description: Sensor framework daemon and libraries debug symbols
+ Debug symbols for sensor framework daemon and libraries.
+
+Package: libsensord-dev
+Section: libdevel
+Priority: extra
+Architecture: any
+Depends: libqt4-dev (>= 4.5), sensord (= ${binary:Version})
+Description: Sensor framework daemon libraries development headers
+ Development headers for sensor framework daemon and libraries.
+
+Package: libsensord-doc
+Section: doc
+Architecture: all
+Priority: optional
+Description: API documentation for libsensord
+ Doxygen-generated API documentation for sensord.
+
+Package: sensord-tests
+Section: tests
+Architecture: any
+Depends: ci-testing, mcetools, sensord (= ${binary:Version}), sysklogd, python, ${shlibs:Depends}
+XB-Maemo-CI-Packages: sensord
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: Unit test cases for sensord
+ Contains unit test cases for CI environment.
+
+Package: sensord-contextfw-tests
+Section: tests
+Architecture: any
+Depends: ci-testing, sensord (= ${binary:Version}), sensord-tests (= ${binary:Version}), contextkit-utils (>> 0.3.6), python-contextkit (>> 0.3.6), ${shlibs:Depends}
+XB-Maemo-CI-Packages: sensord
+XB-Maemo-CI-Stage: fast, staging, acceptance, validation
+Description: Test cases for sensord acting as context provider
+ Contains test cases for CI environment, for ensuring that sensord provides
+ context properties correctly.
