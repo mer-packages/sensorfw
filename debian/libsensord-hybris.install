@@ -1,0 +1,10 @@
+/usr/lib/libhybrissensorfw*.so.*
+/usr/lib/libhybrissensorfw*.so
+/usr/lib/sensord/libhybrisaccelerometeradapter-qt5.so
+/usr/lib/sensord/libhybrisalsadapter-qt5.so
+/usr/lib/sensord/libhybrisaccelerometeradapter-qt5.so
+/usr/lib/sensord/libhybrisgyroscopeadapter-qt5.so
+/usr/lib/sensord/libhybrismagnetometeradapter-qt5.so
+/usr/lib/sensord/libhybrisorientationadapter-qt5.so
+/usr/lib/sensord/libhybrisproximityadapter-qt5.so
+

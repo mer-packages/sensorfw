@@ -24,21 +24,6 @@ else
     CFLAGS += -O2
 endif
 
-# DEPRECATED: No need for separation anymore
-#### Change binary lib include paths depending on host architecture
-###ADEB_HOST_ARCH:=$(shell dpkg-architecture -qDEB_HOST_ARCH)
-###ifneq ($(strip $(DEB_HOST_ARCH)),armel)
-###    QMAKECONFIG:="CONFIG+=x86build"
-###endif
-
-#ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
-#    INSTALL_PROGRAM += -s
-#endif
-
-# Setup to build with contexprovider capabilities
-# Commented out, this comes from common-config these days
-#QMAKECONFIG:= $(QMAKECONFIG) CONFIG+=contextprovider
-
 # check for parallel parameter
 ifneq (,$(findstring parallel=,$(DEB_BUILD_OPTIONS)))
     # DEB_BUILD_OPTIONS can't seem to make its mind with the list usage...
@@ -109,25 +94,11 @@ binary-arch: build install
 	dh_testroot
 	dh_installchangelogs
 	dh_installdocs
-#	dh_installexamples
 	dh_install --sourcedir=debian/tmp
-#	dh_installmenu
-#	dh_installdebconf
-#	dh_installlogrotate
-#	dh_installemacsen
-#	dh_installpam
-#	dh_installmime
-#	dh_python
-#	dh_installinit --name=sensorsystem -u "start 60 2 3 4 5 . stop 40 0 1 6 ."
-#	dh_installupstart
-#	dh_installcron
-#	dh_installinfo
-#	dh_installman
 	dh_link
 	dh_strip --dbg-package=$(PACKAGE_NAME)-dbg
 	dh_compress
 	dh_fixperms
-#	dh_perl
 	dh_makeshlibs --exclude=/usr/lib/sensord
 	dh_installdeb
 	dh_shlibdeps
