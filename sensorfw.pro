@@ -1,3 +1,6 @@
+load(configure)
+qtCompileTest(hybris)
+
 TEMPLATE = subdirs
 CONFIG += ordered
 SUBDIRS = datatypes \ 
@@ -16,10 +19,14 @@ equals(QT_MAJOR_VERSION, 4): {
 }
 
 contains(CONFIG,hybris) {
-    SUBDIRS =  core/hybris.pro \
+
+    SUBDIRS = core/hybris.pro \
                adaptors
 } else {
-
+    config_hybris {
+    SUBDIRS += core/hybris.pro \
+               adaptors
+    }
     publicheaders.files += include/*.h
 
     INSTALLS += PKGCONFIGFILES QTCONFIGFILES
@@ -43,7 +50,6 @@ contains(CONFIG,hybris) {
         QTCONFIGFILES.path = /usr/share/qt5/mkspecs/features
 
     }
-
 }
 
 
@@ -59,6 +65,11 @@ equals(QT_MAJOR_VERSION, 5):  {
         INSTALLS += SENSORDHYBRISCONFIGFILE
 
     } else {
+    config_hybris {
+        SENSORDHYBRISCONFIGFILE.files = config/sensord-hybris.conf
+        SENSORDHYBRISCONFIGFILE.path = /etc/sensorfw
+        INSTALLS += SENSORDHYBRISCONFIGFILE
+    }
         DBUSCONFIGFILES.files = sensorfw.conf
         DBUSCONFIGFILES.path = /etc/dbus-1/system.d
 
@@ -97,3 +108,11 @@ equals(QT_MAJOR_VERSION, 5):  {
 
 }
 OTHER_FILES += config/*
+
+SENSORDCONFIGHELPER.files = rpm/sensord-daemon-conf-setup
+SENSORDCONFIGHELPER.path = /usr/bin
+INSTALLS += SENSORDCONFIGHELPER
+
+SENSORSYSTEMD.files = rpm/sensord.service
+SENSORSYSTEMD.path = /lib/systemd/system
+INSTALLS += SENSORSYSTEMD

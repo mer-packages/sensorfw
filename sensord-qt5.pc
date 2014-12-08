@@ -2,7 +2,7 @@ prefix=/usr
 includedir=${prefix}/include/sensord-qt5
 libdir=${prefix}/lib/
 
-Name: Sensord-qt5
+Name: Sensorfw-qt5
 Description: Sensord for Qt 5
 Version: 0.7.2.1
 Requires:

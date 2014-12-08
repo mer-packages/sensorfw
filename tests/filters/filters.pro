@@ -5,9 +5,7 @@ include(../common-install.pri)
 TEMPLATE = app
 TARGET = sensorfilters-test
 
-CONFIG += testcase link_pkgconfig
-
-PKGCONFIG += mlite5
+CONFIG += testcase
 
 HEADERS += filtertests.h \
     ../../filters/orientationinterpreter/orientationinterpreter.h \

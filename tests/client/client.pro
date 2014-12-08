@@ -11,8 +11,8 @@ TARGET = sensorapi-test
 HEADERS += clientapitest.h
 SOURCES += clientapitest.cpp
 
-CONFIG += link_pkgconfig
-PKGCONFIG += mlite5
+#CONFIG += link_pkgconfig
+#PKGCONFIG += mlite5
 
 SENSORFW_INCLUDEPATHS = ../.. \
                         ../../include \

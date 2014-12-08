@@ -26,13 +26,24 @@ SUDBIRS += oemtabletgyroscopeadaptor
 SUBDIRS += steaccelerometeradaptor
 SUBDIRS += mpu6050accelerometer
 
-contains(CONFIG,hybris) {
-    SUBDIRS = hybrisaccelerometer
+config_hybris {
+    SUBDIRS += hybrisaccelerometer
     SUBDIRS += hybrisalsadaptor
     SUBDIRS += hybrisgyroscopeadaptor
     SUBDIRS += hybrismagnetometeradaptor
     SUBDIRS += hybrisproximityadaptor
     SUBDIRS += hybrisorientationadaptor
+
+} else {
+# split like this as Sailfish only installs hybris plugins
+    contains(CONFIG,hybris) {
+        SUBDIRS = hybrisaccelerometer
+        SUBDIRS += hybrisalsadaptor
+        SUBDIRS += hybrisgyroscopeadaptor
+        SUBDIRS += hybrismagnetometeradaptor
+        SUBDIRS += hybrisproximityadaptor
+        SUBDIRS += hybrisorientationadaptor
+    }
 }
 
 

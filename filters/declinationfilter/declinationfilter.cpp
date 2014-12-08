@@ -24,7 +24,7 @@
    </p>
  */
 
-#include <MGConfItem>
+#include <QSettings>
 #include <QSettings>
 
 #include "declinationfilter.h"
@@ -75,9 +75,6 @@ void DeclinationFilter::loadSettings()
     double declination = confFile.value("declination",0).toDouble();
     if (declination != 0) {
         declinationCorrection_ = declination;
-    } else {
-        MGConfItem item(declinationKey);
-        declinationCorrection_ = item.value().toInt();
     }
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     sensordLogD() << "Fetched declination correction from GConf: " << declinationCorrection_;

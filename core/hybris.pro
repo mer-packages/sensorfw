@@ -6,6 +6,7 @@ TARGET = hybrissensorfw
 include( ../common-config.pri )
 
 CONFIG += link_pkgconfig
+INCLUDEPATH+=/usr/include/android
 
 SENSORFW_INCLUDEPATHS = .. \
                         ../include \
@@ -19,7 +20,7 @@ QMAKE_LIBDIR_FLAGS += -lsensordatatypes-qt5
 
 SOURCES += hybrisadaptor.cpp
 HEADERS += hybrisadaptor.h
-LIBS += -L/usr/lib -lhybris-common -lhardware
+LIBS += -L/usr/lib -lhybris-common -lhardware -L../datatypes
 
 include(../common-install.pri)
 target.path = $$SHAREDLIBPATH

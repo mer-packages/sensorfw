@@ -9,7 +9,7 @@ space:= $(empty) $(empty)
 # project specific
 PROJECT_NAME:= sensorfw
 BUILD_DIR:= builddir
-PACKAGE_NAME:= sensord
+PACKAGE_NAME:= sensorfw-qt5
 
 # Uncomment this to turn on verbose mode.
 export DH_VERBOSE=1
@@ -49,7 +49,7 @@ configure-stamp: builddir
 
 	# Add here commands to configure the package.
 	cd $(BUILD_DIR) && qmake $(QMAKECONFIG) "QMAKE_CXXFLAGS=$(CFLAGS)" "MAKE_DOCS=$(MAKE_DOCS)" ../$(PROJECT_NAME).pro
-	export LD_RUN_PATH=/usr/lib/sensord/
+	export LD_RUN_PATH=/usr/lib/sensord-qt5/
 
 	touch configure-stamp
 
@@ -99,13 +99,12 @@ binary-arch: build install
 	dh_strip --dbg-package=$(PACKAGE_NAME)-dbg
 	dh_compress
 	dh_fixperms
-	dh_makeshlibs --exclude=/usr/lib/sensord
+	dh_makeshlibs --exclude=/usr/lib/sensord-qt5
 	dh_installdeb
 	dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
 	dh_builddeb
-	aegis-deb-add -control debian/sensord/DEBIAN/control .. debian/_aegis=_aegis
 
 binary: binary-indep binary-arch
 .PHONY: build clean binary-indep binary-arch binary install configure

@@ -32,10 +32,10 @@
 #include <QTimer>
 #include <QProcess>
 #include <QDebug>
-#include <MGConfItem>
+#include <QSettings>
 
-#define DISABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(false)); item.sync(); }
-#define ENABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(true)); item.sync(); }
+//#define DISABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(false)); item.sync(); }
+//#define ENABLE_TKLOCK { MGConfItem item("/system/osso/dsm/locks/touchscreen_keypad_autolock_enabled"); item.set(QVariant(true)); item.sync(); }
 #define OPEN_TKLOCK QProcess::execute("mcetool --set-tklock-mode=unlocked");
 #define BLANK_SCREEN QProcess::execute("mcetool --blank-screen");
 #define UNBLANK_SCREEN QProcess::execute("mcetool --unblank-screen");
@@ -50,7 +50,7 @@ void StandbyOverrideTest::initTestCase()
 
     remoteSensorManager.registerSensorInterface<AccelerometerSensorChannelInterface>("accelerometersensor");
 
-    DISABLE_TKLOCK;
+//    DISABLE_TKLOCK;
     OPEN_TKLOCK;
 
     helper1.setInputFile(accInputFile);
@@ -63,7 +63,7 @@ void StandbyOverrideTest::init() {}
 void StandbyOverrideTest::cleanup() {}
 void StandbyOverrideTest::cleanupTestCase()
 {
-    ENABLE_TKLOCK;
+  //  ENABLE_TKLOCK;
     helper1.stop();
     helper2.stop();
     helper1.wait();

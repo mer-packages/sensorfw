@@ -1,8 +1,8 @@
 TARGET = declinationfilter
 
-CONFIG += link_pkgconfig
+#CONFIG += link_pkgconfig
 
-PKGCONFIG += mlite5
+#PKGCONFIG += mlite5
 
 HEADERS += declinationfilter.h \
            declinationfilterplugin.h

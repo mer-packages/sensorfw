@@ -1,55 +1,60 @@
-Source: sensord
+Source: sensorfw-qt5
 Section: misc
 Priority: optional
-Maintainer: Antti Virtanen <antti.i.virtanen@nokia.com>
-Uploaders: Timo Rongas <ext-timo.2.rongas@nokia.com>, Pia Niemelä <pia.s.niemela@nokia.com>, Markus Lehtonen <markus.lehtonen@nokia.com>, Semi Malinen <semi.malinen@nokia.com>
-Build-Depends: debhelper (>=5), libqt5-dev, doxygen, libgconf2-dev 
+Maintainer: Lorn Potter <lorn.potter@gmail.com>
+Uploaders: 
+Build-Depends: debhelper (>=5), qt5-default
 Standards-Version: 3.7.3
 
-Package: sensord
+Package: sensorfw-qt5
 Section: misc
 Priority: extra
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5-core, libgconf2-6
+Depends: ${shlibs:Depends}, ${misc:Depends}, libqt5core5a 
 Description: Sensor framework daemon
  Provides sensor framework daemon and required libraries
 
-Package: sensord-dbg
+Package: libsensorfw-qt5-plugins
 Section: misc
 Priority: extra
 Architecture: any
-Depends: sensord (= ${binary:Version}), ${misc:Depends}
+Depends: sensorfw-qt5 (= ${binary:Version}), ${misc:Depends}, libqt5core5a
+Description: Sensor framework daemon and libraries plugins
+ Platform plugins for sensorfw.
+
+Package: sensorfw-qt5-dbg
+Section: misc
+Priority: extra
+Architecture: any
+Depends: sensorfw-qt5 (= ${binary:Version}), ${misc:Depends}
 Description: Sensor framework daemon and libraries debug symbols
  Debug symbols for sensor framework daemon and libraries.
 
-Package: libsensord-dev
+Package: libsensorfw-qt5-dev
 Section: libdevel
 Priority: extra
 Architecture: any
-Depends: libqt5-dev, sensord (= ${binary:Version})
+Depends: qt5-default, sensorfw-qt5 (= ${binary:Version})
 Description: Sensor framework daemon libraries development headers
  Development headers for sensor framework daemon and libraries.
 
-Package: libsensord-doc
+Package: libsensorfw-qt5-doc
 Section: doc
 Architecture: all
 Priority: optional
-Description: API documentation for libsensord
- Doxygen-generated API documentation for sensord.
+Description: API documentation for libsensorfw
+ Doxygen-generated API documentation for sensorfw.
 
-Package: sensord-tests
+Package: sensorfw-qt5-tests
 Section: tests
 Architecture: any
-Depends: ci-testing, sensord (= ${binary:Version}), sysklogd, python, ${shlibs:Depends}
-XB-Maemo-CI-Packages: sensord
-XB-Maemo-CI-Stage: fast, staging, acceptance, validation
-Description: Unit test cases for sensord
+Depends: libqt5test5, sensorfw-qt5 (= ${binary:Version}), sysklogd, python, ${shlibs:Depends}
+Description: Unit test cases for sensorfw
 
-Package: libsensord-hybris
+Package: libsensorfw-qt5-hybris
 Section: misc
 Priority: extra
 Architecture: any
-Depends: sensord (= ${binary:Version}), libqt5-core, libgconf2-6, android-headers, libhardware
+Depends: sensorfw-qt5 (= ${binary:Version}), libqt5core5a, android-headers, libhardware2
 Description: Sensor framework hybris support
- Provides sensor framework hybris support
-
+ Provides support for hybris Sensor framework backend.

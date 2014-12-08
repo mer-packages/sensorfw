@@ -1,32 +1,32 @@
-interface: libsensord
+interface: libsensorfw-qt5
 type: library
 scope: internal
 state: unstable
-libs-pkg: sensord
-dev-pkg: libsensord-dev
+libs-pkg: sensorfw-qt5
+dev-pkg: libsensorfw-qt5-dev
 headers:
- /usr/include/sensord/datatypes/*
- /usr/include/sensord/*_i.h
+ /usr/include/sensord-qt5/datatypes/*
+ /usr/include/sensord-qt5/*_i.h
 libs:
- /usr/lib/libsensorclient.so.1.0.0
+ /usr/lib/libsensorclient-qt5.so.1.0.0
  /usr/lib/libsensordatatypes.so.1.0.0
 
 interface: sensordPlugins
 type: library
 scope: internal
 state: unstable
-libs-pkg: sensord
-dev-pkg: libsensord-dev
+libs-pkg: sensorfw-qt5
+dev-pkg: libsensorfw-qt5-dev
 headers:
- /usr/include/sensord/plugin.h
- /usr/include/sensord/sensormanager.h
- /usr/include/sensord/deviceadaptor.h
- /usr/include/sensord/abstractsensor.h
- /usr/include/sensord/abstractchain.h
- /usr/include/sensord/filter.h
- /usr/include/sensord/bin.h
- /usr/include/sensord/bufferreader.h
- /usr/include/sensord/filterproperty.h
+ /usr/include/sensord-qt5/plugin.h
+ /usr/include/sensord-qt5/sensormanager.h
+ /usr/include/sensord-qt5/deviceadaptor.h
+ /usr/include/sensord-qt5/abstractsensor.h
+ /usr/include/sensord-qt5/abstractchain.h
+ /usr/include/sensord-qt5/filter.h
+ /usr/include/sensord-qt5/bin.h
+ /usr/include/sensord-qt5/bufferreader.h
+ /usr/include/sensord-qt5/filterproperty.h
 libs:
- /usr/lib/libsensorclient.so.1.0.0
+ /usr/lib/libsensorclient-qt5.so.1.0.0
  /usr/lib/libsensordatatypes.so.1.0.0

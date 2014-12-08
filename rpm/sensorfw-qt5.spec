@@ -130,9 +130,8 @@ systemctl daemon-reload || :
 %dir %{_sysconfdir}/sensorfw
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-#%doc debian/copyright debian/README COPYING
-/%{_lib}/systemd/system/sensord.service
-/%{_lib}/systemd/system/basic.target.wants/sensord.service
+%{_unitdir}/sensord.service
+%{_unitdir}/graphical.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
 
 %files devel
