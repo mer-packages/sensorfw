@@ -22,6 +22,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(mlite5)
+BuildRequires:  systemd
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
 
@@ -91,11 +92,11 @@ rm -rf %{buildroot}
 export QT_SELECT=5
 %qmake5_install
 
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_lib}/systemd/system/sensord.service
+install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/sensord.service
 install -D -m750 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
 
-mkdir -p %{buildroot}/%{_lib}/systemd/system/basic.target.wants
-ln -s ../sensord.service %{buildroot}/%{_lib}/systemd/system/basic.target.wants/sensord.service
+mkdir -p %{buildroot}/%{_unitdir}/graphical.target.wants
+ln -s ../sensord.service %{buildroot}/%{_unitdir}/graphical.target.wants/sensord.service
 
 %preun
 if [ "$1" -eq 0 ]; then
@@ -127,8 +128,8 @@ systemctl daemon-reload || :
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-/%{_lib}/systemd/system/sensord.service
-/%{_lib}/systemd/system/basic.target.wants/sensord.service
+%{_unitdir}/sensord.service
+%{_unitdir}/graphical.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
 
 %files devel
