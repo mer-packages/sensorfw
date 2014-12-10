@@ -121,11 +121,13 @@ systemctl daemon-reload || :
 %{_libdir}/libsensorclient-qt5.so.*
 %{_libdir}/libsensordatatypes-qt5.so.*
 %attr(755,root,root)%{_sbindir}/sensord
+%dir %{_libdir}/sensord-qt5
 %{_libdir}/sensord-qt5/*.so
 %{_libdir}/libsensorfw*.so.*
 %{_libdir}/libsensordatatypes*.so.*
 %{_libdir}/libsensorclient*.so.*
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
+%dir %{_sysconfdir}/sensorfw
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
 %{_unitdir}/sensord.service
@@ -145,7 +147,9 @@ systemctl daemon-reload || :
 %defattr(-,root,root,-)
 %{_libdir}/libsensorfakeopen*.so
 %{_libdir}/libsensorfakeopen*.so.*
+%dir %{_libdir}/sensord-qt5/testing
 %{_libdir}/sensord-qt5/testing/*
+%dir %{_datadir}/sensorfw-tests
 %attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf
