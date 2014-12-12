@@ -22,6 +22,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(mlite5)
+BuildRequires:  systemd
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
 
@@ -91,11 +92,11 @@ rm -rf %{buildroot}
 export QT_SELECT=5
 %qmake5_install
 
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_lib}/systemd/system/sensord.service
+install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/sensord.service
 install -D -m750 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
 
-mkdir -p %{buildroot}/%{_lib}/systemd/system/basic.target.wants
-ln -s ../sensord.service %{buildroot}/%{_lib}/systemd/system/basic.target.wants/sensord.service
+mkdir -p %{buildroot}/%{_unitdir}/graphical.target.wants
+ln -s ../sensord.service %{buildroot}/%{_unitdir}/graphical.target.wants/sensord.service
 
 %preun
 if [ "$1" -eq 0 ]; then
@@ -120,15 +121,17 @@ systemctl daemon-reload || :
 %{_libdir}/libsensorclient-qt5.so.*
 %{_libdir}/libsensordatatypes-qt5.so.*
 %attr(755,root,root)%{_sbindir}/sensord
+%dir %{_libdir}/sensord-qt5
 %{_libdir}/sensord-qt5/*.so
 %{_libdir}/libsensorfw*.so.*
 %{_libdir}/libsensordatatypes*.so.*
 %{_libdir}/libsensorclient*.so.*
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
+%dir %{_sysconfdir}/sensorfw
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-/%{_lib}/systemd/system/sensord.service
-/%{_lib}/systemd/system/basic.target.wants/sensord.service
+%{_unitdir}/sensord.service
+%{_unitdir}/graphical.target.wants/sensord.service
 %{_bindir}/sensord-daemon-conf-setup
 
 %files devel
@@ -144,7 +147,9 @@ systemctl daemon-reload || :
 %defattr(-,root,root,-)
 %{_libdir}/libsensorfakeopen*.so
 %{_libdir}/libsensorfakeopen*.so.*
+%dir %{_libdir}/sensord-qt5/testing
 %{_libdir}/sensord-qt5/testing/*
+%dir %{_datadir}/sensorfw-tests
 %attr(755,root,root)%{_datadir}/sensorfw-tests/*.p*
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.xml
 %attr(644,root,root)%{_datadir}/sensorfw-tests/*.conf
