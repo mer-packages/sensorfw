@@ -10,7 +10,7 @@ Source0:    %{name}-%{version}.tar.bz2
 # as those are added to packaging dir by tar_git.
 Source1:    sensord-daemon-conf-setup
 Source2:    sensorfw-rpmlintrc
-Source3:    sensord.service
+Source3:    sensorfwd.service
 Requires:   %{name}-configs
 Requires:   sensord-qt5
 Requires(post): /sbin/ldconfig
@@ -55,7 +55,7 @@ Sensorfw configuration files.
 
 %build
 unset LD_AS_NEEDED
-export LD_RUN_PATH=/usr/lib/sensord/
+export LD_RUN_PATH=/usr/lib/sensord-qt5/
 export QT_SELECT=5
 
 %qmake5 CONFIG+=hybris

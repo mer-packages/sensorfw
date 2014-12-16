@@ -3,8 +3,7 @@ QT += network
 TEMPLATE = app
 
 include( ../common-config.pri )
-#don't change target name in qt5
-TARGET = sensord
+TARGET = sensorfwd
 
 CONFIG += console \
           link_pkgconfig
