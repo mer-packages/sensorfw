@@ -19,6 +19,11 @@ if [ -x /usr/sbin/sensord ]; then
         for f in sensord-*.conf; do
             fbase="${f#sensord-}"
             if grep -q "${fbase%.conf}" /etc/boardname; then
+                # N9/N950 (RM-696/RM-680) boardname containts rm_680 for both
+                # use /proc/1/environ to tell them apart
+                if [ "$f" = "sensord-rm_680.conf" ] && grep -q 'RM-696' /proc/1/environ; then
+                   f="sensord-rm_696.conf"
+                fi
                 ln -s $f primaryuse.conf
                 break
             fi
