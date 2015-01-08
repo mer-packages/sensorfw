@@ -24,11 +24,11 @@
 #include <hardware/sensors.h>
 
 HybrisAlsAdaptor::HybrisAlsAdaptor(const QString& id) :
-    HybrisAdaptor(id,SENSOR_TYPE_LIGHT)
+    HybrisAdaptor(id,SENSOR_TYPE_LIGHT),
+    lastLightValue(9999)
 {
     buffer = new DeviceAdaptorRingBuffer<TimedUnsigned>(1);
     setAdaptedSensor("als", "Internal ambient light sensor lux values", buffer);
-   // setDefaultInterval(50);
     setDescription("Hybris als");
 }
 
@@ -46,6 +46,18 @@ bool HybrisAlsAdaptor::startSensor()
     return true;
 }
 
+void HybrisAlsAdaptor::sendInitialData()
+{
+    TimedUnsigned *d = buffer->nextSlot();
+
+    d->timestamp_ = Utils::getTimeStamp();
+    d->value_ = lastLightValue;
+
+    buffer->commit();
+    buffer->wakeUpReaders();
+
+}
+
 void HybrisAlsAdaptor::stopSensor()
 {
     HybrisAdaptor::stopSensor();
@@ -57,7 +69,7 @@ void HybrisAlsAdaptor::processSample(const sensors_event_t& data)
     TimedUnsigned *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
     d->value_ = data.light;
-
+    lastLightValue = d->value_;
     buffer->commit();
     buffer->wakeUpReaders();
 }
