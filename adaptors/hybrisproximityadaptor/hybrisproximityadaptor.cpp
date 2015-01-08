@@ -30,7 +30,8 @@
 #include <unistd.h>
 
 HybrisProximityAdaptor::HybrisProximityAdaptor(const QString& id) :
-    HybrisAdaptor(id,SENSOR_TYPE_PROXIMITY)
+    HybrisAdaptor(id,SENSOR_TYPE_PROXIMITY),
+    lastNearValue(true)
 {
     buffer = new DeviceAdaptorRingBuffer<ProximityData>(1);
     setAdaptedSensor("proximity", "Internal proximity coordinates", buffer);
@@ -53,58 +54,63 @@ bool HybrisProximityAdaptor::startSensor()
 
 void HybrisProximityAdaptor::sendInitialData()
 {
-    QFile file("/proc/bus/input/devices");
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        bool ok = false;
-        QString inputDev;
+   QFile file("/proc/bus/input/devices");
+   if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+       bool ok = false;
+       QString inputDev;
 
-        QTextStream in(&file);
-        QString line = in.readLine();
-        while (!line.isNull()) {
-            if (ok && line.startsWith("S: Sysfs=")) {
-                inputDev = line.split("=").at(1).section("/",-1);
-                ok = false;
-                break;
-            }
-            if (line.contains("proximity")) {
-                ok = true;
-            }
-            line = in.readLine();
-        }
+       QTextStream in(&file);
+       QString line = in.readLine();
+       while (!line.isNull()) {
+           if (ok && line.startsWith("S: Sysfs=")) {
+               inputDev = line.split("=").at(1).section("/",-1);
+               ok = false;
+               break;
+           }
+           if (line.contains("proximity")) {
+               ok = true;
+           }
+           line = in.readLine();
+       }
 
-        if (inputDev.isEmpty()) {
-            sensordLogW() << "No sysfs proximity device found";
-            return;
-        }
+       if (inputDev.isEmpty()) {
+           sensordLogW() << "No sysfs proximity device found";
+           return;
+       }
 
-        struct input_absinfo absinfo;
-        int fd;
-        inputDev.replace("input","event");
-        inputDev.prepend("/dev/input/");
+       struct input_absinfo absinfo;
+       int fd;
+       inputDev.replace("input","event");
+       inputDev.prepend("/dev/input/");
 
-        if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > 0) {
+       if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > 0) {
 
-            if (!ioctl(fd, EVIOCGABS(ABS_DISTANCE), &absinfo)) {
-                bool near = false;
-                if (absinfo.value == 0)
-                    near = true;
+           if (!ioctl(fd, EVIOCGABS(ABS_DISTANCE), &absinfo)) {
+               bool near = false;
+               if (absinfo.value == 0)
+                   near = true;
+               ProximityData *d = buffer->nextSlot();
+               d->timestamp_ = Utils::getTimeStamp();
+               d->withinProximity_ = near;
+               d->value_ = near ? 10 : 0;
+               buffer->commit();
+               buffer->wakeUpReaders();
+           } else {
+               qDebug() << "ioctl not opened" ;
+           }
+           close(fd);
+       } else {
+           qDebug() << "could not open proximity evdev";
+           ProximityData *d = buffer->nextSlot();
 
-                ProximityData *d = buffer->nextSlot();
+           d->timestamp_ = Utils::getTimeStamp();
+           d->withinProximity_ = lastNearValue;
+           d->value_ = lastNearValue ? 10 : 0;
 
-                d->timestamp_ = Utils::getTimeStamp();
-                d->withinProximity_ = near;
-                d->value_ = near ? 10 : 0;
-
-                buffer->commit();
-                buffer->wakeUpReaders();
-            } else {
-                qDebug() << "ioctl not opened" ;
-            }
-            close(fd);
-        } else {
-            qDebug() << "could not open proximity evdev";
-        }
-    }
+           buffer->commit();
+           buffer->wakeUpReaders();
+       }
+   }
 }
 
 void HybrisProximityAdaptor::stopSensor()
@@ -118,13 +124,13 @@ void HybrisProximityAdaptor::processSample(const sensors_event_t& data)
     ProximityData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
     bool near = false;
-
     if (data.distance < maxRange) {
         near = true;
     }
     d->withinProximity_ = near;
     d->value_ = data.distance;
 
+    lastNearValue = near;
     buffer->commit();
     buffer->wakeUpReaders();
 }
