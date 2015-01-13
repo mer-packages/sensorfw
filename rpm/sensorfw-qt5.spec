@@ -162,7 +162,7 @@ systemctl daemon-reload || :
 %attr(755,root,root)%{_bindir}/sensordiverter.sh
 %attr(755,root,root)%{_bindir}/sensordriverpoll-test
 %attr(755,root,root)%{_bindir}/sensordummyclient-qt5
-%attr(755,root,root)%{_bindir}/sensorexternal-test
+#%attr(755,root,root)%{_bindir}/sensorexternal-test
 %attr(755,root,root)%{_bindir}/sensorfilters-test
 %attr(755,root,root)%{_bindir}/sensormetadata-test
 %attr(755,root,root)%{_bindir}/sensorpowermanagement-test
