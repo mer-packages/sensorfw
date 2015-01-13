@@ -1,0 +1,4 @@
+/usr/include/sensord-qt5/*.h
+/usr/include/sensord-qt5/datatypes/*.h
+/usr/lib/pkgconfig/*.pc
+/usr/share/qt5/mkspecs/features/*.prf

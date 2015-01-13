@@ -40,7 +40,7 @@
 #include "rotationfilter.h"
 #include "filtertests.h"
 #include "config.h"
-#include <MGConfItem>
+#include <QSettings>
 
 void FilterApiTest::initTestCase()
 {
@@ -335,9 +335,9 @@ void FilterApiTest::testDeclinationFilter()
     FilterBase* declinationFilter = DeclinationFilter::factoryMethod();
     QVERIFY(declinationFilter);
 
-    MGConfItem item("/system/osso/location/settings/magneticvariation");
-    item.set(QVariant(50));
-    item.sync();
+    QSettings confFile("/etc/xdg/sensorfw/location.conf", QSettings::IniFormat);
+    confFile.beginGroup("location");
+    confFile.setValue("declination",50);
 
     int key = dynamic_cast<DeclinationFilter*>(declinationFilter)->declinationCorrection();
 
@@ -396,8 +396,7 @@ void FilterApiTest::testDeclinationFilter()
 
     delete declinationFilter;
 
-    item.set(QVariant((int)0));
-    item.sync();
+    confFile.setValue("declination",0);
 }
 
 void FilterApiTest::testRotationFilter()

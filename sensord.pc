@@ -2,8 +2,8 @@ prefix=/usr
 includedir=${prefix}/include/sensord
 libdir=${prefix}/lib/
 
-Name: Sensord
-Description: Sensord
+Name: Sensorfw
+Description: Sensorfw
 Version: 0.7.2.1
 Requires:
 Libs: -L${libdir} -lsensorclient -lsensordatatypes

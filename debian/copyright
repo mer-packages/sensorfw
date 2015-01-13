@@ -1,10 +1,4 @@
-/**
-   @file externaltests.h
-   @brief Automatic tests for external issues
-   <p>
-   Copyright (C) 2009-2010 Nokia Corporation
-
-   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
+Copyright (C) 2009-2011 Nokia Corporation
 
    This file is part of Sensord.
 
@@ -19,30 +13,6 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
-   </p>
-*/
 
-#ifndef EXTERNALTEST_H
-#define EXTERNALTEST_H
-
-#include <QTest>
-
-/**
- * Tests for external matters, such as GConf keys set by other frameworks
- * etc.
- */
-class ExternalTest : public QObject
-{
-     Q_OBJECT;
-
-private slots:
-    void initTestCase() {}
-    void init() {}
-
-    void testDeclinationCorrectionKey();
-
-    void cleanup() {}
-    void cleanupTestCase() {}
-};
-
-#endif // EXTERNALTEST_H
+On Debian systems, the complete text of the GNU Lesser
+General Public License can be found in `/usr/share/common-licenses/LGPL-2.1'.

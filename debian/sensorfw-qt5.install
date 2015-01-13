@@ -1,0 +1,8 @@
+/usr/lib/libsensorclient-qt5.so*
+/usr/lib/libsensordatatypes-qt5.so*
+/usr/lib/libsensorfw-qt5.so*
+/usr/sbin/sensord
+/etc/dbus-1/system.d/*
+/etc/sensorfw/sensord.conf.d/90-sensord-default.conf
+/usr/bin/sensord-daemon-conf-setup
+/lib/systemd/system/sensord.service

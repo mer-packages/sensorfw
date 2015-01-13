@@ -36,7 +36,7 @@
 #include "gyroscopesensor_i.h"
 
 #include "clientapitest.h"
-#include <MGConfItem>
+#include <QSettings>
 
 ClientApiTest::ClientApiTest()
 {
@@ -300,9 +300,9 @@ void ClientApiTest::testCompassSensor()
     QVERIFY(declinationInUse != sensorIfc->useDeclination());
     sensorIfc->setUseDeclination(!declinationInUse);
 
-    MGConfItem item("/system/osso/location/settings/magneticvariation");
-    item.set(QVariant(50));
-    item.sync();
+    QSettings confFile("/etc/xdg/sensorfw/location.conf", QSettings::IniFormat);
+    confFile.beginGroup("location");
+    confFile.setValue("declination",50);
 
     sensorIfc->setUseDeclination(true);
     QVERIFY(sensorIfc->declinationValue() == 50);
@@ -328,8 +328,7 @@ void ClientApiTest::testCompassSensor()
     reply = sensorIfc2->stop();
     QVERIFY(reply.isValid());
 
-    item.set(QVariant((int)0));
-    item.sync();
+   confFile.setValue("declination",0);
 }
 
 void ClientApiTest::testTapSensor()

@@ -16,3 +16,4 @@ publicheaders.files += $$HEADERS
 target.path = $$PLUGINPATH
 
 INSTALLS += target
+

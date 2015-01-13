@@ -10,9 +10,12 @@ SUBDIRS = filters\
           benchmark \
           testutils \
           deadclient \
-          powermanagement \
-          metadata \
-          external
+          metadata 
+
+#disabled tests due to requirement of mcetool
+contains(CONFIG,mce) {
+    SUBDIRS += powermanagement
+}
 contextprovider {
     SUBDIRS += contextfw
 }

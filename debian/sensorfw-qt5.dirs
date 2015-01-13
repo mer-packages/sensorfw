@@ -1,0 +1,6 @@
+/usr/lib/sensord-qt5
+/usr/bin
+/lib/systemd/system
+/usr/lib
+/etc/dbus-1/system.d
+/etc/sensorfw
