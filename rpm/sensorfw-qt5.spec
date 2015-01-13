@@ -124,8 +124,7 @@ systemctl daemon-reload || :
 %dir %{_libdir}/sensord-qt5
 %{_libdir}/sensord-qt5/*.so
 %{_libdir}/libsensorfw*.so.*
-%{_libdir}/libsensordatatypes*.so.*
-%{_libdir}/libsensorclient*.so.*
+
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
 %dir %{_sysconfdir}/sensorfw
 %config %{_sysconfdir}/sensorfw/sensord.conf
