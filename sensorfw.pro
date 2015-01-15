@@ -92,6 +92,14 @@ equals(QT_MAJOR_VERSION, 5):  {
         SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
 
         INSTALLS += DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES
+
+        SENSORDCONFIGHELPER.files = rpm/sensord-daemon-conf-setup
+        SENSORDCONFIGHELPER.path = /usr/bin
+        INSTALLS += SENSORDCONFIGHELPER
+
+        SENSORSYSTEMD.files = rpm/sensord.service
+        SENSORSYSTEMD.path = /lib/systemd/system
+        INSTALLS += SENSORSYSTEMD
     }
 }
 
@@ -109,10 +117,3 @@ equals(QT_MAJOR_VERSION, 5):  {
 }
 OTHER_FILES += config/*
 
-SENSORDCONFIGHELPER.files = rpm/sensord-daemon-conf-setup
-SENSORDCONFIGHELPER.path = /usr/bin
-INSTALLS += SENSORDCONFIGHELPER
-
-SENSORSYSTEMD.files = rpm/sensord.service
-SENSORSYSTEMD.path = /lib/systemd/system
-INSTALLS += SENSORSYSTEMD
