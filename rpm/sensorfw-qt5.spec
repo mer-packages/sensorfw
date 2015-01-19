@@ -73,6 +73,16 @@ Provides:   config-u8500
 %description configs
 Sensorfw configuration files.
 
+%package docs
+Summary: API documentation for libsensord
+Group:      Development/Libraries
+Requires:   %{name} = %{version}-%{release}
+Requires:   doxygen
+
+%description docs
+API documentation for libsensord
+ Doxygen-generated API documentation for sensord.
+
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -175,3 +185,5 @@ systemctl daemon-reload || :
 %config %{_sysconfdir}/sensorfw/*conf
 %exclude %{_sysconfdir}/sensorfw/sensord.conf
 
+%files docs
+%{_prefix}/share/doc/sensord-qt5

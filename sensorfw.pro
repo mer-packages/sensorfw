@@ -36,7 +36,7 @@ contains(CONFIG,hybris) {
     qt-api.depends = datatypes
     sensord.depends = datatypes adaptors sensors chains
 
-    #include( doc/doc.pri )
+    include( doc/doc.pri )
     include( common-install.pri )
     include( common-config.pri )
 
