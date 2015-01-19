@@ -98,11 +98,6 @@ private:
     int threshold_;
     ProximityAdaptor::DeviceType deviceType_;
     QByteArray powerStatePath_;
-
-#ifdef SENSORFW_MCE_WATCHER
-    QDBusInterface *dbusIfc_;
-#endif
-
 };
 
 #endif

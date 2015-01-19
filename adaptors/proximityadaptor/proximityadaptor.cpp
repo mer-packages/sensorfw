@@ -53,21 +53,9 @@ struct apds990x_data {
 ProximityAdaptor::ProximityAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::SelectMode, false)
 {
-
-#ifdef SENSORFW_MCE_WATCHER
-    dbusIfc_ = new QDBusInterface(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
-                                                 QDBusConnection::systemBus(), this);
-#endif
-
     deviceType_ = (DeviceType)Config::configuration()->value<int>("proximity/driver_type", 0);
     threshold_ = Config::configuration()->value<int>("proximity/threshold", 35);
     powerStatePath_ = Config::configuration()->value("proximity/powerstate_path").toByteArray();
-    if (deviceType_ == RM696)
-    {
-#ifdef SENSORFW_MCE_WATCHER
-        dbusIfc_->call(QDBus::NoBlock, "req_proximity_sensor_enable");
-#endif
-    }
     proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
     setDescription("Proximity sensor readings (Dipro sensor)");
@@ -75,19 +63,13 @@ ProximityAdaptor::ProximityAdaptor(const QString& id) :
 
 ProximityAdaptor::~ProximityAdaptor()
 {
-#ifdef SENSORFW_MCE_WATCHER
-    if(dbusIfc_)
-    {
-        dbusIfc_->call(QDBus::NoBlock, "req_proximity_sensor_disable");
-        delete dbusIfc_;
-    }
-#endif
+    stopSensor();
     delete proximityBuffer_;
 }
 
 bool ProximityAdaptor::startSensor()
 {
-    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    if(!powerStatePath_.isEmpty())
     {
         writeToFile(powerStatePath_, "1");
     }
@@ -96,7 +78,7 @@ bool ProximityAdaptor::startSensor()
 
 void ProximityAdaptor::stopSensor()
 {
-    if(deviceType_ == NCDK && !powerStatePath_.isEmpty())
+    if(!powerStatePath_.isEmpty())
     {
         writeToFile(powerStatePath_, "0");
     }
