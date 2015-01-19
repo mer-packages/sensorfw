@@ -55,7 +55,7 @@ void HybrisAlsAdaptor::stopSensor()
 void HybrisAlsAdaptor::processSample(const sensors_event_t& data)
 {
     TimedUnsigned *d = buffer->nextSlot();
-    d->timestamp_ = quint64(data.timestamp * .0001);
+    d->timestamp_ = quint64(data.timestamp * .001);
     d->value_ = data.light;
 
     buffer->commit();

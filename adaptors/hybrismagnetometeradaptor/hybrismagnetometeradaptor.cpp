@@ -57,7 +57,7 @@ void HybrisMagnetometerAdaptor::stopSensor()
 void HybrisMagnetometerAdaptor::processSample(const sensors_event_t& data)
 {
     TimedXyzData *d = buffer->nextSlot();
-    d->timestamp_ = quint64(data.timestamp * .0001);
+    d->timestamp_ = quint64(data.timestamp * .001);
     //uT to nT
     d->x_ = (data.acceleration.x * 1000);
     d->y_ = (data.acceleration.y * 1000);
