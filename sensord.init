@@ -14,14 +14,14 @@
 # source function library
 . /etc/rc.d/init.d/functions
 
-servicename=sensord
-processname=sensord
+servicename=sensorfwd
+processname=sensorfwd
 sbindir=/usr/sbin
 
 RETVAL=0
 
 start() {
-    echo -n "Starting sensord: "
+    echo -n "Starting sensorfwd: "
     CONFIG="/etc/sensorfw/sensord-ncdk.conf"
     exec $sbindir/$processname -c "$CONFIG" &> /dev/null &
     RETVAL=$?

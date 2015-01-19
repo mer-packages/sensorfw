@@ -7,7 +7,7 @@ License:    LGPLv2+
 URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
 Source1:    sensorfw-rpmlintrc
-Source2:    sensord.service
+Source2:    sensorfwd.service
 Source3:    sensord-daemon-conf-setup
 Requires:   qt5-qtcore
 Requires:   sensord-configs
@@ -79,7 +79,7 @@ Sensorfw configuration files.
 
 %build
 unset LD_AS_NEEDED
-export LD_RUN_PATH=/usr/lib/sensord/
+export LD_RUN_PATH=/usr/lib/sensord-qt5/
 export QT_SELECT=5
 
 %qmake5  \
@@ -92,21 +92,21 @@ rm -rf %{buildroot}
 export QT_SELECT=5
 %qmake5_install
 
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/sensord.service
+install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/sensorfwd.service
 install -D -m750 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
 
 mkdir -p %{buildroot}/%{_unitdir}/graphical.target.wants
-ln -s ../sensord.service %{buildroot}/%{_unitdir}/graphical.target.wants/sensord.service
+ln -s ../sensorfwd.service %{buildroot}/%{_unitdir}/graphical.target.wants/sensorfwd.service
 
 %preun
 if [ "$1" -eq 0 ]; then
-systemctl stop sensord.service || :
+systemctl stop sensorfwd.service || :
 fi
 
 %post
 /sbin/ldconfig
 systemctl daemon-reload || :
-systemctl reload-or-try-restart sensord.service || :
+systemctl reload-or-try-restart sensorfwd.service || :
 
 %postun
 /sbin/ldconfig
@@ -120,7 +120,7 @@ systemctl daemon-reload || :
 %defattr(-,root,root,-)
 %{_libdir}/libsensorclient-qt5.so.*
 %{_libdir}/libsensordatatypes-qt5.so.*
-%attr(755,root,root)%{_sbindir}/sensord
+%attr(755,root,root)%{_sbindir}/sensorfwd
 %dir %{_libdir}/sensord-qt5
 %{_libdir}/sensord-qt5/*.so
 %{_libdir}/libsensorfw*.so.*
@@ -129,8 +129,8 @@ systemctl daemon-reload || :
 %dir %{_sysconfdir}/sensorfw
 %config %{_sysconfdir}/sensorfw/sensord.conf
 %dir %{_sysconfdir}/sensorfw/sensord.conf.d/
-%{_unitdir}/sensord.service
-%{_unitdir}/graphical.target.wants/sensord.service
+%{_unitdir}/sensorfwd.service
+%{_unitdir}/graphical.target.wants/sensorfwd.service
 %{_bindir}/sensord-daemon-conf-setup
 
 %files devel

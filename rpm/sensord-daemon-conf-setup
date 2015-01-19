@@ -5,7 +5,7 @@
 #   2. If not, try to pick the best-match from the boardname
 
 cd /etc/sensorfw/
-if [ -x /usr/sbin/sensord ]; then
+if [ -x /usr/sbin/sensorfwd ]; then
     if [ -f /usr/lib/libhybrissensorfw*.so ]; then
         # Always prefer hybris sensor backend to anything else (also overwrite
         # old setting, as sometimes the boardname matches, e.g. on grouper)
