@@ -22,6 +22,7 @@ BuildRequires:  pkgconfig(Qt5DBus)
 BuildRequires:  pkgconfig(Qt5Network)
 BuildRequires:  pkgconfig(Qt5Test)
 BuildRequires:  pkgconfig(mlite5)
+BuildRequires:  doxygen
 BuildRequires:  systemd
 Provides:   sensord-qt5
 Obsoletes:   sensorframework
