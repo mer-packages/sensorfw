@@ -97,7 +97,7 @@ equals(QT_MAJOR_VERSION, 5):  {
         SENSORDCONFIGHELPER.path = /usr/bin
         INSTALLS += SENSORDCONFIGHELPER
 
-        SENSORSYSTEMD.files = rpm/sensord.service
+        SENSORSYSTEMD.files = rpm/sensorfwd.service
         SENSORSYSTEMD.path = /lib/systemd/system
         INSTALLS += SENSORSYSTEMD
     }
