@@ -118,6 +118,10 @@ fi
 /sbin/ldconfig
 systemctl daemon-reload || :
 systemctl reload-or-try-restart sensorfwd.service || :
+if [ -e $RPM_BUILD_ROOT/%{_unitdir}/sensord.service ]; then
+rm -f $RPM_BUILD_ROOT/%{_unitdir}/sensord.service
+rm -f %{buildroot}/%{_unitdir}/graphical.target.wants/sensord.service
+fi
 
 %postun
 /sbin/ldconfig
