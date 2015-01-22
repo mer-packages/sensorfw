@@ -76,7 +76,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static const AccelerometerSensorChannelInterface* listenInterface(const QString& id);
 
@@ -85,7 +85,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static AccelerometerSensorChannelInterface* controlInterface(const QString& id);
 

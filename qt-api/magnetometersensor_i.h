@@ -78,7 +78,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static const MagnetometerSensorChannelInterface* listenInterface(const QString& id);
 
@@ -87,7 +87,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static MagnetometerSensorChannelInterface* controlInterface(const QString& id);
 

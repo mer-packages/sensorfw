@@ -29,6 +29,13 @@
 #include "datatypes/orientationdata.h"
 #include <QTime>
 
+/**
+ * @brief Adaptor for hybris magnetometer.
+ *
+ * Adaptor for internal magnetometer
+ * Uses hybris sensor daemon driver interface in interval
+ * polling mode, i.e. values are read with given constant interval.
+ */
 class HybrisMagnetometerAdaptor : public HybrisAdaptor
 {
     Q_OBJECT

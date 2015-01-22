@@ -29,6 +29,16 @@
 #include "datatypes/orientationdata.h"
 #include <QTime>
 
+/**
+ * @brief Adaptor for hybris ambient light sensor.
+ *
+ * Adaptor for internal light sensor. Provides the amount of ambient
+ * light detected by the device. Uses hybris sensor daemon driver interface.
+ *
+ * Value output frequency depends on driver decision - only changed values
+ * are pushed out of driver.
+ *
+ */
 class HybrisAlsAdaptor : public HybrisAdaptor
 {
     Q_OBJECT

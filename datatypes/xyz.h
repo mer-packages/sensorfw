@@ -31,7 +31,7 @@
 #include <datatypes/orientationdata.h>
 
 /**
- * QObject facade for #TimedXYZData.
+ * QObject facade for #XYZData.
  */
 class XYZ : public QObject
 {
@@ -63,7 +63,7 @@ public:
     XYZ(const XYZ& xyz);
 
     /**
-     * Returns the contained #TimedXYZData
+     * Returns the contained #XYZData
      * @return Contained TimedXYZData
      */
     const TimedXyzData& XYZData() const { return data_; }

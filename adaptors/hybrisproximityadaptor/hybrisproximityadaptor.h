@@ -29,6 +29,15 @@
 #include "datatypes/orientationdata.h"
 #include <QTime>
 
+
+/**
+ * @brief Adaptor for hybris proximity sensor.
+ *
+ * Adaptor for proximity. Uses hybris sensor daemon driver interface.
+ *
+ * Value output frequency depends on driver decision - only changed values
+ * are pushed out of driver.
+ */
 class HybrisProximityAdaptor : public HybrisAdaptor
 {
     Q_OBJECT

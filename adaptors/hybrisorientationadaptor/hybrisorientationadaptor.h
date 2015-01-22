@@ -27,6 +27,13 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
 
+/**
+ * @brief Adaptor for hybris compass.
+ *
+ * Adaptor for internal compass
+ * Uses hybris sensor daemon driver interface in interval
+ * polling mode, i.e. values are read with given constant interval.
+ */
 class HybrisOrientationAdaptor : public HybrisAdaptor
 {
     Q_OBJECT
