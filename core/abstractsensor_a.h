@@ -34,6 +34,8 @@
 #include "datatypes/datarange.h"
 
 /**
+ * @brief D-Bus adaptor base class for sensors
+ *
  * Sensor DBus facade for handling remote method invocations. It instance
  * has associated AbstractSensorChannel to which this object delegates
  * calls.

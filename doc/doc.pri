@@ -11,7 +11,6 @@ contains(MAKE_DOCS,no): {
 doctarget.commands = echo \"*** skip building docs ***\"
 } else {
 doctarget.commands = INPUT=\"$${_PRO_FILE_PWD_}/adaptors \
-                     $${_PRO_FILE_PWD_}/adaptors/arianeadaptor \
                      $${_PRO_FILE_PWD_}/datatypes \
                      $${_PRO_FILE_PWD_}/sensord \
                      $${_PRO_FILE_PWD_}/filters \

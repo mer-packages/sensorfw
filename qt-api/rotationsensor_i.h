@@ -87,7 +87,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static const RotationSensorChannelInterface* listenInterface(const QString& id);
 
@@ -96,7 +96,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static RotationSensorChannelInterface* controlInterface(const QString& id);
 

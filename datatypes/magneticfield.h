@@ -32,7 +32,7 @@
 #include <datatypes/orientationdata.h>
 
 /**
- * QObject facade for #CalibratedMagneticField.
+ * QObject facade for #CalibratedMagneticFieldData.
  */
 class MagneticField : public QObject
 {

@@ -28,6 +28,14 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/orientationdata.h"
 
+/**
+ * @brief Adaptor for hybris accelerometer.
+ *
+ * Adaptor for internal accelerometer. Uses hybris sensor daemon driver interface in interval
+ * polling mode, i.e. values are read with given constant interval.
+ *
+ *
+ */
 class HybrisAccelerometerAdaptor : public HybrisAdaptor
 {
     Q_OBJECT

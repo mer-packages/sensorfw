@@ -64,7 +64,7 @@ public:
      * Get latest proximity reading from sensor daemon.
      *
      * @return proximity reading. Non-zero value means that object is within proximity.
-     * @deprecated Use #proximityReflectance().
+     * @deprecated Use proximityReflectance().
      */
     Unsigned proximity();
 
@@ -88,7 +88,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static const ProximitySensorChannelInterface* listenInterface(const QString& id);
 
@@ -97,7 +97,7 @@ public:
      *
      * @param id sensor ID.
      * @return Pointer to interface, or NULL on failure.
-     * @deprecated use #interface(const QString&) instead.
+     * @deprecated use interface(const QString&) instead.
      */
     static ProximitySensorChannelInterface* controlInterface(const QString& id);
 
@@ -119,7 +119,7 @@ Q_SIGNALS:
      * proximity sensor blocked or not.
      *
      * @param data New measurement data.
-     * @deprecated Use #reflectanceDataAvailable(const Proximity&).
+     * @deprecated Use reflectanceDataAvailable(const Proximity&).
      */
     void dataAvailable(const Unsigned& data);
 

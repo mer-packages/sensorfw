@@ -29,6 +29,13 @@
 #include "datatypes/orientationdata.h"
 #include <QTime>
 
+/**
+ * @brief Adaptor for hybris gyroscope.
+ *
+ * Adaptor for internal gyroscope. Uses hybris sensor daemon driver interface in
+ * polling mode, i.e. values are read with given constant interval.
+ *
+ */
 class HybrisGyroscopeAdaptor : public HybrisAdaptor
 {
     Q_OBJECT

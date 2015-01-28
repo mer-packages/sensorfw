@@ -41,7 +41,7 @@ class FilterBase;
  *        aligned to Nokia Standard Coordinate system.
  *
  * <b>Output buffers:</b>
- * <ul><li>\em accelerometer</li></ul>
+ * <ul><li><em>accelerometer</em></li></ul>
  *
  * For direct raw data (no coordinate correction) use #AccelerometerAdaptor.
  */
