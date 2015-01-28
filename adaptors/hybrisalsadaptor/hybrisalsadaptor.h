@@ -43,13 +43,15 @@ public:
     bool startSensor();
     void stopSensor();
 
+    void sendInitialData();
+
 protected:
     void processSample(const sensors_event_t& data);
     void init();
 
 private:
     DeviceAdaptorRingBuffer<TimedUnsigned>* buffer;
-
+    unsigned lastLightValue;
 
 };
 #endif
