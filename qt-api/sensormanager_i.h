@@ -115,6 +115,10 @@ Q_SIGNALS:
      */
     void errorSignal(int error);
 
+    void loadPluginFinished();
+    void requestSensorFinished();
+    void releaseSensorFinished();
+
 protected:
 
     /**
@@ -126,6 +130,12 @@ protected:
      * @param parent Parent object.
      */
     LocalSensorManagerInterface(const QString& service, const QString& path, const QDBusConnection& connection, QObject* parent = 0);
+
+protected slots:
+    void loadPluginFinished(QDBusPendingCallWatcher *watch);
+    void requestSensorFinished(QDBusPendingCallWatcher *watch);
+    void releaseSensorFinished(QDBusPendingCallWatcher *watch);
+
 };
 
 namespace local {
