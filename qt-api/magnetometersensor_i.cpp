@@ -101,7 +101,7 @@ void MagnetometerSensorChannelInterface::connectNotify(const QMetaMethod &signal
 
 QDBusReply<void> MagnetometerSensorChannelInterface::reset()
 {
-    return call(QDBus::Block, QLatin1String("reset"));
+    return call(QDBus::NoBlock, QLatin1String("reset"));
 }
 
 MagneticField MagnetometerSensorChannelInterface::magneticField()

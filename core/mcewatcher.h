@@ -32,6 +32,8 @@
 #include <QObject>
 #include <QDBusInterface>
 #include <QString>
+#include <QtDBus/QtDBus>
+
 #define MCE_SERVICE                     "com.nokia.mce"
 #define MCE_SIGNAL_PATH                 "/com/nokia/mce/signal"
 #define MCE_SIGNAL_IF                   "com.nokia.mce.signal"
@@ -104,6 +106,8 @@ private slots:
      * @param mode is powersave-mode enabled or not.
      */
     void slotPSMStateChanged(bool mode);
+
+    void displayStateReplyFinished(QDBusPendingCallWatcher *watch);
 
 private:
     QDBusInterface* dbusIfc; /**< DBus iface to MCE */

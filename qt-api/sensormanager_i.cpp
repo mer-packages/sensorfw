@@ -75,7 +75,24 @@ QDBusReply<bool> LocalSensorManagerInterface::loadPlugin(const QString& name)
 {
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(name);
-    return callWithArgumentList(QDBus::Block, QLatin1String("loadPlugin"), argumentList);
+    QDBusPendingReply <bool> reply = asyncCallWithArgumentList(QLatin1String("loadPlugin"), argumentList);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+            SLOT(loadPluginFinished(QDBusPendingCallWatcher*)));
+
+    return reply;
+}
+
+void LocalSensorManagerInterface::loadPluginFinished(QDBusPendingCallWatcher *watch)
+{
+    watch->deleteLater();
+    QDBusPendingReply<bool> reply = *watch;
+
+    if(reply.isError()) {
+        qDebug() << Q_FUNC_INFO  << reply.error().message();
+        Q_EMIT errorSignal(errorCode());
+    }
+    Q_EMIT loadPluginFinished();
 }
 
 QDBusReply<int> LocalSensorManagerInterface::requestSensor(const QString& id)
@@ -84,7 +101,23 @@ QDBusReply<int> LocalSensorManagerInterface::requestSensor(const QString& id)
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(id);
     argumentList << qVariantFromValue(pid);
-    return callWithArgumentList(QDBus::Block, QLatin1String("requestSensor"), argumentList);
+    QDBusPendingReply <int> reply = asyncCallWithArgumentList(QLatin1String("requestSensor"), argumentList);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+            SLOT(loadPluginFinished(QDBusPendingCallWatcher*)));
+    return reply;
+}
+
+void LocalSensorManagerInterface::requestSensorFinished(QDBusPendingCallWatcher *watch)
+{
+    watch->deleteLater();
+    QDBusPendingReply<int> reply = *watch;
+
+    if(reply.isError()) {
+        qDebug() << Q_FUNC_INFO  << reply.error().message();
+        Q_EMIT errorSignal(errorCode());
+    }
+    Q_EMIT requestSensorFinished();
 }
 
 QDBusReply<bool> LocalSensorManagerInterface::releaseSensor(const QString& id, int sessionId)
@@ -93,5 +126,21 @@ QDBusReply<bool> LocalSensorManagerInterface::releaseSensor(const QString& id, i
     QList<QVariant> argumentList;
     argumentList << qVariantFromValue(id) << qVariantFromValue(sessionId);
     argumentList << qVariantFromValue(pid);
-    return callWithArgumentList(QDBus::Block, QLatin1String("releaseSensor"), argumentList);
+    QDBusPendingReply <bool> reply = asyncCallWithArgumentList(QLatin1String("releaseSensor"), argumentList);
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+            SLOT(releaseSensorFinished(QDBusPendingCallWatcher*)));
+    return reply;
+}
+
+void LocalSensorManagerInterface::releaseSensorFinished(QDBusPendingCallWatcher *watch)
+{
+    watch->deleteLater();
+    QDBusPendingReply<bool> reply = *watch;
+
+    if(reply.isError()) {
+        qDebug() << Q_FUNC_INFO  << reply.error().message();
+        Q_EMIT errorSignal(errorCode());
+    }
+    Q_EMIT releaseSensorFinished();
 }

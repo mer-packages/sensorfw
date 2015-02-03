@@ -471,6 +471,17 @@ protected:
 #else
     void dbusConnectNotify(const QMetaMethod& signal);
 #endif
+protected slots:
+    void startFinished(QDBusPendingCallWatcher *watch);
+    void stopFinished(QDBusPendingCallWatcher *watch);
+
+    void setIntervalFinished(QDBusPendingCallWatcher *watch);
+    void setBufferIntervalFinished(QDBusPendingCallWatcher *watch);
+    void setBufferSizeFinished(QDBusPendingCallWatcher *watch);
+    void setStandbyOverrideFinished(QDBusPendingCallWatcher *watch);
+    void setDownsamplingFinished(QDBusPendingCallWatcher *watch);
+    void setDataRangeIndexFinished(QDBusPendingCallWatcher *watch);
+
 
 private:
     struct AbstractSensorChannelInterfaceImpl;
@@ -499,7 +510,7 @@ T AbstractSensorChannelInterface::getAccessor(const char* name)
 template<typename T>
 void AbstractSensorChannelInterface::setAccessor(const char* name, const T& value)
 {
-    QDBusReply<void> reply(call(QDBus::Block, QLatin1String(name), qVariantFromValue(value)));
+    QDBusReply<void> reply(call(QDBus::NoBlock, QLatin1String(name), qVariantFromValue(value)));
     if(!reply.isValid())
     {
         qDebug() << "Failed to set '" << name << " = " << value << "' to sensord: " << reply.error().message();

@@ -52,12 +52,23 @@ MceWatcher::MceWatcher(QObject* parent) : QObject(parent),
                                   SLOT(slotDisplayStateChanged(const QString)));
 
 // get the current state, instead of assuming it's true
-    QDBusPendingReply<QString> displayStateReply = QDBusConnection::systemBus().call(
+    QDBusPendingReply<QString> displayStateReply = QDBusConnection::systemBus().asyncCall(
                 QDBusMessage::createMethodCall(MCE_SERVICE, MCE_REQUEST_PATH, MCE_REQUEST_IF,
                                                MCE_DISPLAY_STATUS_GET));
-    displayStateReply.waitForFinished();
-    if (displayStateReply.isValid()) {
-        if (displayStateReply.value() == MCE_DISPLAY_OFF_STRING) {
+    QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(displayStateReply, this);
+    connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
+            SLOT(displayStateReplyFinished(QDBusPendingCallWatcher*)));
+}
+
+void MceWatcher::displayStateReplyFinished(QDBusPendingCallWatcher *watch)
+{
+    watch->deleteLater();
+    QDBusPendingReply<QString> reply = *watch;
+
+    if(reply.isError()) {
+        qDebug() << reply.error().message();
+    } else {
+        if (reply.value() == MCE_DISPLAY_OFF_STRING) {
             displayState = false;
         }
     }
