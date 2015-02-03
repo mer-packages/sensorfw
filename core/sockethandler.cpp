@@ -75,7 +75,6 @@ bool SessionData::write(void* source, int size, unsigned int count)
 {
     if(socket && count)
     {
-        sensordLogT() << "[SocketHandler]: writing " << count << " fragments to socket with payload (bytes): " << size;
         memcpy(source, &count, sizeof(unsigned int));
         int written = socket->write((const char*)source, size * count + sizeof(unsigned int));
         if(written < 0)
@@ -106,7 +105,6 @@ bool SessionData::write(const void* source, int size)
         memcpy(buffer + sizeof(unsigned int), source, size);
         if(!downsampling || (downsampling && since >= interval))
         {
-            sensordLogT() << "[SocketHandler]: writing, since > interval or downsampling disabled";
             gettimeofday(&lastWrite, 0);
             return write(buffer, size, 1);
         }
@@ -117,7 +115,6 @@ bool SessionData::write(const void* source, int size)
         ++count;
         if(bufferSize == count)
         {
-            sensordLogT() << "[SocketHandler]: writing, bufferSize == count";
             return delayedWrite();
         }
     }
@@ -125,18 +122,12 @@ bool SessionData::write(const void* source, int size)
     {
         if(bufferSize > 1 && bufferInterval)
         {
-            sensordLogT() << "[SocketHandler]: delayed write by " << bufferInterval << "ms";
             timer.start(bufferInterval);
         }
         else if(!bufferSize && (interval - since) > 0)
         {
-            sensordLogT() << "[SocketHandler]: delayed write by " << (interval - since) << "ms";
             timer.start(interval - since);
         }
-    }
-    else
-    {
-        sensordLogT() << "[SocketHandler]: timer already running";
     }
     return true;
 }
@@ -261,7 +252,6 @@ bool SocketHandler::write(int id, const void* source, int size)
         sensordLogD() << "[SocketHandler]: Trying to write to nonexistent session (normal, no panic).";
         return false;
     }
-    sensordLogT() << "[SocketHandler]: Writing to session " << id;
     return (*it)->write(source, size);
 }
 
