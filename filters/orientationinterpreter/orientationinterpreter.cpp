@@ -68,10 +68,9 @@ OrientationInterpreter::OrientationInterpreter() :
     maxBufferSize = Config::configuration()->value("orientation/buffer_size", QVariant(AVG_BUFFER_MAX_SIZE)).toInt();
 
     // Open the handle for boosting cpu on changes that affect orientation
-    if (!cpuBoostFile.exists() || !cpuBoostFile.open(QIODevice::WriteOnly))
-    {
-        sensordLogW() << "Failed to open" << CPU_BOOST_PATH << "for adjusting cpu freq for orientation.";
-    }
+    if (cpuBoostFile.exists()) {
+            cpuBoostFile.open(QIODevice::WriteOnly);
+      }
 }
 
 void OrientationInterpreter::accDataAvailable(unsigned, const AccelerationData* pdata)
