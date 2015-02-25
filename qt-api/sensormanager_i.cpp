@@ -104,7 +104,7 @@ QDBusReply<int> LocalSensorManagerInterface::requestSensor(const QString& id)
     QDBusPendingReply <int> reply = asyncCallWithArgumentList(QLatin1String("requestSensor"), argumentList);
     QDBusPendingCallWatcher *watcher = new QDBusPendingCallWatcher(reply, this);
     connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)),
-            SLOT(loadPluginFinished(QDBusPendingCallWatcher*)));
+            SLOT(requestSensorFinished(QDBusPendingCallWatcher*)));
     return reply;
 }
 
