@@ -1,6 +1,6 @@
 Name:       sensorfw-qt5
 Summary:    Sensor Framework Qt5
-Version:    0.8.5
+Version:    0.8.6
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
