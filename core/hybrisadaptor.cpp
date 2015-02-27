@@ -226,18 +226,11 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
 
 bool HybrisManager::resumeReader(HybrisAdaptor *adaptor)
 {
-    sensordLogD() << Q_FUNC_INFO << adaptor->id() << adaptor->deviceStandbyOverride(); //alwaysOn
-    QList <HybrisAdaptor *> list;
-    list = registeredAdaptors.values();
-    bool okToResume = false;
-    for (int i = 0; i < list.count(); i++) {
-        if (list.at(i) != adaptor && list.at(i)->isRunning()) {
-            qDebug() << Q_FUNC_INFO << "running";
-            okToResume = true;
-        }
-    }
+    sensordLogD() << Q_FUNC_INFO << adaptor->id()
+                  << adaptor->deviceStandbyOverride()
+                  << adaptor->isRunning(); //alwaysOn
 
-    if (okToResume) {
+    if (!adaptor->isRunning()) {
         sensordLogD() << "activating for resume" << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 1);
         if (error != 0) {
@@ -249,18 +242,11 @@ bool HybrisManager::resumeReader(HybrisAdaptor *adaptor)
 
 void HybrisManager::standbyReader(HybrisAdaptor *adaptor)
 {
-    sensordLogD() << Q_FUNC_INFO  << adaptor->id() << adaptor->deviceStandbyOverride(); //alwaysOn
-    QList <HybrisAdaptor *> list;
-    list = registeredAdaptors.values();
-    bool okToStandby = true;
-    for (int i = 0; i < list.count(); i++) {
-        if (adaptor->sensorType  == list.at(i)->sensorType && list.at(i)->isRunning()) {
-            qDebug() << Q_FUNC_INFO << list.at(i) << "running";
-            okToStandby = false;
-        }
-    }
+    sensordLogD() << Q_FUNC_INFO  << adaptor->id()
+                  << adaptor->deviceStandbyOverride()
+                  << adaptor->isRunning(); //alwaysOn
 
-    if (okToStandby) {
+    if (adaptor->isRunning() && !adaptor->deviceStandbyOverride()) {
         sensordLogD() << "deactivating for standby" << adaptor->name();
         int error = device->activate(device, adaptor->sensorHandle, 0);
         if (error != 0) {
@@ -386,6 +372,7 @@ bool HybrisAdaptor::isRunning() const
 
 void HybrisAdaptor::stopAdaptor()
 {
+    qDebug() << Q_FUNC_INFO;
     if (getAdaptedSensor()->isRunning())
         stopSensor();
     hybrisManager()->closeSensors();
@@ -393,6 +380,7 @@ void HybrisAdaptor::stopAdaptor()
 
 bool HybrisAdaptor::startSensor()
 {
+    qDebug() << Q_FUNC_INFO;
     AdaptedSensorEntry *entry = getAdaptedSensor();
     if (entry == NULL) {
         qDebug() << "Sensor not found: " << name();
@@ -405,6 +393,7 @@ bool HybrisAdaptor::startSensor()
     /// Check from entry
     if (isRunning()) {
         qDebug()  << Q_FUNC_INFO << "already running";
+        shouldBeRunning_ = true;
         return false;
     }
 
@@ -428,6 +417,7 @@ bool HybrisAdaptor::startSensor()
 
     entry->setIsRunning(true);
     running_ = true;
+    shouldBeRunning_ = true;
 
     return true;
 }
@@ -453,6 +443,7 @@ void HybrisAdaptor::stopSensor()
         entry->setIsRunning(false);
         running_ = false;
         shouldBeRunning_ = false;
+        inStandbyMode_ = false;
         if (!inStandbyMode_) {
             stopReaderThread();
         }
@@ -462,8 +453,8 @@ void HybrisAdaptor::stopSensor()
 
 bool HybrisAdaptor::standby()
 {
-    sensordLogD() << "Adaptor '" << id() << "' requested to go to standby";
-    if (inStandbyMode_) {
+    sensordLogD() << "Adaptor '" << id() << "' requested to go to standby"  << "deviceStandbyOverride" << deviceStandbyOverride();
+    if (inStandbyMode_ && deviceStandbyOverride()) {
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: already in standby";
         return false;
     }
@@ -485,14 +476,13 @@ bool HybrisAdaptor::standby()
 bool HybrisAdaptor::resume()
 {
     sensordLogD() << "Adaptor '" << id() << "' requested to resume from standby";
+    sensordLogD() << "deviceStandbyOverride" << deviceStandbyOverride();
 
     // Don't resume if not in standby
-    if (!inStandbyMode_) {
+    if (!inStandbyMode_ && !deviceStandbyOverride()) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
         return false;
     }
-
-    inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
@@ -500,13 +490,14 @@ bool HybrisAdaptor::resume()
     }
 
     sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
+    inStandbyMode_ = false;
 
     if (!hybrisManager()->resumeReader(this)) {
         sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";
         return false;
     }
-
     running_ = true;
+
     return true;
 }
 
@@ -600,7 +591,6 @@ void HybrisAdaptorReader::run()
     int err = 0;
     static const size_t numEvents = 16;
     sensors_event_t buffer[numEvents];
-
     while (running_) {
         int numberOfEvents = hybrisManager()->device->poll(hybrisManager()->device, buffer, numEvents);
         if (numberOfEvents < 0) {

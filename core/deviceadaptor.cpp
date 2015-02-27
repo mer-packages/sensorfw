@@ -76,16 +76,15 @@ RingBufferBase* AdaptedSensorEntry::buffer() const
     return buffer_;
 }
 
-// TODO: correct initialization of screenBlanked is disabled since it
-// most probably has effect for testcase functionalities.
+// TODO: correct initialization of screenBlanked most probably has effect for testcase functionalities.
 DeviceAdaptor::DeviceAdaptor(const QString& id) :
     NodeBase(id),
     standbyOverride_(false),
-//#ifdef SENSORFW_MCE_WATCHER
-//    screenBlanked_(!SensorManager::instance().MCEWatcher()->displayEnabled())
-//#else
+#ifdef SENSORFW_MCE_WATCHER
+    screenBlanked_(!SensorManager::instance().MCEWatcher()->displayEnabled())
+#else
     screenBlanked_(false)
-//#endif
+#endif
 {
     setValid(true);
 }
@@ -121,15 +120,10 @@ RingBufferBase* DeviceAdaptor::findBuffer(const QString& name) const
 bool DeviceAdaptor::setStandbyOverride(bool override)
 {
     standbyOverride_ = override;
-
-    if (screenBlanked_)
-    {
-        if(override)
-        {
+    if (screenBlanked_) {
+        if (override) {
             resume();
-        }
-        else
-        {
+        } else {
             standby();
         }
     }
