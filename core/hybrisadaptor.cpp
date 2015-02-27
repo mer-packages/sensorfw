@@ -485,9 +485,8 @@ bool HybrisAdaptor::standby()
 bool HybrisAdaptor::resume()
 {
     sensordLogD() << "Adaptor '" << id() << "' requested to resume from standby";
-
-    // Don't resume if not in standby
-    if (!inStandbyMode_) {
+    sensordLogD() << "deviceStandbyOverride" << deviceStandbyOverride();
+    if (!inStandbyMode_ && !deviceStandbyOverride()) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming: not in standby";
         return false;
     }
