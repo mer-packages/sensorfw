@@ -159,7 +159,6 @@ void AbstractSensorChannelInterface::startFinished(QDBusPendingCallWatcher *watc
 QDBusReply<void> AbstractSensorChannelInterface::stop(int sessionId)
 {
     clearError();
-
     if (!pimpl_->running_) {
         return QDBusReply<void>();
     }
@@ -410,9 +409,7 @@ bool AbstractSensorChannelInterface::standbyOverride()
 bool AbstractSensorChannelInterface::setStandbyOverride(bool override)
 {
     pimpl_->standbyOverride_ = override;
-    if (pimpl_->running_)
-        return setStandbyOverride(pimpl_->sessionId_, override);
-    return true;
+    return setStandbyOverride(pimpl_->sessionId_, override);
 }
 
 QString AbstractSensorChannelInterface::type()
