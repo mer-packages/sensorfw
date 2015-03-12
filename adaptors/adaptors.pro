@@ -13,12 +13,14 @@ contains(CONFIG,hybris) {
     } else {
 
 SUBDIRS = alsadaptor \
+          alsadaptor-evdev \
           alsadaptor-sysfs \
           alsadaptor-ascii \
           tapadaptor \
           accelerometeradaptor \
           magnetometeradaptor \
           magnetometeradaptor-ascii \
+          magnetometeradaptor-evdev \
           magnetometeradaptor-ncdk \
           touchadaptor \
           kbslideradaptor \
@@ -26,7 +28,8 @@ SUBDIRS = alsadaptor \
           proximityadaptor-evdev \
           proximityadaptor-ascii \
           mrstaccelerometer \
-          gyroscopeadaptor
+          gyroscopeadaptor \
+          gyroscopeadaptor-evdev
 SUDBIRS += oemtabletmagnetometeradaptor
 SUBDIRS += pegatronaccelerometeradaptor 
 SUBDIRS += oemtabletalsadaptor-ascii

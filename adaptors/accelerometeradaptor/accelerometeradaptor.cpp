@@ -43,7 +43,7 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
 {
     accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1);
     setAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
-    setDescription("Input device accelerometer adaptor (lis302d)");
+    setDescription("Input device accelerometer adaptor");
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()
@@ -56,19 +56,20 @@ void AccelerometerAdaptor::interpretEvent(int src, struct input_event *ev)
     Q_UNUSED(src);
 
     switch (ev->type) {
-        case EV_ABS:
-            switch (ev->code) {
-                case ABS_X:
-                    orientationValue_.x_ = ev->value;
-                    break;
-                case ABS_Y:
-                    orientationValue_.y_ = ev->value;
-                    break;
-                case ABS_Z:
-                    orientationValue_.z_ = ev->value;
-                    break;
-            }
+    case EV_REL:
+    case EV_ABS:
+        switch (ev->code) {
+        case ABS_X:
+            orientationValue_.x_ = ev->value;
             break;
+        case ABS_Y:
+            orientationValue_.y_ = ev->value;
+            break;
+        case ABS_Z:
+            orientationValue_.z_ = ev->value;
+            break;
+        }
+        break;
     }
 }
 
@@ -87,7 +88,7 @@ void AccelerometerAdaptor::commitOutput(struct input_event *ev)
     d->y_ = orientationValue_.y_;
     d->z_ = orientationValue_.z_;
 
-    sensordLogT() << "Accelerometer reading: " << d->x_ << ", " << d->y_ << ", " << d->z_;
+//    sensordLogT() << "Accelerometer reading: " << d->x_ << ", " << d->y_ << ", " << d->z_;
 
     accelerometerBuffer_->commit();
     accelerometerBuffer_->wakeUpReaders();
@@ -95,8 +96,7 @@ void AccelerometerAdaptor::commitOutput(struct input_event *ev)
 
 unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) const
 {
-    if (m_intervalMap.size() == 0)
-    {
+    if (m_intervalMap.size() == 0) {
         sessionId = -1;
         return defaultInterval();
     }
@@ -106,8 +106,7 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
     unsigned int highestValue = it.value();
     int winningSessionId = it.key();
 
-    for (++it; it != m_intervalMap.constEnd(); ++it)
-    {
+    for (++it; it != m_intervalMap.constEnd(); ++it) {
         if (((it.value() < highestValue) && (it.value() > 0)) || highestValue == 0) {
             highestValue = it.value();
             winningSessionId = it.key();

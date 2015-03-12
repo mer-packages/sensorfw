@@ -58,6 +58,7 @@ InputDevAdaptor::~InputDevAdaptor()
 
 int InputDevAdaptor::getInputDevices(const QString& typeName)
 {
+    qDebug() << Q_FUNC_INFO << typeName;
     QString deviceSysPathString = Config::configuration()->value("global/device_sys_path").toString();
     QString devicePollFilePath = Config::configuration()->value("global/device_poll_file_path").toString();
 
@@ -71,9 +72,7 @@ int InputDevAdaptor::getInputDevices(const QString& typeName)
     if (deviceName.size() && checkInputDevice(deviceName, typeName, false)) {
         addPath(deviceName, deviceCount_);
         ++deviceCount_;
-    }
-    else if(deviceSysPathString.contains("%1"))
-    {
+    } else if(deviceSysPathString.contains("%1")) {
         const int MAX_EVENT_DEV = 16;
 
         // No configuration for this device, try find the device from the device system path
@@ -94,13 +93,12 @@ int InputDevAdaptor::getInputDevices(const QString& typeName)
     } else {
         usedDevicePollFilePath_ = devicePollFilePath.arg(deviceNumber);
     }
+qDebug() << Q_FUNC_INFO << usedDevicePollFilePath_;
 
     if (deviceCount_ == 0) {
         sensordLogW() << "Cannot find any device for: " << typeName;
         setValid(false);
-    }
-    else
-    {
+    } else {
         QByteArray byteArray = readFromFile(usedDevicePollFilePath_.toLatin1());
         cachedInterval_ = byteArray.size() > 0 ? byteArray.toInt() : 0;
     }
@@ -142,7 +140,7 @@ bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& match
 {
     char deviceName[256] = {0,};
     bool check = true;
-
+qDebug() << Q_FUNC_INFO << path << matchString << strictChecks;
     int fd = open(path.toLocal8Bit().constData(), O_RDONLY);
     if (fd == -1) {
         return false;
@@ -150,15 +148,17 @@ bool InputDevAdaptor::checkInputDevice(const QString& path, const QString& match
 
     if (strictChecks) {
         int result = ioctl(fd, EVIOCGNAME(sizeof(deviceName)), deviceName);
+        qDebug() << Q_FUNC_INFO << "open result:" << result << deviceName;
         if (result == -1) {
            sensordLogW() << "Could not read devicename for " << path;
            check = false;
-        } else
-        if (QString(deviceName).contains(matchString, Qt::CaseInsensitive)) {
-            sensordLogT() << "\"" << matchString << "\"" << " matched in device name: " << deviceName;
-            check = true;
         } else {
-            check = false;
+            if (QString(deviceName).contains(matchString, Qt::CaseInsensitive)) {
+                sensordLogT() << "\"" << matchString << "\"" << " matched in device name: " << deviceName;
+                check = true;
+            } else {
+                check = false;
+            }
         }
     }
 
@@ -188,10 +188,11 @@ bool InputDevAdaptor::setInterval(const unsigned int value, const int sessionId)
 
 void InputDevAdaptor::init()
 {
+    qDebug() << Q_FUNC_INFO << name();
     if (!getInputDevices(Config::configuration()->value<QString>(name() + "/input_match", name()))) {
         sensordLogW() << "Input device not found.";
+        SysfsAdaptor::init();
     }
-    SysfsAdaptor::init();
 }
 
 int InputDevAdaptor::getDeviceCount() const
