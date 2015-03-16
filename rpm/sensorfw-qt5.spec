@@ -6,7 +6,7 @@ Group:      System/Sensor Framework
 License:    LGPLv2+
 URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
-Source1:    sensorfw-rpmlintrc
+Source1:    sensorfw-qt5-rpmlintrc
 Source2:    sensorfwd.service
 Source3:    sensord-daemon-conf-setup
 Requires:   qt5-qtcore
