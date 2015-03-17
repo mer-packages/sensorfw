@@ -27,6 +27,7 @@
 
 #include "deviceadaptor.h"
 #include <hardware/sensors.h>
+#define SENSORFW_MCE_WATCHER
 
 class HybrisAdaptor;
 
