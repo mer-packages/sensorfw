@@ -80,7 +80,7 @@ void HybrisOrientationAdaptor::processSample(const sensors_event_t& data)
         d->level_ = 0;
         break;
     default:
-        d->level_ = data.orientation.status / 3;
+        d->level_ = data.orientation.status;
         break;
     };
 
