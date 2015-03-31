@@ -30,54 +30,77 @@
 #include "logging.h"
 #include "calibrationfilter.h"
 
-//#include "coordinatealignfilter.h"
+#include "magcoordinatealignfilter.h"
 #include "datatypes/orientationdata.h"
 // magcalibrationchain requires: magnetometeradaptor, kbslideradaptor
 
 MagCalibrationChain::MagCalibrationChain(const QString& id) :
     AbstractChain(id)
 {
-    qDebug() << Q_FUNC_INFO << id;
-
+    setMatrixFromString("1,0,0,\
+                         0,1,0,\
+                         0,0,1");
     SensorManager& sm = SensorManager::instance();
 
     magAdaptor = sm.requestDeviceAdaptor("magnetometeradaptor");
     setValid(magAdaptor->isValid());
 
 // Config::configuration()->value<int>("magnetometer/interval_compensation", 16);
-    magReader = new BufferReader<TimedXyzData>(1);
+    // Get the transformation matrix from config file
+    QString aconvString = Config::configuration()->value<QString>("magnetometer/transformation_matrix", "");
+    if (aconvString.size() > 0) {
+        if (!setMatrixFromString(aconvString)) {
+            sensordLogW() << "Failed to parse 'transformation_matrix' configuration key. Coordinate alignment may be invalid";
+        }
+    }
 
-    magCalFilter = sm.instantiateFilter("calibrationfilter");
-    magScaleFilter = sm.instantiateFilter("magnetometerscalefilter");
-
+    needsCalibration = Config::configuration()->value<bool>("magnetometer/needs_calibration", true);
 
     calibratedMagnetometerData = new RingBuffer<CalibratedMagneticFieldData>(1);
     nameOutputBuffer("calibratedmagnetometerdata", calibratedMagnetometerData);
 
     // Create buffers for filter chain
     filterBin = new Bin;
-//formationsink
+    //formationsink
+    magReader = new BufferReader<CalibratedMagneticFieldData>(1);
+
+    // Join filterchain buffers
     filterBin->add(magReader, "calibratedmagneticfield");
-    filterBin->add(magCalFilter, "calibration");
-    filterBin->add(magScaleFilter,"filter");
 
     filterBin->add(calibratedMagnetometerData, "calibratedmagnetometerdata"); //calibration
 
-    // Join filterchain buffers
-    if (!filterBin->join("calibratedmagneticfield", "source", "calibration", "magsink"))
-        qDebug() << Q_FUNC_INFO << "calibratedmagneticfield join failed";
+    if (sm.getAdaptorTypes().contains("orientationadaptor")) {
+        DeviceAdaptor *orientAdaptor = sm.requestDeviceAdaptor("orientationadaptor");
+        if (orientAdaptor->isValid()) {
+            needsCalibration = false;
+        }
+    }
+    magCoordinateAlignFilter_ = sm.instantiateFilter("magcoordinatealignfilter");
+    Q_ASSERT(magCoordinateAlignFilter_);
+    filterBin->add(magCoordinateAlignFilter_, "magcoordinatealigner");
 
-    if (!filterBin->join("calibration", "calibratedmagneticfield", "calibratedmagnetometerdata", "sink"))
-        qDebug() << Q_FUNC_INFO << "calibration join failed";
+    if (needsCalibration) {
+        magCalFilter = sm.instantiateFilter("calibrationfilter");
 
+        ((MagCoordinateAlignFilter*)magCoordinateAlignFilter_)->setMatrix(TMagMatrix(aconv_));
 
-//////    ///////
-//    if (!filterBin->join("magnetometeradaptor", "source", "filter", "sink"))
-//        qDebug() << Q_FUNC_INFO << "magnetometer join failed";
+        filterBin->add(magCalFilter, "calibration");
 
-//    if (!filterBin->join("filter", "source", "buffer", "sink"))
-//         qDebug() << Q_FUNC_INFO << "filter join failed";
+        if (!filterBin->join("calibratedmagneticfield", "source", "magcoordinatealigner", "sink"))
+            qDebug() << Q_FUNC_INFO << "calibratedmagneticfield/magcoordinatealigner join failed";
 
+        if (!filterBin->join("magcoordinatealigner", "source", "calibration", "magsink"))
+            qDebug() << Q_FUNC_INFO << "magcoordinatealigner/calibration join failed";
+
+        if (!filterBin->join("calibration", "source", "calibratedmagnetometerdata", "sink"))
+            qDebug() << Q_FUNC_INFO << "calibration/calibratedmagnetometerdata join failed";
+    } else {
+        if (!filterBin->join("calibratedmagneticfield", "source", "magcoordinatealigner", "sink"))
+            qDebug() << Q_FUNC_INFO << "calibratedmagneticfield/magcoordinatealigner join failed";
+
+        if (!filterBin->join("magcoordinatealigner", "source", "calibratedmagnetometerdata", "sink"))
+            qDebug() << Q_FUNC_INFO << "magcoordinatealigner/calibratedmagnetometerdata join failed";
+    }
 
     // Join datasources to the chain
     connectToSource(magAdaptor, "calibratedmagneticfield", magReader);
@@ -91,13 +114,14 @@ MagCalibrationChain::MagCalibrationChain(const QString& id) :
 MagCalibrationChain::~MagCalibrationChain()
 {
     SensorManager& sm = SensorManager::instance();
-
+    sm.releaseDeviceAdaptor("magnetometeradaptor");
     disconnectFromSource(magAdaptor, "magnetometer", magReader);
 
-    sm.releaseDeviceAdaptor("magnetometeradaptor");
-
     delete magReader;
-    delete magCalFilter;
+    if (needsCalibration) {
+        delete magCoordinateAlignFilter_;
+        delete magCalFilter;
+    }
     delete calibratedMagnetometerData;
     delete filterBin;
 }
@@ -124,7 +148,24 @@ bool MagCalibrationChain::stop()
 
 void MagCalibrationChain::resetCalibration()
 {
-    CalibrationFilter *filter = static_cast<CalibrationFilter *>(magCalFilter);
+   if (needsCalibration) {
+       CalibrationFilter *filter = static_cast<CalibrationFilter *>(magCalFilter);
     filter->dropCalibration();
-    qDebug() << Q_FUNC_INFO;
+   }
 }
+
+bool MagCalibrationChain::setMatrixFromString(const QString& str)
+{
+    QStringList strList = str.split(',');
+    if (strList.size() != 9) {
+        sensordLogW() << "Invalid cell count from matrix. Expected 9, got" << strList.size();
+        return false;
+    }
+
+    for (int i = 0; i < 9; ++i) {
+        aconv_[i/3][i%3] = strList.at(i).toInt();
+    }
+
+    return true;
+}
+

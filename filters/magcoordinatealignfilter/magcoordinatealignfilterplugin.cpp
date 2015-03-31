@@ -1,7 +1,11 @@
-/****************************************************************************
-**
-** Copyright (C) 2013 Jolla Ltd
-** Contact: lorn.potter@jollamobile.com
+/**
+   @file MagCoordinateAlignFilterPlugin.cpp
+   @brief Plugin for CoordinateAlignFilter
+
+   <p>
+   Copyright (C) 2009-2010 Nokia Corporation
+
+   @author Timo Rongas <ext-timo.2.rongas@nokia.com>
 
    This file is part of Sensord.
 
@@ -16,26 +20,21 @@
 
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
+   </p>
  */
 
-#include "magcalibrationchainplugin.h"
-#include "magcalibrationchain.h"
-#include "calibrationfilter.h"
+#include "magcoordinatealignfilterplugin.h"
+#include "magcoordinatealignfilter.h"
 #include "sensormanager.h"
 #include "logging.h"
 
-void MagCalibrationChainPlugin::Register(class Loader&)
+void MagCoordinateAlignFilterPlugin::Register(class Loader&)
 {
-    sensordLogD() << "registering magcalibrationchain";
+    sensordLogD() << "registering magcoordinatealignfilter";
     SensorManager& sm = SensorManager::instance();
-    sm.registerFilter<CalibrationFilter>("calibrationfilter");
-    sm.registerChain<MagCalibrationChain>("magcalibrationchain");
-}
-
-QStringList MagCalibrationChainPlugin::Dependencies() {
-    return QString("magcoordinatealignfilter:magnetometeradaptor").split(":", QString::SkipEmptyParts);
+    sm.registerFilter<MagCoordinateAlignFilter>("magcoordinatealignfilter");
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-Q_EXPORT_PLUGIN2(magcalibrationchain, MagCalibrationChainPlugin)
+Q_EXPORT_PLUGIN2(magcoordinatealignfilter, MagCoordinateAlignFilterPlugin)
 #endif

@@ -25,6 +25,7 @@
 
 #include "downsamplefilter.h"
 #include "logging.h"
+// averaging filter
 
 DownsampleFilter::DownsampleFilter() :
     Filter<TimedXyzData, DownsampleFilter, TimedXyzData>(this, &DownsampleFilter::filter),
@@ -91,7 +92,7 @@ void DownsampleFilter::filter(unsigned, const TimedXyzData* data)
                              y / count,
                              z / count);
 
-    sensordLogT() << "Downsampled: " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
+//    sensordLogT() << "Downsampled: " << downsampled.x_ << ", " << downsampled.y_ << ", " << downsampled.z_;
 
     source_.propagate(1, &downsampled);
     buffer_.clear();

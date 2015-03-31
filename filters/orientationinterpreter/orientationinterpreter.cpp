@@ -221,7 +221,7 @@ void OrientationInterpreter::processFace()
     if (abs(data.z_) >= 300)
     {
         PoseData newFace;
-        newFace.orientation_ = ((data.z_ >= 0) ? PoseData::FaceDown : PoseData::FaceUp);
+        newFace.orientation_ = ((data.z_ <= 0) ? PoseData::FaceDown : PoseData::FaceUp);
 
         if (newFace.orientation_ == PoseData::FaceDown)
         {

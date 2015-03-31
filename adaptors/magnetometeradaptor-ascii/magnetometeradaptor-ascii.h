@@ -35,6 +35,7 @@
 #include "sysfsadaptor.h"
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/timedunsigned.h"
+#include "datatypes/orientationdata.h"
 
 class MagnetometerAdaptorAscii : public SysfsAdaptor
 {
@@ -53,7 +54,7 @@ private:
     void processSample(int pathId, int fd);
     char buf[32];
 
-    DeviceAdaptorRingBuffer<TimedXyzData>* magnetBuffer_;
+    DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>* magnetBuffer_;
 };
 
 #endif

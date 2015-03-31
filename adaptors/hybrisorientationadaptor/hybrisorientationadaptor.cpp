@@ -44,7 +44,7 @@ HybrisOrientationAdaptor::HybrisOrientationAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_ORIENTATION)
 {
     buffer = new DeviceAdaptorRingBuffer<CompassData>(1);
-    setAdaptedSensor("orientation", "Internal orientation coordinates", buffer);
+    setAdaptedSensor("hybrisorientation", "Internal orientation coordinates", buffer);
 
     setDescription("Hybris orientation");
 //    setDefaultInterval(50);
@@ -74,15 +74,9 @@ void HybrisOrientationAdaptor::processSample(const sensors_event_t& data)
 {
     CompassData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
-    d->degrees_ = data.data[0] * 1000; //azimuth
-    switch (data.orientation.status) {
-    case SENSOR_STATUS_UNRELIABLE:
-        d->level_ = 0;
-        break;
-    default:
-        d->level_ = data.orientation.status;
-        break;
-    };
+    d->degrees_ = data.orientation.azimuth; //azimuth
+    d->rawDegrees_ = d->degrees_;
+    d->level_ = data.orientation.status;
 
     buffer->commit();
     buffer->wakeUpReaders();

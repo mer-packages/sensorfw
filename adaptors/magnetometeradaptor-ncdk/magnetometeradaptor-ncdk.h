@@ -29,7 +29,7 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/genericdata.h"
 #include <QString>
-
+#include "datatypes/orientationdata.h"
 
 class MagnetometerAdaptorNCDK : public SysfsAdaptor
 {
@@ -76,7 +76,7 @@ private:
 
     int x_adj, y_adj, z_adj;
     bool powerState_;
-    DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
+    DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>* magnetometerBuffer_;
 
     bool setPowerState(bool value) const;
     void getSensitivityAdjustment(int &x, int &y, int &z) const;

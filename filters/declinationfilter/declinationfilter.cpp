@@ -44,25 +44,21 @@ DeclinationFilter::DeclinationFilter() :
 void DeclinationFilter::correct(unsigned, const CompassData* data)
 {
     CompassData newOrientation(*data);
-    if(newOrientation.timestamp_ - lastUpdate_ > updateInterval_)
-    {
+    if (newOrientation.timestamp_ - lastUpdate_ > updateInterval_) {
         loadSettings();
         lastUpdate_ = newOrientation.timestamp_;
     }
+
     newOrientation.correctedDegrees_ = newOrientation.degrees_;
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-    if(declinationCorrection_)
-#else
-    if(declinationCorrection_.loadAcquire() == 0)
-#endif
-    {
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    if (declinationCorrection_) {
         newOrientation.correctedDegrees_ += declinationCorrection_;
 #else
+    if (declinationCorrection_.loadAcquire() != 0) {
         newOrientation.correctedDegrees_ += declinationCorrection_.loadAcquire();
 #endif
         newOrientation.correctedDegrees_ %= 360;
-        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_ << ". Level: " << newOrientation.level_;
+//        sensordLogT() << "DeclinationFilter corrected degree " << newOrientation.degrees_ << " => " << newOrientation.correctedDegrees_ << ". Level: " << newOrientation.level_;
     }
     orientation_ = newOrientation;
     source_.propagate(1, &orientation_);

@@ -49,19 +49,21 @@ private:
     void magDataAvailable(unsigned, const CalibratedMagneticFieldData*);
     void accelDataAvailable(unsigned, const AccelerationData*);
 
-    int factor;
     CalibratedMagneticFieldData magData;
 
-    qreal magRX;
-    qreal magRY;
-    qreal magRZ;
+    qreal magX;
+    qreal magY;
+    qreal magZ;
+    qreal oldMagX;
+    qreal oldMagY;
+    qreal oldMagZ;
 
-    qreal adjX;
-    qreal adjY;
-    qreal adjZ;
-
-    qreal level;
-    qreal oldHeading;
+    int level;
+    int oldHeading;
+    QList <int> averagingBuffer;
+    QList <const CalibratedMagneticFieldData *> magAvgBuffer;
+    QList <const AccelerationData *> accelAvgBuffer;
+//    MagAvgBuffer magAvgBuffer;
 };
 
 #endif

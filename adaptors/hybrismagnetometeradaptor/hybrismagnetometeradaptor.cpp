@@ -27,12 +27,12 @@
 HybrisMagnetometerAdaptor::HybrisMagnetometerAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_MAGNETIC_FIELD)
 {
-    buffer = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
+    buffer = new DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", buffer);
 
     setDescription("Hybris magnetometer");
     //setStandbyOverride(false);
-   // setDefaultInterval(50);
+    setDefaultInterval(50);
 }
 
 HybrisMagnetometerAdaptor::~HybrisMagnetometerAdaptor()
@@ -56,13 +56,34 @@ void HybrisMagnetometerAdaptor::stopSensor()
 
 void HybrisMagnetometerAdaptor::processSample(const sensors_event_t& data)
 {
-    TimedXyzData *d = buffer->nextSlot();
+    CalibratedMagneticFieldData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
-    //uT to nT
-    d->x_ = (data.acceleration.x * 1000);
-    d->y_ = (data.acceleration.y * 1000);
-    d->z_ = (data.acceleration.z * 1000);
+    //uT
+    d->x_ = (data.magnetic.x * 1000);
+    d->y_ = (data.magnetic.y * 1000);
+    d->z_ = (data.magnetic.z * 1000);
+    d->level_= data.magnetic.status;
+#ifdef SENSORS_DEVICE_API_VERSION_1_1
+    d->rx_ = data.uncalibrated_magnetic.x_uncalib * 1000;
+    d->ry_ = data.uncalibrated_magnetic.y_uncalib * 1000;
+    d->rz_ = data.uncalibrated_magnetic.z_uncalib * 1000;
+    qDebug() << Q_FUNC_INFO
+             << "uncalibrated"
+             << data.uncalibrated_magnetic.x_uncalib * 1000
+             << data.uncalibrated_magnetic.y_uncalib * 1000
+             << data.uncalibrated_magnetic.z_uncalib * 1000;
+    qDebug() << Q_FUNC_INFO
+             << "bias"
+             << data.uncalibrated_magnetic.x_bias * 1000
+             << data.uncalibrated_magnetic.y_bias * 1000
+             << data.uncalibrated_magnetic.z_bias * 1000;
+#else
+    d->rx_ = data.magnetic.x * 1000;
+    d->ry_ = data.magnetic.y * 1000;
+    d->rz_ = data.magnetic.z * 1000;
 
+#endif
+    qDebug() << Q_FUNC_INFO << d->x_ << d->y_ << d->z_ << data.magnetic.status;
     buffer->commit();
     buffer->wakeUpReaders();
 }

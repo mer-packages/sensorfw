@@ -24,6 +24,7 @@
 #include "orientationfilter.h"
 #include "sensormanager.h"
 #include "logging.h"
+#include "config.h"
 
 void CompassChainPlugin::Register(class Loader&)
 {
@@ -36,8 +37,12 @@ void CompassChainPlugin::Register(class Loader&)
 }
 
 QStringList CompassChainPlugin::Dependencies() {
-//    return QString("accelerometerchain:magcalibrationchain:declinationfilter:downsamplefilter:avgaccfilterr").split(":", QString::SkipEmptyParts);
-    return QString("accelerometerchain:magcalibrationchain:declinationfilter:downsamplefilter:avgaccfilter:orientationadaptor").split(":", QString::SkipEmptyParts);
+    QByteArray orientationConfiguration = Config::configuration()->value("plugins/orientationadaptor").toByteArray();
+    if (orientationConfiguration.isEmpty()) {
+        return QString("accelerometerchain:magcalibrationchain:declinationfilter:downsamplefilter:avgaccfilter").split(":", QString::SkipEmptyParts);
+    } else {
+        return QString("accelerometerchain:magcalibrationchain:declinationfilter:downsamplefilter:avgaccfilter:orientationadaptor").split(":", QString::SkipEmptyParts);
+    }
 }
 
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)

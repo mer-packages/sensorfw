@@ -53,7 +53,6 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
 
     // Join filterchain buffers
     filterBin_->join("orientation", "source", "buffer", "sink");
-    filterBin_->join("face", "source", "buffer", "sink");
 
     // Join datasources to the chain
     connectToSource(orientationChain_, "orientation", orientationReader_);

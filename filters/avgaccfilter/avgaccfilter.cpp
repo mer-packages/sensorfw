@@ -20,32 +20,31 @@
 
 #include "avgaccfilter.h"
 #include <math.h>
+#define FILTER_COUNT 10
 
 AvgAccFilter::AvgAccFilter() :
     Filter<TimedXyzData, AvgAccFilter, TimedXyzData>(this, &AvgAccFilter::interpret),
     avgAccdata(0,0,0,0),
-    filterFactor(0.2)
+    filterFactor(0.54)
 {
 }
 
 void AvgAccFilter::interpret(unsigned, const TimedXyzData *data)
 {
-    avgAccdata.x_ = data->x_ * filterFactor + avgAccdata.x_ * (1.0 - filterFactor);
-    avgAccdata.y_ = data->y_ * filterFactor + avgAccdata.y_ * (1.0 - filterFactor);
-    avgAccdata.z_ = data->z_ * filterFactor + avgAccdata.z_ * (1.0 - filterFactor);
+    avgAccdata.x_ = data->x_ * filterFactor + averageX * (1.0f - filterFactor);
+    avgAccdata.y_ = data->y_ * filterFactor + averageY * (1.0f - filterFactor);
+    avgAccdata.z_ = data->z_ * filterFactor + averageZ * (1.0f - filterFactor);
 
     TimedXyzData filteredData(data->timestamp_,
                               avgAccdata.x_,
                               avgAccdata.y_,
                               avgAccdata.z_);
 
-    sensordLogT() << "averaged: "
-                  << filteredData.x_
-                  << ", "
-                  << filteredData.y_
-                  << ", " << filteredData.z_;
-
     source_.propagate(1, &filteredData);
+
+    averageX = data->x_;
+    averageY = data->y_;
+    averageZ = data->z_;
 }
 
 void AvgAccFilter::reset()
@@ -59,7 +58,6 @@ void AvgAccFilter::setFactor(qreal f)
 {
     filterFactor = f;
 }
-
 
 qreal AvgAccFilter::factor()
 {

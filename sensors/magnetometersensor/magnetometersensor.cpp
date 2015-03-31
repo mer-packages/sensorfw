@@ -40,9 +40,9 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 {
     SensorManager& sm = SensorManager::instance();
 
-    compassChain_ = sm.requestChain("magcalibrationchain");
-    Q_ASSERT( compassChain_ );
-    setValid(compassChain_->isValid());
+    magChain_ = sm.requestChain("magcalibrationchain");
+    Q_ASSERT( magChain_ );
+    setValid(magChain_->isValid());
 
     magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(1);
 
@@ -67,16 +67,22 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
     if (scaleFilter_)
     {
-        filterBin_->add(scaleFilter_, "filter");
-        filterBin_->join("magnetometer", "source", "filter", "sink");
-        filterBin_->join("filter", "source", "buffer", "sink");
+        filterBin_->add(scaleFilter_, "scaleFilter");
+
+        if (!filterBin_->join("magnetometer", "source", "scaleFilter", "sink"))
+            qDebug() << Q_FUNC_INFO << "magnetometer/scaleFilter join failed";
+
+        if (!filterBin_->join("filter", "source", "buffer", "sink"))
+            qDebug() << Q_FUNC_INFO << "source/buffer join failed";
+
     } else
     {
-        filterBin_->join("magnetometer", "source", "buffer", "sink");
+        if (!filterBin_->join("magnetometer", "source", "buffer", "sink"))
+            qDebug() << Q_FUNC_INFO << "magnetometer/buffer join failed";
     }
 
     // Join datasources to the chain
-    connectToSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
+    connectToSource(magChain_, "calibratedmagnetometerdata", magnetometerReader_);
 
     marshallingBin_ = new Bin;
     marshallingBin_->add(this, "sensorchannel");
@@ -87,26 +93,26 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     if (scaleFilter_)
     {
         // Get available ranges and introduce modified ones
-        QList<DataRange> rangeList = compassChain_->getAvailableDataRanges();
+        QList<DataRange> rangeList = magChain_->getAvailableDataRanges();
         foreach(const DataRange& range, rangeList)
         {
             introduceAvailableDataRange(DataRange(scaleCoefficient_*range.min, scaleCoefficient_*range.max, scaleCoefficient_*range.resolution));
         }
     } else {
         // Use the ranges directly from source
-        setRangeSource(compassChain_);
+        setRangeSource(magChain_);
     }
 
     setDescription("magnetic flux density in nT");
-    addStandbyOverrideSource(compassChain_);
-    setIntervalSource(compassChain_);
+    addStandbyOverrideSource(magChain_);
+    setIntervalSource(magChain_);
 }
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()
 {
     SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(compassChain_, "calibratedmagnetometerdata", magnetometerReader_);
+    disconnectFromSource(magChain_, "calibratedmagnetometerdata", magnetometerReader_);
     sm.releaseChain("magcalibrationchain");
 
     if (scaleFilter_) delete scaleFilter_;
@@ -124,7 +130,7 @@ bool MagnetometerSensorChannel::start()
     if (AbstractSensorChannel::start()) {
         marshallingBin_->start();
         filterBin_->start();
-        compassChain_->start();
+        magChain_->start();
     }
     return true;
 }
@@ -134,7 +140,7 @@ bool MagnetometerSensorChannel::stop()
     sensordLogD() << "Stopping MagnetometerSensorChannel";
 
     if (AbstractSensorChannel::stop()) {
-        compassChain_->stop();
+        magChain_->stop();
         filterBin_->stop();
         marshallingBin_->stop();
     }
@@ -150,9 +156,9 @@ void MagnetometerSensorChannel::emitData(const CalibratedMagneticFieldData& valu
 
 void MagnetometerSensorChannel::resetCalibration()
 {
-    if (!compassChain_)
+    if (!magChain_)
         return;
-    QMetaObject::invokeMethod(compassChain_, "resetCalibration", Qt::DirectConnection);
+    QMetaObject::invokeMethod(magChain_, "resetCalibration", Qt::DirectConnection);
 }
 
 bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int sessionId)
@@ -162,7 +168,7 @@ bool MagnetometerSensorChannel::setDataRange(const DataRange& range, int session
     request.max = range.max * scaleCoefficient_;
     request.resolution = range.resolution * scaleCoefficient_;
 
-    compassChain_->requestDataRange(sessionId, request);
+    magChain_->requestDataRange(sessionId, request);
     return true;
 }
 

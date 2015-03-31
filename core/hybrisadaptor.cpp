@@ -347,6 +347,9 @@ HybrisAdaptor::~HybrisAdaptor()
 void HybrisAdaptor::init()
 {
     sensorHandle = hybrisManager()->handleForType(sensorType);
+    if (sensorHandle == -1) {
+        setValid(false);
+    }
     maxRange = hybrisManager()->maxRange(sensorType);
     minDelay = hybrisManager()->minDelay(sensorType);
     if (minDelay > 1000)
@@ -372,7 +375,6 @@ bool HybrisAdaptor::isRunning() const
 
 void HybrisAdaptor::stopAdaptor()
 {
-    qDebug() << Q_FUNC_INFO;
     if (getAdaptedSensor()->isRunning())
         stopSensor();
     hybrisManager()->closeSensors();
@@ -380,7 +382,6 @@ void HybrisAdaptor::stopAdaptor()
 
 bool HybrisAdaptor::startSensor()
 {
-    qDebug() << Q_FUNC_INFO;
     AdaptedSensorEntry *entry = getAdaptedSensor();
     if (entry == NULL) {
         qDebug() << "Sensor not found: " << name();

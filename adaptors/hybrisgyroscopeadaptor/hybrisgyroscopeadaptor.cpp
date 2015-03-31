@@ -24,6 +24,8 @@
 #include <hardware/sensors.h>
 #include <math.h>
 
+#define RADIANS_TO_DEGREESECONDS 57295.7795
+#define RADIANS_TO_DEGREES 57.2957795
 
 HybrisGyroscopeAdaptor::HybrisGyroscopeAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_GYROSCOPE)
@@ -61,10 +63,9 @@ void HybrisGyroscopeAdaptor::processSample(const sensors_event_t& data)
 
     TimedXyzData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
-    d->x_ = (data.acceleration.x) * 57295.7795;
-    d->y_ = (data.acceleration.y) * 57295.7795;
-    d->z_ = (data.acceleration.z) * 57295.7795;
-
+    d->x_ = (data.gyro.x) * RADIANS_TO_DEGREES * 1000;
+    d->y_ = (data.gyro.y) * RADIANS_TO_DEGREES * 1000;
+    d->z_ = (data.gyro.z) * RADIANS_TO_DEGREES * 1000;
     buffer->commit();
     buffer->wakeUpReaders();
 }

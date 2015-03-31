@@ -39,7 +39,7 @@
 MagAdaptorEvdev::MagAdaptorEvdev(const QString& id) :
     InputDevAdaptor(id, 1)
 {
-    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
+    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Input device magnetometer adaptor");
     powerStatePath_ = Config::configuration()->value("magnetometer/powerstate_path").toByteArray();
@@ -82,7 +82,7 @@ void MagAdaptorEvdev::interpretSync(int src, struct input_event *ev)
 
 void MagAdaptorEvdev::commitOutput(struct input_event *ev)
 {
-    TimedXyzData* magData = magnetometerBuffer_->nextSlot();
+    CalibratedMagneticFieldData* magData = magnetometerBuffer_->nextSlot();
     magData->x_ = magValue_.x_;
     magData->y_ = magValue_.y_;
     magData->z_ = magValue_.z_;

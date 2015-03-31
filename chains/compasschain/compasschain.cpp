@@ -23,12 +23,16 @@
 #include <QDebug>
 
 #include "compasschain.h"
+#include "magcalibrationchain.h"
 #include "orientationfilter.h"
+#include "declinationfilter.h"
 #include "sensormanager.h"
 #include "bin.h"
 #include "bufferreader.h"
 #include "config.h"
 #include "logging.h"
+#include "downsamplefilter.h"
+#include "avgaccfilter.h"
 
 #include "datatypes/orientationdata.h"
 
@@ -39,11 +43,14 @@ CompassChain::CompassChain(const QString& id) :
 {
     SensorManager& sm = SensorManager::instance();
 
-    orientAdaptor = sm.requestDeviceAdaptor("orientationadaptor");
+    if (sm.getAdaptorTypes().contains("orientationadaptor")) {
+        orientAdaptor = sm.requestDeviceAdaptor("orientationadaptor");
+        if (orientAdaptor->isValid()) {
+            hasOrientationAdaptor = true;
+        }
+    }
 
-    if (orientAdaptor) {
-        Q_ASSERT(orientAdaptor);
-        hasOrientationAdaptor = true;
+    if (hasOrientationAdaptor) {
         setValid(orientAdaptor->isValid());
         if (orientAdaptor->isValid())
             orientationdataReader = new BufferReader<CompassData>(1);
@@ -54,9 +61,7 @@ CompassChain::CompassChain(const QString& id) :
         declinationFilter = sm.instantiateFilter("declinationfilter");
         Q_ASSERT(declinationFilter);
         //hybris has compass heading in orientation sensor
-    }
-
-    if (!hasOrientationAdaptor) {
+    } else {
         magChain = sm.requestChain("magcalibrationchain");
         Q_ASSERT(magChain);
         setValid(magChain->isValid());
@@ -93,8 +98,8 @@ CompassChain::CompassChain(const QString& id) :
     if (!hasOrientationAdaptor) {
         filterBin->add(magReader, "magnetometer");
         filterBin->add(accelerometerReader, "accelerometer");
-        filterBin->add(compassFilter, "compass");
-        filterBin->add(avgaccFilter, "avgaccelerometer"); //normalize to flat ?
+        filterBin->add(compassFilter, "compassfilter");
+        filterBin->add(avgaccFilter, "avgaccelerometer");
         filterBin->add(downsampleFilter, "downsamplefilter");
     } else {
         ////////////////////
@@ -107,7 +112,10 @@ CompassChain::CompassChain(const QString& id) :
     filterBin->add(magneticNorthBuffer, "magneticnorth");
 
     if (!hasOrientationAdaptor) {
-        if (!filterBin->join("magnetometer", "source", "compass", "magsink"))
+        // magchain > compassfilter > magnorth/declination
+        // accelchain > avg filter > downsamplefilter > compassfilter
+
+        if (!filterBin->join("magnetometer", "source", "compassfilter", "magsink"))
             qDebug() << Q_FUNC_INFO << "magnetometer join failed";
 
         if (!filterBin->join("accelerometer", "source", "avgaccelerometer", "sink"))
@@ -116,13 +124,14 @@ CompassChain::CompassChain(const QString& id) :
         if (!filterBin->join("avgaccelerometer", "source", "downsamplefilter", "sink"))
             qDebug() << Q_FUNC_INFO << "avgaccelerometer join failed";
 
-        if (!filterBin->join("downsamplefilter", "source", "compass", "accsink"))
+        if (!filterBin->join("downsamplefilter", "source", "compassfilter", "accsink"))
             qDebug() << Q_FUNC_INFO << "downsamplefilter join failed";
-        if (!filterBin->join("compass", "magnorthangle", "magneticnorth", "sink"))
-            qDebug() << Q_FUNC_INFO << "compass1 join failed";
 
-        if (!filterBin->join("compass", "magnorthangle", "declinationcorrection", "sink"))
-            qDebug() << Q_FUNC_INFO << "compass2 join failed";
+        if (!filterBin->join("compassfilter", "magnorthangle", "magneticnorth", "sink"))
+            qDebug() << Q_FUNC_INFO << "compassfilter/magnorth join failed";
+
+        if (!filterBin->join("compassfilter", "magnorthangle", "declinationcorrection", "sink"))
+            qDebug() << Q_FUNC_INFO << "compassfilter/declination join failed";
 
     } else {
         ////////////////////
@@ -154,6 +163,14 @@ CompassChain::CompassChain(const QString& id) :
     setDescription("Compass direction"); //compass north in degrees
     introduceAvailableDataRange(DataRange(0, 359, 1));
     introduceAvailableInterval(DataRange(50,200,0));
+
+    if (!hasOrientationAdaptor) {
+        DownsampleFilter *filter = static_cast<DownsampleFilter *>(downsampleFilter);
+        filter->setTimeout(3000);
+
+        AvgAccFilter *filter2 = static_cast<AvgAccFilter *>(avgaccFilter);
+        filter2->setFactor(0.24);
+    }
 
     if (!hasOrientationAdaptor) {
         setRangeSource(magChain);
@@ -189,7 +206,7 @@ CompassChain::~CompassChain()
 bool CompassChain::start()
 {
     if (AbstractSensorChannel::start()) {
-        sensordLogD() << "Starting compassChain";
+        sensordLogD() << "Starting compassChain" << hasOrientationAdaptor;
         filterBin->start();
         if (hasOrientationAdaptor) {
             orientAdaptor->startSensor();
@@ -197,14 +214,16 @@ bool CompassChain::start()
             accelerometerChain->start();
             magChain->start();
         }
+    } else {
+        qDebug() << Q_FUNC_INFO <<"Failed: not started";
     }
     return true;
 }
 
 bool CompassChain::stop()
 {
-    if (AbstractSensorChannel::stop()) {
-        sensordLogD() << "Stopping compassChain";
+    bool isStopped = AbstractSensorChannel::stop();
+    if (isStopped) {
         if (hasOrientationAdaptor) {
             orientAdaptor->stopSensor();
         } else {
@@ -221,16 +240,18 @@ bool CompassChain::compassEnabled() const
     return true;
 }
 
-void CompassChain::setCompassEnabled(bool enabled)
+void CompassChain::setCompassEnabled(bool /*enabled*/)
 {
 }
 
 quint16 CompassChain::declinationValue() const
 {
-    return 0; //TODO
+    DeclinationFilter *filter = static_cast<DeclinationFilter *>(declinationFilter);
+    return filter->declinationCorrection();
 }
 
 void CompassChain::resetCalibration()
 {
-    qDebug() << Q_FUNC_INFO;
+    MagCalibrationChain *chain = static_cast<MagCalibrationChain *>(magChain);
+    chain->resetCalibration();
 }
