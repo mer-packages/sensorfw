@@ -65,7 +65,7 @@ void signalUSR1(int param)
     logLevel = QtMsgType(logLevel + 1);
     if (logLevel > QtSystemMsg)
         logLevel = QtDebugMsg;
-    std::cerr << "New debugging level: " << logLevel << "\n";
+    qDebug() << "New debugging level: " << logLevel;
 }
 
 void signalUSR2(int param)
@@ -74,8 +74,8 @@ void signalUSR2(int param)
 
     QStringList output;
 
-    output.append("Flushing sensord state\n");
-    output.append(QString("  Logging level: %1\n").arg(logLevel));
+    output.append("Flushing sensord state");
+    output.append(QString("  Logging level: %1").arg(logLevel));
     SensorManager::instance().printStatus(output);
 
     foreach (const QString& line, output) {
