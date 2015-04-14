@@ -55,7 +55,7 @@ protected:
     void init();
 
 private:
-    DeviceAdaptorRingBuffer<TimedXyzData>* buffer;
+    DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>* buffer;
     int sensorType;
 
 };

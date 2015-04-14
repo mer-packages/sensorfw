@@ -45,8 +45,9 @@ private:
 
     Sink<OrientationFilter, CompassData> orientDataSink;
     void orientDataAvailable(unsigned, const CompassData*);
-    qreal level;
-    qreal oldHeading;
+
+    CompassData compassData; //north angle
+
 };
 
 #endif

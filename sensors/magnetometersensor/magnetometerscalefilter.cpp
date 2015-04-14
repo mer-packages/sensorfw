@@ -30,7 +30,7 @@
 MagnetometerScaleFilter::MagnetometerScaleFilter() :
         Filter<CalibratedMagneticFieldData, MagnetometerScaleFilter, CalibratedMagneticFieldData>(this, &MagnetometerScaleFilter::filter)
 {
-    factor = Config::configuration()->value("magnetometer/scale_coefficient", QVariant(300)).toInt();;
+    factor = Config::configuration()->value("magnetometer/scale_coefficient", QVariant(1)).toInt();
 }
 
 void MagnetometerScaleFilter::filter(unsigned, const CalibratedMagneticFieldData* data)

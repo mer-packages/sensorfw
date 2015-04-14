@@ -52,6 +52,13 @@ private:
     XyzAvgAccBuffer avgBuffer;
     unsigned int avgBufferSize;
     qreal filterFactor;
+
+    int averageX;
+    int averageY;
+    int averageZ;
+
+    QList<TimedXyzData> avgAccelBuffer;
+
 };
 
 #endif // ROTATIONFILTER_H

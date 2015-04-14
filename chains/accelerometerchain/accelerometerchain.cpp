@@ -75,8 +75,11 @@ AccelerometerChain::AccelerometerChain(const QString& id) :
     filterBin_->add(outputBuffer_, "buffer");
 
     // Join filterchain buffers
-    filterBin_->join("accelerometer", "source", "acccoordinatealigner", "sink");
-    filterBin_->join("acccoordinatealigner", "source", "buffer", "sink");
+    if (!filterBin_->join("accelerometer", "source", "acccoordinatealigner", "sink"))
+    qDebug() << Q_FUNC_INFO << "accelerometer/acccoordinatealigner join failed";
+
+    if (!filterBin_->join("acccoordinatealigner", "source", "buffer", "sink"))
+    qDebug() << Q_FUNC_INFO << "acccoordinatealigner/buffer join failed";
 
     // Join datasources to the chain
     connectToSource(accelerometerAdaptor_, "accelerometer", accelerometerReader_);

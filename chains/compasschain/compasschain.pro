@@ -10,6 +10,11 @@ SOURCES += compasschain.cpp   \
            compassfilter.cpp \
            orientationfilter.cpp
 
-INCLUDEPATH += ../../filters/coordinatealignfilter
+INCLUDEPATH += ../../filters/coordinatealignfilter \
+               ../../filters/downsamplefilter \
+               ../../filters/avgaccfilter \
+               ../../chains/magcalibrationchain \
+               ../../filters/magcoordinatealignfilter \
+               ../../filters/declinationfilter
 
 include( ../chain-config.pri )

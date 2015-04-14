@@ -68,13 +68,13 @@ protected:
     virtual unsigned int evaluateIntervalRequests(int& sessionId) const;
 
 private:
-    DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
+    DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>* magnetometerBuffer_;
 
     void interpretEvent(int src, struct input_event *ev);
     void commitOutput(struct input_event *ev);
     void interpretSync(int src, struct input_event *ev);
     QByteArray powerStatePath_;
-    TimedXyzData magValue_;
+    CalibratedMagneticFieldData magValue_;
 };
 
 #endif

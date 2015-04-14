@@ -26,8 +26,9 @@
 #include "orientationdata.h"
 #include "filter.h"
 
+#include <QFile>
 
-class CalibrationFilter : public QObject, public Filter<TimedXyzData, CalibrationFilter, CalibratedMagneticFieldData>
+class CalibrationFilter : public QObject, public Filter<CalibratedMagneticFieldData, CalibrationFilter, CalibratedMagneticFieldData>
 {
     Q_OBJECT
 
@@ -44,20 +45,40 @@ protected:
 
 private:
 
-    Sink<CalibrationFilter, TimedXyzData> magDataSink;
+    Sink<CalibrationFilter, CalibratedMagneticFieldData> magDataSink;
 
     Source<CalibratedMagneticFieldData> magSource;
-
-    void magDataAvailable(unsigned, const TimedXyzData * );
+    void magDataAvailable(unsigned, const CalibratedMagneticFieldData * );
 
     CalibratedMagneticFieldData magData;
+    CalibratedMagneticFieldData transformed;
+
     QList <QPair<int,int> > minMaxList;
 
-    qreal oldX;
-    qreal oldY;
-    qreal oldZ;
+    qreal offsetX;
+    qreal offsetY;
+    qreal offsetZ;
+
+    qreal xScale;
+    qreal yScale;
+    qreal zScale;
+
+    qreal meanX;
+    qreal meanY;
+    qreal meanZ;
 
     qreal calLevel;
+    int lowPass(int newVal, int oldVal);
+    QList<const CalibratedMagneticFieldData *> *readingBuffer;
+    int bufferPos;
+
+    QFile unCalibratedData;
+    QFile calibratedData;
+    QTextStream stream;
+    QTextStream calibratedStream;
+    int dataPoints;
+    bool manualCalibration;
+
 };
 
 #endif

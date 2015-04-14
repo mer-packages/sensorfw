@@ -37,7 +37,7 @@ MagnetometerAdaptorNCDK::MagnetometerAdaptorNCDK(const QString& id) :
     intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
     powerStateFilePath_ = Config::configuration()->value<QByteArray>("magnetometer/path_power_state", "");
     sensAdjFilePath_ = Config::configuration()->value<QByteArray>("magnetometer/path_sens_adjust", "");
-    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(128);
+    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>(128);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     setDescription("Magnetometer adaptor (ak8975) for NCDK");
 
@@ -84,7 +84,7 @@ void MagnetometerAdaptorNCDK::processSample(int pathId, int fd)
 
     sensordLogT() << "Magnetometer Reading: " << x << ", " << y << ", " << z;
 
-    TimedXyzData* sample = magnetometerBuffer_->nextSlot();
+    CalibratedMagneticFieldData* sample = magnetometerBuffer_->nextSlot();
 
     sample->timestamp_ = Utils::getTimeStamp();
     sample->x_ = x;
@@ -159,7 +159,7 @@ bool MagnetometerAdaptorNCDK::setInterval(const unsigned int value, const int se
 {
     if(intervalCompensation_)
     {
-        return SysfsAdaptor::setInterval(value > intervalCompensation_ ? value - intervalCompensation_ : 0, sessionId);
+        return SysfsAdaptor::setInterval((int)value > intervalCompensation_ ? value - intervalCompensation_ : 0, sessionId);
     }
     return SysfsAdaptor::setInterval(value, sessionId);
 }

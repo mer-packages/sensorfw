@@ -94,7 +94,7 @@ protected:
 private:
     Bin*                                       filterBin_;
     Bin*                                       marshallingBin_;
-    AbstractChain*                             compassChain_;
+    AbstractChain*                             magChain_;
     FilterBase*                                scaleFilter_;
     BufferReader<CalibratedMagneticFieldData>* magnetometerReader_;
     RingBuffer<CalibratedMagneticFieldData>*   outputBuffer_;

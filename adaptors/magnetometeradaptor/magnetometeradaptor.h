@@ -32,6 +32,7 @@
 #include "deviceadaptorringbuffer.h"
 #include "datatypes/genericdata.h"
 #include <QString>
+#include "datatypes/orientationdata.h"
 
 /**
  * @brief Adaptor for internal magnetometer.
@@ -90,7 +91,7 @@ private:
      */
     int overflowLimit() const;
 
-    DeviceAdaptorRingBuffer<TimedXyzData>* magnetometerBuffer_;
+    DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>* magnetometerBuffer_;
     int intervalCompensation_;
     int overflowLimit_;
 };

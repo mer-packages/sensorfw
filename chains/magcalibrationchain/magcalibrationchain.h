@@ -24,7 +24,7 @@
 
 #include "abstractsensor.h"
 #include "abstractchain.h"
-//#include "coordinatealignfilter.h"
+#include "magcoordinatealignfilter.h"
 #include "deviceadaptor.h"
 #include "bufferreader.h"
 #include "filter.h"
@@ -72,16 +72,20 @@ protected:
     ~MagCalibrationChain();
 
 private:
+    bool setMatrixFromString(const QString& str);
+    double aconv_[3][3];
 
     Bin* filterBin;
     DeviceAdaptor *magAdaptor;
 
-    BufferReader<TimedXyzData>  *magReader; //pusher/producer
+    BufferReader<CalibratedMagneticFieldData>  *magReader; //pusher/producer
 
-    FilterBase* magCalFilter;
-    FilterBase* magScaleFilter;
+    FilterBase *magCalFilter;
+    FilterBase *magScaleFilter;
 
+    FilterBase *magCoordinateAlignFilter_;
     RingBuffer<CalibratedMagneticFieldData> *calibratedMagnetometerData; //consumer
+    bool needsCalibration;
 };
 
 #endif // MAGCALIBRATIONCHAIN_H

@@ -1,6 +1,6 @@
 /**
-   @file magnetometerplugin.cpp
-   @brief Plugin for MagnetometerSensor
+   @file coordinatealignfilterplugin.h
+   @brief Plugin for CoordinateAlignFilter
 
    <p>
    Copyright (C) 2009-2010 Nokia Corporation
@@ -21,25 +21,21 @@
    You should have received a copy of the GNU Lesser General Public
    License along with Sensord.  If not, see <http://www.gnu.org/licenses/>.
    </p>
-*/
+ */
 
-#include "magnetometerplugin.h"
-#include "magnetometersensor.h"
-#include "magnetometerscalefilter.h"
-#include "sensormanager.h"
-#include "logging.h"
+#ifndef MAGCOORDINATEALIGNFILTERPLUGIN_H
+#define MAGCOORDINATEALIGNFILTERPLUGIN_H
 
-void MagnetometerPlugin::Register(class Loader&)
+#include "plugin.h"
+
+class MagCoordinateAlignFilterPlugin : public Plugin
 {
-    SensorManager& sm = SensorManager::instance();
-    sm.registerSensor<MagnetometerSensorChannel>("magnetometersensor");
-    sm.registerFilter<MagnetometerScaleFilter>("magnetometerscalefilter");
-}
+    Q_OBJECT
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    Q_PLUGIN_METADATA(IID "com.nokia.SensorService.Plugin/1.0")
+#endif
+private:
+    void Register(class Loader& l);
+};
 
-QStringList MagnetometerPlugin::Dependencies() {
-    return QString("magcalibrationchain").split(":", QString::SkipEmptyParts);
-}
-
-#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
-Q_EXPORT_PLUGIN2(magnetometersensor, MagnetometerPlugin)
 #endif

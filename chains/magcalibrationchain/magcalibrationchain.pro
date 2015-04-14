@@ -10,4 +10,6 @@ SOURCES += magcalibrationchain.cpp \
            magcalibrationchainplugin.cpp
 #        qvector3d.cpp
 
+INCLUDEPATH += ../../filters/magcoordinatealignfilter
+
 include( ../chain-config.pri )

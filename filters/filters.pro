@@ -4,7 +4,8 @@ SUBDIRS = coordinatealignfilter \
           orientationinterpreter \
           rotationfilter \
           downsamplefilter \
-          avgaccfilter
+          avgaccfilter \
+          magcoordinatealignfilter
 
 include(../common-install.pri)
 publicheaders.files = *.h

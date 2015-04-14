@@ -25,11 +25,15 @@
 
 #define RADIANS_TO_DEGREES 57.2957795
 #define DEGREES_TO_RADIANS 0.017453292
+#define GRAVITY_EARTH 9.80665f
+#define FILTER_FACTOR 0.24f
+#define LIST_COUNT 10
 
 CompassFilter::CompassFilter() :
         magDataSink(this, &CompassFilter::magDataAvailable),
         accelSink(this, &CompassFilter::accelDataAvailable),
-        factor(1)
+        level(0),
+        oldHeading(0)
 {
     addSink(&magDataSink, "magsink");
     addSink(&accelSink, "accsink");
@@ -38,24 +42,34 @@ CompassFilter::CompassFilter() :
 
 void CompassFilter::magDataAvailable(unsigned, const CalibratedMagneticFieldData *data)
 {
-    adjX = data->x_;
-    adjY = data->y_;
-    adjZ = data->z_;
-
-    magRX = data->rx_;
-    magRY = data->ry_;
-    magRZ = data->rz_;
-
+    magX = data->y_ * .001f;
+    magY = data->x_ * .001f;
+    magZ = data->z_ * .001f;
     level = data->level_;
+
+    magX = oldMagX + FILTER_FACTOR * (magX - oldMagX);
+    magY = oldMagY + FILTER_FACTOR * (magY - oldMagY);
+    magZ = oldMagZ + FILTER_FACTOR * (magZ - oldMagZ);
+    oldMagX = magX;
+    oldMagY = magY;
+    oldMagZ = magZ;
 }
+
 
 void CompassFilter::accelDataAvailable(unsigned, const AccelerationData *data)
 {
-    qreal x = data->x_ * 0.00980665; // to m/s^2
-    qreal y = data->y_ * 0.00980665;
-    qreal z = data->z_ * 0.00980665;
+    // the x/y are switched as compass expects it in aero coordinates
+    qreal Gx = data->y_ * .001f; //convert to g
+    qreal Gy = data->x_ * .001f;
+    qreal Gz = -data->z_ * .001f;
+
+    qreal divisor = qSqrt(Gx * Gx + Gy * Gy + Gz * Gz);
+    qreal normalizedGx = Gx / divisor;
+    qreal normalizedGy = Gy / divisor;
+    qreal normalizedGz = Gz / divisor;
+
     ///////////////
-    /// \brief this algorithm is from Circuit Cellar Aug 2012
+    /// this algorithm is from Circuit Cellar Aug 2012
     ///  by Mark Pedley
     /// Electronic Compass: Tilt Compensation & Calibration
     /// There are no restrictions on your use of the software listed in the
@@ -64,58 +78,39 @@ void CompassFilter::accelDataAvailable(unsigned, const AccelerationData *data)
     ///
     qreal Psi = 0;
     qreal The = 0;
-    qreal Phi = 0; /* yaw, pitch, roll angles in deg */
-
-    qreal Bx = magRX;
-    qreal By = magRY;
-    qreal Bz = magRZ;
-    qreal Gx = x;
-    qreal Gy = y;
-    qreal Gz = z;
-
-    qreal sinAngle, cosAngle; /* sine and cosine */
-    qreal fBfx;
-    qreal fBfy;
-    qreal fBfz; /* calibrated mag data in uT after tilt correction */
-
-    /* subtract off the hard iron interference computed using equation 9*/
-
-    Bx -= adjX;
-    By -= adjY;
-    Bz -= adjZ;
+    qreal Phi = 0;
+    qreal sinAngle = 0;
+    qreal cosAngle = 0;
+    qreal fBfx = 0;
+    qreal fBfy = 0;
 
     /* calculate roll angle Phi (-180deg, 180deg) and sin, cos */
+    Phi = qAtan2(normalizedGy, normalizedGz); /* Equation 2 */
+    sinAngle = qSin(Phi);
+    cosAngle = qCos(Phi);
 
-    Phi = qAtan2(Gy, Gz) * RADIANS_TO_DEGREES; /* Equation 2 */
-    sinAngle = qSin(Phi * DEGREES_TO_RADIANS);  /* sin(Phi) */
-    cosAngle = qCos(Phi * DEGREES_TO_RADIANS);  /* cos(Phi) */
-
-    /* de-rotate by roll angle Phi */
-    fBfy = By * cosAngle - Bz * sinAngle; /* Equation 5 y component */
-
-    Bz = By * sinAngle + Bz * cosAngle; /*Bz=(By-Vy).sin(Phi)+(Bz-Vz).cos(Phi) */
-    Gz = Gy * sinAngle + Gz * cosAngle; /* Gz=Gy.sin(Phi)+Gz.cos(Phi) */
+    /* de-rotate magY roll angle Phi */
+    fBfy = magY * cosAngle - magZ * sinAngle; /* Equation 5 y component */
+    magZ = magY * sinAngle + magZ * cosAngle;
+    normalizedGz = normalizedGy * sinAngle + normalizedGz * cosAngle;
 
     /* calculate pitch angle Theta (-90deg, 90deg) and sin, cos*/
-    The = atan(-Gx / Gz) * RADIANS_TO_DEGREES;  /* Equation 3 */
-    sinAngle = qSin(The * DEGREES_TO_RADIANS); /* sin(Theta) */
-    cosAngle = qCos(The * DEGREES_TO_RADIANS); /* cos(Theta) */
+    The = qAtan(-normalizedGx / normalizedGz);  /* Equation 3 */
+    sinAngle = qSin(The);
+    cosAngle = qCos(The);
 
-    /* de-rotate by pitch angle Theta */
-    fBfx = Bx * cosAngle + Bz * sinAngle; /* Equation 5 x component */
-    fBfz = -Bx * sinAngle + Bz * cosAngle; /* Equation 5 z component */
+    /* de-rotate magY pitch angle Theta */
+    fBfx = magX * cosAngle + magZ * sinAngle; /* Equation 5 x component */
 
     /* calculate yaw = ecompass angle psi (-180deg, 180deg) */
-
     Psi = (qAtan2(-fBfy, fBfx) * RADIANS_TO_DEGREES); /* Equation 7 */
 
+    int heading = Psi * FILTER_FACTOR + oldHeading * (1.0 - FILTER_FACTOR);
 
-// because sensorfw expects x,y axis to be opposite from what this algo expects
-int offset = 90;
-    ////////////////////////////////////////
     CompassData compassData; //north angle
     compassData.timestamp_ = data->timestamp_;
-    compassData.degrees_ = (int)(Psi + (360 - offset)) % 360;
+    compassData.degrees_ = (int)(heading + 360) % 360;
     compassData.level_ = level;
     magSource.propagate(1, &compassData);
+    oldHeading = heading;
 }

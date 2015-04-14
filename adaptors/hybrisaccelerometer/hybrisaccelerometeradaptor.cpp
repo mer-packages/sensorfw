@@ -23,6 +23,8 @@
 #include "datatypes/utils.h"
 #include <hardware/sensors.h>
 
+#define GRAVITY_RECIPROCAL_THOUSANDS 101.971621298
+
 HybrisAccelerometerAdaptor::HybrisAccelerometerAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_ACCELEROMETER)
 {
@@ -55,15 +57,14 @@ void HybrisAccelerometerAdaptor::stopSensor()
 
 void HybrisAccelerometerAdaptor::processSample(const sensors_event_t& data)
 {
-
     AccelerationData *d = buffer->nextSlot();
     d->timestamp_ = quint64(data.timestamp * .001);
     // sensorfw wants milli-G'
-    d->x_ = -(data.data[0] / 9.80665 * 1000);
-    d->y_ = -(data.data[1] / 9.80665 * 1000);
-    d->z_ = -(data.data[2] / 9.80665 * 1000);
-//  qt's sensorfw plugin expects G == 9.81286, but it should be
-    //9.80665
+
+    d->x_ = data.acceleration.x * GRAVITY_RECIPROCAL_THOUSANDS;
+    d->y_ = data.acceleration.y * GRAVITY_RECIPROCAL_THOUSANDS;
+    d->z_ = data.acceleration.z * GRAVITY_RECIPROCAL_THOUSANDS;
+
     buffer->commit();
     buffer->wakeUpReaders();
 }

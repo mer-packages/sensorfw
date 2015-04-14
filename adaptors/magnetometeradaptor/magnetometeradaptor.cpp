@@ -47,7 +47,7 @@ MagnetometerAdaptor::MagnetometerAdaptor(const QString& id) :
     SysfsAdaptor(id, SysfsAdaptor::IntervalMode, false)
 {
     intervalCompensation_ = Config::configuration()->value<int>("magnetometer/interval_compensation", 0);
-    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<TimedXyzData>(1);
+    magnetometerBuffer_ = new DeviceAdaptorRingBuffer<CalibratedMagneticFieldData>(1);
     setAdaptedSensor("magnetometer", "Internal magnetometer coordinates", magnetometerBuffer_);
     overflowLimit_ = Config::configuration()->value<int>("magnetometer/overflow_limit", 8000);
     setDescription("Input device Magnetometer adaptor (ak897x)");
@@ -78,7 +78,7 @@ void MagnetometerAdaptor::processSample(int pathId, int fd)
 
     sensordLogT() << "Magnetometer reading: " << mag_data.x << ", " << mag_data.y << ", " << mag_data.z;
 
-    TimedXyzData* sample = magnetometerBuffer_->nextSlot();
+    CalibratedMagneticFieldData* sample = magnetometerBuffer_->nextSlot();
 
     sample->timestamp_ = Utils::getTimeStamp();
     sample->x_ = mag_data.x;
