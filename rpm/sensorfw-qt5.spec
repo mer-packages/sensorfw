@@ -6,9 +6,8 @@ Group:      System/Sensor Framework
 License:    LGPLv2+
 URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
-Source1:    sensorfw-qt5-rpmlintrc
-Source2:    sensorfwd.service
-Source3:    sensord-daemon-conf-setup
+Source1:    sensorfwd.service
+Source2:    sensord-daemon-conf-setup
 Requires:   qt5-qtcore
 Requires:   sensord-configs
 Requires:   systemd
@@ -103,8 +102,8 @@ rm -rf %{buildroot}
 export QT_SELECT=5
 %qmake5_install
 
-install -D -m644 %{SOURCE2} $RPM_BUILD_ROOT/%{_unitdir}/sensorfwd.service
-install -D -m750 %{SOURCE3} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
+install -D -m644 %{SOURCE1} $RPM_BUILD_ROOT/%{_unitdir}/sensorfwd.service
+install -D -m750 %{SOURCE2} $RPM_BUILD_ROOT/%{_bindir}/sensord-daemon-conf-setup
 
 mkdir -p %{buildroot}/%{_unitdir}/graphical.target.wants
 ln -s ../sensorfwd.service %{buildroot}/%{_unitdir}/graphical.target.wants/sensorfwd.service

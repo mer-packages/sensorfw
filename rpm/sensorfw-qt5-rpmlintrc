@@ -1,2 +1,0 @@
-addFilter("sensorfw-doc.* file-contains-date-and-time")
-addFilter("sensorfw-doc.* file-contains-current-date")
