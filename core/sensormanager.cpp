@@ -679,17 +679,17 @@ void SensorManager::devicePSMStateChanged(bool psmState)
 
 void SensorManager::printStatus(QStringList& output) const
 {
-    output.append("  Adaptors:\n");
+    output.append("  Adaptors:");
     for (QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.constBegin(); it != deviceAdaptorInstanceMap_.constEnd(); ++it) {
-        output.append(QString("    %1 [%2 listener(s)]\n").arg(it.value().type_).arg(it.value().cnt_));
+        output.append(QString("    %1 [%2 listener(s)]").arg(it.value().type_).arg(it.value().cnt_));
     }
 
     output.append("  Chains:\n");
     for (QMap<QString, ChainInstanceEntry>::const_iterator it = chainInstanceMap_.constBegin(); it != chainInstanceMap_.constEnd(); ++it) {
-        output.append(QString("    %1 [%2 listener(s)]. %3\n").arg(it.value().type_).arg(it.value().cnt_).arg((it.value().chain_ && it.value().chain_->running()) ? "Running" : "Stopped"));
+        output.append(QString("    %1 [%2 listener(s)]. %3").arg(it.value().type_).arg(it.value().cnt_).arg((it.value().chain_ && it.value().chain_->running()) ? "Running" : "Stopped"));
     }
 
-    output.append("  Logical sensors:\n");
+    output.append("  Logical sensors:");
     for (QMap<QString, SensorInstanceEntry>::const_iterator it = sensorInstanceMap_.constBegin(); it != sensorInstanceMap_.constEnd(); ++it) {
 
         QString str;
@@ -698,7 +698,7 @@ void SensorManager::printStatus(QStringList& output) const
             str.append(QString("%1 session(s), PID(s): %2]").arg(it.value().sessions_.size()).arg(socketToPid(it.value().sessions_)));
         else
             str.append("No sessions]");
-        str.append(QString(". %1\n").arg((it.value().sensor_ && it.value().sensor_->running()) ? "Running" : "Stopped"));
+        str.append(QString(". %1").arg((it.value().sensor_ && it.value().sensor_->running()) ? "Running" : "Stopped"));
         output.append(str);
     }
 }
