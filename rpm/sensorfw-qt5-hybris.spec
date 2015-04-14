@@ -9,8 +9,7 @@ Source0:    %{name}-%{version}.tar.bz2
 # Eventhough these are really needed we have these here
 # as those are added to packaging dir by tar_git.
 Source1:    sensord-daemon-conf-setup
-Source2:    sensorfw-rpmlintrc
-Source3:    sensorfwd.service
+Source2:    sensorfwd.service
 Requires:   %{name}-configs
 Requires:   sensord-qt5
 Requires(post): /sbin/ldconfig
