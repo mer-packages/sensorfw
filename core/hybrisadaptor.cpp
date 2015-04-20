@@ -467,8 +467,8 @@ bool HybrisAdaptor::standby()
 
     inStandbyMode_ = true;
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
-    running_ = deviceStandbyOverride();
     hybrisManager()->standbyReader(this);
+    running_ = deviceStandbyOverride();
 
     return true;
 }
