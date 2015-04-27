@@ -42,9 +42,9 @@ void AvgAccFilter::interpret(unsigned, const TimedXyzData *data)
 
     source_.propagate(1, &filteredData);
 
-    averageX = data->x_;
-    averageY = data->y_;
-    averageZ = data->z_;
+    averageX = avgAccdata.x_;
+    averageY = avgAccdata.y_;
+    averageZ = avgAccdata.z_;
 }
 
 void AvgAccFilter::reset()
