@@ -53,9 +53,9 @@ private:
     unsigned int avgBufferSize;
     qreal filterFactor;
 
-    int averageX;
-    int averageY;
-    int averageZ;
+    qreal averageX;
+    qreal averageY;
+    qreal averageZ;
 
     QList<TimedXyzData> avgAccelBuffer;
 
