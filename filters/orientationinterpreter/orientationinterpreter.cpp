@@ -135,7 +135,7 @@ int OrientationInterpreter::orientationCheck(const AccelerationData &data,  Orie
 PoseData OrientationInterpreter::rotateToPortrait(int rotation)
 {
     PoseData newTopEdge = PoseData::Undefined;
-    newTopEdge.orientation_ = (rotation >= 0) ? PoseData::BottomUp : PoseData::BottomDown;
+    newTopEdge.orientation_ = (rotation <= 0) ? PoseData::BottomUp : PoseData::BottomDown;
 
     // Some threshold to switching between portrait modes
     if (topEdge.orientation_ == PoseData::BottomUp || topEdge.orientation_ == PoseData::BottomDown)
@@ -153,7 +153,7 @@ PoseData OrientationInterpreter::rotateToLandscape(int rotation)
 {
 
     PoseData newTopEdge = PoseData::Undefined;
-    newTopEdge.orientation_ = (rotation >= 0) ? PoseData::LeftUp : PoseData::RightUp;
+    newTopEdge.orientation_ = (rotation <= 0) ? PoseData::LeftUp : PoseData::RightUp;
     // Some threshold to switching between landscape modes
     if (topEdge.orientation_ == PoseData::LeftUp || topEdge.orientation_ == PoseData::RightUp)
     {
