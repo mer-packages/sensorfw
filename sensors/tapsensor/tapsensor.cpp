@@ -37,7 +37,10 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     tapAdaptor_ = sm.requestDeviceAdaptor("tapadaptor");
-    Q_ASSERT( tapAdaptor_ );
+    if (!tapAdaptor_) {
+        setValid(false);
+        return;
+    }
 
     tapReader_ = new BufferReader<TapData>(1);
 
@@ -71,15 +74,17 @@ TapSensorChannel::TapSensorChannel(const QString& id) :
 
 TapSensorChannel::~TapSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(tapAdaptor_, "tap", tapReader_);
-    sm.releaseDeviceAdaptor("tapadaptor");
+        disconnectFromSource(tapAdaptor_, "tap", tapReader_);
+        sm.releaseDeviceAdaptor("tapadaptor");
 
-    delete tapReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete tapReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool TapSensorChannel::start()

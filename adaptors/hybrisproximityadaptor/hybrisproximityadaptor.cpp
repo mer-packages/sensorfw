@@ -33,15 +33,19 @@ HybrisProximityAdaptor::HybrisProximityAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_PROXIMITY),
     lastNearValue(true)
 {
-    buffer = new DeviceAdaptorRingBuffer<ProximityData>(1);
-    setAdaptedSensor("proximity", "Internal proximity coordinates", buffer);
+    if (isValid()) {
+        buffer = new DeviceAdaptorRingBuffer<ProximityData>(1);
+        setAdaptedSensor("proximity", "Internal proximity coordinates", buffer);
 
-    setDescription("Hybris proximity");
+        setDescription("Hybris proximity");
+    }
 }
 
 HybrisProximityAdaptor::~HybrisProximityAdaptor()
 {
-    delete buffer;
+    if (isValid()) {
+        delete buffer;
+    }
 }
 
 bool HybrisProximityAdaptor::startSensor()

@@ -188,10 +188,11 @@ bool HybrisManager::setDelay(int sensorHandle, int interval)
 void HybrisManager::startReader(HybrisAdaptor *adaptor)
 {
     if (registeredAdaptors.values().contains(adaptor)) {
-        sensordLogD() << "activating " << adaptor->name();
+        sensordLogD() << "activating " << adaptor->name() << adaptor->sensorHandle;
         int error = device->activate(device, adaptor->sensorHandle, 1);
         if (error != 0) {
             sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
+            adaptor->setValid(false);
         }
         if (!adaptorReader.isRunning())
             adaptorReader.startReader();
@@ -315,7 +316,7 @@ void HybrisManager::processSample(const sensors_event_t& data)
 
 void HybrisManager::registerAdaptor(HybrisAdaptor *adaptor)
 {
-    if (!registeredAdaptors.values().contains(adaptor)) {
+    if (!registeredAdaptors.values().contains(adaptor) && adaptor->isValid()) {
         registeredAdaptors.insertMulti(adaptor->sensorType, adaptor);
     }
 }
@@ -328,8 +329,10 @@ HybrisAdaptor::HybrisAdaptor(const QString& id, int type)
       inStandbyMode_(false),
       running_(false)
 {
-    if (!HybrisAdaptor_sensorTypes().values().contains(sensorType)) {
+    sensorHandle = hybrisManager()->handleForType(sensorType);
+    if (sensorHandle == -1) {
         qDebug() << Q_FUNC_INFO <<"no such sensor" << id;
+        setValid(false);
         return;
     }
 
@@ -345,10 +348,6 @@ HybrisAdaptor::~HybrisAdaptor()
 
 void HybrisAdaptor::init()
 {
-    sensorHandle = hybrisManager()->handleForType(sensorType);
-    if (sensorHandle == -1) {
-        setValid(false);
-    }
     maxRange = hybrisManager()->maxRange(sensorType);
     minDelay = hybrisManager()->minDelay(sensorType);
     if (minDelay > 1000)
@@ -364,6 +363,8 @@ bool HybrisAdaptor::addSensorType(int type)
 
 bool HybrisAdaptor::startAdaptor()
 {
+    if (!isValid())
+        return false;
     return hybrisManager()->openSensors();
 }
 

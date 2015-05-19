@@ -268,6 +268,8 @@ AbstractSensorChannel* SensorManager::addSensor(const QString& id)
     {
         sensordLogC() << QString("%1 instantiation failed").arg(cleanId);
         delete sensorChannel;
+        removeSensor(getCleanId(id));
+        sensorFactoryMap_.remove(id);
         return NULL;
     }
 
@@ -291,6 +293,7 @@ void SensorManager::removeSensor(const QString& id)
     bus().unregisterObject(OBJECT_PATH + "/" + id);
     delete entryIt.value().sensor_;
     entryIt.value().sensor_ = 0;
+    sensorInstanceMap_.remove(id);
 }
 
 bool SensorManager::loadPlugin(const QString& name)
@@ -498,11 +501,14 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
             {
                 da = deviceAdaptorFactoryMap_[type](id);
                 Q_ASSERT( da );
-                da->init();
+                bool ok = da->isValid();
+                if (ok) {
+                    da->init();
 
-                ParameterParser::applyPropertyMap(da, entryIt.value().propertyMap_);
+                    ParameterParser::applyPropertyMap(da, entryIt.value().propertyMap_);
 
-                bool ok = da->startAdaptor();
+                    ok = da->startAdaptor();
+                }
                 if (ok)
                 {
                     entryIt.value().adaptor_ = da;

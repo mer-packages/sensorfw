@@ -38,7 +38,10 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     proximityAdaptor_ = sm.requestDeviceAdaptor("proximityadaptor");
-    Q_ASSERT( proximityAdaptor_ );
+    if (!proximityAdaptor_ ) {
+        setValid(false);
+        return;
+    }
 
     proximityReader_ = new BufferReader<ProximityData>(1);
 
@@ -70,16 +73,18 @@ ProximitySensorChannel::ProximitySensorChannel(const QString& id) :
 
 ProximitySensorChannel::~ProximitySensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(proximityAdaptor_, "proximity", proximityReader_);
+        disconnectFromSource(proximityAdaptor_, "proximity", proximityReader_);
 
-    sm.releaseDeviceAdaptor("proximityadaptor");
+        sm.releaseDeviceAdaptor("proximityadaptor");
 
-    delete proximityReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete proximityReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool ProximitySensorChannel::start()
