@@ -220,7 +220,6 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
 
     if (okToStop) {
         adaptorReader.stopReader();
-        adaptorReader.wait();
    }
 }
 
