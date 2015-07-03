@@ -38,7 +38,10 @@ GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     gyroscopeAdaptor_ = sm.requestDeviceAdaptor("gyroscopeadaptor");
-    Q_ASSERT( gyroscopeAdaptor_ );
+    if (!gyroscopeAdaptor_) {
+        setValid(false);
+        return;
+    }
 
     gyroscopeReader_ = new BufferReader<TimedXyzData>(1);
 
@@ -70,16 +73,18 @@ GyroscopeSensorChannel::GyroscopeSensorChannel(const QString& id) :
 
 GyroscopeSensorChannel::~GyroscopeSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(gyroscopeAdaptor_, "gyroscope", gyroscopeReader_);
+        disconnectFromSource(gyroscopeAdaptor_, "gyroscope", gyroscopeReader_);
 
-    sm.releaseDeviceAdaptor("gyroscopeadaptor");
+        sm.releaseDeviceAdaptor("gyroscopeadaptor");
 
-    delete gyroscopeReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete gyroscopeReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool GyroscopeSensorChannel::start()

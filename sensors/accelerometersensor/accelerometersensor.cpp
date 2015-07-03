@@ -39,7 +39,10 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
-    Q_ASSERT( accelerometerChain_ );
+    if (!accelerometerChain_) {
+        setValid(false);
+        return;
+    }
     setValid(accelerometerChain_->isValid());
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1);
@@ -71,16 +74,18 @@ AccelerometerSensorChannel::AccelerometerSensorChannel(const QString& id) :
 
 AccelerometerSensorChannel::~AccelerometerSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
+        disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
 
-    sm.releaseChain("accelerometerchain");
+        sm.releaseChain("accelerometerchain");
 
-    delete accelerometerReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete accelerometerReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool AccelerometerSensorChannel::start()

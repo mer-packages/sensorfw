@@ -41,7 +41,10 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     magChain_ = sm.requestChain("magcalibrationchain");
-    Q_ASSERT( magChain_ );
+    if (!magChain_) {
+        setValid(false);
+        return;
+    }
     setValid(magChain_->isValid());
 
     magnetometerReader_ = new BufferReader<CalibratedMagneticFieldData>(1);
@@ -110,17 +113,19 @@ MagnetometerSensorChannel::MagnetometerSensorChannel(const QString& id) :
 
 MagnetometerSensorChannel::~MagnetometerSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(magChain_, "calibratedmagnetometerdata", magnetometerReader_);
-    sm.releaseChain("magcalibrationchain");
+        disconnectFromSource(magChain_, "calibratedmagnetometerdata", magnetometerReader_);
+        sm.releaseChain("magcalibrationchain");
 
-    if (scaleFilter_) delete scaleFilter_;
+        if (scaleFilter_) delete scaleFilter_;
 
-    delete magnetometerReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete magnetometerReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool MagnetometerSensorChannel::start()

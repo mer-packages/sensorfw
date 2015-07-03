@@ -43,7 +43,7 @@ class LocalSensorManagerInterface : public QDBusAbstractInterface
     Q_DISABLE_COPY(LocalSensorManagerInterface)
     Q_PROPERTY(SensorManagerError errorCode READ errorCode)
     Q_PROPERTY(QString errorString READ errorString)
-    Q_PROPERTY(int errorCodeInt READ errorCodeInt)
+    Q_PROPERTY(int errorCodeInt READ errorCodeInt NOTIFY errorSignal)
 
     /**
      * Get error code integer.

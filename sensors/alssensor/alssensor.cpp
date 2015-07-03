@@ -47,7 +47,10 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     alsAdaptor_ = sm.requestDeviceAdaptor("alsadaptor");
-    Q_ASSERT( alsAdaptor_ );
+    if (!alsAdaptor_) {
+        setValid(false);
+        return;
+    }
 
     alsReader_ = new BufferReader<TimedUnsigned>(1);
 
@@ -93,16 +96,18 @@ ALSSensorChannel::ALSSensorChannel(const QString& id) :
 
 ALSSensorChannel::~ALSSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(alsAdaptor_, "als", alsReader_);
+        disconnectFromSource(alsAdaptor_, "als", alsReader_);
 
-    sm.releaseDeviceAdaptor("alsadaptor");
+        sm.releaseDeviceAdaptor("alsadaptor");
 
-    delete alsReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete alsReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool ALSSensorChannel::start()

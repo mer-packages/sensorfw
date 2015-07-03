@@ -38,7 +38,10 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     compassChain_ = sm.requestChain("compasschain");
-    Q_ASSERT( compassChain_ );
+    if (!compassChain_) {
+        setValid(false);
+        return;
+    }
     setValid(compassChain_->isValid());
 
     inputReader_ = new BufferReader<CompassData>(1);
@@ -69,15 +72,17 @@ CompassSensorChannel::CompassSensorChannel(const QString& id) :
 
 CompassSensorChannel::~CompassSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(compassChain_, "truenorth", inputReader_);
-    sm.releaseChain("compasschain");
+        disconnectFromSource(compassChain_, "truenorth", inputReader_);
+        sm.releaseChain("compasschain");
 
-    delete inputReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete inputReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 quint16 CompassSensorChannel::declinationValue() const

@@ -38,7 +38,10 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     orientationChain_ = sm.requestChain("orientationchain");
-    Q_ASSERT( orientationChain_ );
+    if (!orientationChain_) {
+        setValid(false);
+        return;
+    }
     setValid(orientationChain_->isValid());
 
     orientationReader_ = new BufferReader<PoseData>(1);
@@ -70,16 +73,18 @@ OrientationSensorChannel::OrientationSensorChannel(const QString& id) :
 
 OrientationSensorChannel::~OrientationSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(orientationChain_, "orientation", orientationReader_);
+        disconnectFromSource(orientationChain_, "orientation", orientationReader_);
 
-    sm.releaseChain("orientationchain");
+        sm.releaseChain("orientationchain");
 
-    delete orientationReader_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
+        delete orientationReader_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
+    }
 }
 
 bool OrientationSensorChannel::start()

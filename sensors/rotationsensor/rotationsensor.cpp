@@ -40,8 +40,10 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     SensorManager& sm = SensorManager::instance();
 
     accelerometerChain_ = sm.requestChain("accelerometerchain");
-    Q_ASSERT( accelerometerChain_ );
-    setValid(accelerometerChain_->isValid());
+    if (!accelerometerChain_) {
+        setValid(false);
+        return;
+    }
 
     accelerometerReader_ = new BufferReader<AccelerationData>(1);
 
@@ -53,7 +55,11 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
     }
 
     rotationFilter_ = sm.instantiateFilter("rotationfilter");
-    Q_ASSERT(rotationFilter_);
+    if (!rotationFilter_) {
+        setValid(false);
+        return;
+    }
+    setValid(true);
 
     outputBuffer_ = new RingBuffer<TimedXyzData>(1);
 
@@ -108,23 +114,25 @@ RotationSensorChannel::RotationSensorChannel(const QString& id) :
 
 RotationSensorChannel::~RotationSensorChannel()
 {
-    SensorManager& sm = SensorManager::instance();
+    if (isValid()) {
+        SensorManager& sm = SensorManager::instance();
 
-    disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
-    sm.releaseChain("accelerometerchain");
+        disconnectFromSource(accelerometerChain_, "accelerometer", accelerometerReader_);
+        sm.releaseChain("accelerometerchain");
 
-    if (hasZ())
-    {
-        disconnectFromSource(compassChain_, "truenorth", compassReader_);
-        sm.releaseChain("compasschain");
-        delete compassReader_;
+        if (hasZ())
+        {
+            disconnectFromSource(compassChain_, "truenorth", compassReader_);
+            sm.releaseChain("compasschain");
+            delete compassReader_;
+        }
+
+        delete accelerometerReader_;
+        delete rotationFilter_;
+        delete outputBuffer_;
+        delete marshallingBin_;
+        delete filterBin_;
     }
-
-    delete accelerometerReader_;
-    delete rotationFilter_;
-    delete outputBuffer_;
-    delete marshallingBin_;
-    delete filterBin_;
 }
 
 bool RotationSensorChannel::start()
