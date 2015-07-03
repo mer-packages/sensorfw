@@ -212,7 +212,7 @@ void HybrisManager::stopReader(HybrisAdaptor *adaptor)
                 sensordLogW() <<Q_FUNC_INFO<< "failed for"<< strerror(-error);
             }
         }
-        if (list.at(i) != adaptor && list.at(i)->isRunning()) {
+        if (list.at(i) != adaptor && list.at(i)->shouldBeRunning_) {
             okToStop = false;
         }
     }
