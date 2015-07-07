@@ -59,39 +59,15 @@ contains(CONFIG,hybris) {
 
 
 equals(QT_MAJOR_VERSION, 5):  {
-    contains(CONFIG,hybris) {
-        SENSORDHYBRISCONFIGFILE.files = config/sensord-hybris.conf
-        SENSORDHYBRISCONFIGFILE.path = /etc/sensorfw
-        INSTALLS += SENSORDHYBRISCONFIGFILE
-
-    } else {
-    config_hybris {
-        SENSORDHYBRISCONFIGFILE.files = config/sensord-hybris.conf
-        SENSORDHYBRISCONFIGFILE.path = /etc/sensorfw
-        INSTALLS += SENSORDHYBRISCONFIGFILE
-    }
+    !contains(CONFIG,hybris) {
+# config file installation not handled here
         DBUSCONFIGFILES.files = sensorfw.conf
         DBUSCONFIGFILES.path = /etc/dbus-1/system.d
-
-        SENSORDCONFIGFILE.files = config/sensord-rx_51.conf \
-		config/sensord-oaktrail.conf \
-		config/sensord-exopc.conf \
-		config/sensord-aava.conf \
-		config/sensord-rm_696.conf \
-		config/sensord-arm_grouper_0000.conf \
-		config/sensord-mrst_cdk.conf \
-		config/sensord-ncdk.conf \
-		config/sensord.conf \
-		config/sensord-rm_680.conf \
-		config/sensord-icdk.conf \
-		config/sensord-u8500.conf \
-
-        SENSORDCONFIGFILE.path = /etc/sensorfw
+        INSTALLS += DBUSCONFIGFILES
 
         SENSORDCONFIGFILES.files = config/90-sensord-default.conf
         SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
-
-        INSTALLS += DBUSCONFIGFILES SENSORDCONFIGFILE SENSORDCONFIGFILES
+        INSTALLS += SENSORDCONFIGFILES
 
         SENSORDCONFIGHELPER.files = rpm/sensord-daemon-conf-setup
         SENSORDCONFIGHELPER.path = /usr/bin

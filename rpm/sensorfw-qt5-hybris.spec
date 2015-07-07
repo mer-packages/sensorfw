@@ -1,6 +1,6 @@
 Name:       hybris-libsensorfw-qt5
 Summary:    Sensor Framework Qt5
-Version:    0.8.7
+Version:    0.8.17
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -8,9 +8,7 @@ URL:        http://gitorious.org/sensorfw
 Source0:    %{name}-%{version}.tar.bz2
 # Eventhough these are really needed we have these here
 # as those are added to packaging dir by tar_git.
-Source1:    sensord-daemon-conf-setup
 Source2:    sensorfwd.service
-Requires:   %{name}-configs
 Requires:   sensord-qt5
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
@@ -22,6 +20,7 @@ BuildRequires:  pkgconfig(mlite5)
 BuildRequires:  pkgconfig(sensord-qt5)
 BuildRequires:  pkgconfig(libhardware)
 BuildRequires:  pkgconfig(android-headers)
+Obsoletes: %{name}-configs <= 0.8.17
 
 %description
 Sensor Framework provides an interface to hardware sensor drivers through logical sensors. This package contains sensor framework daemon and required libraries.
@@ -36,18 +35,6 @@ Requires:   qt5-qtnetwork-devel
 
 %description devel
 Development headers for sensor framework daemon and libraries.
-
-
-%package configs
-Summary:    Sensorfw configuration files
-Group:      System/Libraries
-BuildArch:  noarch
-Requires:   %{name} = %{version}
-Provides:   sensord-configs
-Obsoletes:  sensorfw-qt5-configs <= 0.7.3.31
-
-%description configs
-Sensorfw configuration files.
 
 %prep
 %setup -q -n %{name}-%{version}
@@ -68,7 +55,6 @@ export QT_SELECT=5
 
 %post
 /sbin/ldconfig
-%{_bindir}/sensord-daemon-conf-setup
 
 %postun
 /sbin/ldconfig
@@ -82,7 +68,3 @@ export QT_SELECT=5
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/sensord-qt5/*
-
-%files configs
-%defattr(-,root,root,-)
-%config %{_sysconfdir}/sensorfw/sensord-hybris.conf
