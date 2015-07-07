@@ -1,6 +1,6 @@
 Name:       sensorfw-qt5
 Summary:    Sensor Framework Qt5
-Version:    0.8.7
+Version:    0.8.17
 Release:    0
 Group:      System/Sensor Framework
 License:    LGPLv2+
@@ -137,8 +137,6 @@ systemctl daemon-reload || :
 
 %config %{_sysconfdir}/dbus-1/system.d/sensorfw.conf
 %dir %{_sysconfdir}/sensorfw
-%config %{_sysconfdir}/sensorfw/sensord.conf
-%dir %{_sysconfdir}/sensorfw/sensord.conf.d/
 %{_unitdir}/sensorfwd.service
 %{_unitdir}/graphical.target.wants/sensorfwd.service
 %{_bindir}/sensord-daemon-conf-setup
@@ -182,8 +180,6 @@ systemctl daemon-reload || :
 %files configs
 %defattr(-,root,root,-)
 %config %{_sysconfdir}/sensorfw/sensord.conf.d/*conf
-%config %{_sysconfdir}/sensorfw/*conf
-%exclude %{_sysconfdir}/sensorfw/sensord.conf
 
 %files docs
 %{_prefix}/share/doc/sensord-qt5
