@@ -69,10 +69,6 @@ equals(QT_MAJOR_VERSION, 5):  {
         SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
         INSTALLS += SENSORDCONFIGFILES
 
-        SENSORDCONFIGHELPER.files = config/sensord-daemon-conf-setup
-        SENSORDCONFIGHELPER.path = /usr/bin
-        INSTALLS += SENSORDCONFIGHELPER
-
         SENSORSYSTEMD.files = rpm/sensord.service
         SENSORSYSTEMD.path = /lib/systemd/system
         INSTALLS += SENSORSYSTEMD
