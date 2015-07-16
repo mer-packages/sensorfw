@@ -45,7 +45,7 @@ CompassChain::CompassChain(const QString& id) :
 
     if (sm.getAdaptorTypes().contains("orientationadaptor")) {
         orientAdaptor = sm.requestDeviceAdaptor("orientationadaptor");
-        if (orientAdaptor->isValid()) {
+        if (orientAdaptor && orientAdaptor->isValid()) {
             hasOrientationAdaptor = true;
         }
     }
