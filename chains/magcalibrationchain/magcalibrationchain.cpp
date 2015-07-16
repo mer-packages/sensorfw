@@ -71,7 +71,7 @@ MagCalibrationChain::MagCalibrationChain(const QString& id) :
 
     if (sm.getAdaptorTypes().contains("orientationadaptor")) {
         DeviceAdaptor *orientAdaptor = sm.requestDeviceAdaptor("orientationadaptor");
-        if (orientAdaptor->isValid()) {
+        if (orientAdaptor && orientAdaptor->isValid()) {
             needsCalibration = false;
         }
     }
