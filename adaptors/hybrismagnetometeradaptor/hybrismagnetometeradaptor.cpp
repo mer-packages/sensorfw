@@ -67,23 +67,12 @@ void HybrisMagnetometerAdaptor::processSample(const sensors_event_t& data)
     d->rx_ = data.uncalibrated_magnetic.x_uncalib * 1000;
     d->ry_ = data.uncalibrated_magnetic.y_uncalib * 1000;
     d->rz_ = data.uncalibrated_magnetic.z_uncalib * 1000;
-    qDebug() << Q_FUNC_INFO
-             << "uncalibrated"
-             << data.uncalibrated_magnetic.x_uncalib * 1000
-             << data.uncalibrated_magnetic.y_uncalib * 1000
-             << data.uncalibrated_magnetic.z_uncalib * 1000;
-    qDebug() << Q_FUNC_INFO
-             << "bias"
-             << data.uncalibrated_magnetic.x_bias * 1000
-             << data.uncalibrated_magnetic.y_bias * 1000
-             << data.uncalibrated_magnetic.z_bias * 1000;
 #else
     d->rx_ = data.magnetic.x * 1000;
     d->ry_ = data.magnetic.y * 1000;
     d->rz_ = data.magnetic.z * 1000;
 
 #endif
-    qDebug() << Q_FUNC_INFO << d->x_ << d->y_ << d->z_ << data.magnetic.status;
     buffer->commit();
     buffer->wakeUpReaders();
 }
