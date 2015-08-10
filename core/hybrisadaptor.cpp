@@ -133,6 +133,10 @@ void HybrisManager::init()
     sensorsCount = module->get_sensors_list(module, &sensorList);
 
     for (int i = 0 ; i < sensorsCount ; i++) {
+        // some devices have compass and compass raw,
+        // ignore compass raw. compass has range 360
+        if (sensorList[i].type != SENSOR_TYPE_ORIENTATION
+                || sensorList[i].maxRange == 360)
         sensorMap.insert(sensorList[i].type, i);
     }
 }
