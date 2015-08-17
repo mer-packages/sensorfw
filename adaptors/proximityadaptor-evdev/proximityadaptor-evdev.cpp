@@ -38,6 +38,7 @@
 
 #define SELFDEF_EV_SW 5
 #define SELFDEF_EV_FRONT_PROXIMITY 11
+#define SELFDEF_EV_DISTANCE 25
 
 ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
     InputDevAdaptor(id, 1),
@@ -55,29 +56,15 @@ ProximityAdaptorEvdev::~ProximityAdaptorEvdev()
 void ProximityAdaptorEvdev::interpretEvent(int src, struct input_event *ev)
 {
     Q_UNUSED(src);
-
-    switch (ev->type) {
-        case SELFDEF_EV_SW:
-        {
-            switch (ev->code) {
-                case SELFDEF_EV_FRONT_PROXIMITY:
-                {
-                    if (ev->value == 0) {
-                        currentState_ = ProximityStateOpen;
-                    }
-                    else if (ev->value == 1) {
-                        currentState_ = ProximityStateClosed;
-                    }
-                    else {
-                        currentState_ = ProximityStateUnknown;
-                    }
-                }
-                break;
-                default: break;
-            }
+    if (ev->type == EV_SW && ev->code == SW_FRONT_PROXIMITY  ||
+            ev->type == EV_ABS && ev->code == ABS_DISTANCE) {
+        if (ev->value == 0) {
+            currentState_ = ProximityStateOpen;
+        } else if (ev->value == 1) {
+            currentState_ = ProximityStateClosed;
+        } else {
+            currentState_ = ProximityStateUnknown;
         }
-        break;
-        default: break;
     }
 }
 

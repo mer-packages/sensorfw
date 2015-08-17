@@ -44,11 +44,29 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     accelerometerBuffer_ = new DeviceAdaptorRingBuffer<OrientationData>(1);
     setAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
     setDescription("Input device accelerometer adaptor");
+    powerStatePath_ = Config::configuration()->value("accelerometer/powerstate_path").toByteArray();
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()
 {
+    stopSensor();
     delete accelerometerBuffer_;
+}
+
+bool AccelerometerAdaptor::startSensor()
+{
+    if(!powerStatePath_.isEmpty()) {
+        writeToFile(powerStatePath_, "1");
+    }
+    return SysfsAdaptor::startSensor();
+}
+
+void AccelerometerAdaptor::stopSensor()
+{
+    if(!powerStatePath_.isEmpty()) {
+        writeToFile(powerStatePath_, "0");
+    }
+    SysfsAdaptor::stopSensor();
 }
 
 void AccelerometerAdaptor::interpretEvent(int src, struct input_event *ev)
