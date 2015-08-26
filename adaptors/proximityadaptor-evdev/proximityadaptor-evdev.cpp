@@ -92,3 +92,41 @@ void ProximityAdaptorEvdev::commitOutput(struct input_event *ev)
         proximityBuffer_->wakeUpReaders();
     }
 }
+
+bool ProximityAdaptorEvdev::startSensor()
+{
+    if (!powerStatePath_.isEmpty()) {
+        writeToFile(powerStatePath_, "1");
+    }
+    if (SysfsAdaptor::startSensor()) {
+        return true;
+    }
+    return false;
+}
+
+void ProximityAdaptorEvdev::stopSensor()
+{
+    if (!powerStatePath_.isEmpty()) {
+        writeToFile(powerStatePath_, "0");
+    }
+
+    SysfsAdaptor::stopSensor();
+}
+
+bool ProximityAdaptorEvdev::standby()
+{
+    if (SysfsAdaptor::standby()) {
+        stopSensor();
+        return true;
+    }
+    return false;
+}
+
+bool ProximityAdaptorEvdev::resume()
+{
+    if (SysfsAdaptor::resume()) {
+        startSensor();
+        return true;
+    }
+    return false;
+}
