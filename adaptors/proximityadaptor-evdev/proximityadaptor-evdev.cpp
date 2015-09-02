@@ -46,6 +46,7 @@ ProximityAdaptorEvdev::ProximityAdaptorEvdev(const QString& id) :
 {
     proximityBuffer_ = new DeviceAdaptorRingBuffer<ProximityData>(1);
     setAdaptedSensor("proximity", "Proximity state", proximityBuffer_);
+    powerStatePath_ = Config::configuration()->value("proximity/powerstate_path").toByteArray();
 }
 
 ProximityAdaptorEvdev::~ProximityAdaptorEvdev()

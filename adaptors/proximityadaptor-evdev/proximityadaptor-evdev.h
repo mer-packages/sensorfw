@@ -82,6 +82,7 @@ private:
     void interpretEvent(int src, struct input_event *ev);
     void commitOutput(struct input_event *ev);
     void interpretSync(int src, struct input_event *ev);
+    QByteArray powerStatePath_;
 };
 
 #endif

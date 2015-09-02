@@ -173,13 +173,12 @@ bool SysfsAdaptor::standby()
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: overriden";
         return false;
     }
-    inStandbyMode_ = true;
-
     if (!isRunning()) {
         sensordLogD() << "Adaptor '" << id() << "' not going to standby: not running";
         return false;
     }
 
+    inStandbyMode_ = true;
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
     stopReaderThread();
     closeAllFds();
@@ -199,7 +198,6 @@ bool SysfsAdaptor::resume()
         return false;
     }
 
-    inStandbyMode_ = false;
 
     if (!shouldBeRunning_) {
         sensordLogD() << "Adaptor '" << id() << "' not resuming from standby: not running";
@@ -207,6 +205,7 @@ bool SysfsAdaptor::resume()
     }
 
     sensordLogD() << "Adaptor '" << id() << "' resuming from standby";
+    inStandbyMode_ = false;
 
     if (!startReaderThread()) {
         sensordLogW() << "Adaptor '" << id() << "' failed to resume from standby!";

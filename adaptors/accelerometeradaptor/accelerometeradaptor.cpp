@@ -134,3 +134,15 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
     sessionId = winningSessionId;
     return highestValue > 0 ? highestValue : defaultInterval();
 }
+
+bool AccelerometerAdaptor::resume()
+{
+    if (SysfsAdaptor::resume())
+        SysfsAdaptor::startSensor();
+}
+
+bool AccelerometerAdaptor::standby()
+{
+    if (SysfsAdaptor::standby())
+        SysfsAdaptor::stopSensor();
+}

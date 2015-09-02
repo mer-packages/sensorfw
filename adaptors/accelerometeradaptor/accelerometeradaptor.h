@@ -59,6 +59,9 @@ public:
     virtual bool startSensor();
 
     virtual void stopSensor();
+    virtual bool standby();
+    virtual bool resume();
+
 protected:
     /**
      * Constructor.
