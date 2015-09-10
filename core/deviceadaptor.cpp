@@ -120,12 +120,10 @@ RingBufferBase* DeviceAdaptor::findBuffer(const QString& name) const
 bool DeviceAdaptor::setStandbyOverride(bool override)
 {
     standbyOverride_ = override;
-    if (screenBlanked_) {
-        if (override) {
-            resume();
-        } else {
-            standby();
-        }
+    if (override) {
+        resume();
+    } else {
+        standby();
     }
     sensordLogD() << "standbyOverride changed: id = " << id() << ", value = " <<  standbyOverride_;
     return true;
