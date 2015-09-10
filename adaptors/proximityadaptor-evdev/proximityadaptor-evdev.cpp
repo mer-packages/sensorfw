@@ -60,9 +60,9 @@ void ProximityAdaptorEvdev::interpretEvent(int src, struct input_event *ev)
     if (ev->type == EV_SW && ev->code == SW_FRONT_PROXIMITY  ||
             ev->type == EV_ABS && ev->code == ABS_DISTANCE) {
         if (ev->value == 0) {
-            currentState_ = ProximityStateOpen;
-        } else if (ev->value == 1) {
             currentState_ = ProximityStateClosed;
+        } else if (ev->value == 1) {
+            currentState_ = ProximityStateOpen;
         } else {
             currentState_ = ProximityStateUnknown;
         }
