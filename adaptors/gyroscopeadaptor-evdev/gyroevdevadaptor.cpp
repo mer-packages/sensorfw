@@ -143,18 +143,12 @@ void GyroAdaptorEvdev::stopSensor()
 
 bool GyroAdaptorEvdev::standby()
 {
-    if (SysfsAdaptor::standby()) {
-        stopSensor();
-        return true;
-    }
-    return false;
+    stopSensor();
+    return true;
 }
 
 bool GyroAdaptorEvdev::resume()
 {
-    if (SysfsAdaptor::resume()) {
-        startSensor();
-        return true;
-    }
-    return false;
+    startSensor();
+    return true;
 }

@@ -142,18 +142,12 @@ void MagAdaptorEvdev::stopSensor()
 
 bool MagAdaptorEvdev::standby()
 {
-    if (SysfsAdaptor::standby()) {
-        stopSensor();
-        return true;
-    }
-    return false;
+    stopSensor();
+    return true;
 }
 
 bool MagAdaptorEvdev::resume()
 {
-    if (SysfsAdaptor::resume()) {
-        startSensor();
-        return true;
-    }
-    return false;
+    startSensor();
+    return true;
 }

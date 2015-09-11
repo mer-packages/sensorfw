@@ -146,10 +146,6 @@ void SysfsAdaptor::stopSensor()
         return;
     }
 
-    if (!shouldBeRunning_) {
-        return;
-    }
-
     entry->removeReference();
     if (entry->referenceCount() <= 0) {
         if (!inStandbyMode_) {
@@ -158,7 +154,6 @@ void SysfsAdaptor::stopSensor()
         }
         entry->setIsRunning(false);
         running_ = false;
-        shouldBeRunning_ = false;
     }
 }
 
@@ -179,12 +174,13 @@ bool SysfsAdaptor::standby()
     }
 
     inStandbyMode_ = true;
+    shouldBeRunning_ = true;
     sensordLogD() << "Adaptor '" << id() << "' going to standby";
     stopReaderThread();
     closeAllFds();
 
     running_ = false;
-
+    stopAdaptor();
     return true;
 }
 
@@ -213,6 +209,7 @@ bool SysfsAdaptor::resume()
     }
 
     running_ = true;
+    startAdaptor();
     return true;
 }
 

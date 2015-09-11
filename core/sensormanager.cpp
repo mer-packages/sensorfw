@@ -130,7 +130,6 @@ SensorManager::SensorManager()
     }
 
 #ifdef SENSORFW_MCE_WATCHER
-
     mceWatcher_ = new MceWatcher(this);
     connect(mceWatcher_, SIGNAL(displayStateChanged(const bool)),
             this, SLOT(displayStateChanged(const bool)));
@@ -687,7 +686,7 @@ void SensorManager::printStatus(QStringList& output) const
 {
     output.append("  Adaptors:");
     for (QMap<QString, DeviceAdaptorInstanceEntry>::const_iterator it = deviceAdaptorInstanceMap_.constBegin(); it != deviceAdaptorInstanceMap_.constEnd(); ++it) {
-        output.append(QString("    %1 [%2 listener(s)]").arg(it.value().type_).arg(it.value().cnt_));
+        output.append(QString("    %1 [%2 listener(s)] %3").arg(it.value().type_).arg(it.value().cnt_).arg(it.value().adaptor_->deviceStandbyOverride() ? "Standby Overriden" : "No standby override"));
     }
 
     output.append("  Chains:\n");
