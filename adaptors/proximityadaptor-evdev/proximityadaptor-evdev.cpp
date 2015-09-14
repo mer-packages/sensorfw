@@ -116,18 +116,12 @@ void ProximityAdaptorEvdev::stopSensor()
 
 bool ProximityAdaptorEvdev::standby()
 {
-    if (SysfsAdaptor::standby()) {
-        stopSensor();
-        return true;
-    }
-    return false;
+    stopSensor();
+    return true;
 }
 
 bool ProximityAdaptorEvdev::resume()
 {
-    if (SysfsAdaptor::resume()) {
-        startSensor();
-        return true;
-    }
-    return false;
+    startSensor();
+    return true;
 }

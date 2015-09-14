@@ -137,12 +137,12 @@ unsigned int AccelerometerAdaptor::evaluateIntervalRequests(int& sessionId) cons
 
 bool AccelerometerAdaptor::resume()
 {
-    if (SysfsAdaptor::resume())
-        SysfsAdaptor::startSensor();
+   startSensor();
+   return true;
 }
 
 bool AccelerometerAdaptor::standby()
 {
-    if (SysfsAdaptor::standby())
-        SysfsAdaptor::stopSensor();
+    stopSensor();
+    return true;
 }

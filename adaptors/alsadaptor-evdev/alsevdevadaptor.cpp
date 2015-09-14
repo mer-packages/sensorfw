@@ -134,18 +134,12 @@ void ALSAdaptorEvdev::stopSensor()
 
 bool ALSAdaptorEvdev::standby()
 {
-    if (SysfsAdaptor::standby()) {
-        stopSensor();
-        return true;
-    }
-    return false;
+    stopSensor();
+    return true;
 }
 
 bool ALSAdaptorEvdev::resume()
 {
-    if (SysfsAdaptor::resume()) {
-        startSensor();
-        return true;
-    }
-    return false;
+    startSensor();
+    return true;
 }
