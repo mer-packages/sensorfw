@@ -45,6 +45,7 @@ AccelerometerAdaptor::AccelerometerAdaptor(const QString& id) :
     setAdaptedSensor("accelerometer", "Internal accelerometer coordinates", accelerometerBuffer_);
     setDescription("Input device accelerometer adaptor");
     powerStatePath_ = Config::configuration()->value("accelerometer/powerstate_path").toByteArray();
+    accelMultiplier = Config::configuration()->value("accelerometer/multiplier", QVariant(1)).toReal();
 }
 
 AccelerometerAdaptor::~AccelerometerAdaptor()
@@ -78,13 +79,13 @@ void AccelerometerAdaptor::interpretEvent(int src, struct input_event *ev)
     case EV_ABS:
         switch (ev->code) {
         case ABS_X:
-            orientationValue_.x_ = ev->value;
+            orientationValue_.x_ = ev->value * accelMultiplier;
             break;
         case ABS_Y:
-            orientationValue_.y_ = ev->value;
+            orientationValue_.y_ = ev->value * accelMultiplier;
             break;
         case ABS_Z:
-            orientationValue_.z_ = ev->value;
+            orientationValue_.z_ = ev->value * accelMultiplier;
             break;
         }
         break;
