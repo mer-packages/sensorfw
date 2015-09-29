@@ -173,10 +173,13 @@ int HybrisManager::resolution(int sensorType)
 
 bool HybrisManager::setDelay(int sensorHandle, int interval)
 {
-    int result = device->setDelay(device, sensorHandle, interval);
-    if (result < 0) {
-        sensordLogW() << "setDelay() failed" << strerror(-result);
-        return false;
+    bool ok = true;
+    if (interval > 0) {
+        int result = device->setDelay(device, sensorHandle, interval);
+        if (result < 0) {
+            sensordLogW() << "setDelay() failed" << strerror(-result);
+            ok = false;
+        }
     }
     QList <HybrisAdaptor *> list;
     list = registeredAdaptors.values();
@@ -186,7 +189,7 @@ bool HybrisManager::setDelay(int sensorHandle, int interval)
         }
     }
 
-    return true;
+    return ok;
 }
 
 void HybrisManager::startReader(HybrisAdaptor *adaptor)
