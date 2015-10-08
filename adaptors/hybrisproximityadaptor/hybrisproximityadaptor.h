@@ -61,6 +61,6 @@ protected:
 private:
     DeviceAdaptorRingBuffer<ProximityData>* buffer;
     int sensorType;
-    bool lastNearValue;
+    int lastNearValue;
 };
 #endif
