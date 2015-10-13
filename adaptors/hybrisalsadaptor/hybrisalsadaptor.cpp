@@ -83,7 +83,7 @@ void HybrisAlsAdaptor::sendInitialData()
         inputDev.replace("input","event");
         inputDev.prepend("/dev/input/");
 
-        if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > 0) {
+        if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > -1) {
 
             if (!ioctl(fd, EVIOCGABS(ABS_MISC), &absinfo)) {
                 if (absinfo.value != lastLightValue)

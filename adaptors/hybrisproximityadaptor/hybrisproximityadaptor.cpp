@@ -31,7 +31,7 @@
 
 HybrisProximityAdaptor::HybrisProximityAdaptor(const QString& id) :
     HybrisAdaptor(id,SENSOR_TYPE_PROXIMITY),
-    lastNearValue(true)
+    lastNearValue(-1)
 {
     if (isValid()) {
         buffer = new DeviceAdaptorRingBuffer<ProximityData>(1);
@@ -66,8 +66,8 @@ void HybrisProximityAdaptor::sendInitialData()
        QTextStream in(&file);
        QString line = in.readLine();
        while (!line.isNull()) {
-           if (ok && line.startsWith("S: Sysfs=")) {
-               inputDev = line.split("=").at(1).section("/",-1);
+           if (ok && line.startsWith("H: Handlers")) {
+               inputDev = line.split("=").at(1).section("/",-1).simplified();
                ok = false;
                break;
            }
@@ -84,10 +84,9 @@ void HybrisProximityAdaptor::sendInitialData()
 
        struct input_absinfo absinfo;
        int fd;
-       inputDev.replace("input","event");
        inputDev.prepend("/dev/input/");
 
-       if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > 0) {
+       if ((fd = open(inputDev.toLatin1(), O_RDONLY)) > -1) {
 
            if (!ioctl(fd, EVIOCGABS(ABS_DISTANCE), &absinfo)) {
                bool near = false;
@@ -96,7 +95,7 @@ void HybrisProximityAdaptor::sendInitialData()
                ProximityData *d = buffer->nextSlot();
                d->timestamp_ = Utils::getTimeStamp();
                d->withinProximity_ = near;
-               d->value_ = near ? 10 : 0;
+               d->value_ = absinfo.value;
                buffer->commit();
                buffer->wakeUpReaders();
            } else {
@@ -108,8 +107,8 @@ void HybrisProximityAdaptor::sendInitialData()
            ProximityData *d = buffer->nextSlot();
 
            d->timestamp_ = Utils::getTimeStamp();
-           d->withinProximity_ = lastNearValue;
-           d->value_ = lastNearValue ? 10 : 0;
+           d->withinProximity_ = false;
+           d->value_ = 10;
 
            buffer->commit();
            buffer->wakeUpReaders();
