@@ -17,7 +17,34 @@ SUBDIRS = datatypes \
 equals(QT_MAJOR_VERSION, 4): {
     SUBDIRS = datatypes qt-api
 }
+    
+contains(CONFIG,configs) {
+   # !contains(CONFIG,hybris) {
+        SENSORDHYBRISCONFIGFILE.files = config/sensord-hybris.conf
+        SENSORDHYBRISCONFIGFILE.path = /etc/sensorfw
+        INSTALLS += SENSORDHYBRISCONFIGFILE
+    # }
+        SENSORFWCONFIGFILES.files = config/sensord-rx_51.conf \
+               config/sensord-oaktrail.conf \
+               config/sensord-exopc.conf \
+               config/sensord-aava.conf \
+               config/sensord-rm_696.conf \
+               config/sensord-arm_grouper_0000.conf \
+               config/sensord-mrst_cdk.conf \
+               config/sensord-ncdk.conf \
+               config/sensord.conf \
+               config/sensord-rm_680.conf \
+               config/sensord-icdk.conf \
+               config/sensord-u8500.conf \
 
+        SENSORFWCONFIGFILES.path = /etc/sensorfw
+
+    SENSORCONFIG_SETUP.files = config/sensord-daemon-conf-setup
+    SENSORCONFIG_SETUP.path = /usr/bin
+    
+     INSTALLS +=  SENSORFWCONFIGFILES SENSORCONFIG_SETUP
+ }
+    
 contains(CONFIG,hybris) {
 
     SUBDIRS = core/hybris.pro \
@@ -69,7 +96,7 @@ equals(QT_MAJOR_VERSION, 5):  {
         SENSORDCONFIGFILES.path = /etc/sensorfw/sensord.conf.d
         INSTALLS += SENSORDCONFIGFILES
 
-        SENSORSYSTEMD.files = rpm/sensord.service
+        SENSORSYSTEMD.files = rpm/sensorfwd.service
         SENSORSYSTEMD.path = /lib/systemd/system
         INSTALLS += SENSORSYSTEMD
     }
