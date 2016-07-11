@@ -1,5 +1,5 @@
 
-#include <android/hardware/sensors.h>
+#include <hardware/sensors.h>
 
 int main()
 {

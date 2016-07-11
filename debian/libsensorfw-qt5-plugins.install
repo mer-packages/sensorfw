@@ -1,15 +1,3 @@
-/etc/sensorfw/sensord-aava.conf
-/etc/sensorfw/sensord-arm_grouper_0000.conf
-/etc/sensorfw/sensord.conf
-/etc/sensorfw/sensord-exopc.conf
-/etc/sensorfw/sensord-icdk.conf
-/etc/sensorfw/sensord-mrst_cdk.conf
-/etc/sensorfw/sensord-ncdk.conf
-/etc/sensorfw/sensord-oaktrail.conf
-/etc/sensorfw/sensord-rm_680.conf
-/etc/sensorfw/sensord-rm_696.conf
-/etc/sensorfw/sensord-rx_51.conf
-/etc/sensorfw/sensord-u8500.conf
 /usr/lib/sensord-qt5/libaccelerometeradaptor-qt5.so  
 /usr/lib/sensord-qt5/libalssensor-qt5.so              
 /usr/lib/sensord-qt5/libdownsamplefilter-qt5.so            

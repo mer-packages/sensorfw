@@ -58,3 +58,11 @@ Architecture: any
 Depends: sensorfw-qt5 (= ${binary:Version}), libqt5core5a, android-headers, libhardware2
 Description: Sensor framework hybris support
  Provides support for hybris Sensor framework backend.
+
+Package: libsensorfw-qt5-configs
+Section: misc
+Priority: extra
+Architecture: any
+Depends: sensorfw-qt5 (= ${binary:Version}), libqt5core5a, android-headers, libhardware2
+Description: Sensor framework hybris support
+ Provides support for hybris Sensor framework backend.
