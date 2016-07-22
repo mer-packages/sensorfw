@@ -829,10 +829,10 @@ void ClientApiTest::testDownsampling()
         // error less than 30% of total range is accepted
         float limitF = 0.3f;
 
-        QVERIFY2((float)abs(x1 - x2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(x1 - x2) / rangeLimit, "<", limitF ));
-        QVERIFY2((float)abs(y1 - y2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(y1 - y2) / rangeLimit,"<", limitF ));
-        QVERIFY2((float)abs(rx1 - rx2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(rx1 - rx2) / rangeLimit,"<", limitF ));
-        QVERIFY2((float)abs(ry1 - ry2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)abs(ry1 - ry2) / rangeLimit,"<", limitF ));
+        QVERIFY2((float)fabsf(x1 - x2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)fabsf(x1 - x2) / rangeLimit, "<", limitF ));
+        QVERIFY2((float)fabsf(y1 - y2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)fabsf(y1 - y2) / rangeLimit,"<", limitF ));
+        QVERIFY2((float)fabsf(rx1 - rx2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)fabsf(rx1 - rx2) / rangeLimit,"<", limitF ));
+        QVERIFY2((float)fabsf(ry1 - ry2) / rangeLimit < limitF, errorMessage(sensorName, interval, (float)fabsf(ry1 - ry2) / rangeLimit,"<", limitF ));
     }
 }
 
