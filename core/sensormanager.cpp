@@ -479,7 +479,7 @@ DeviceAdaptor* SensorManager::requestDeviceAdaptor(const QString& id)
     if( id.contains(';') ) // no parameter passing in release
     {
         setError( SmIdNotRegistered, QString(tr("unknown adaptor id '%1'").arg(id)) );
-        return false;
+        return NULL;
     }
 
     DeviceAdaptor* da = NULL;
